@@ -1,0 +1,281 @@
+body{
+     line-height: 1.6em;
+     letter-spacing: .5px;
+     font-weight: 300;
+     font-style: normal;
+     color: #1f1f1f;
+
+     -moz-osx-font-smoothing: auto;
+     -webkit-font-smoothing: antialiased;
+ }
+h1
+{
+    font-family:"futura-pt", futura, sans-serif;
+    font-size: 42px;
+    line-height: 1.2em;
+    text-transform: none;
+    letter-spacing: 0px;
+    font-weight: 300;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    text-align: center;
+}
+
+nav#squarespaceNavBar.navbar.navbar-squarespace.navbar-fixed-top{
+    height: 74px;
+}
+
+#squarespaceNavBar{
+    font-family:"futura-pt", futura, sans-serif;
+    letter-spacing: 3px;
+    background: #11325c;
+    color: white;
+    padding-left: 4px;
+    padding-top: 10px;
+    padding-right: 4px;
+    padding-bottom: 10px;
+    -webkit-font-smoothing: antialiased;
+    border-radius: 0px;
+    margin-bottom: 0px;
+}
+.navbar-right{
+    padding-top: 4px;
+
+
+}
+span.glyphicon{
+    margin-top: -2px;
+    font-size: 17px;
+}
+.badge-notify{
+    /*background:red;*/
+    position: relative;
+    font-size: 9px;
+    top: -15px;
+    left: -12px;
+}
+
+a#squarespaceBrandText{
+    font-size: 21px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-style: normal;
+    line-height: 1em;
+    color: white;
+    -webkit-font-smoothing: antialiased;
+}
+.navbar-squarespace .navbar-nav>li>a{
+    color: white;
+    font-size: 12px;
+    text-transform: uppercase;
+    text-decoration: none;
+    letter-spacing: 2px;
+    font-style: normal;
+    line-height: 1em;
+    font-weight: 400;
+    padding-left: 10px;
+    padding-right: 10px;
+
+}
+.nav>li>a:focus, .nav>li>a:hover{
+    color:  rgba(152, 198, 239, 1);
+    background-color: transparent;
+    -webkit-transition: color .1s 0s ease-in-out;
+    -moz-transition: color .1s 0s ease-in-out;
+    -ms-transition: color .1s 0s ease-in-out;
+    -o-transition: color .1s 0s ease-in-out;
+    transition: color .1s 0s ease-in-out
+
+}
+.nav .open>a, .nav .open>a:focus, .nav .open>a:hover{
+    background-color: transparent;
+    border-color: #337ab7
+}
+.dropdown-menu>li>a{
+    font-size: 13px;
+    /*text-transform: uppercase;*/
+    text-decoration: none;
+    letter-spacing: 1px;
+    font-style: normal;
+    line-height: 1em;
+    font-weight: 400;
+}
+.dropdown-menu>li{
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+.btn-sqspcLogin{
+    background-color: transparent;
+    border: 2px solid #fff;
+
+    color: white;
+    font-size: 12px;
+    text-transform: uppercase;
+    text-decoration: none;
+    letter-spacing: 2px;
+    font-style: normal;
+    line-height: 1em;
+    font-weight: 400;
+    padding: 13px;
+    padding-right: 19px;
+    padding-left: 18px;
+    padding-top: 15px;
+    border-radius: 0px;
+    margin-left: 10px;
+}
+
+.btn-sqspcLogin:hover, .btn-sqspcLogin:focus{
+    color:black;
+    background: white;
+    -webkit-transition: color .1s 0s ease-in-out;
+    -moz-transition: color .1s 0s ease-in-out;
+    -ms-transition: color .1s 0s ease-in-out;
+    -o-transition: color .1s 0s ease-in-out;
+    transition: color .1s 0s ease-in-out
+}
+
+
+
+
+
+
+
+/*!
+ * Start Bootstrap - Simple Sidebar (http://startbootstrap.com/)
+ * Copyright 2013-2016 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
+ */
+
+body {
+    overflow-x: hidden;
+}
+
+/* Toggle Styles */
+
+#wrapper {
+    margin-top: 74px;
+    padding-left: 0;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+#wrapper.toggled {
+    /*padding-left: 250px;*/
+}
+
+#sidebar-wrapper {
+    z-index: 1000;
+    position: fixed;
+    left: 250px;
+    width: 0;
+    height: 100%;
+    margin-left: -250px;
+    overflow-y: auto;
+    /*background: #11325c;*/
+    background: rgba(22, 65, 119, 0.88);
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+#wrapper.toggled #sidebar-wrapper {
+    width: 250px;
+}
+
+#page-content-wrapper {
+    width: 100%;
+    position: absolute;
+    padding: 15px;
+}
+
+#wrapper.toggled #page-content-wrapper {
+    position: absolute;
+    margin-right: -250px;
+}
+
+/* Sidebar Styles */
+
+.sidebar-nav {
+    position: absolute;
+    top: 0;
+    width: 250px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.sidebar-nav li {
+    text-indent: 5px;
+    /*padding-left: 10px;*/
+    line-height: 40px;
+}
+.sidebar-nav li span {
+    padding-right: 10px;
+}
+
+.sidebar-nav li a {
+    display: block;
+    text-decoration: none;
+    /*color: #999999;*/
+    color: #ffffff;
+
+}
+
+.sidebar-nav li a:hover {
+    text-decoration: none;
+    color: #fff;
+    background: rgba(255,255,255,0.2);
+}
+
+.sidebar-nav li a:active,
+.sidebar-nav li a:focus {
+    text-decoration: none;
+}
+
+.sidebar-nav > .sidebar-brand {
+    height: 65px;
+    font-size: 18px;
+    line-height: 60px;
+}
+
+.sidebar-nav > .sidebar-brand a {
+    color: #999999;
+}
+
+.sidebar-nav > .sidebar-brand a:hover {
+    color: #fff;
+    background: none;
+}
+
+@media(min-width:768px) {
+    #wrapper {
+        padding-left: 38px;
+    }
+
+    #wrapper.toggled {
+        padding-left: 250px;
+    }
+
+    #sidebar-wrapper {
+        width: 38px;
+    }
+
+    #wrapper.toggled #sidebar-wrapper {
+        width: 250px;
+    }
+
+    #page-content-wrapper {
+        padding: 20px;
+        position: relative;
+    }
+
+    #wrapper.toggled #page-content-wrapper {
+        position: relative;
+        margin-right: 0;
+    }
+}
