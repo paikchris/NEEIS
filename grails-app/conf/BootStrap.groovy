@@ -1,72 +1,150 @@
 class BootStrap {
 
     def init = { servletContext ->
-        new portal.Coverage(coverageName: "Accident Medical", bindingAuthority: "N").save();
-        new portal.Coverage(coverageName: "Aviation", bindingAuthority: "N").save();
-        new portal.Coverage(coverageName: "Bond", bindingAuthority: "N").save();
-        new portal.Coverage(coverageName: "Business Owners", bindingAuthority: "N").save();
-        new portal.Coverage(coverageName: "Auto Liability", bindingAuthority: "N").save();
-        new portal.Coverage(coverageName: "Commercial Automobile", bindingAuthority: "Y").save();
-        new portal.Coverage(coverageName: "Business Auto Liability", bindingAuthority: "N").save();
-        new portal.Coverage(coverageName: "Commercial General Liability", bindingAuthority: "Y").save();
-        new portal.Coverage(coverageName: "Professional Liability", bindingAuthority: "N").save();
-        new portal.Coverage(coverageName: "Commercial Inland Marine", bindingAuthority: "Y").save();
-        new portal.Coverage(coverageName: "Cargo - Ocean or Motor", bindingAuthority: "N").save();
-        new portal.Coverage(coverageName: "Contingency/Even Cancellation", bindingAuthority: "N").save();
-        new portal.Coverage(coverageName: "Commercial Package", bindingAuthority: "Y").save();
-        new portal.Coverage(coverageName: "Crime", bindingAuthority: "N").save();
-        new portal.Coverage(coverageName: "Cyber Security Privacy", bindingAuthority: "Y").save();
-        new portal.Coverage(coverageName: "Umbrella - Commercial", bindingAuthority: "Y").save();
-        new portal.Coverage(coverageName: "Umbrella - Excess", bindingAuthority: "N").save();
-        new portal.Coverage(coverageName: "Death, Disgrace, Disablement", bindingAuthority: "N").save();
-        new portal.Coverage(coverageName: "Directors & Officers", bindingAuthority: "N").save();
-        new portal.Coverage(coverageName: "Computers", bindingAuthority: "Y").save();
-        new portal.Coverage(coverageName: "Equipment Floater", bindingAuthority: "Y").save();
-        new portal.Coverage(coverageName: "Errors & Omissions - Film Producers", bindingAuthority: "Y").save();
-        new portal.Coverage(coverageName: "Entertainment Package", bindingAuthority: "Y").save();
-        new portal.Coverage(coverageName: "Employment Practices Liability", bindingAuthority: "N").save();
-        new portal.Coverage(coverageName: "Foreign Policy", bindingAuthority: "N").save();
-        new portal.Coverage(coverageName: "Guild Travel Accident", bindingAuthority: "N").save();
-        new portal.Coverage(coverageName: "Homeowners", bindingAuthority: "N").save();
-        new portal.Coverage(coverageName: "Hull & Machinery/Charterer's Legal Liability", bindingAuthority: "N").save();
-        new portal.Coverage(coverageName: "NOA Liability", bindingAuthority: "Y").save();
-        new portal.Coverage(coverageName: "NOA Physical Damage", bindingAuthority: "N").save();
-        new portal.Coverage(coverageName: "Non Owned and Hired Auto", bindingAuthority: "Y").save();
-        new portal.Coverage(coverageName: "Ocean Cargo", bindingAuthority: "N").save();
-        new portal.Coverage(coverageName: "Owners' & Contractors' Protective Liability", bindingAuthority: "N").save();
-        new portal.Coverage(coverageName: "Personal Auto Policy", bindingAuthority: "N").save();
-        new portal.Coverage(coverageName: "Dwelling Fire", bindingAuthority: "N").save();
-        new portal.Coverage(coverageName: "Errors & Omissions - Professional", bindingAuthority: "Y").save();
-        new portal.Coverage(coverageName: "Commercial Property", bindingAuthority: "Y").save();
-        new portal.Coverage(coverageName: "Umbrella - Personal", bindingAuthority: "N").save();
-        new portal.Coverage(coverageName: "Railroad Protective Liability", bindingAuthority: "N").save();
-        new portal.Coverage(coverageName: "Scheduled Auto", bindingAuthority: "N").save();
-        new portal.Coverage(coverageName: "Technology Package Policy", bindingAuthority: "N").save();
-        new portal.Coverage(coverageName: "Third Party Property Damage", bindingAuthority: "Y").save();
-        new portal.Coverage(coverageName: "Weather", bindingAuthority: "N").save();
+        new portal.Coverages(coverageCode: "CGL", coverageName: "Commercial General Liability").save();
+        new portal.Coverages(coverageCode: "EPKG", coverageName: "Entertainment Package").save();
+        new portal.Coverages(coverageCode: "NOHA", coverageName: "Non Owned Hired Auto Liability").save();
+        new portal.Coverages(coverageCode: "EO", coverageName: "Errors & Omissions - Film Producers").save();
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        new portal.RiskType(riskTypeName: "Amusement/Theme Park", bindingAuthority: "N", riskTypeCategory: "Ancillary Entertainment Risk").save();
+        new portal.RiskType(riskTypeName: "Athletic League", bindingAuthority: "N", riskTypeCategory: "Ancillary Entertainment Risk").save();
+        new portal.RiskType(riskTypeName: "Bar/Restaurant/Club", bindingAuthority: "N", riskTypeCategory: "Ancillary Entertainment Risk").save();
+        new portal.RiskType(riskTypeName: "Concessionaire w/ Liquor", bindingAuthority: "N", riskTypeCategory: "Ancillary Entertainment Risk").save();
+        new portal.RiskType(riskTypeName: "Concessionaire w/o Liquor", bindingAuthority: "N", riskTypeCategory: "Ancillary Entertainment Risk").save();
+        new portal.RiskType(riskTypeName: "Convention Center/Venue/Halls", bindingAuthority: "N", riskTypeCategory: "Venue").save();
+        new portal.RiskType(riskTypeName: "Annual Blanket Film Projects (DICE)", bindingAuthority: "N",riskTypeCategory: "Film Producer").save();
+        new portal.RiskType(riskTypeName: "Specific Film Projects", bindingAuthority: "N", riskTypeCategory: "Film Producer", coverages:"EPKG,CGL,NOHA,EO").save();
+        new portal.RiskType(riskTypeName: "Adult Films", bindingAuthority: "N", riskTypeCategory: "Film Producer").save();
+        new portal.RiskType(riskTypeName: "Animated Films/Cartoons", bindingAuthority: "N", riskTypeCategory: "Film Producer").save();
+        new portal.RiskType(riskTypeName: "Post Production Only", bindingAuthority: "N", riskTypeCategory: "Film Producer").save();
+        new portal.RiskType(riskTypeName: "Short Term Film Project", bindingAuthority: "N", riskTypeCategory: "Film Producer").save();
+//        new portal.RiskType(riskTypeName: "Feature Film - Short Term / Low Budget", bindingAuthority: "N", riskTypeCategory: "Feature Film").save();
+//        new portal.RiskType(riskTypeName: "Habitational", bindingAuthority: "N").save();
+        new portal.RiskType(riskTypeName: "Lessor's Risk Only", bindingAuthority: "N", riskTypeCategory: "Ancillary Entertainment Risk").save();
+        new portal.RiskType(riskTypeName: "Mfg & Design - Audio/Video/Lighting", bindingAuthority: "N", riskTypeCategory: "Ancillary Entertainment Risk").save();
+        new portal.RiskType(riskTypeName: "Mfg & Design - Props/Sets/Staging", bindingAuthority: "N", riskTypeCategory: "Ancillary Entertainment Risk").save();
+        new portal.RiskType(riskTypeName: "Mfg & Design - Radio & TV Equipment", bindingAuthority: "N", riskTypeCategory: "Ancillary Entertainment Risk").save();
+        new portal.RiskType(riskTypeName: "Museum", bindingAuthority: "N", riskTypeCategory: "Ancillary Entertainment Risk").save();
+        new portal.RiskType(riskTypeName: "Musical Entertainer - Alternative Rock", bindingAuthority: "N", riskTypeCategory: "Entertainer").save();
+        new portal.RiskType(riskTypeName: "Musical Entertainer - Baby Band", bindingAuthority: "N", riskTypeCategory: "Entertainer").save();
+        new portal.RiskType(riskTypeName: "Musical Entertainer - Blues", bindingAuthority: "N", riskTypeCategory: "Entertainer").save();
+        new portal.RiskType(riskTypeName: "Musical Entertainer - Christian Music", bindingAuthority: "N", riskTypeCategory: "Entertainer").save();
+        new portal.RiskType(riskTypeName: "Musical Entertainer - Classic Piano", bindingAuthority: "N", riskTypeCategory: "Entertainer").save();
+        new portal.RiskType(riskTypeName: "Musical Entertainer - Country", bindingAuthority: "N", riskTypeCategory: "Entertainer").save();
+        new portal.RiskType(riskTypeName: "Musical Entertainer - Folk", bindingAuthority: "N", riskTypeCategory: "Entertainer").save();
+        new portal.RiskType(riskTypeName: "Musical Entertainer - Funk", bindingAuthority: "N", riskTypeCategory: "Entertainer").save();
+        new portal.RiskType(riskTypeName: "Musical Entertainer - Hard Rock/Heavy Metal", bindingAuthority: "N", riskTypeCategory: "Entertainer").save();
+        new portal.RiskType(riskTypeName: "Musical Entertainer - Hip/Hop", bindingAuthority: "N", riskTypeCategory: "Entertainer").save();
+        new portal.RiskType(riskTypeName: "Musical Entertainer - Jazz", bindingAuthority: "N", riskTypeCategory: "Entertainer").save();
+        new portal.RiskType(riskTypeName: "Musical Entertainer - Pop", bindingAuthority: "N", riskTypeCategory: "Entertainer").save();
+        new portal.RiskType(riskTypeName: "Musical Entertainer - Rock", bindingAuthority: "N", riskTypeCategory: "Entertainer").save();
+        new portal.RiskType(riskTypeName: "Musical Entertainer - Soul/ R&B", bindingAuthority: "N", riskTypeCategory: "Entertainer").save();
+        new portal.RiskType(riskTypeName: "Musical Entertainer - Techno/ Electronica", bindingAuthority: "N", riskTypeCategory: "Entertainer").save();
+        new portal.RiskType(riskTypeName: "Office - Accounting/Bookkeeping", bindingAuthority: "N", riskTypeCategory: "Office").save();
+        new portal.RiskType(riskTypeName: "Office - Advertising Agency", bindingAuthority: "N", riskTypeCategory: "Office").save();
+        new portal.RiskType(riskTypeName: "Office - Animation company", bindingAuthority: "N", riskTypeCategory: "Office").save();
+        new portal.RiskType(riskTypeName: "Office - Association", bindingAuthority: "N", riskTypeCategory: "Office").save();
+        new portal.RiskType(riskTypeName: "Office - Attorney", bindingAuthority: "N", riskTypeCategory: "Office").save();
+        new portal.RiskType(riskTypeName: "Office - Business Manager", bindingAuthority: "N", riskTypeCategory: "Office").save();
+        new portal.RiskType(riskTypeName: "Office - Consultants", bindingAuthority: "N", riskTypeCategory: "Office").save();
+        new portal.RiskType(riskTypeName: "Office - Film Devt Distributor", bindingAuthority: "N", riskTypeCategory: "Office").save();
+        new portal.RiskType(riskTypeName: "Office - Location Finders", bindingAuthority: "N", riskTypeCategory: "Office").save();
+        new portal.RiskType(riskTypeName: "Office - Merchandising/Product Placement", bindingAuthority: "N", riskTypeCategory: "Office").save();
+        new portal.RiskType(riskTypeName: "Office - Music Publisher/Record Label Co.", bindingAuthority: "N", riskTypeCategory: "Office").save();
+        new portal.RiskType(riskTypeName: "Office - Non Profit Organization", bindingAuthority: "N", riskTypeCategory: "Office").save();
+        new portal.RiskType(riskTypeName: "Office - Payroll Service Co.", bindingAuthority: "N", riskTypeCategory: "Office").save();
+        new portal.RiskType(riskTypeName: "Office - Premises Only", bindingAuthority: "N", riskTypeCategory: "Office").save();
+        new portal.RiskType(riskTypeName: "Office - Production Office", bindingAuthority: "N", riskTypeCategory: "Office").save();
+        new portal.RiskType(riskTypeName: "Office - Radio/TV Broadcasting", bindingAuthority: "N", riskTypeCategory: "Office").save();
+        new portal.RiskType(riskTypeName: "Office - Sales Service & Consulting", bindingAuthority: "N", riskTypeCategory: "Office").save();
+        new portal.RiskType(riskTypeName: "Office - Security & Crowd Mgt", bindingAuthority: "N", riskTypeCategory: "Office").save();
+        new portal.RiskType(riskTypeName: "Office - Talent Agency", bindingAuthority: "N", riskTypeCategory: "Office").save();
+        new portal.RiskType(riskTypeName: "Office - Web Design & Devt", bindingAuthority: "N", riskTypeCategory: "Office").save();
+        new portal.RiskType(riskTypeName: "Post Production Facility", bindingAuthority: "N", riskTypeCategory: "Ancillary Entertainment Risk").save();
+        new portal.RiskType(riskTypeName: "Promoter - Concerts", bindingAuthority: "N", riskTypeCategory: "Special Event").save();
+        new portal.RiskType(riskTypeName: "Promoter - Corporate Events", bindingAuthority: "N", riskTypeCategory: "Special Event").save();
+        new portal.RiskType(riskTypeName: "Promoter - Event Planner", bindingAuthority: "N", riskTypeCategory: "Special Event").save();
+        new portal.RiskType(riskTypeName: "Promoter - Special Events", bindingAuthority: "N", riskTypeCategory: "Special Event").save();
+        new portal.RiskType(riskTypeName: "Promoter - Theatrical", bindingAuthority: "N", riskTypeCategory: "Special Event").save();
+        new portal.RiskType(riskTypeName: "Promoter - Trade Shows", bindingAuthority: "N", riskTypeCategory: "Special Event").save();
+        new portal.RiskType(riskTypeName: "Promoter - Wedding Planner", bindingAuthority: "N", riskTypeCategory: "Special Event").save();
+        new portal.RiskType(riskTypeName: "Publisher - Magazine and Book", bindingAuthority: "N", riskTypeCategory: "Ancillary Entertainment Risk").save();
+        new portal.RiskType(riskTypeName: "Publisher - Music", bindingAuthority: "N", riskTypeCategory: "Ancillary Entertainment Risk").save();
+        new portal.RiskType(riskTypeName: "Radio & TV Broadcasting - Satellite Services", bindingAuthority: "N", riskTypeCategory: "Ancillary Entertainment Risk").save();
+        new portal.RiskType(riskTypeName: "Radio & TV Broadcasting - Station", bindingAuthority: "N", riskTypeCategory: "Ancillary Entertainment Risk").save();
+        new portal.RiskType(riskTypeName: "Recording Studio", bindingAuthority: "N", riskTypeCategory: "Ancillary Entertainment Risk").save();
+        new portal.RiskType(riskTypeName: "Rental House - Automobile", bindingAuthority: "N", riskTypeCategory: "Ancillary Entertainment Risk").save();
+        new portal.RiskType(riskTypeName: "Rental House - Equipment Only", bindingAuthority: "N", riskTypeCategory: "Ancillary Entertainment Risk").save();
+        new portal.RiskType(riskTypeName: "Rental House - Other", bindingAuthority: "N", riskTypeCategory: "Ancillary Entertainment Risk").save();
+        new portal.RiskType(riskTypeName: "Rental House - Props, Sets, Wardrobe", bindingAuthority: "N", riskTypeCategory: "Ancillary Entertainment Risk").save();
+        new portal.RiskType(riskTypeName: "Rental House Incl Installation", bindingAuthority: "N", riskTypeCategory: "Ancillary Entertainment Risk").save();
+        new portal.RiskType(riskTypeName: "School - Entertainment Related", bindingAuthority: "N", riskTypeCategory: "Ancillary Entertainment Risk").save();
+        new portal.RiskType(riskTypeName: "Shell Corp - Actor", bindingAuthority: "N", riskTypeCategory: "Shell Corporation").save();
+        new portal.RiskType(riskTypeName: "Shell Corp - Band Manager", bindingAuthority: "N", riskTypeCategory: "Shell Corporation").save();
+        new portal.RiskType(riskTypeName: "Shell Corp - Business/Tour Manager", bindingAuthority: "N", riskTypeCategory: "Shell Corporation").save();
+        new portal.RiskType(riskTypeName: "Shell Corp - Cameraman", bindingAuthority: "N", riskTypeCategory: "Shell Corporation").save();
+        new portal.RiskType(riskTypeName: "Shell Corp - Choregrapher", bindingAuthority: "N", riskTypeCategory: "Shell Corporation").save();
+        new portal.RiskType(riskTypeName: "Shell Corp - Cinematographer", bindingAuthority: "N", riskTypeCategory: "Shell Corporation").save();
+        new portal.RiskType(riskTypeName: "Shell Corp - Comedian", bindingAuthority: "N", riskTypeCategory: "Shell Corporation").save();
+        new portal.RiskType(riskTypeName: "Shell Corp - Creative Consultant", bindingAuthority: "N", riskTypeCategory: "Shell Corporation").save();
+        new portal.RiskType(riskTypeName: "Shell Corp - Director", bindingAuthority: "N", riskTypeCategory: "Shell Corporation").save();
+        new portal.RiskType(riskTypeName: "Shell Corp - Magician", bindingAuthority: "N", riskTypeCategory: "Shell Corporation").save();
+        new portal.RiskType(riskTypeName: "Shell Corp - Make-up Artist", bindingAuthority: "N", riskTypeCategory: "Shell Corporation").save();
+        new portal.RiskType(riskTypeName: "Shell Corp - Music Composer", bindingAuthority: "N", riskTypeCategory: "Shell Corporation").save();
+        new portal.RiskType(riskTypeName: "Shell Corp - Music Entertainer", bindingAuthority: "N", riskTypeCategory: "Shell Corporation").save();
+        new portal.RiskType(riskTypeName: "Shell Corp - Music Producer", bindingAuthority: "N", riskTypeCategory: "Shell Corporation").save();
+        new portal.RiskType(riskTypeName: "Shell Corp - News Correspondent", bindingAuthority: "N", riskTypeCategory: "Shell Corporation").save();
+        new portal.RiskType(riskTypeName: "Shell Corp - Office", bindingAuthority: "N", riskTypeCategory: "Shell Corporation").save();
+        new portal.RiskType(riskTypeName: "Shell Corp - Personal Manager", bindingAuthority: "N", riskTypeCategory: "Shell Corporation").save();
+        new portal.RiskType(riskTypeName: "Shell Corp - Photographer", bindingAuthority: "N", riskTypeCategory: "Shell Corporation").save();
+        new portal.RiskType(riskTypeName: "Shell Corp - Producer", bindingAuthority: "N", riskTypeCategory: "Shell Corporation").save();
+        new portal.RiskType(riskTypeName: "Shell Corp - Record Label/Producer", bindingAuthority: "N", riskTypeCategory: "Shell Corporation").save();
+        new portal.RiskType(riskTypeName: "Shell Corp - Screen Writer", bindingAuthority: "N", riskTypeCategory: "Shell Corporation").save();
+        new portal.RiskType(riskTypeName: "Shell Corp - Song Writer", bindingAuthority: "N", riskTypeCategory: "Shell Corporation").save();
+        new portal.RiskType(riskTypeName: "Shell Corp - Stage & Lighting Designer", bindingAuthority: "N", riskTypeCategory: "Shell Corporation").save();
+        new portal.RiskType(riskTypeName: "Shell Corp - Talk Show Personality", bindingAuthority: "N", riskTypeCategory: "Shell Corporation").save();
+        new portal.RiskType(riskTypeName: "Shell Corp - Voice Over Artist", bindingAuthority: "N", riskTypeCategory: "Shell Corporation").save();
+        new portal.RiskType(riskTypeName: "Special Event - Arts & Crafts Exhibit", bindingAuthority: "N", riskTypeCategory: "Special Event").save();
+        new portal.RiskType(riskTypeName: "Special Event - Charitable", bindingAuthority: "N", riskTypeCategory: "Special Event").save();
+        new portal.RiskType(riskTypeName: "Special Event - Corporate", bindingAuthority: "N", riskTypeCategory: "Special Event").save();
+        new portal.RiskType(riskTypeName: "Special Event - Dance Competitions", bindingAuthority: "N", riskTypeCategory: "Special Event").save();
+        new portal.RiskType(riskTypeName: "Special Event - Exhibitor", bindingAuthority: "N", riskTypeCategory: "Special Event").save();
+        new portal.RiskType(riskTypeName: "Special Event - Fashion Shows", bindingAuthority: "N", riskTypeCategory: "Special Event").save();
+        new portal.RiskType(riskTypeName: "Special Event - Festival", bindingAuthority: "N", riskTypeCategory: "Special Event").save();
+        new portal.RiskType(riskTypeName: "Special Event - Fund Raising", bindingAuthority: "N", riskTypeCategory: "Special Event").save();
+        new portal.RiskType(riskTypeName: "Special Event - Ice Skating Shows", bindingAuthority: "N", riskTypeCategory: "Special Event").save();
+        new portal.RiskType(riskTypeName: "Special Event - Laser Light Shows", bindingAuthority: "N", riskTypeCategory: "Special Event").save();
+        new portal.RiskType(riskTypeName: "Special Event - Networking Meetings", bindingAuthority: "N", riskTypeCategory: "Special Event").save();
+        new portal.RiskType(riskTypeName: "Special Event - Party", bindingAuthority: "N", riskTypeCategory: "Special Event").save();
+        new portal.RiskType(riskTypeName: "Special Event - Radio/Fundraising", bindingAuthority: "N", riskTypeCategory: "Special Event").save();
+        new portal.RiskType(riskTypeName: "Special Event - Rally", bindingAuthority: "N", riskTypeCategory: "Special Event").save();
+        new portal.RiskType(riskTypeName: "Special Event - Religious Trade Show", bindingAuthority: "N", riskTypeCategory: "Special Event").save();
+        new portal.RiskType(riskTypeName: "Special Event - Sponsorship Only", bindingAuthority: "N", riskTypeCategory: "Special Event").save();
+        new portal.RiskType(riskTypeName: "Special Event - Sporting", bindingAuthority: "N", riskTypeCategory: "Special Event").save();
+        new portal.RiskType(riskTypeName: "Special Event - Trades & Exhibits", bindingAuthority: "N", riskTypeCategory: "Special Event").save();
+        new portal.RiskType(riskTypeName: "Special Event - Wedding Planner", bindingAuthority: "N", riskTypeCategory: "Special Event").save();
+        new portal.RiskType(riskTypeName: "Theater/Venue - 100 to 500 Seats", bindingAuthority: "N", riskTypeCategory: "Venue").save();
+        new portal.RiskType(riskTypeName: "Theater/Venue - 1501 to 5000 Seats", bindingAuthority: "N", riskTypeCategory: "Venue").save();
+        new portal.RiskType(riskTypeName: "Theater/Venue - 5000 or More Seats", bindingAuthority: "N", riskTypeCategory: "Venue").save();
+        new portal.RiskType(riskTypeName: "Theater/Venue - 501 to 1500 Seats", bindingAuthority: "N", riskTypeCategory: "Venue").save();
+        new portal.RiskType(riskTypeName: "Theater/Venue - 99 Seats or less", bindingAuthority: "N", riskTypeCategory: "Venue").save();
+        new portal.RiskType(riskTypeName: "Theater/Venue - Movie Complex", bindingAuthority: "N", riskTypeCategory: "Venue").save();
+        new portal.RiskType(riskTypeName: "Theatrical - Broadway", bindingAuthority: "N", riskTypeCategory: "Entertainer").save();
+        new portal.RiskType(riskTypeName: "Theatrical - Comedian/Comedy Show", bindingAuthority: "N", riskTypeCategory: "Entertainer").save();
+        new portal.RiskType(riskTypeName: "Theatrical - Dance Company", bindingAuthority: "N", riskTypeCategory: "Entertainer").save();
+        new portal.RiskType(riskTypeName: "Theatrical - Orchestra", bindingAuthority: "N", riskTypeCategory: "Entertainer").save();
+        new portal.RiskType(riskTypeName: "Theatrical - Play", bindingAuthority: "N", riskTypeCategory: "Entertainer").save();
+        new portal.RiskType(riskTypeName: "TULIP - Tenant User", bindingAuthority: "N", riskTypeCategory: "Special Event").save();
+        new portal.RiskType(riskTypeName: "TULIP - Venue", bindingAuthority: "N", riskTypeCategory: "Venue").save();
+        new portal.RiskType(riskTypeName: "TV - Game Show", bindingAuthority: "N", riskTypeCategory: "Film Producer").save();
+        new portal.RiskType(riskTypeName: "TV - Movie", bindingAuthority: "N", riskTypeCategory: "Film Producer").save();
+        new portal.RiskType(riskTypeName: "TV - Pilot", bindingAuthority: "N", riskTypeCategory: "Film Producer").save();
+        new portal.RiskType(riskTypeName: "TV - Reality Show", bindingAuthority: "N", riskTypeCategory: "Film Producer").save();
+        new portal.RiskType(riskTypeName: "TV - Series", bindingAuthority: "N", riskTypeCategory: "Film Producer").save();
+        new portal.RiskType(riskTypeName: "TV - Special  Comedy", bindingAuthority: "N", riskTypeCategory: "Film Producer").save();
+        new portal.RiskType(riskTypeName: "TV - Special  Cooking Show", bindingAuthority: "N", riskTypeCategory: "Film Producer").save();
+        new portal.RiskType(riskTypeName: "Warehouse & Storage", bindingAuthority: "N", riskTypeCategory: "Ancillary Entertainment Risk").save();
 
 
     }

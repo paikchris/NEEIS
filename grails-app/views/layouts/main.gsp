@@ -133,7 +133,37 @@
 
 	<!-- Page Content -->
 	<div id="page-content-wrapper">
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="${resource(dir: 'js', file: 'jquery.maskedinput.js')}"></script>
+
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script src="${resource(dir: 'js', file: 'bootstrap.min.js')}"></script>
+
+
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+
+
+
+	<script>
+		$("#sidebar-wrapper").hover(function(e) {
+			e.preventDefault();
+			$("#wrapper").toggleClass("toggled");
+		});
+
+		$( "#myAccountButton" ).click(function() {
+			$('#myAccountModal').modal('show');
+		});
+		$( "#settingsButton" ).click(function() {
+			$('#settingsModal').modal('show');
+		});
+
+	</script>
 		<g:layoutBody/>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_6p9r1leoPGIFggBpprGfLVsLVxea5ZI&libraries=places&callback=initAutocomplete"
+			async defer></script>
 	</div>
 	<!-- /#page-content-wrapper -->
 
@@ -213,24 +243,6 @@
 	</div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="${resource(dir: 'js', file: 'bootstrap.min.js')}"></script>
-<script src="${resource(dir: 'js', file: 'newSubmission.js')}"></script>
-<script>
-	$("#sidebar-wrapper").hover(function(e) {
-		e.preventDefault();
-		$("#wrapper").toggleClass("toggled");
-	});
 
-	$( "#myAccountButton" ).click(function() {
-		$('#myAccountModal').modal('show');
-	});
-	$( "#settingsButton" ).click(function() {
-		$('#settingsModal').modal('show');
-	});
-
-</script>
 </body>
 </html>

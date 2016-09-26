@@ -16,7 +16,7 @@ class AuthController {
         User u;
         try{
             u = new portal.User(userRole:userRole, email:params.email, password:params.password,
-                    company:params.company, firstName: params.firstName, lastName: params.lastName,)
+                    company:params.company, firstName: params.firstName, lastName: params.lastName, phoneNumber: params.phoneNumber)
             u.save(flush: true, failOnError: true)
 
 

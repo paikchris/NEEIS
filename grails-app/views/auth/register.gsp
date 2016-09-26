@@ -29,6 +29,10 @@
                                 <label for="company">Company</label>
                                 <g:textField type="text" class="form-control" name="company" placeholder="Company"/>
                             </div>
+                            <div class="form-group">
+                                <label for="phoneNumber">Phone Number</label>
+                                <g:textField type="text" class="form-control" name="phoneNumber" placeholder="(xxx)xxx-xxxx"/>
+                            </div>
                             <br>
                             <div class="form-group">
                                 <label for="email">Email address</label>

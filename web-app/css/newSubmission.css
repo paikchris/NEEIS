@@ -48,3 +48,122 @@ body{
     line-height: 1.428571429;
     border-radius: 15px;
 }
+
+label{
+    font-weight: 500;
+}
+
+
+
+
+
+
+
+
+/*MATERIAL DESIGN CARD CSS*/
+.card-unselected {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.24);
+
+}
+
+.card {
+    margin-top: 10px;
+    box-sizing: border-box;
+    border-radius: 3px;
+    background-clip: padding-box;
+     cursor: pointer;
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    margin: 8px;
+}
+.card span.card-title {
+    color: #fff;
+    font-size: 24px;
+    font-weight: 300;
+    text-transform: uppercase;
+}
+
+.card .card-image {
+    position: relative;
+    overflow: hidden;
+}
+.card .card-image img {
+    border-radius: 2px 2px 0 0;
+    background-clip: padding-box;
+    position: relative;
+    z-index: -1;
+    filter: brightness(50%);
+}
+.card .card-image span.card-title {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 16px;
+}
+.card .card-content {
+    padding: 16px;
+    border-radius: 0 0 2px 2px;
+    background-clip: padding-box;
+    box-sizing: border-box;
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+.card .card-content2 {
+    padding: 16px;
+}
+.card .card-content p {
+    margin: 0;
+    color: inherit;
+}
+.card .card-content span.card-title {
+    line-height: 48px;
+}
+.card .card-action {
+    border-top: 1px solid rgba(160, 160, 160, 0.2);
+    padding: 16px;
+}
+.card .card-action a {
+    color: #ffab40;
+    margin-right: 16px;
+    transition: color 0.3s ease;
+    text-transform: uppercase;
+}
+.card-unselected:hover {
+    /*color: #ffd8a6;*/
+    /*text-decoration: none;*/
+    /*background-color: rgba(119, 218, 255, 0.03);*/
+    box-shadow: 2px 6px 22px rgba(0, 0, 0, 0.25), 2px 2px 10px rgba(0, 0, 0, 0.22);
+}
+.cardselected {
+    /*color: #ffd8a6;*/
+    /*text-decoration: none;*/
+    /*background-color: rgba(119, 218, 255, 0.03);*/
+    box-shadow: 2px 5px 19px rgba(0, 0, 0, 0.25), 2px 2px 8px rgba(0, 0, 0, 0.22);
+}
+
+.media-img{
+    border-radius: 2px;
+    margin: 2px;
+}
+
+.drawer{
+     overflow: hidden;
+    height:0px;
+    margin: 10px;
+    margin-top: -8px;
+    margin-bottom:20px;
+    border-radius: 3px;
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    box-shadow: 2px 4px 9px rgba(0, 0, 0, 0.25);
+
+    padding: 0px;
+}
+
+.drawerContainer .open{
+    padding: 16px;
+    height: auto;
+    padding-top: 36px;
+}
+
+ul.nav li.inactive a.riskOptionLink:hover{
+    background-color: #eee;
+    color:#337ab7;
+}

@@ -12,7 +12,8 @@ hibernate {
     cache.use_second_level_cache = true
     cache.use_query_cache = false
 //    cache.region.factory_class = 'org.hibernate.cache.SingletonEhCacheRegionFactory' // Hibernate 3
-    cache.region.factory_class = 'org.hibernate.cache.ehcache.EhCacheRegionFactory' // Hibernate 4
+    cache.region.factory_class = 'org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory'
+//    cache.region.factory_class = 'org.hibernate.cache.ehcache.EhCacheRegionFactory' // Hibernate 4
     singleSession = true // configure OSIV singleSession mode
     flush.mode = 'manual' // OSIV session flush mode outside of transactional context
 }
@@ -26,11 +27,21 @@ environments {
             username = "root"
             password = "Perseverence!2"
         }
+        dataSource_aim{
+            dbCreate = "update"
+            url = "jdbc:sqlserver://74.100.162.203:1433;databaseName=Training"
+            driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
+            username = "web"
+            password = "jakePoos521"
+        }
     }
     test {
         dataSource {
             dbCreate = "update"
             url = "jdbc:h2:mem:testDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
+        }
+        dataSource_aim{
+
         }
     }
     production {
@@ -50,6 +61,7 @@ environments {
                 maxAge = 10 * 60000
                 timeBetweenEvictionRunsMillis = 5000
                 minEvictableIdleTimeMillis = 60000
+                numTestsPerEviction=-1
                 validationQuery = "SELECT 1"
                 validationQueryTimeout = 3
                 validationInterval = 15000
@@ -59,6 +71,14 @@ environments {
                 jdbcInterceptors = "ConnectionState"
                 defaultTransactionIsolation = java.sql.Connection.TRANSACTION_READ_COMMITTED
             }
+        }
+
+        dataSource_aim{
+            dbCreate = "update"
+            url = "jdbc:sqlserver://74.100.162.203:1433;databaseName=CIS"
+            driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
+            username = "web"
+            password = "jakePoos521"
         }
     }
 }

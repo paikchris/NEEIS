@@ -17,18 +17,18 @@
             <div class="col-xs-4">
                 <div class="panel panel-default" >
                     <div class="panel-body">
-                        <form>
+                        <g:form controller="auth" action="login">
                             <div class="form-group">
-                                <label for="exampleInputUsername1">Username</label>
-                                <input type="text" class="form-control" id="exampleInputUserName1" placeholder="Username">
+                                <label for="email">Email</label>
+                                <g:textField type="email" class="form-control" name="email" placeholder="Email"/>
                             </div>
                             <div class="form-group">
-                                <label for="exampleInputPassword1">Password</label>
-                                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                                <label for="password">Password</label>
+                                <g:passwordField type="password" class="form-control" name="password" placeholder="Password"/>
                             </div>
 
                             <button type="submit" class="btn btn-primary btn-lg btn-block">Login</button>
-                        </form>
+                        </g:form>
                     </div>
                 </div>
             </div>

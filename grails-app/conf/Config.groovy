@@ -122,3 +122,9 @@ log4j.main = {
         info 'file', 'stdout'
     }
 }
+
+beans {
+    cacheManager {
+        shared = true
+    }
+}

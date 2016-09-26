@@ -8,6 +8,8 @@ class User {
     String email
     String password
     String userRole
+    String phoneNumber
+
 
     String toString(){
         "$email"
