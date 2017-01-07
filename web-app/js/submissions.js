@@ -79,7 +79,7 @@ $(document).ready(function () {
                 "<td colspan='8'>" +
                 "<div class='col-xs-6'>" +
 
-                "</div>" +
+                "</div>" + 
                 "<div class='col-xs-6'>" +
                 "<button type='button' class='btn btn-sm btn-default'> Contact Insured </button>" +
                 "<button type='button' class='btn btn-sm btn-default'> Change Status To </button>" +
