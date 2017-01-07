@@ -36,7 +36,7 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" id="squarespaceBrandText" href="#">NEW EMPIRE</a>
+			<a class="navbar-brand" id="squarespaceBrandText" href="https://christopher-paik.squarespace.com">NEW EMPIRE</a>
 		</div>
 
 		<!-- Collect the nav links, forms, and other content for toggling -->
@@ -85,7 +85,7 @@
 						<li role="separator" class="divider"></li>
 						<li><a href="#">Separated link</a></li>
 						<li role="separator" class="divider"></li>
-						<li><a href="#">One more separated link</a></li>
+						<li><a href="./../auth/logout" id="logoutButton">Logout</a></li>
 					</ul>
 				</li>
 			</ul>
@@ -106,14 +106,14 @@
 				%{--</div>--}%
 			%{--</div>--}%
 			<li>
-				<a href="#"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span> Dashboard</a>
+				<a href="./../main/index.gsp"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span> Dashboard</a>
 			</li>
 			<li>
 				<a href="./../main/newSubmission.gsp"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New Policy</a>
 			</li>
 
 			<li>
-				<a href="#"><span class="glyphicon glyphicon-file" aria-hidden="true"></span> My Policies</a>
+				<a href="./../main/submissions.gsp"><span class="glyphicon glyphicon-file" aria-hidden="true"></span> My Submissions</a>
 			</li>
 			%{--<li>--}%
 				%{--<a href="#"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Events</a>--}%
@@ -159,6 +159,7 @@
 		$( "#settingsButton" ).click(function() {
 			$('#settingsModal').modal('show');
 		});
+
 
 	</script>
 		<g:layoutBody/>
@@ -225,6 +226,20 @@
 	</div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<div class="modal fade" tabindex="-1" role="dialog" id="alertMessageModal">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-body">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top:-10px;margin-right:-6px;"><span aria-hidden="true">&times;</span></button>
+				<p id="alertMessageContent" style=" margin-top: 30px; text-align:center; font-size:16px;">Something</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <div class="modal fade" tabindex="-1" role="dialog" id="settingsModal">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
@@ -242,7 +257,23 @@
 		</div><!-- /.modal-content -->
 	</div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+<div class="modal" id="loadingModal"><!-- Place at bottom of page --></div>
 
-
+<div class="modal fade" tabindex="-1" role="dialog" id="progressBarModal" style="pointer-events: none;">
+	<div class="modal-dialog" role="document" style="margin-top:200px;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title" id="progressBarHeader">Please wait, your submission is being processed.</h4>
+			</div>
+			<div class="modal-body">
+				<div class="progress">
+					<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+						<span class="sr-only">60% Complete</span>
+					</div>
+				</div>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 </body>
 </html>

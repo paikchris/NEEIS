@@ -1,5 +1,6 @@
 body{
     background: url("../images/coverPhoto.jpg") fixed;
+    background-size: cover;
 }
 
 div.loginHeader>h1{

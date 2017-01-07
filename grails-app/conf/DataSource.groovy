@@ -26,6 +26,11 @@ environments {
             url = "jdbc:mysql://104.131.41.129/neeisPortal?useUnicode=yes&characterEncoding=UTF-8"
             username = "root"
             password = "Perseverence!2"
+            properties {
+                validationQuery="select 1"
+                testWhileIdle=true
+                timeBetweenEvictionRunsMillis=60000
+            }
         }
         dataSource_aim{
             dbCreate = "update"

@@ -24,6 +24,8 @@ public  java.lang.String getRiskTypeName() { return (java.lang.String)null;}
 public  void setRiskTypeName(java.lang.String value) { }
 public  java.lang.String getBindingAuthority() { return (java.lang.String)null;}
 public  void setBindingAuthority(java.lang.String value) { }
+public  java.lang.String getCoverages() { return (java.lang.String)null;}
+public  void setCoverages(java.lang.String value) { }
 public static  java.lang.Object getConstraints() { return null;}
 public static  void setConstraints(java.lang.Object value) { }
 }

@@ -1,0 +1,4 @@
+body{
+    background: url("../images/coverPhoto.jpg") fixed;
+    background-size: cover;
+}

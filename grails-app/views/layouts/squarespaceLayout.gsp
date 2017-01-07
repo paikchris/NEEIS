@@ -35,7 +35,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" id="squarespaceBrandText" href="#">NEW EMPIRE</a>
+            <a class="navbar-brand" id="squarespaceBrandText" href="https://christopher-paik.squarespace.com">NEW EMPIRE</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -68,5 +68,7 @@
 
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <script src="${resource(dir: 'js', file: 'bootstrap.min.js')}"></script>
+<script src="${resource(dir: 'js', file: 'jquery.maskedinput.js')}"></script>
+<script src="${resource(dir: 'js', file: 'register.js')}"></script>
 </body>
 </html>

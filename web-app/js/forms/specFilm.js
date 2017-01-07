@@ -2,9 +2,58 @@
  * Created by paikchris on 8/23/16.
  */
 
+var pipchoiceLimits = "";
+var pipChoiceMisc = "";
+var pipChoiceExtra = "";
+var pipChoiceProps = "";
+var pipChoiceThird = "";
+var pipChoiceNOHA = "";
 
+var riskHasCast = false;
+var riskHasWC = false;
 $(document).ready(function () {
+    riskChosen = $("li.active").children("a.riskOptionLink").html().trim();
 
+    if(riskChosen === "Film Projects Without Cast (No Work Comp)"){
+        riskHasCast = false;
+        riskhasWC = false;
+    }
+    else if(riskChosen === "Film Projects Without Cast (With Work Comp)"){
+        riskHasCast = false;
+        riskhasWC = true;
+    }
+    else if(riskChosen === "Film Projects With Cast (No Work Comp)"){
+        riskHasCast = true;
+        riskhasWC = false;
+    }
+    else if(riskChosen === "Film Projects With Cast (With Work Comp)"){
+        riskHasCast = true;
+        riskhasWC = true;
+    }
+
+    if(riskHasCast){
+        $('#questionListPriorFilmProjects').css('display','');
+        $('#questionTotalAbove').css('display','');
+        $('#questionTotalBelow').css('display','');
+        $('#questionTotalPost').css('display','');
+        $('#questionFilmingLocations').css('display','');
+        $('#questionSourceFinancing').css('display','');
+        $('#questionCompletionBondRequired').css('display','');
+
+
+    }
+
+    if(riskHasWC){
+        $('#questionListPriorFilmProjects').css('display','');
+        $('#questionFilmingLocations').css('display','');
+        $('#questionSourceFinancing').css('display','');
+        $('#questionCompletionBondRequired').css('display','');
+    }else{
+        $('#workCompCoverageRequested').css('display','none');
+        $('#statesOfHire').css('display','none');
+        $('#namesOfOfficers').css('display','none');
+        $('#namesOfOfficersExcluded').css('display','none');
+    }
 
     //CHECKBOXES THAT HIDE AND SHOW FIELDS
     $(document.body).on('change', '#tvSeriesCheckBox' ,function(){
@@ -15,6 +64,46 @@ $(document).ready(function () {
             $('#specFilmNumEpisodesText').css("display", "none");
         }
     });
+
+    $(document.body).on('change', '#showFilmLocationsCheckbox' ,function(){
+        if($("#showFilmLocationsCheckbox").is(':checked')) {
+            $('#filmingLocationInfo').css("display", "");
+        }
+        else{
+            $('#filmingLocationInfo').css("display", "none");
+        }
+    });
+
+    $(document.body).on('change', '.productionInvolvesCheckbox' ,function(){
+        console.log("CHECKBOX")
+        if($(this).attr('id') === "productionInvolvesNoneAbove"){
+            $(".productionInvolvesCheckbox").prop("checked", false);
+            $("#productionInvolvesNoneAbove").prop("checked", true);
+            //$('#noneOfAboveWords').css("display", "none");
+        }
+        else{
+            $("#productionInvolvesNoneAbove").prop("checked", false);
+            //$('#noneOfAboveWords').css("display", "");
+        }
+
+        if($("#showFilmLocationsCheckbox").is(':checked')) {
+            $('#filmingLocationInfo').css("display", "");
+        }
+        else{
+            $('#filmingLocationInfo').css("display", "none");
+        }
+    });
+
+
+    //$(document.body).on('change', '#productionInvolvesNoneAbove' ,function(){
+    //    //alert("NONE");
+    //    if($("#productionInvolvesNoneAbove").is(':checked')) {
+    //
+    //    }
+    //    else{
+    //
+    //    }
+    //});
 
     $(document.body).on('change', '#otherProductionType' ,function(){
         if($("#otherProductionType").is(':checked')) {
@@ -42,6 +131,422 @@ $(document).ready(function () {
         }
     });
 
+    // Cast Member Insurance
+    $(document.body).on('change', '#castInsuranceRequiredCheckBox' ,function(){
+        if($("#castInsuranceRequiredCheckBox").is(':checked')) {
+            $("#castInsuranceRequiredContainer").css("display", "");
+            var htmlString = $(".coverageCodeString:first").html().split("<")[0];
+            htmlString = htmlString + "<span id='castInsuranceDisclaimer' style='font-size: 9px;padding-left: 9px;font-weight: 300;'> *Cast Insurance is covered </span>";
+            $(".coverageCodeString:first").html(htmlString);
+            //$("#castInsuranceInfo").html("Cast Insurance is covered");
+        }
+        else{
+            $("#castInsuranceRequiredContainer").css("display", "none");
+            var htmlString = $(".coverageCodeString:first").html().split("<")[0];
+            htmlString = htmlString + "<span id='castInsuranceDisclaimer' style='font-size: 9px;padding-left: 9px;font-weight: 300;'> *Cast Insurance is NOT covered </span>";
+            $(".coverageCodeString:first").html(htmlString);
+            //$("#castInsuranceInfo").html("Cast Insurance not covered");
+        }
+    });
+// Cast Member Insurance
+    $('#totalBudgetInput').maskMoney({prefix:'$', precision:"0"});
+    $('#totalBudgetConfirm').maskMoney({prefix:'$', precision:"0"});
+    $('#costOfHireInput').maskMoney({prefix:'$', precision:"0"});
+    $('#brokerFeeInput').maskMoney({prefix:'$', precision:"0"});
+
+    $(document.body).on('change', '#totalBudgetInput, #totalBudgetConfirm' ,function(){
+        //alert("Budget change");
+
+    });
+
+    $(document.body).on('change', '#principalPhotographyDateStart, #principalPhotographyDateEnd' ,function(){
+        var datesAreValid = false;
+
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+        var mdyEffective = $('#principalPhotographyDateStart').val().split('/');
+        var mdyEffectiveDateObject = new Date(mdyEffective[2], mdyEffective[0]-1, mdyEffective[1]);
+
+        var mdyExpiration = $('#principalPhotographyDateEnd').val().split('/');
+        var mdyExpirationDateObject = new Date(mdyExpiration[2], mdyExpiration[0]-1, mdyExpiration[1]);
+
+
+        var mdyProposedEffective = $('#proposedEffectiveDate').val().split('/');
+        var mdyProposedEffectiveDateObject = new Date(mdyProposedEffective[2], mdyProposedEffective[0]-1, mdyProposedEffective[1]);
+
+        var mdyProposedExpiration = $('#proposedExpirationDate').val().split('/');
+        var mdyProposedExpirationDateObject = new Date(mdyProposedExpiration[2], mdyProposedExpiration[0]-1, mdyProposedExpiration[1]);
+        //alert(mdyEffectiveDateObject + " ====== " + mdyProposedEffectiveDateObject);
+        if ( mdyEffectiveDateObject.getTime() < mdyProposedEffectiveDateObject.getTime()) {
+            //alert();
+
+            if(mdyEffectiveDateObject.getTime() < today.getTime() ){
+
+                $('#alertMessageContent').html("Photography Begin Date must be a present or future date");
+                $('#alertMessageModal').modal('show');
+                $(this).val($('#proposedEffectiveDate').val());
+            }
+            else{
+                $('#alertMessageContent').html("Photography Begin Date cannot be before Effective Date");
+                $('#alertMessageModal').modal('show');
+                $(this).val($('#proposedEffectiveDate').val());
+
+            }
+            datesAreValid = false;
+        }
+        else if(mdyExpirationDateObject.getTime() > mdyProposedExpirationDateObject.getTime()){
+            $('#alertMessageContent').html("Photography End Date cannot be after Expiration Date");
+            $('#alertMessageModal').modal('show');
+            $(this).val($('#proposedExpirationDate').val());
+        }
+
+    });
+    //$(document.body).on('change', '#principalPhotographyDateStart, #principalPhotographyDateEnd' ,function(){
+    //    //alert("Budget change");
+    //    var termLength;
+    //    var datesAreValid = true;
+    //    var today = new Date();
+    //    today.setHours(0, 0, 0, 0);
+    //    var mdyEffective = $('#principalPhotographyDateStart').val().split('/');
+    //    var mdyEffectiveDateObject = new Date(mdyEffective[2], mdyEffective[0]-1, mdyEffective[1]);
+    //
+    //    var mdyProposedEffective =  $('#proposedEffectiveDate').val().split('/');
+    //    var mdyProposedEffectiveObject = new Date(mdyProposedEffective[2], mdyProposedEffective[0]-1, mdyProposedEffective[1]);
+    //
+    //    if (mdyEffectiveDateObject.getTime() < today.getTime()) {
+    //        alert("Effective Date must be a present or future date");
+    //        $(this).val("");
+    //        datesAreValid = false;
+    //    }
+    //
+    //
+    //    var riskChosen = $("li.active").children("a.riskOptionLink").html().trim();
+    //
+    //
+    //        if($(this).attr("id") === "principalPhotographyDateStart"  && mdyEffectiveDateObject.getTime() >= today.getTime()
+    //            && mdyEffectiveDateObject.getTime() >= mdyProposedEffectiveObject.getTime()   ){
+    //            //alert(mdyEffectiveDateObject);
+    //            var day = mdyEffectiveDateObject.getDate();
+    //            if (day < 10) { day = '0' + day; }
+    //            var monthIndex = mdyEffectiveDateObject.getMonth() + 1;
+    //            if (monthIndex < 10) { monthIndex = '0' + monthIndex; }
+    //            var year = mdyEffectiveDateObject.getFullYear() + 1;
+    //            $("#principalPhotographyDateEnd").val( (monthIndex) + "/" + day + "/" + year);
+    //            $("#proposedEffectiveDate").val($("#principalPhotographyDateStart").val());
+    //            $("#proposedExpirationDate").val($("#principalPhotographyDateEnd").val());
+    //            $('#proposedTermLength').val(365 + " Days")
+    //        }
+    //        else{
+    //            //alert("not valid");
+    //            $("#principalPhotographyDateStart").val( "");
+    //            $("#principalPhotographyDateEnd").val( "");
+    //            $("#proposedEffectiveDate").val("");
+    //            $("#proposedExpirationDate").val("");
+    //            $('#proposedTermLength').val("")
+    //        }
+    //
+    //
+    //});
+    $(document.body).on('change', '#ksd' ,function(){
+        //alert("Budget change");
+        var date = $(this).val();
+        $("#principalPhotographyDateEnd").val(date);
+        $("#proposedExpirationDate").val(date);
+        checkPhotographyDates();
+    });
+
+
+// add and remove cast member
+    $(document.body).on('click', '.addCastMember' ,function(){
+        var htmlString = "";
+        var count = 0;
+        $('#castMemberInfo').children('.castMember').each(function () {
+            count++
+            htmlString = $(this).html();
+            htmlString = htmlString.replace("Cast Member #1" , " Cast Member # " + (count+1));
+            htmlString = htmlString.replace("Cast Member # " + count , "Cast Member # " + (count+1));
+        });
+        $("#castMemberInfo").append("<div class='castMember'>" + htmlString + "</div>");
+    });
+$(document.body).on('click', '.removeCastMember' ,function() {
+    var htmlString = "";
+    var count = 0;
+    if ($(this).closest('.castMember').find('h5').html() === "Cast Member #1") {
+    }
+    else {
+        $(this).closest('.castMember').remove();
+        $('#castMemberInfo').children('.castMember').each(function () {
+            count++
+            var castMemberHeader = $(this).find('h5').html();
+            if (castMemberHeader == "Cast Member #1") {
+            }
+            else {
+                $(this).find('h5').html("Cast Member # " + count);
+            }
+        });
+    }
+});
+// add and remove cast member
+
+    // add and remove filming location
+    $(document.body).on('click', '.addFilmLocation' ,function(){
+        var htmlString = "";
+        var count = 0;
+        $('#filmingLocationInfo').find('.locationFilm').each(function () {
+            count++
+            htmlString = $(this).html();
+            htmlString = htmlString.replace("Filming Location #1" , " Filming Location # " + (count+1));
+            htmlString = htmlString.replace("Filming Location # " + count , "Filming Location # " + (count+1));
+        });
+        $("#filmingLocationInfo").append("<div class='locationFilm'>" + htmlString + "</div>");
+
+        var date_input=$('.datepicker');
+        date_input.datepicker(options);
+    });
+    $(document.body).on('click', '.removeFilmLocation' ,function() {
+        var htmlString = "";
+        var count = 0;
+        if ($(this).closest('.locationFilm').find('h5').html() === "Filming Location #1") {
+        }
+        else {
+            $(this).closest('.locationFilm').remove();
+            $('#filmingLocationInfo').find('.locationFilm').each(function () {
+                count++
+                var filmingLocationHeader = $(this).find('h5').html();
+                if (filmingLocationHeader == "Filming Location #1") {
+                }
+                else {
+                    $(this).find('h5').html("Filming Location # " + count);
+                }
+            });
+        }
+    });
+// add and remove filming location
+    $(document.body).on('change', '#PIP1InputRadio, #PIP2InputRadio, #PIP3InputRadio, #PIP4InputRadio, #PIP5InputRadio, #PIPChoiceInputRadio' ,function(){
+        //alert($('#PIP3InputRadio').is(':checked'));
+        $("#EPKGoptions").css("display","");
+        $("#EPKGNOHAOption").css("display","");
+        if($('#PIP1InputRadio').is(':checked') || $('#PIP2InputRadio').is(':checked') ||
+            $('#PIP3InputRadio').is(':checked') || $('#PIP4InputRadio').is(':checked') ||
+            $('#PIP5InputRadio').is(':checked') || $('#PIPChoiceInputRadio').is(':checked')){
+            $('#EPKGcoverage').prop("checked", true);
+            $("#EPKGoptions").css("display","");
+            if($('#PIP5InputRadio').is(':checked') == false){
+                $('.PIP5Options').css("display", "none");
+                $('#EPKGCIVIL100AdditionalCoverage').prop("checked", false);
+                $('#EPKGCIVIL500AdditionalCoverage').prop("checked", false);
+                $('.additionalCoverageCheckboxPIP5').prop("checked", false);
+            }
+        }
+        if($('#PIPChoiceInputRadio').is(':checked')){
+            $('#pipChoiceSelections').css('display', '');
+            $('#PIPChoice_ExtraExpense').prop("checked", true);
+            $('#PIPChoice_MiscRented').prop("checked", true);
+            $('#PIPChoice_Props').prop("checked", true);
+            $('#PIPChoice_ThirdParty').prop("checked", true);
+        }
+        else{
+            $('#pipChoiceSelections').css('display', 'none');
+            $('#PIPChoice_ExtraExpense').prop("checked", false);
+            $('#PIPChoice_MiscRented').prop("checked", false);
+            $('#PIPChoice_Props').prop("checked", false);
+            $('#PIPChoice_ThirdParty').prop("checked", false);
+        }
+        //uncheck NOHA if NOHA is included in Misc Rental Equip
+        if($('#PIP1InputRadio').is(':checked') || $('#PIP2InputRadio').is(':checked') ||$('#PIP3InputRadio').is(':checked') ||
+            $('#PIP4InputRadio').is(':checked') || $('#PIP5InputRadio').is(':checked')){
+            var termLength;
+            var datesAreValid = true;
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+            var mdyEffective = $('#proposedEffectiveDate').val().split('/');
+            var mdyEffectiveDateObject = new Date(mdyEffective[2], mdyEffective[0]-1, mdyEffective[1]);
+            var day = mdyEffectiveDateObject.getDate();
+            if (day < 10) { day = '0' + day; }
+            var monthIndex = mdyEffectiveDateObject.getMonth() + 1;
+            if (monthIndex < 10) { monthIndex = '0' + monthIndex; }
+            var year = mdyEffectiveDateObject.getFullYear();
+
+            if($('#PIP3InputRadio').is(':checked') || $('#PIP4InputRadio').is(':checked') || $('#PIP5InputRadio').is(':checked')){
+                year = mdyEffectiveDateObject.getFullYear() + 1;
+                $("#proposedExpirationDate").val( (monthIndex) + "/" + day + "/" + year);
+                $('#proposedTermLength').val(365 + " Days");
+                $("#CPKCGLcoverage").trigger('change');
+
+            }
+            else if($('#PIP1InputRadio').is(':checked') || $('#PIP2InputRadio').is(':checked') ){
+                var dat = new Date(mdyEffectiveDateObject.valueOf());
+                dat.setDate(dat.getDate() + 60);
+                day = dat.getDate();
+                monthIndex = dat.getMonth() + 1;
+                year = dat.getFullYear();
+                $("#proposedExpirationDate").val( (monthIndex) + "/" + day + "/" + year);
+                $('#proposedTermLength').val(60 + " Days");
+                $("#CPKCGLcoverage").trigger('change');
+            }
+            $("#EPKGoptions").css("display","none");
+            $('#EPKGNOHAAdditionalCoverage').prop("checked", false);
+        }
+        else if($('#PIP5InputRadio').is(':checked')){
+            $("#EPKGoptions").css("display","");
+            $('.PIP5Options').css("display", "");
+            $("#EPKGNOHAOption").css("display","none");
+            $('#EPKGNOHAAdditionalCoverage').prop("checked", false);
+        }
+
+
+    });
+
+    $(document.body).on('change', '#EPKGcoverage' ,function(){
+        //alert();
+        if($('#EPKGcoverage').is(':checked') ){
+            //alert();
+            if($("#PIPChoiceInput").is(":visible")){
+                $('#PIPChoiceInputRadio').prop("checked", true);
+                $('#PIPChoiceInputRadio').trigger("change");
+
+            }
+            else{
+                $('#PIP5InputRadio').prop("checked", true);
+                $('#PIP5InputRadio').trigger("change");
+            }
+            $("#EPKGoptions").css("display","");
+        }
+        else{
+            $('#PIP1InputRadio').prop("checked", false);
+            $('#PIP2InputRadio').prop("checked", false);
+            $('#PIP3InputRadio').prop("checked", false);
+            $('#PIP4InputRadio').prop("checked", false);
+            $('#PIP5InputRadio').prop("checked", false);
+            $('#PIPChoiceInputRadio').prop("checked", false);
+            $('.additionalCoverageCheckboxEPKG').prop("checked", false);
+            $("#EPKGoptions").css("display","none");
+
+            $('#pipChoiceSelections').css('display', 'none');
+            $('#PIPChoice_ExtraExpense').prop("checked", false);
+            $('#PIPChoice_MiscRented').prop("checked", false);
+            $('#PIPChoice_Props').prop("checked", false);
+            $('#PIPChoice_ThirdParty').prop("checked", false);
+        }
+    });
+
+    $(document.body).on('change', '#CPKInputRadio, #CGLInputRadio' ,function(){
+        if($('#CPKInputRadio').is(':checked') || $('#CGLInputRadio').is(':checked') ){
+            $('#CPKCGLcoverage').prop("checked", true);
+            $("#CPKCGLoptions").css("display","");
+            if($('#CPKInputRadio').is(':checked')){
+                $("#costOfHireDiv").css("display","");
+                $("#costOfHireInput").val("$");
+            }
+            else{
+                $("#costOfHireDiv").css("display","none");
+                $("#costOfHireInput").val("$");
+            }
+
+            var termLength = parseInt($("#proposedTermLength").val().split(" ")[0]);
+            if(termLength <= 60){
+                $("#BAIAdditionalCoverage").parent().css("display","none");
+                $("#BAIAdditionalCoverage").prop("checked", false);
+            }
+            else{
+                $("#BAIAdditionalCoverage").parent().css("display","");
+                $("#BAIAdditionalCoverage").prop("checked", false);
+            }
+            if(termLength <= 30){
+
+                $("#EAIAdditionalCoverage").parent().css("display","none");
+                $("#WOSAdditionalCoverage").parent().css("display","none");
+                $("#MEDAdditionalCoverage").parent().css("display","");
+                $("#AGGAdditionalCoverage").parent().css("display","");
+
+
+                $("#EAIAdditionalCoverage").prop("checked", false);
+                $("#WOSAdditionalCoverage").prop("checked", false);
+                $("#MEDAdditionalCoverage").prop("checked", false);
+                $("#AGGAdditionalCoverage").prop("checked", false);
+            }
+            else{
+
+                $("#EAIAdditionalCoverage").parent().css("display","");
+                $("#WOSAdditionalCoverage").parent().css("display","");
+                $("#MEDAdditionalCoverage").parent().css("display","");
+                $("#AGGAdditionalCoverage").parent().css("display","");
+
+
+                $("#EAIAdditionalCoverage").prop("checked", false);
+                $("#WOSAdditionalCoverage").prop("checked", false);
+                $("#MEDAdditionalCoverage").prop("checked", false);
+                $("#AGGAdditionalCoverage").prop("checked", false);
+            }
+        }
+    });
+    $(document.body).on('change', '#CPKCGLcoverage' ,function(){
+        if($('#CPKCGLcoverage').is(':checked') ){
+            $('#CPKInputRadio').prop("checked", true);
+            $('#CPKInputRadio').trigger("change");
+            $("#CPKCGLoptions").css("display","");
+            if($('#CPKInputRadio').is(':checked')){
+                $("#costOfHireDiv").css("display","");
+                $("#costOfHireInput").val("$");
+            }
+
+            var termLength = parseInt($("#proposedTermLength").val().split(" ")[0]);
+            if(termLength <= 60){
+                $("#BAIAdditionalCoverage").parent().css("display","none");
+                $("#BAIAdditionalCoverage").prop("checked", false);
+            }
+            else{
+                $("#BAIAdditionalCoverage").parent().css("display","");
+                $("#BAIAdditionalCoverage").prop("checked", false);
+            }
+            if(termLength <= 30){
+                $("#EAIAdditionalCoverage").parent().css("display","none");
+                $("#WOSAdditionalCoverage").parent().css("display","none");
+                $("#MEDAdditionalCoverage").parent().css("display","");
+                $("#AGGAdditionalCoverage").parent().css("display","");
+
+                $("#EAIAdditionalCoverage").prop("checked", false);
+                $("#WOSAdditionalCoverage").prop("checked", false);
+                $("#MEDAdditionalCoverage").prop("checked", false);
+                $("#AGGAdditionalCoverage").prop("checked", false);
+            }
+            else{
+                $("#EAIAdditionalCoverage").parent().css("display","");
+                $("#WOSAdditionalCoverage").parent().css("display","");
+                $("#MEDAdditionalCoverage").parent().css("display","");
+                $("#AGGAdditionalCoverage").parent().css("display","");
+
+                $("#EAIAdditionalCoverage").prop("checked", false);
+                $("#WOSAdditionalCoverage").prop("checked", false);
+                $("#MEDAdditionalCoverage").prop("checked", false);
+                $("#AGGAdditionalCoverage").prop("checked", false);
+            }
+        }
+        else{
+            $('#CPKInputRadio').prop("checked", false);
+            $('#CGLInputRadio').prop("checked", false);
+            $('.additionalCoverageCheckboxCPKCGL').prop("checked", false);
+            $("#CPKCGLoptions").css("display","none");
+            $("#costOfHireDiv").css("display","none");
+            $("#costOfHireInput").val("$");
+            $("#BAIAdditionalCoverage").parent().css("display","none");
+            $("#EAIAdditionalCoverage").parent().css("display","none");
+            $("#WOSAdditionalCoverage").parent().css("display","none");
+            $("#MEDAdditionalCoverage").parent().css("display","");
+            $("#AGGAdditionalCoverage").parent().css("display","none");
+
+            $("#BAIAdditionalCoverage").prop("checked", false);
+            $("#EAIAdditionalCoverage").prop("checked", false);
+            $("#WOSAdditionalCoverage").prop("checked", false);
+            $("#MEDAdditionalCoverage").prop("checked", false);
+            $("#AGGAdditionalCoverage").prop("checked", false);
+        }
+        return false;
+    });
+
+
+
+
     var date_input=$('input[name="date"]'); //our date input has the name "date"
     var container=$('#page-content-wrapper');
     var options={
@@ -54,80 +559,1160 @@ $(document).ready(function () {
     date_input.datepicker(options);
 
 
-
-
-
-
-    $('#attachButton').click(function(){
-        // var formData = new FormData($('form')[0]);
-
-        var file = $('#file').get(0).files[0];
-        var formData = new FormData();
-        formData.append('file', file);
-
-        $.ajax({
-            url: '/portal/async/ajaxAttach',
-            //Ajax events
-            beforeSend: function (e) {
-                alert('Are you sure you want to upload document.');
-            },
-            success: function (e) {
-                alert('Upload completed');
-            },
-            error: function (e) {
-                alert('error ' + e.message);
-            },
-            // Form data
-            data: formData,
-            type: 'POST',
-            //Options to tell jQuery not to process data or worry about content-type.
-            cache: false,
-            contentType: false,
-            processData: false
-        });
-            
-
-
-
-
-
-        // $.ajax({
-        //     url: '/portal/async/ajaxAttach',  //Server script to process data
-        //     type: 'POST',
-        //     // xhr: function() {  // Custom XMLHttpRequest
-        //     //     var myXhr = $.ajaxSettings.xhr();
-        //     //     if(myXhr.upload){ // Check if upload property exists
-        //     //         myXhr.upload.addEventListener('progress',progressHandlingFunction, false); // For handling the progress of the upload
-        //     //     }
-        //     //     return myXhr;
-        //     // },
-        //     //Ajax events
-        //     // beforeSend: beforeSendHandler,
-        //     // success: completeHandler,
-        //     // error: errorHandler,
-        //     // Form data
-        //     data: formData,
-        //     //Options to tell jQuery not to process data or worry about content-type.
-        //     cache: false,
-
-        // });
-    });
+        //$('#nextButtonStep3').click(function(){
+        //    // var formData = new FormData($('form')[0]);
+        //
+        //    // var file = $('.file').get(0).files[0];
+        //    var bioFile = $('#bioFile').get(0).files[0];
+        //    var lossesFile = $('#lossesFile').get(0).files[0]
+        //    var pyroFile = $('#pyroFile').get(0).files[0];
+        //    var stuntsFile = $('#stuntsFile').get(0).files[0];
+        //    var doodFile = $('#doodFile').get(0).files[0];
+        //    var treatmentFile = $('#treatmentFile').get(0).files[0];
+        //    var budgetFile = $('#budgetFile').get(0).files[0];
+        //
+        //    if(bioFile || lossesFile || pyroFile || stuntsFile || doodFile || treatmentFile || budgetFile){
+        //        var formData = new FormData();
+        //        formData.append('bioFile', bioFile);
+        //        formData.append('lossesFile', lossesFile);
+        //        formData.append('pyroFile', pyroFile);
+        //        formData.append('stuntsFile', stuntsFile);
+        //        formData.append('doodFile', doodFile);
+        //        formData.append('treatmentFile', treatmentFile);
+        //        formData.append('budgetFile', budgetFile);
+        //
+        //
+        //        $.ajax({
+        //            url: '/portal/async/ajaxAttach',
+        //            //Ajax events
+        //            beforeSend: function (e) {
+        //                alert('Are you sure you want to upload document.');
+        //            },
+        //            success: function (e) {
+        //                alert('Upload completed');
+        //            },
+        //            error: function (e) {
+        //                alert('error ' + e.message);
+        //            },
+        //            // Form data
+        //            data: formData,
+        //            type: 'POST',
+        //            //Options to tell jQuery not to process data or worry about content-type.
+        //            cache: false,
+        //            contentType: false,
+        //            processData: false
+        //        });
+        //    }
+        //});
 
     $(':file').change(function(){
         var file = this.files[0];
+
         var name = file.name;
         var size = file.size;
         var type = file.type;
+        var ext = $(this).val().split('.').pop().toLowerCase();
+        if($.inArray(ext, ['zip', 'doc', 'docx', 'xlsx', 'xls', 'pdf', 'txt']) == -1) {
+            alert('Only .zip, .doc, .docx, .xlsx, .xls, .pdf, .txt are permitted');
+            $(this).val('');
+        }
+        else{
+            //alert(name);
+
+            //alert('Only .zip, .doc, .docx, .xlsx, .xls, .pdf are permitted');
+            var iconFilePath = "";
+            if(ext == "zip") {
+                iconFilePath = "zipIcon.png"
+            }
+            else if(ext == "doc"){
+                iconFilePath = "docIcon.png"
+            }
+            else if(ext == "docx"){
+                iconFilePath = "docxIcon.png"
+            }
+            else if(ext == "xls"){
+                iconFilePath = "xlsIcon.png"
+            }
+            else if(ext == "xlsx"){
+                iconFilePath = "xlsxIcon.png"
+            }
+            else if(ext == "pdf"){
+                iconFilePath = "pdfIcon.png"
+            }
+            else if(ext == "txt"){
+                iconFilePath = "txtIcon.png"
+            }
+            else{
+                iconFilePath = "fileIcon.png"
+            }
+
+            $("#" + $(this).attr('id') + 'Span').closest(".fileNameContainer").css("display","");
+            $("#" + $(this).attr('id') + 'Span').html("<img src='/portal/images/" + iconFilePath + "' height='16' width='16' style='margin-right:5px'/>" + name);
+        }
+        //console.log(this.files[0]);
         //Your validation
     });
 
+    $(document.body).on('click', '.attachClearButton' ,function(){
+        $(this).closest('.fileNameContainer').find('.fileNameSpan').html("");
+        var spanID = $(this).closest('.fileNameContainer').find('.fileNameSpan').attr('id');
+        $( "#" + spanID.replace("Span","") ).val('');
+        //alert("#" + spanID.replace("Span",""));
+
+    });
 
 
-    ///////////////////////////
+    //Coverage Checkboxes
+    $(document.body).on('keyup', '#totalBudgetConfirm' ,function(){
+        console.log($(this).val());
+        if($(this).val().trim().length > 0 && $(this).val() != "$0.00"){
+            $('#coverageOptionsReview').addClass("panel-primary");
+            $('#coverageOptionsReview').removeClass("panel-default");
+            $('#coverageOptionsReview').parent().css("color", "#1f1f1f");
+            $('#coverageOptionsTitle').css("color", "#fff");
+            $('#loadingModal').show();
+            //console.log($("li.active").html());
+            //if ($("li.active").length > 0) {
+            //    getProductsForRisk();
+            //}
+
+            console.log("budget confirm rating");
+            var budget = $(this).val();
+            $("#totalBudgetInput").val(budget);
+            $("#totalBudgetConfirm").val(budget);
+
+            console.log($("#totalBudgetConfirm").val().split(".")[0]);
+            $('.PIPCHOILimitsInput').val($("#totalBudgetConfirm").val().split(".")[0]);
+            $('.CPKNOHALimitsInput').val($("#totalBudgetConfirm").val().split(".")[0]);
+
+            pipChoiceMisc = $("#totalBudgetConfirm").val().split(".")[0];
+            pipChoiceExtra = $("#totalBudgetConfirm").val().split(".")[0];
+            pipChoiceProps = $("#totalBudgetConfirm").val().split(".")[0];
+            pipChoiceThird = $("#totalBudgetConfirm").val().split(".")[0];
+            pipChoiceNOHA = $("#totalBudgetConfirm").val().split(".")[0];
+            getProductsForRisk();
+        }
+        else{
+            $('#coverageOptionsReview').addClass("panel-default");
+            $('#coverageOptionsReview').removeClass("panel-primary");
+            $('#coverageOptionsReview').parent().css("color", "rgba(31, 31, 31, 0.35)");
+            $('#coverageOptionsTitle').css("color", "rgba(31, 31, 31, 0.35)");
+            $('#EPKGcoverage').prop("checked", false);
+            $('#EPKGcoverage').trigger('change');
+            $('#CPKCGLcoverage').prop("checked", false);
+            $('#CPKCGLcoverage').trigger('change');
+
+            clearProductChoices();
+        }
 
 
 
+        //ratePremiums(this);
+    });
+    $(document.body).on('keyup', '#costOfHireInput' ,function() {
+        ratePremiums(this);
+    });
+
+    var currentChecked;
+    $(document.body).on('click', '.additionalCoverageCheckboxPIP5',function(){
+        //alert(currentChecked + "=" + $(this).attr('id'));
+        if($(this).attr('id') === currentChecked){
+            $('.additionalCoverageCheckboxPIP5').prop('checked', false);
+            $('.additionalCoverageCheckboxPIP5').trigger('change');
+            currentChecked = "";
+        }
+
+        if($('#EPKGCIVIL100AdditionalCoverage').is(':checked')){
+            currentChecked = $('#EPKGCIVIL100AdditionalCoverage').attr('id');
+        }
+        else if($('#EPKGCIVIL500AdditionalCoverage').is(':checked')){
+            currentChecked = $('#EPKGCIVIL500AdditionalCoverage').attr('id');
+        }
+    });
+    $(document.body).on('change', '.coverageInput, .additionalCoverageCheckboxCPKCGL, #EPKGNOHAAdditionalCoverage, #totalBudgetConfirm, .additionalCoverageCheckboxPIP5, .PIPCHOIOption' ,function(){
+        ratePremiums(this);
+
+    });
+
+    $(document.body).on('keyup', '.PIPCHOILimitsInput' ,function(){
+        //console.log("change");
+        var limitAmount = $(this).val().replace(/\$|,/g, '');
+        var rate = 0.0;
+        var coverageLine = $(this).parent().siblings(".coverageColumn").find("span").html();
+        var minPremium =0;
+        var premium = 0;
+        var maxLimit = 0;
+        var termLength = parseInt($("#proposedTermLength").val().split(" ")[0]);
+
+        if(coverageLine.indexOf("Extra Expense") > -1){
+            rate = .0010;
+            minPremium = 100;
+            maxLimit = 1000000;
+        }
+        else if(coverageLine.indexOf("Third Party Prop Damage Liab") > -1){
+            rate = .0005;
+            minPremium = 100;
+            maxLimit = 1000000;
+        }
+        else if(coverageLine.indexOf("Props, Sets") > -1){
+            rate = .005;
+            minPremium = 100;
+            maxLimit = 1000000;
+        }
+        else if(coverageLine.indexOf("Miscellaneous Rented Equipment") > -1){
+            rate = .005;
+            minPremium = 100;
+            maxLimit = 1000000;
+        }
+
+        if(limitAmount > maxLimit){
+            //alert("Maximum Limit for this Product is  " + maxLimit);
+            $(this).val("$" + maxLimit.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"));
+
+            //return;
+            limitAmount = maxLimit;
+        }
+
+        if(termLength <= 30){
+            premium = ((((limitAmount * rate)/365)* termLength)*10);
+        }
+        else{
+            premium = limitAmount * rate;
+        }
+
+        //alert(limitAmount + "+" + rate + "=" + premium);
+        if(premium < minPremium){
+            premium = minPremium;
+        }
+
+        $(this).parent().siblings(".premiumColumn").find(".PIPCHOIPremiumLine").html(formatMoney(premium));
+
+
+        var deductAmount = 0;
+        if(limitAmount<= 250000){
+            deductAmount = 2500;
+        }
+        else if(limitAmount > 250000 && limitAmount <=500000){
+            deductAmount = 2500;
+        }
+        else if(limitAmount > 500000){
+            deductAmount = 2500;
+        }
+        $(this).parent().siblings(".deductibleColumn").find(".PIPCHOIDeductLine").html(formatMoney(deductAmount));
+
+        var totalPremium = 0;
+        $(".PIPCHOIPremiumLine").each(function(){
+            totalPremium =  totalPremium + parseInt($(this).html().replace(/\$|,/g, ''));
+        });
+
+        $("#PIPCHOIPremiumTotal").html(formatMoney(totalPremium));
+        $("#EPKGPremiumLOBTotal").html(formatMoney(totalPremium));
+
+        ////RECALCULATE ALL LOBS AND TOTAL
+        //var totalAllLOBPremium = 0.0;
+        //$('.premiumSpan').each(function () {
+        //    if($.isNumeric($(this).html())){
+        //        totalAllLOBPremium = totalAllLOBPremium + parseFloat($(this).html());
+        //    }
+        //});
+
+        totalUpPremiumAndTax();
+        var elem = document.createElement('textarea');
+        $('.PIPCHOILimitsInput').each(function( index ) {
+            elem.innerHTML = $(this).parent().siblings(".coverageColumn").children().first().html();
+            var decoded = elem.value;
+            if($(this).val().length == 0){
+                pipchoiceLimits = pipchoiceLimits + decoded + "&;&" + 0 + "&;;&";
+                $(this).val("0");
+            }
+            else{
+                pipchoiceLimits = pipchoiceLimits + decoded + "&;&" + $(this).val() + "&;;&";
+            }
+
+            if(decoded === "Miscellaneous Rented Equipment"){
+                pipChoiceMisc = $(this).val();
+            }
+            else if(decoded === "Extra Expense"){
+                pipChoiceExtra = $(this).val();
+            }
+            else if(decoded === "Props, Sets & Wardrobe"){
+                pipChoiceProps = $(this).val();
+            }
+            else if(decoded === "Third Party Prop Damage Liab"){
+                pipChoiceThird = $(this).val();
+            }
+            else if(decoded === "Hired Auto Physical Damage"){
+                pipChoiceNOHA = $(this).val();
+            }
+        });
+
+
+
+
+
+
+    });
+
+
+    $(document.body).on('keyup', '.CPKNOHALimitsInput' ,function() {
+        console.log("change");
+        var limitAmount = $(this).val().replace(/\$|,/g, '');
+        var rate = .06;
+        var minPremium = 500;
+        var premium = 0;
+        var maxLimit = 1000000;
+
+        premium = limitAmount * rate;
+        //alert(limitAmount + "+" + rate + "=" + premium);
+        if(premium < minPremium){
+            premium = minPremium;
+        }
+
+        $(this).parent().siblings(".premiumColumn").find(".NOAL01PremiumLine").html(premium);
+
+        var totalPremium = 0;
+        $(".NOAL01PremiumLine").each(function(){
+            totalPremium =  totalPremium + parseInt($(this).html().replace(/\$|,/g, ''));
+        });
+
+        $("#NOAL01PremiumTotal").html(totalPremium);
+    });
 });
+
+function checkPhotographyDates(){
+
+}
+
+
+
+function ratePremiums(thisObj){
+    console.log("rating");
+    var val = $(thisObj).val();
+    var riskChosen = $("li.active").children("a.riskOptionLink").html().trim();
+    var prodString = $(".productsSelect option[value='" + val + "']").text();
+    var productsSelected = "";
+    var additionalProducts = "";
+    var pipChoiOptions = "";
+
+    $(".coverageRadioButton").each(function( index ) {
+        if($(this).is(':checked')){
+            productsSelected = productsSelected + $(this).attr('class').replace("coverageRadioButton ","") + ":" + $( this ).val() + ",";
+            if($(this).hasClass("CPK")){
+                productsSelected = productsSelected + "NOAL" + ":" + "NOAL01" + ",";
+            }
+        }
+    });
+
+    $("#EPKGNOHAAdditionalCoverage").each(function( index ) {
+        if($(this).is(':checked')){
+            productsSelected = productsSelected + "NOHA" + ":" + $( this ).val() + ",";
+        }
+    });
+
+    $(".additionalCoverageCheckboxCPKCGL").each(function( index ) {
+        if($(this).is(':checked')){
+            additionalProducts = additionalProducts + $( this ).attr("id") + ":" + $( this ).attr("id") + ",";
+        }
+    });
+
+    $('.PIPCHOIOption').each(function( index ) {
+        if($(this).is(':checked')){
+            pipChoiOptions = pipChoiOptions + $(this).attr('id') + "," ;
+        }
+
+    });
+    $(".additionalCoverageCheckboxPIP5").each(function( index ) {
+        if($(this).is(':checked')){
+            additionalProducts = additionalProducts + $( this ).attr("id") + ":" + $( this ).attr("id") + ",";
+        }
+    });
+    //alert(productsSelected);
+
+    var CGLNOALLimit = "";
+    var elem = document.createElement('textarea');
+
+    $('.PIPCHOILimitsInput').each(function( index ) {
+        elem.innerHTML = $(this).parent().siblings(".coverageColumn").children().first().html();
+        var decoded = elem.value;
+        if($(this).val().length == 0){
+            pipchoiceLimits = pipchoiceLimits + decoded + "&;&" + 0 + "&;;&";
+            $(this).val("0");
+        }
+        else{
+            pipchoiceLimits = pipchoiceLimits + decoded + "&;&" + $(this).val() + "&;;&";
+        }
+
+        if(decoded === "Miscellaneous Rented Equipment"){
+            pipChoiceMisc = $(this).val();
+        }
+        else if(decoded === "Extra Expense"){
+            pipChoiceExtra = $(this).val();
+        }
+        else if(decoded === "Props, Sets & Wardrobe"){
+            pipChoiceProps = $(this).val();
+        }
+        else if(decoded === "Third Party Prop Damage Liab"){
+            pipChoiceThird = $(this).val();
+        }
+        else if(decoded === "Hired Auto Physical Damage"){
+            pipChoiceNOHA = $(this).val();
+        }
+    });
+    console.log(pipChoiceMisc);
+    $('.CPKNOHALimitsInput').each(function( index ) {
+        elem.innerHTML = $(this).parent().siblings(".coverageColumn").children().first().html();
+        var decoded = elem.value;
+        if (decoded === "Hired Auto Physical Damage") {
+            CGLNOALLimit = $(this).val();
+        }
+    });
+    //console.log(pipchoiceLimits);
+
+    if(productsSelected.length > 0 && parseFloat($("#totalBudgetInput").val().replace(/\$|,/g, '')) > 0) {
+            //console.log($('#costOfHireInput').val());
+        $.ajax({
+            method: "POST",
+            url: "/portal/Async/ratePremiums",
+            data: {
+                riskType: riskChosen,
+                productsSelected: productsSelected,
+                pipChoiOptions: pipChoiOptions,
+                pipChoiceLimits: pipchoiceLimits.replace(/\$|,/g, ''),
+                additionalProducts: additionalProducts,
+                totalBudget: $("#totalBudgetInput").val().replace(/\$|,/g, ''),
+                proposedTermLength: $("#proposedTermLength").val(),
+                costOfHire: $('#costOfHireInput').val().replace(/\$|,/g, '')
+
+            }
+        })
+            .done(function (msg) {
+                //alert(msg);
+                //alert( "Data Saved: " + msg );
+                responseJSON = JSON.parse(msg);
+                //alert(responseJSON.coverages.length);
+                var limitDeductibleString = "";
+                var lobDistString = "";
+                var CPKincluded = false;
+                var EPKGincluded = false;
+                var termsInsert = "";
+                var beginTerms = "";
+                var endorseInsert = "";
+                for (var i = 0; i < responseJSON.coverages.length; i++) {
+                    if(responseJSON.coverages[i].coverageCode === "CPK"){
+                        CPKincluded = true;
+                        beginTerms = responseJSON.coverages[i].beginTerms;
+                    }
+                    if(responseJSON.coverages[i].coverageCode === "EPKG"){
+                        EPKGincluded = true;
+                        beginTerms = responseJSON.coverages[i].beginTerms;
+                    }
+                }
+                for (var i = 0; i < responseJSON.coverages.length; i++) {
+                    //alert(Object.keys(responseJSON.coverages[i].limits));
+                    if(responseJSON.coverages[i].coverageCode === "NOHA" ){
+                        continue;
+                    }
+
+                    limitDeductibleString = limitDeductibleString + "<div class='row coverageCodeRow'>" +
+                        "<div class='col-xs-6 ' >";
+                    if(responseJSON.coverages[i].coverageCode === "NOAL" && CPKincluded){
+                        limitDeductibleString = limitDeductibleString +    "<strong class='coverageCodeString' style='font-size:13px'>" + "NOAL" + "</strong>";
+                        limitDeductibleString = limitDeductibleString +   "</div>" +
+                            "<div class='col-xs-2 ' >" +
+                            "<span'>" + "-" + "</span>" +
+                            "</div>" +
+                            "<div class='col-xs-2 ' >" +
+                            "<strong style='font-size:13px'>" + "</strong>" +
+                            "</div>" +
+                            "<div class='col-xs-2 ' >" +
+                            "<span'>" + "-" + "</span>" +
+                            "</div>" +
+                            "</div>";
+                    }
+                    else if(responseJSON.coverages[i].coverageCode === "EPKG" ){
+                        if(responseJSON.coverages[i].productCode === "PIP CHOI"){
+                            limitDeductibleString = limitDeductibleString +    "<strong class='coverageCodeString' style='font-size:13px'>" + "EPKG" + "</strong>";
+                            limitDeductibleString = limitDeductibleString +   "</div>" +
+                                "<div class='col-xs-2 ' >" +
+                                "<span style='font-size:9px;'>" + "*Max $1,000,000" + "</span>" +
+                                "</div>" +
+                                "<div class='col-xs-2 ' >" +
+                                "<strong style='font-size:13px'>" + "</strong>" +
+                                "</div>" +
+                                "<div class='col-xs-2 ' >" +
+                                "<span>" + "-" + "</span>" +
+                                "</div>" +
+                                "</div>";
+                        }
+                        else if(responseJSON.coverages[i].productCode === "PIP 1"){
+                            limitDeductibleString = limitDeductibleString +    "<strong class='coverageCodeString' style='font-size:13px'>" + "EPKG" + "</strong>";
+                            limitDeductibleString = limitDeductibleString +   "</div>" +
+                                "<div class='col-xs-2 ' >" +
+                                "<span style='font-size:9px;'>" + "" + "</span>" +
+                                "</div>" +
+                                "<div class='col-xs-2 ' >" +
+                                "<strong style='font-size:13px'>" + "</strong>" +
+                                "</div>" +
+                                "<div class='col-xs-2 ' >" +
+                                "<span>" + "-" + "</span>" +
+                                "</div>" +
+                                "</div>";
+                        }
+                        else{
+                            limitDeductibleString = limitDeductibleString +    "<strong class='coverageCodeString' style='font-size:13px'>" + responseJSON.coverages[i].coverageCode + "</strong>";
+                            limitDeductibleString = limitDeductibleString +   "</div>" +
+                                "<div class='col-xs-2 ' >" +
+                                "<span'>" + "-" + "</span>" +
+                                "</div>" +
+                                "<div class='col-xs-2 ' >" +
+                                "<strong style='font-size:13px'>" + "</strong>" +
+                                "</div>" +
+                                "<div class='col-xs-2 ' >" +
+                                "<span'>" + "-" + "</span>" +
+                                "</div>" +
+                                "</div>";
+                        }
+
+                    }
+                    else if(responseJSON.coverages[i].coverageCode === "CPK"){
+                        limitDeductibleString = limitDeductibleString +    "<strong class='coverageCodeString' style='font-size:13px'>" + "CGL" + "</strong>";
+                        limitDeductibleString = limitDeductibleString +   "</div>" +
+                            "<div class='col-xs-2 ' >" +
+                            "<span>" + "-" + "</span>" +
+                            "</div>" +
+                            "<div class='col-xs-2 ' >" +
+                            "<strong style='font-size:13px'>" + "</strong>" +
+                            "</div>" +
+                            "<div class='col-xs-2 ' >" +
+                            "<span>" + "-" + "</span>" +
+                            "</div>" +
+                            "</div>";
+                    }
+                    else{
+                        limitDeductibleString = limitDeductibleString +    "<strong class='coverageCodeString' style='font-size:13px'>" + responseJSON.coverages[i].coverageCode + "</strong>";
+                        limitDeductibleString = limitDeductibleString +   "</div>" +
+                            "<div class='col-xs-2 ' >" +
+                            "<span'>" + "-" + "</span>" +
+                            "</div>" +
+                            "<div class='col-xs-2 ' >" +
+                            "<strong style='font-size:13px'>" + "</strong>" +
+                            "</div>" +
+                            "<div class='col-xs-2 ' >" +
+                            "<span'>" + "-" + "</span>" +
+                            "</div>" +
+                            "</div>";
+                    }
+
+
+                    var limitLines = Object.keys(responseJSON.coverages[i].limits);
+                    if(responseJSON.coverages[i].coverageCode === "EPKG"){
+                        if(limitLines.indexOf("Negative Film & Videotape") > -1){
+                            limitLines.splice(limitLines.indexOf("Negative Film & Videotape"), 1);
+                            limitLines.push("Negative Film & Videotape");
+                        }
+                        if(limitLines.indexOf("Faulty Stock & Camera Processing") > -1){
+                            limitLines.splice(limitLines.indexOf("Faulty Stock & Camera Processing"), 1);
+                            limitLines.push("Faulty Stock & Camera Processing");
+                        }
+                        if(limitLines.indexOf("Miscellaneous Rented Equipment") > -1){
+                            limitLines.splice(limitLines.indexOf("Miscellaneous Rented Equipment"), 1);
+                            limitLines.push("Miscellaneous Rented Equipment");
+                        }
+                        if(limitLines.indexOf("Extra Expense") > -1){
+                            limitLines.splice(limitLines.indexOf("Extra Expense"), 1);
+                            limitLines.push("Extra Expense");
+                        }
+                        if(limitLines.indexOf("Props, Sets & Wardrobe") > -1){
+                            limitLines.splice(limitLines.indexOf("Props, Sets & Wardrobe"), 1);
+                            limitLines.push("Props, Sets & Wardrobe");
+                        }
+                        if(limitLines.indexOf("Third Party Prop Damage Liab") > -1){
+                            limitLines.splice(limitLines.indexOf("Third Party Prop Damage Liab"), 1);
+                            limitLines.push("Third Party Prop Damage Liab");
+                        }
+                        if(limitLines.indexOf("Office Contents") > -1){
+                            limitLines.splice(limitLines.indexOf("Office Contents"), 1);
+                            limitLines.push("Office Contents");
+                        }
+
+                        if(limitLines.indexOf("Civil Authority (US Only)") > -1){
+                            limitLines.splice(limitLines.indexOf("Civil Authority (US Only)"), 1);
+                            limitLines.push("Civil Authority (US Only)");
+                        }
+
+                        if(limitLines.indexOf("Animal Mortality Under Cast Insurance (Domestic Birds/Fish)") > -1){
+                            limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (Domestic Birds/Fish)"), 1);
+                            limitLines.push("Animal Mortality Under Cast Insurance (Domestic Birds/Fish)");
+                        }
+                        if(limitLines.indexOf("Animal Mortality Under Cast Insurance (Dogs w/ Breed Exceptions)") > -1){
+                            limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (Dogs w/ Breed Exceptions)"), 1);
+                            limitLines.push("Animal Mortality Under Cast Insurance (Dogs w/ Breed Exceptions)");
+                        }
+                        if(limitLines.indexOf("Animal Mortality Under Cast Insurance (Reptiles (Non-Venomous))") > -1){
+                            limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (Reptiles (Non-Venomous))"), 1);
+                            limitLines.push("Animal Mortality Under Cast Insurance (Reptiles (Non-Venomous))");
+                        }
+                        if(limitLines.indexOf("Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))") > -1){
+                            limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))"), 1);
+                            limitLines.push("Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))");
+                        }
+                        if(limitLines.indexOf("Animal Mortality Under Cast Insurance (Farm Animals)") > -1){
+                            limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (Farm Animals)"), 1);
+                            limitLines.push("Animal Mortality Under Cast Insurance (Farm Animals)");
+                        }
+                        if(limitLines.indexOf("Animal Mortality Under Cast Insurance (Wild Cats (Caged))") > -1){
+                            limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (Wild Cats (Caged))"), 1);
+                            limitLines.push("Animal Mortality Under Cast Insurance (Wild Cats (Caged))");
+                        }
+                        if(limitLines.indexOf("Animal Mortality Under Cast Insurance (All Others - Refer Only)") > -1){
+                            limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (All Others - Refer Only)"), 1);
+                            limitLines.push("Animal Mortality Under Cast Insurance (All Others - Refer Only)");
+                        }
+
+
+
+                        if(limitLines.indexOf("Hired Auto Physical Damage") > -1){
+                            limitLines.splice(limitLines.indexOf("Hired Auto Physical Damage"), 1);
+                            limitLines.push("Hired Auto Physical Damage");
+                        }
+                    }
+                    else if(responseJSON.coverages[i].coverageCode === "CPK" || responseJSON.coverages[i].coverageCode === "CGL" ){
+                        if(limitLines.indexOf("Each Occurrence") > -1){
+                            limitLines.splice(limitLines.indexOf("Each Occurrence"), 1);
+                            limitLines.push("Each Occurrence");
+                        }
+                        if(limitLines.indexOf("General Aggregate Limit") > -1){
+                            limitLines.splice(limitLines.indexOf("General Aggregate Limit"), 1);
+                            limitLines.push("General Aggregate Limit");
+                        }
+                        if(limitLines.indexOf("Products & Completed Operations") > -1){
+                            limitLines.splice(limitLines.indexOf("Products & Completed Operations"), 1);
+                            limitLines.push("Products & Completed Operations");
+                        }
+                        if(limitLines.indexOf("Personal & Advertising Injury") > -1){
+                            limitLines.splice(limitLines.indexOf("Personal & Advertising Injury"), 1);
+                            limitLines.push("Personal & Advertising Injury");
+                        }
+                        if(limitLines.indexOf("Fire Damage (Any One Fire)") > -1){
+                            limitLines.splice(limitLines.indexOf("Fire Damage (Any One Fire)"), 1);
+                            limitLines.push("Fire Damage (Any One Fire)");
+                        }
+
+                        if(limitLines.indexOf("\$5,000 Medical Payments (Per Person)") > -1){
+                            limitLines.splice(limitLines.indexOf("\$5,000 Medical Payments (Per Person)"), 1);
+                            limitLines.push("\$5,000 Medical Payments (Per Person)");
+                        }
+                        if(limitLines.indexOf("Increased Agg Limit") > -1){
+                            limitLines.splice(limitLines.indexOf("Increased Agg Limit"), 1);
+                            limitLines.push("Increased Agg Limit");
+                        }
+                        if(limitLines.indexOf("Blanket Additional Insured Endorsement") > -1){
+                            limitLines.splice(limitLines.indexOf("Blanket Additional Insured Endorsement"), 1);
+                            limitLines.push("Blanket Additional Insured Endorsement");
+                        }
+                        if(limitLines.indexOf("Waiver of Subrogation") > -1){
+                            limitLines.splice(limitLines.indexOf("Waiver of Subrogation"), 1);
+                            limitLines.push("Waiver of Subrogation");
+                        }
+                        if(limitLines.indexOf("Additional Charge to Include $5,000 Medical Payments") > -1){
+                            limitLines.splice(limitLines.indexOf("Additional Charge to Include $5,000 Medical Payments"), 1);
+                            limitLines.push("Additional Charge to Include $5,000 Medical Payments");
+                        }
+
+
+                        if(limitLines.indexOf("Non-Owned & Hired Auto Liability") > -1){
+                            limitLines.splice(limitLines.indexOf("Non-Owned & Hired Auto Liability"), 1);
+                            limitLines.push("Non-Owned & Hired Auto Liability");
+                        }
+
+                        //PUSH IN FRONT
+
+                    }
+
+
+                    limitLines.forEach(function (key, index) {
+                        //alert.log(e);
+                        if(key === "Non-Owned Auto Physical Damage" && (responseJSON.coverages[i].productCode === "PIP 5" ||
+                            responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3" )){
+                            return;
+                        }
+                        var premiumForCoverageLine = "";
+                        if (responseJSON.coverages[i].premiums[key]) {
+                            premiumForCoverageLine = responseJSON.coverages[i].premiums[key][1];
+                            //console.log("Premium: " + premiumForCoverageLine);
+                        }
+                        else {
+                            premiumForCoverageLine = "undefined";
+                        }
+
+                        limitDeductibleString = limitDeductibleString + "<div class='row " + responseJSON.coverages[i].coverageCode + "_LOBRow'";
+                        if (index % 2 == 0) {
+                            if(key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
+                                responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")){
+                                limitDeductibleString = limitDeductibleString + " style= 'background-color: rgba(38, 80, 159, 0.13); height:44px'";
+                            }
+                            else{
+                                limitDeductibleString = limitDeductibleString + " style= 'background-color: rgba(38, 80, 159, 0.13)'";
+                            }
+
+                        }
+                        limitDeductibleString = limitDeductibleString + ">" +
+                            "<div class='col-xs-6 coverageColumn' style='padding-left:20px'>";
+
+                        if(key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
+                            responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")){
+                            limitDeductibleString = limitDeductibleString + "<span>" + key + "</span>" + "<br><span>Non-Owned Auto Physical Damage</span>" +
+                                "</div>" +
+                                "<div class='col-xs-2 limitColumn'>";
+                        }
+                        else{
+                            limitDeductibleString = limitDeductibleString + "<span>" + key + "</span>" +
+                            "</div>" +
+                            "<div class='col-xs-2 limitColumn'>";
+                        }
+
+
+
+                        if(responseJSON.coverages[i].productCode === "PIP CHOI") {
+                            if(key === "Hired Auto Physical Damage"){
+                                limitDeductibleString = limitDeductibleString + "<span>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
+                            }
+                            else{
+                                limitDeductibleString = limitDeductibleString + "<input class='form-control PIPCHOILimitsInput " + key.replace(/\s+/g, '').replace(/[^a-zA-Z-]/g, '') +"' type='text' placeholder = '$' name='numBuildings' " +
+                                    "style='font-size: 12px;padding: 2px;margin-top: 3px; margin-bottom:3px; height: 20px;'/>";
+                            }
+
+                        }
+                        else if(responseJSON.coverages[i].coverageCode === "NOAL" && CPKincluded){
+                            limitDeductibleString = limitDeductibleString + "<span>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
+                        }
+                        else{
+                            limitDeductibleString = limitDeductibleString + "<span>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
+                        }
+
+
+
+
+                        limitDeductibleString = limitDeductibleString + "</div>" +
+                            "<div class='col-xs-2 premiumColumn'>" +
+                            "<span class='" + responseJSON.coverages[i].productCode.replace(/ /g,'') + "PremiumLine' >" + formatMoney(premiumForCoverageLine) + "</span>" +
+                            "</div>";
+                        if(key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
+                            responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")){
+                            limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 deductibleColumn'>" +
+                                "<span class='" + responseJSON.coverages[i].productCode.replace(/ /g,'') + "DeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles[key])  +
+                                "</span><br>" +
+                                "<span class='NOHADeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles["Non-Owned Auto Physical Damage"])  +
+                                "</span>";
+                        }
+
+                        else{
+                            limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 deductibleColumn'>" +
+                                "<span class='" + responseJSON.coverages[i].productCode.replace(/ /g,'') + "DeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles[key])  +
+
+                                "</span>";
+                        }
+                            limitDeductibleString = limitDeductibleString + "</div>" +
+                            "</div>";
+                    });
+                    limitDeductibleString = limitDeductibleString + "<div class='row' style='border-top: 1px solid rgba(0, 0, 0, 0.19);'>" +
+                        "<div class='col-xs-6 ' >" +
+                        "<strong style='font-size:13px'>"  + "</strong>" +
+                        "</div>" +
+                        "<div class='col-xs-2 ' >" +
+                        "<span'>" + "-" + "</span>" +
+                        "</div>" +
+                        "<div class='col-xs-2 ' >" +
+                        "<strong style='font-size:13px' id='" + responseJSON.coverages[i].productCode.replace(/ /g,'') +"PremiumTotal'>" + formatMoney(responseJSON.coverages[i].productTotalPremium) + "</strong>" +
+                        "</div>" +
+                        "<div class='col-xs-2 ' >" +
+                        "<span'>" + "-" + "</span>" +
+                        "</div>" +
+                        "</div>";
+                    limitDeductibleString = limitDeductibleString + "<br>";
+
+                    var lobLines = Object.keys(responseJSON.coverages[i].lobDist);
+                    lobLines.forEach(function (key, index) {
+                        for (var k = 0; k < responseJSON.coverages[i].lobDist[key].split(";").length; k++) {
+                            if (responseJSON.coverages[i].lobDist[key].split(";")[k].length > 0) {
+                                lobDistString = lobDistString + "<div class='row'" ;
+                                if (index % 2 == 0) {
+                                    lobDistString = lobDistString + " style= 'background-color: rgba(38, 80, 159, 0.13)'";
+                                }
+                                lobDistString = lobDistString + ">" +
+                                    "<div class='col-xs-4'>" +
+                                    "<span class='lineOfBusinessSpan'>" + responseJSON.coverages[i].lobDist[key].split(";")[k].split(",")[0] + "</span>" +
+                                    "</div>" +
+                                    "<div class='col-xs-3'>" +
+                                    "<span class='premiumSpan' id='" + responseJSON.coverages[i].coverageCode + "PremiumLOBTotal'>" + formatMoney(responseJSON.coverages[i].lobDist[key].split(";")[k].split(",")[1]) + "</span>" +
+                                    "</div>" +
+                                    "<div class='col-xs-3'>" +
+                                    "<span class='agentPercentSpan'>"  + responseJSON.coverages[i].lobDist[key].split(";")[k].split(",")[3] + "</span>" +
+                                    "</div>" +
+                                    "</div>";
+                            }
+                        }
+
+
+                    });
+
+                    if(responseJSON.coverages[i].coverageCode != "NOAL"){
+                        //termsInsert = termsInsert +
+                        //    responseJSON.coverages[i].coverageCode + " - " + responseJSON.coverages[i].productCode + "\n"  +  responseJSON.coverages[i].terms + "\n\n\n";
+                        endorseInsert = endorseInsert +
+                            responseJSON.coverages[i].coverageCode + " - " + responseJSON.coverages[i].productCode + "\n" +
+                            responseJSON.coverages[i].endorse + "\n\n\n";
+                    }
+
+
+
+
+
+
+
+                    if(responseJSON.coverages[i].productCode === "PIP CHOI" ){
+                        $('#limitsHeader').html("Please Enter Desired Limits");
+                    }
+                }
+
+                $("#limitsDeductPremiumInsert").html(limitDeductibleString);
+                $("#premDistributionInsert").html(lobDistString);
+                $("#termsInsert").html(beginTerms + termsInsert);
+                $("#endorseInsert").html(endorseInsert);
+                var disclaimerInsert = "*TRIA is rejected as per form LMA 5091 U.S. Terrorism Risk Insurance Act 2002.  " +
+                    "TRIA can be afforded for an additional premium charge equal to 1% of the total premium indication.";
+                $("#disclaimerInsert").html(disclaimerInsert);
+
+                //$("#premDistributionInsert").html(lobDistString);
+
+                //Add NOAL to CPK if valid
+                console.log("lENGTH = " + $('.NOAL01PremiumTotal').length)
+                if($('#NOAL01PremiumTotal').length > 0){
+                    var noalPrem = $('#NOAL01PremiumTotal').html();
+                    var cpkPrem = $('#BARCPKGCPremiumTotal').html();
+
+                    var v1 = noalPrem;
+                    v1= v1.replace("$","");
+                    v1= v1.replace(/,/g , "");
+
+                    var v2 = cpkPrem;
+                    v2= v2.replace("$","");
+                    v2= v2.replace(/,/g , "");
+
+                    $("#CPKPremiumLOBTotal").html(formatMoney(parseFloat(v1) + parseFloat(v2)));
+
+
+
+
+                }
+
+                $('.PIPCHOILimitsInput').maskMoney({prefix:'$', precision:"0"});
+                $('.PIPCHOILimitsInput').val($("#totalBudgetInput").val().split(".")[0]);
+                if(pipChoiceMisc.length > 0){
+                    $(".MiscellaneousRentedEquipment").val(pipChoiceMisc);
+                }
+                if(pipChoiceExtra.length > 0){
+                    $(".ExtraExpense").val(pipChoiceExtra);
+                }
+                if(pipChoiceProps.length > 0){
+                    $(".PropsSetsWardrobe").val(pipChoiceProps);
+                }
+                if(pipChoiceThird.length > 0){
+                    $(".ThirdPartyPropDamageLiab").val(pipChoiceThird);
+                }
+                if(pipChoiceNOHA.length > 0){
+                    $(".HiredAutoPhysicalDamage").val(pipChoiceNOHA);
+
+                }
+
+                $('.PIPCHOILimitsInput').trigger("keyup");
+                $('.CPKNOHALimitsInput').maskMoney({prefix:'$', precision:"0"});
+                $('.CPKNOHALimitsInput').val($("#totalBudgetInput").val().split(".")[0]);
+                if(CGLNOALLimit.length > 0){
+                    $(".HiredAutoPhysicalDamage").val(CGLNOALLimit);
+                }
+                $('.CPKNOHALimitsInput').trigger("keyup");
+                getTaxInfo();
+                totalUpPremiumAndTax();
+                addOverflowTransitionClass();
+                $('#castInsuranceRequiredCheckBox').trigger('change');
+            });
+
+    }
+    else{
+        //alert("clear all");
+        $("#limitsDeductPremiumInsert").html("");
+        $("#premDistributionInsert").html("");
+        $("#termsInsert").html("");
+        $("#endorseInsert").html("");
+        $("#taxRows").html("");
+        $("#premiumAllLOBTotal").html("");
+        $("#disclaimerInsert").html("");
+    }
+    //alert("");
+
+}
+function addOverflowTransitionClass(){
+    $('.NOHADeductLine').parent().addClass("deductibleColumnTwoLine")
+    $(".deductibleColumn").each(function( index ) {
+        var largestInnerHeight = 0;
+        var combinedInnerHeight =0;
+        $(this).find('span').each(function( index ) {
+            combinedInnerHeight = combinedInnerHeight + $(this).innerHeight();
+            if($(this).innerHeight() > largestInnerHeight){
+                largestInnerHeight = $(this).innerHeight();
+            }
+        });
+        //alert( $(this).innerHeight() + " - " + largestInnerHeight +" - " + $(this).html());
+
+        //if (largestInnerHeight >  $(this).innerHeight() || combinedInnerHeight > $(this).innerHeight() ) {
+        if($(this).innerHeight() > 24){
+
+            $(this).addClass("deductibleColumnOverflow");
+            //$(this).append("<span class='glyphicon glyphicon-arrow-down'> </span>")
+        }
+    });
+}
+function totalUpPremiumAndTax(){
+    //alert();
+
+    var totalPremium = 0.0;
+    $('.premiumSpan, .taxSpan').each(function () {
+        //console.log("TOTALING === " + $(this).html())
+        if($.isNumeric($(this).html())){
+            totalPremium = totalPremium + parseFloat($(this).html());
+        }
+        else if($(this).html().substring(0,1) ==="\$"){
+            var v = $(this).html();
+            v= v.replace("$","");
+            v= v.replace(/,/g , "");
+            //console.log("PREMIUM LINE ===== " + v);
+            //v = ("$"+v+"").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            totalPremium = totalPremium + parseFloat(v);
+        }
+    });
+    $("#premiumAllLOBTotal").html(formatTaxAndFee(totalPremium));
+}
+
+function buildReview() {
+    $("#reviewRiskType").html($("li.active").children("a.riskOptionLink").html().trim());
+    //alert($("#namedInsured").html());
+    $("#reviewNamedInsured").html($("#namedInsured").val());
+    $("#reviewMailingAddress").html($("#googleAutoAddress").val());
+    $("#reviewMailingCity").html($("#cityMailing").val());
+    $("#reviewMailingZipcode").html($("#zipCodeMailing").val());
+    $("#reviewMailingState").html($("#stateMailing").val());
+    $("#reviewPhoneNumber").html($("#phoneNumber").val());
+    $("#reviewEmail").html($("#namedInsuredEmail").val());
+    $("#reviewWebsite").html($("#website").val());
+
+    $("#reviewTotalBudget").html($("#totalBudgetConfirm").val());
+    $("#reviewPrincipalPhotographyDates").html($("#principalPhotographyDateStart").val() + " to " + $("#principalPhotographyDateEnd").val());
+    $("#reviewProposedEffective").html($("#proposedEffectiveDate").val());
+    $("#reviewProposedExpiration").html($("#proposedExpirationDate").val());
+    $("#reviewProposedTerm").html($("#proposedTermLength").val());
+    $("#reviewSubject").html($("#endorseInsert").html());
+
+
+    $("#reviewNameProduction").html($("#titleOfProduction").val());
+    $("#reviewNameProductionCompany").html($("#nameOfProductionCompany").val());
+    $("#reviewNamePrincipals").html($("#nameOfPrincipal").val());
+    $("#reviewNumberYearsExperience").html($("#numberOfYearsOfExperience").val());
+    $("#reviewPriorLosses").html($("#listOfPriorLosses").val());
+
+    var limitValueArray = [];
+    $("#limitsDeductPremiumInsert").find('.limitColumn').each(function () {
+        if ($(this).find('input').length) {
+            limitValueArray.push($(this).find('input').val());
+        }
+    });
+    var htmlString = $("#limitsDeductPremiumInsert").html();
+    var object = $('<div/>').html(htmlString).contents();
+    object.find('.limitColumn').each(function (index) {
+        if ($(this).find('input').length) {
+            $(this).html("<span>" + limitValueArray[index] + "<span>");
+        }
+    });
+    $("#reviewLimitsDeducts").html(object);
+
+    var str = $("<div />").append($('#premDistributionInsert').clone()).html();
+        str = str + $("<div />").append($('.TaxHeaderRow').clone()[0]).html();
+    str = str + $("<div />").append($('#taxRows').clone()[0]).html();
+    str = str + $("<div />").append($('.TotalPremiumRow').clone()[0]).html();
+    $("#reviewPremDistribution").html( str);
+    $("#reviewTerms").html($("#termsInsert").html());
+    //$("#reviewSubject").html($("#subjectInsert").html());
+    $("#reviewBrokerFee").html($("#brokerFeeInput").val());
+
+    var reviewString = "";
+    var checkboxesReviewed = "";
+    var blankAnswer = "To Follow"
+    $(".showReview").each(function () {
+        if ($(this).css("display") != "none") {
+            if ($(this).is("select")) {
+                // the input field is not a select
+                var answer = "";
+                if ($(this).find(":selected").text().length > 0) {
+                    answer = $(this).find(":selected").text()
+                }
+                else {
+                    answer = blankAnswer;
+                }
+                reviewString = reviewString + "<div class='row'>" +
+                    "<div class='col-xs-3 text-left'>" +
+                    "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
+                    "</div>" +
+                    "<div class='col-xs-9'>" +
+                    "<div class='reviewSpan' id='reviewBrokerFee'>" + answer + "</div>" +
+                    "</div>" +
+                    "</div>";
+                reviewString = reviewString + "<br>";
+            }
+            else if ($(this).is(':checkbox') && $(this).attr("data-reviewName")) {
+                // the input field is not a select
+                //alert($(this).attr("data-reviewName") + " - " + checkboxesReviewed + " - " +  checkboxesReviewed.indexOf($(this).attr("data-reviewName")));
+                if (checkboxesReviewed.indexOf($(this).attr("data-reviewName")) == -1) {
+                    var checkboxesCheckedString = "";
+
+                    var answer = "";
+
+
+                    reviewString = reviewString + "<div class='row'>" +
+                        "<div class='col-xs-3 text-left'>" +
+                        "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
+                        "</div>";
+
+                    $('input[data-reviewName="' + $(this).attr("data-reviewName") + '"]').each(function () {
+                        if ($(this).is(":checked")) {
+                            //alert($(this).val());
+                            checkboxesCheckedString = checkboxesCheckedString + $(this).val() + ", ";
+                        }
+                    });
+                    checkboxesCheckedString = checkboxesCheckedString.replace(/,\s*$/, "");
+
+                    if (checkboxesCheckedString.length > 0) {
+                        answer = checkboxesCheckedString;
+                    }
+                    else {
+                        answer = blankAnswer;
+                    }
+
+                    reviewString = reviewString + "<div class='col-xs-9'>" +
+                        "<div class='reviewSpan' id='reviewBrokerFee'>" + answer + "</div>" +
+                        "</div>";
+
+                    reviewString = reviewString + "</div>";
+                    reviewString = reviewString + "<br>";
+                    checkboxesReviewed = checkboxesReviewed + $(this).attr("data-reviewName") + ";";
+                }
+                else {
+
+                }
+            }
+            else if ($(this).is(':radio') && $(this).attr("data-reviewName")) {
+
+
+                var answer = "";
+                if ($("input:radio[name='" + $(this).attr('name') + "']:checked").val().length > 0) {
+                    answer = $("input:radio[name='" + $(this).attr('name') + "']:checked").val();
+                }
+                else {
+                    answer = blankAnswer;
+                }
+
+                reviewString = reviewString + "<div class='row'>" +
+                    "<div class='col-xs-3 text-left'>" +
+                    "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
+                    "</div>" +
+                    "<div class='col-xs-9'>" +
+                    "<div class='reviewSpan' id='reviewBrokerFee'>" + answer + "</div>" +
+                    "</div>" +
+                    "</div>";
+                reviewString = reviewString + "<br>";
+            }
+            else {
+                var answer = "";
+                if ($(this).val().length > 0) {
+                    answer = $(this).val()
+                }
+                else {
+                    answer = blankAnswer;
+                }
+
+                reviewString = reviewString + "<div class='row'>" +
+                    "<div class='col-xs-3 text-left'>" +
+                    "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
+                    "</div>" +
+                    "<div class='col-xs-9'>" +
+                    "<div class='reviewSpan' id='reviewBrokerFee'>" + answer + "</div>" +
+                    "</div>" +
+                    "</div>";
+                reviewString = reviewString + "<br>";
+            }
+
+
+        }
+
+
+    });
+    //alert("review String: " + reviewString);
+    $("#otherReviewInsert").html(reviewString);
+
+    //ATTACHED FILES
+    var filesInsert = "";
+    $(':file').each(function(){
+        var file = this.files[0];
+        if(file === undefined){
+
+        }
+        else{
+            var ext = $(this).val().split('.').pop().toLowerCase();
+
+            //alert('Only .zip, .doc, .docx, .xlsx, .xls, .pdf are permitted');
+            var iconFilePath = "";
+            if(ext == "zip") {
+                iconFilePath = "zipIcon.png"
+            }
+            else if(ext == "doc"){
+                iconFilePath = "docIcon.png"
+            }
+            else if(ext == "docx"){
+                iconFilePath = "docxIcon.png"
+            }
+            else if(ext == "xls"){
+                iconFilePath = "xlsIcon.png"
+            }
+            else if(ext == "xlsx"){
+                iconFilePath = "xlsxIcon.png"
+            }
+            else if(ext == "pdf"){
+                iconFilePath = "pdfIcon.png"
+            }
+            else if(ext == "txt"){
+                iconFilePath = "txtIcon.png"
+            }
+            else{
+                iconFilePath = "fileIcon.png"
+            }
+
+            console.log("Change: " + file);
+
+            var name = file.name;
+            var size = file.size;
+            var type = file.type;
+            filesInsert = filesInsert +
+                "<div class='row'>" +
+                "<div class='col-xs-12 text-left'>" +
+                "<div class='reviewSpan' id='review'><img src='/portal/images/" + iconFilePath + "' height='16' width='16' style='margin-right:10px'/>" + name + "</div>" +
+                "</div>" +
+                "</div>";
+        }
+
+    });
+
+    $('#reviewAttachedFilesInsert').html(filesInsert);
+
+}
 
 
 

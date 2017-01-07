@@ -1,5 +1,6 @@
 package portal;
 
+import portal.DAO.*;
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -20,9 +21,18 @@ public  java.lang.Object getBeforeInterceptor() { return null;}
 public  void setBeforeInterceptor(java.lang.Object value) { }
 public  java.lang.Object getDataSource_aim() { return null;}
 public  void setDataSource_aim(java.lang.Object value) { }
+public  portal.DAO.AIMSQL getAimDAO() { return (portal.DAO.AIMSQL)null;}
+public  void setAimDAO(portal.DAO.AIMSQL value) { }
+public  java.lang.Object getDownloadPDF() { return null;}
+public  void setDownloadPDF(java.lang.Object value) { }
 public  java.lang.Object checkUser() { return null;}
 public  java.lang.Object index() { return null;}
 public  java.lang.Object newSubmission() { return null;}
 public  java.lang.Object submitSubmission() { return null;}
 public  java.lang.Object checkNamedInsured() { return null;}
+public  java.lang.Object sandbox() { return null;}
+public  java.lang.Object syncProductsFromAIM() { return null;}
+public  java.lang.Object submissions() { return null;}
+public  java.lang.Object submissionView() { return null;}
+public  java.lang.Object newSubmissionConfirm() { return null;}
 }

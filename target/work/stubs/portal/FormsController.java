@@ -22,4 +22,6 @@ public  java.lang.Object checkUser() { return null;}
 public  java.lang.Object index() { return null;}
 public  java.lang.Object specFilm() { return null;}
 public  java.lang.Object specialEventLiability() { return null;}
+public  java.lang.Object blanketFilmProduction() { return null;}
+public  java.lang.Object rate() { return null;}
 }

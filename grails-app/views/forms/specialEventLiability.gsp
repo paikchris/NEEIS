@@ -1,38 +1,8 @@
-<body>
-<div class="form-group">
-    <label for="nameOfInsured">Name Of Insured</label>
-    <g:textField type="text" class="form-control" name="nameOfInsured" placeholder="First / Last Name"/>
-</div>
+<div>
+<div id="insuredInfo">
 <div class="col-xs-12">
     <div class = "form-group">
-        <label class="control-label">Address </label>
-        <div id="address">
-            <div class="panel panel-info">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Address #1</h3>
-                </div>
-                <div class="panel-body">
-                    <div class = "form-group col-xs-4">
-                        <input class="form-control" type="text" placeholder = "Street address" name="streetName" />
-                    </div>
-                    <div class="form-group col-xs-4">
-                        <input class="form-control" type="text" placeholder = "City" name="city" />
-                    </div>
-                    <div class="form-group col-xs-2">
-                        <input class="form-control" type="text" placeholder = "State" name="state" />
-                    </div>
-                    <div class="form-group col-xs-2">
-                        <input class="form-control" type="text" placeholder = "Zip Code" name="zipCode" />
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-
-<div class="col-xs-12">
-    <div class = "form-group">
+        <div class="col-xs-6">
         <label class="control-label">For Each Proposed Named Insured Entity, Provide the following: </label>
         <div id="insuredEntity">
             <div class="panel panel-info">
@@ -65,8 +35,8 @@
             </div>
             </div>
             </div>
+
         </div>
-    </div>
 </div>
 </div>
 
@@ -78,6 +48,14 @@
     <label for="listApplicantLicensingTraining">List the applicant's licensing, training, or other credentials:</label>
     <g:textField type="text" class="form-control" name="listApplicantLicensingTraining" placeholder=""/>
 </div>
+</div>
+
+
+
+
+
+
+<div id="riskSpecificInfo">
 <div class="col-xs-12">
     <div class="col-xs-6">
         <div class="form-group">
@@ -304,7 +282,7 @@
     <g:textField type="text" class="form-control" name="provideAverageLengthOfEachEvent" placeholder=""/>
 </div>
 <div class="form-group">
-    <label for="doesApplicantSponsorOrPromote">Does the applicant sponsor or promote any events? If yes please decribe:</label>
+    <label for="doesApplicantSponsorOrPromote">Does the applicant sponsor or promote any events? If yes please describe:</label>
     <g:textField type="text" class="form-control" name="doesApplicantSponsorOrPromote" placeholder=""/>
     <p><input type="checkbox" name="sponsorYes" /> Yes </p>
     <p><input type="checkbox" name="sponsorNo" /> No </p>
@@ -313,98 +291,98 @@
     <label for="doesApplicantOwnOrLease">Does the applicant own or lease (long term) any venue? If yes please describe:</label>
     <g:textField type="text" class="form-control" name="doesApplicantOwnOrLease" placeholder=""/>
 </div>
-<div class="form-group">
-    <label for="indicateServicesProvidedByApplicant">Indicate those services provided by the applicant, employees or subcontractor, and describe:</label>
-    <p><input type="checkbox" name="automotiveTours" /> Automotive Tours </p>
-    <g:textField type="text" class="form-control" name="automotiveToursApplicantEmployees" placeholder=""/>
-    <g:textField type="text" class="form-control" name="automotiveToursSubcontractor" placeholder=""/>
-    <g:textField type="text" class="form-control" name="automotiveToursDescribe" placeholder=""/>
-    <p><input type="checkbox" name="bookingAgent" /> Booking Agent </p>
-    <g:textField type="text" class="form-control" name="bookingAgentApplicantEmployees" placeholder=""/>
-    <g:textField type="text" class="form-control" name="bookingAgentSubcontractor" placeholder=""/>
-    <g:textField type="text" class="form-control" name="bookingAgentDescribe" placeholder=""/>
-    <p><input type="checkbox" name="cateringFood" /> Catering Food </p>
-    <g:textField type="text" class="form-control" name="cateringFoodApplicantEmployees" placeholder=""/>
-    <g:textField type="text" class="form-control" name="cateringFoodSubcontractor" placeholder=""/>
-    <g:textField type="text" class="form-control" name="cateringFoodDescribe" placeholder=""/>
-    <p><input type="checkbox" name="cateringFoodLiquor" /> Catering Food & Liquor </p>
-    <g:textField type="text" class="form-control" name="cateringFoodLiquorApplicantEmployees" placeholder=""/>
-    <g:textField type="text" class="form-control" name="cateringFoodLiquorSubcontractor" placeholder=""/>
-    <g:textField type="text" class="form-control" name="cateringFoodLiquorDescribe" placeholder=""/>
-    <p><input type="checkbox" name="cateringLiquorOnly" /> Catering Liquor Only </p>
-    <g:textField type="text" class="form-control" name="cateringLiquorOnlyApplicantEmployees" placeholder=""/>
-    <g:textField type="text" class="form-control" name="cateringLiquorOnlySubcontractor" placeholder=""/>
-    <g:textField type="text" class="form-control" name="cateringLiquorOnlyDescribe" placeholder=""/>
-    <p><input type="checkbox" name="concessions" /> Concessions </p>
-    <g:textField type="text" class="form-control" name="concessionsApplicantEmployees" placeholder=""/>
-    <g:textField type="text" class="form-control" name="concessionsSubcontractor" placeholder=""/>
-    <g:textField type="text" class="form-control" name="concessionsDescribe" placeholder=""/>
-    <p><input type="checkbox" name="consultingOnly" /> Consulting Only </p>
-    <g:textField type="text" class="form-control" name="consultingOnlyApplicantEmployees" placeholder=""/>
-    <g:textField type="text" class="form-control" name="consultingOnlySubcontractor" placeholder=""/>
-    <g:textField type="text" class="form-control" name="consultingOnlyDescribe" placeholder=""/>
-    <p><input type="checkbox" name="" /> </p>
-    <g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Describe" placeholder=""/>
-    <p><input type="checkbox" name="" /> </p>
-    <g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Describe" placeholder=""/>
-    <p><input type="checkbox" name="" /> </p>
-    <g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Describe" placeholder=""/>
-    <p><input type="checkbox" name="" /> </p>
-    <g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Describe" placeholder=""/>
-    <p><input type="checkbox" name="" /> </p>
-    <g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Describe" placeholder=""/>
-    <p><input type="checkbox" name="" /> </p>
-    <g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Describe" placeholder=""/>
-    <p><input type="checkbox" name="" /> </p>
-    <g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Describe" placeholder=""/>
-    <p><input type="checkbox" name="" /> </p>
-    <g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Describe" placeholder=""/>
-    <p><input type="checkbox" name="" /> </p>
-    <g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Describe" placeholder=""/>
-    <p><input type="checkbox" name="" /> </p>
-    <g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Describe" placeholder=""/>
-    <p><input type="checkbox" name="" /> </p>
-    <g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Describe" placeholder=""/>
-    <p><input type="checkbox" name="" /> </p>
-    <g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Describe" placeholder=""/>
-    <p><input type="checkbox" name="" /> </p>
-    <g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Describe" placeholder=""/>
-    <p><input type="checkbox" name="" /> </p>
-    <g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Describe" placeholder=""/>
-    <p><input type="checkbox" name="" /> </p>
-    <g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>
-    <g:textField type="text" class="form-control" name="Describe" placeholder=""/>
-    
+%{--<div class="form-group">--}%
+    %{--<label for="indicateServicesProvidedByApplicant">Indicate those services provided by the applicant, employees or subcontractor, and describe:</label>--}%
+    %{--<p><input type="checkbox" name="automotiveTours" /> Automotive Tours </p>--}%
+    %{--<g:textField type="text" class="form-control" name="automotiveToursApplicantEmployees" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="automotiveToursSubcontractor" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="automotiveToursDescribe" placeholder=""/>--}%
+    %{--<p><input type="checkbox" name="bookingAgent" /> Booking Agent </p>--}%
+    %{--<g:textField type="text" class="form-control" name="bookingAgentApplicantEmployees" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="bookingAgentSubcontractor" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="bookingAgentDescribe" placeholder=""/>--}%
+    %{--<p><input type="checkbox" name="cateringFood" /> Catering Food </p>--}%
+    %{--<g:textField type="text" class="form-control" name="cateringFoodApplicantEmployees" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="cateringFoodSubcontractor" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="cateringFoodDescribe" placeholder=""/>--}%
+    %{--<p><input type="checkbox" name="cateringFoodLiquor" /> Catering Food & Liquor </p>--}%
+    %{--<g:textField type="text" class="form-control" name="cateringFoodLiquorApplicantEmployees" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="cateringFoodLiquorSubcontractor" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="cateringFoodLiquorDescribe" placeholder=""/>--}%
+    %{--<p><input type="checkbox" name="cateringLiquorOnly" /> Catering Liquor Only </p>--}%
+    %{--<g:textField type="text" class="form-control" name="cateringLiquorOnlyApplicantEmployees" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="cateringLiquorOnlySubcontractor" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="cateringLiquorOnlyDescribe" placeholder=""/>--}%
+    %{--<p><input type="checkbox" name="concessions" /> Concessions </p>--}%
+    %{--<g:textField type="text" class="form-control" name="concessionsApplicantEmployees" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="concessionsSubcontractor" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="concessionsDescribe" placeholder=""/>--}%
+    %{--<p><input type="checkbox" name="consultingOnly" /> Consulting Only </p>--}%
+    %{--<g:textField type="text" class="form-control" name="consultingOnlyApplicantEmployees" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="consultingOnlySubcontractor" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="consultingOnlyDescribe" placeholder=""/>--}%
+    %{--<p><input type="checkbox" name="" /> </p>--}%
+    %{--<g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Describe" placeholder=""/>--}%
+    %{--<p><input type="checkbox" name="" /> </p>--}%
+    %{--<g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Describe" placeholder=""/>--}%
+    %{--<p><input type="checkbox" name="" /> </p>--}%
+    %{--<g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Describe" placeholder=""/>--}%
+    %{--<p><input type="checkbox" name="" /> </p>--}%
+    %{--<g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Describe" placeholder=""/>--}%
+    %{--<p><input type="checkbox" name="" /> </p>--}%
+    %{--<g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Describe" placeholder=""/>--}%
+    %{--<p><input type="checkbox" name="" /> </p>--}%
+    %{--<g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Describe" placeholder=""/>--}%
+    %{--<p><input type="checkbox" name="" /> </p>--}%
+    %{--<g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Describe" placeholder=""/>--}%
+    %{--<p><input type="checkbox" name="" /> </p>--}%
+    %{--<g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Describe" placeholder=""/>--}%
+    %{--<p><input type="checkbox" name="" /> </p>--}%
+    %{--<g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Describe" placeholder=""/>--}%
+    %{--<p><input type="checkbox" name="" /> </p>--}%
+    %{--<g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Describe" placeholder=""/>--}%
+    %{--<p><input type="checkbox" name="" /> </p>--}%
+    %{--<g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Describe" placeholder=""/>--}%
+    %{--<p><input type="checkbox" name="" /> </p>--}%
+    %{--<g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Describe" placeholder=""/>--}%
+    %{--<p><input type="checkbox" name="" /> </p>--}%
+    %{--<g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Describe" placeholder=""/>--}%
+    %{--<p><input type="checkbox" name="" /> </p>--}%
+    %{--<g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Describe" placeholder=""/>--}%
+    %{--<p><input type="checkbox" name="" /> </p>--}%
+    %{--<g:textField type="text" class="form-control" name="ApplicantEmployees" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Subcontractor" placeholder=""/>--}%
+    %{--<g:textField type="text" class="form-control" name="Describe" placeholder=""/>--}%
+    %{----}%
 
+%{--</div>--}%
 </div>
-
 </body>
