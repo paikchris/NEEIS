@@ -28,6 +28,7 @@ public  void setDownloadPDF(java.lang.Object value) { }
 public  java.lang.Object checkUser() { return null;}
 public  java.lang.Object index() { return null;}
 public  java.lang.Object newSubmission() { return null;}
+public  java.lang.Object messages() { return null;}
 public  java.lang.Object submitSubmission() { return null;}
 public  java.lang.Object checkNamedInsured() { return null;}
 public  java.lang.Object sandbox() { return null;}

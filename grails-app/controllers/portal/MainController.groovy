@@ -20,6 +20,31 @@ class MainController {
     }
 
     def index() {
+        //MESSAGES
+        def groupedMessages = getGroupedMessages();
+        def countUnread = 0;
+        groupedMessages.each{
+            def isUnread = false;
+            it.eachWithIndex{ m, index ->
+                if(index==0){
+
+                }
+                else{
+                    if(m.unread=="true"){
+                        isUnread = true;
+                        countUnread++;
+//                        return false;
+                    }
+                    log.info m.sentDateTime
+                }
+
+            }
+        }
+
+
+        log.info groupedMessages;
+
+        //SUBMISSIONS
         def submissions;
         def submissionsUnderReview;
         def submissionsQuoted;
@@ -62,7 +87,7 @@ class MainController {
             }
         }
 
-        [user: session.user, submissions: submissions, submissionsQuoted: submissionsQuoted, submissionsUnderReview: submissionsUnderReview]
+        [user: session.user, messageChains:groupedMessages, messagesUnreadCount: countUnread, submissions: submissions, submissionsQuoted: submissionsQuoted, submissionsUnderReview: submissionsUnderReview]
     }
 
 
@@ -118,7 +143,25 @@ class MainController {
     }
 
 
+    def messages(){
+        log.info ("MY Messages")
+        log.info (params)
 
+        def groupedMessages = getGroupedMessages();
+
+        def initial
+        if(!params.intial){
+            initial = (groupedMessages[0])[1].messageChainID
+        }
+        else{
+            initial = params.initial
+        }
+
+        log.info initial
+        log.info groupedMessages;
+        [user: session.user, messageChains:groupedMessages, initialChainView: initial]
+
+    }
 
     def submitSubmission(){
         //METHOD TO HANDLE SUBMITTING ALL SUBMISSION INFO TO AIM
@@ -578,4 +621,41 @@ class MainController {
             }
             else render "Error!" // appropriate error handling
         }
+
+    def getGroupedMessages(){
+        def messages;
+        def messageChainList = []
+        messages = NeeisMessages.findAllByRecipientOrSender(session.user.email,session.user.email,[sort: "sentDateTime",order: "desc"])
+        messages.each{
+            if(messageChainList.contains(it.messageChainID)){
+
+            }
+            else{
+                messageChainList.add(it.messageChainID)
+            }
+        }
+
+        def groupedMessages = [];
+        messageChainList.each {
+            log.info "TESTING == " + it
+            def messagesInChain = messages.findAll { m -> m.messageChainID == it }
+
+            def conversationWith = ""
+            messagesInChain.each{
+                if(it.sender == session.user.email){
+                }
+                else{
+                    conversationWith = it.sender
+
+                    return false;
+                }
+            }
+
+            messagesInChain.add(0, conversationWith)
+            groupedMessages.add(messagesInChain)
+        }
+
+        return groupedMessages;
+    }
+
 }

@@ -44,17 +44,17 @@
 
 			<ul class="nav navbar-nav navbar-right">
 				%{--<li class="dropdown">--}%
-					%{--<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">--}%
-						%{--<span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>--}%
-						%{--<span class="badge badge-notify">3</span>--}%
-					%{--</a>--}%
-					%{--<ul class="dropdown-menu">--}%
-						%{--<li><a href="#">Mail From Andee</a></li>--}%
-						%{--<li role="separator" class="divider"></li>--}%
-						%{--<li><a href="#">Mail From Andee</a></li>--}%
-						%{--<li role="separator" class="divider"></li>--}%
-						%{--<li><a href="#">Mail From Chris</a></li>--}%
-					%{--</ul>--}%
+				%{--<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">--}%
+				%{--<span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>--}%
+				%{--<span class="badge badge-notify">3</span>--}%
+				%{--</a>--}%
+				%{--<ul class="dropdown-menu">--}%
+				%{--<li><a href="#">Mail From Andee</a></li>--}%
+				%{--<li role="separator" class="divider"></li>--}%
+				%{--<li><a href="#">Mail From Andee</a></li>--}%
+				%{--<li role="separator" class="divider"></li>--}%
+				%{--<li><a href="#">Mail From Chris</a></li>--}%
+				%{--</ul>--}%
 				%{--</li>--}%
 
 				<li class="dropdown">
@@ -101,9 +101,9 @@
 		<ul class="sidebar-nav">
 			<br>
 			%{--<div class="row">--}%
-				%{--<div class="col-xs-12">--}%
-					%{--<button class="btn btn-default pull-right" style="background: transparent;"><span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span></button>--}%
-				%{--</div>--}%
+			%{--<div class="col-xs-12">--}%
+			%{--<button class="btn btn-default pull-right" style="background: transparent;"><span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span></button>--}%
+			%{--</div>--}%
 			%{--</div>--}%
 			<li>
 				<a href="./../main/index.gsp"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span> Dashboard</a>
@@ -115,17 +115,20 @@
 			<li>
 				<a href="./../main/submissions.gsp"><span class="glyphicon glyphicon-file" aria-hidden="true"></span> My Submissions</a>
 			</li>
+			<li>
+				<a href="./../main/messages.gsp"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Messages</a>
+			</li>
 			%{--<li>--}%
-				%{--<a href="#"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Events</a>--}%
+			%{--<a href="#"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Events</a>--}%
 			%{--</li>--}%
 			%{--<li>--}%
-				%{--<a href="#"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> About</a>--}%
+			%{--<a href="#"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> About</a>--}%
 			%{--</li>--}%
 			%{--<li>--}%
-				%{--<a href="#"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Services</a>--}%
+			%{--<a href="#"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Services</a>--}%
 			%{--</li>--}%
 			%{--<li>--}%
-				%{--<a href="#"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Contact</a>--}%
+			%{--<a href="#"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Contact</a>--}%
 			%{--</li>--}%
 		</ul>
 	</div>
@@ -133,38 +136,39 @@
 
 	<!-- Page Content -->
 	<div id="page-content-wrapper">
-	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-	<script src="${resource(dir: 'js', file: 'jquery.maskedinput.js')}"></script>
+		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+		<script src="${resource(dir: 'js', file: 'jquery.maskedinput.js')}"></script>
+	<script src="${resource(dir: 'js', file: 'moment.js')}"></script>
 
-	<!-- Include all compiled plugins (below), or include individual files as needed -->
-	<script src="${resource(dir: 'js', file: 'bootstrap.min.js')}"></script>
-
-
-
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+		<!-- Include all compiled plugins (below), or include individual files as needed -->
+		<script src="${resource(dir: 'js', file: 'bootstrap.min.js')}"></script>
+		<script src="${resource(dir: 'js', file: 'global.js')}"></script>
 
 
-
-	<script>
-		$("#sidebar-wrapper").hover(function(e) {
-			e.preventDefault();
-			$("#wrapper").toggleClass("toggled");
-		});
-
-		$( "#myAccountButton" ).click(function() {
-			$('#myAccountModal').modal('show');
-		});
-		$( "#settingsButton" ).click(function() {
-			$('#settingsModal').modal('show');
-		});
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
 
 
-	</script>
+
+		<script>
+			$("#sidebar-wrapper").hover(function(e) {
+				e.preventDefault();
+				$("#wrapper").toggleClass("toggled");
+			});
+
+			$( "#myAccountButton" ).click(function() {
+				$('#myAccountModal').modal('show');
+			});
+			$( "#settingsButton" ).click(function() {
+				$('#settingsModal').modal('show');
+			});
+
+
+		</script>
 		<g:layoutBody/>
-	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_6p9r1leoPGIFggBpprGfLVsLVxea5ZI&libraries=places&callback=initAutocomplete"
-			async defer></script>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_6p9r1leoPGIFggBpprGfLVsLVxea5ZI&libraries=places&callback=initAutocomplete"
+				async defer></script>
 	</div>
 	<!-- /#page-content-wrapper -->
 
@@ -219,8 +223,8 @@
 				</g:form>
 			</div>
 			%{--<div class="modal-footer">--}%
-				%{--<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>--}%
-				%{--<button type="submit" class="btn btn-primary">Save changes</button>--}%
+			%{--<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>--}%
+			%{--<button type="submit" class="btn btn-primary">Save changes</button>--}%
 			%{--</div>--}%
 		</div><!-- /.modal-content -->
 	</div><!-- /.modal-dialog -->
@@ -234,7 +238,7 @@
 				<p id="alertMessageContent" style=" margin-top: 30px; text-align:center; font-size:16px;">Something</p>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal" id="alertMessageModalButton">OK</button>
 			</div>
 		</div><!-- /.modal-content -->
 	</div><!-- /.modal-dialog -->
@@ -271,6 +275,31 @@
 						<span class="sr-only">60% Complete</span>
 					</div>
 				</div>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" tabindex="-1" role="dialog" id="newMessageModal">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">New Message</h4>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<label for="inputEmail3" class="col-xs-1 control-label">To</label>
+					<div class="col-xs-4">
+						<select class="form-control" name="recipient" id="recipientSelect">
+							<option value="invalid">Select Recipient</option>
+						</select>
+					</div>
+				</div>
+
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary">Save changes</button>
 			</div>
 		</div><!-- /.modal-content -->
 	</div><!-- /.modal-dialog -->

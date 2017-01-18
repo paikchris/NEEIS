@@ -18,8 +18,8 @@ public  java.lang.Object getProperty(java.lang.String property) { return null;}
 public  void setProperty(java.lang.String property, java.lang.Object value) { }
 public  java.lang.String getCategoryName() { return (java.lang.String)null;}
 public  void setCategoryName(java.lang.String value) { }
-public  java.lang.String getWeight() { return (java.lang.String)null;}
-public  void setWeight(java.lang.String value) { }
+public  java.lang.Integer getWeight() { return (java.lang.Integer)null;}
+public  void setWeight(java.lang.Integer value) { }
 public static  java.lang.Object getConstraints() { return null;}
 public static  void setConstraints(java.lang.Object value) { }
 }

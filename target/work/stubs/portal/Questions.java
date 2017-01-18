@@ -66,6 +66,10 @@ public  java.lang.String getAncillaryEntertainmentRisk() { return (java.lang.Str
 public  void setAncillaryEntertainmentRisk(java.lang.String value) { }
 public  java.lang.String getCategory() { return (java.lang.String)null;}
 public  void setCategory(java.lang.String value) { }
+public  java.lang.String getQuestionGroup() { return (java.lang.String)null;}
+public  void setQuestionGroup(java.lang.String value) { }
+public  java.lang.Integer getWeight() { return (java.lang.Integer)null;}
+public  void setWeight(java.lang.Integer value) { }
 public static  java.lang.Object getConstraints() { return null;}
 public static  void setConstraints(java.lang.Object value) { }
 }

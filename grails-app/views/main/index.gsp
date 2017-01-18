@@ -24,50 +24,60 @@
                         <div class="panel-body" style="background-color: rgb(59, 112, 159); color: white; padding-top:25px">
                             <div class="col-xs-12">
                                 <span style=" font-size: 25px; font-weight: 500">
-                                    Messages
-                                    <span class="badge" style=" font-size: 15px; font-weight: 500; margin-bottom: 4px; background-color: rgb(19, 170, 142);">4</span>
+                                    <a href="./../main/messages.gsp" class="noStyleLink"> Messages</a>
+
+                                        <g:if test="${messagesUnreadCount== 0}">
+
+                                        </g:if>
+                                        <g:else>
+                                            <span class="badge" style=" font-size: 15px; font-weight: 500; margin-bottom: 4px; background-color: rgb(19, 170, 142);">
+                                                ${messagesUnreadCount}
+                                            </span>
+                                        </g:else>
+
+
                                 </span>
                                 <span class="glyphicon glyphicon-envelope pull-right"  style=" font-size:35px;" aria-hidden="true"></span>
                             </div>
-                            <div class="col-xs-12" style="padding-top:18px; font-weight: 400">
-                                <div class="dashboardMessageRow">
-                                    <div class="col-xs-2" style="padding-left:0px;">
-                                        <span>11/25/16</span>
+                            <div class="col-xs-12 dashboardMessageContainer" style="padding-top:18px; font-weight: 400">
+                                <g:each in="${messageChains}" var="c" status="i">
+                                    <div class="messageChainContainer">
+                                    <g:each in="${c}" var="m" status="j">
+                                        <g:if test="${j== 0}">
+
+                                        </g:if>
+                                        <g:else>
+                                            <g:if test="${j == 1}">
+                                                <div class="dashboardMessageRow unreadMessageChain" id="${m.messageChainID}_Row" style="cursor:pointer;">
+                                            </g:if>
+                                            <g:else>
+                                                <div class="dashboardMessageRow" id="${m.messageChainID}_Row" style="cursor:pointer; display:none">
+                                            </g:else>
+                                                    <div class="unreadDiv" style="display: none;">${m.unread}</div>
+                                                    <div class="messageChainID" style="display: none;">${m.messageChainID}</div>
+                                                    <div class="col-xs-2" style="overflow: hidden;" style="padding-left:0px;">
+                                                        <span class="messageDate" style="white-space: nowrap">${m.sentDateTime}</span>
+                                                    </div>
+                                                    <div class="col-xs-6" style="overflow: hidden;" >
+                                                        <span class="messageSubject" style="white-space: nowrap">${m.subject}</span>
+                                                    </div>
+                                                    <div class="col-xs-4" style="overflow: hidden;">
+                                                        <span class="messageWith" style="white-space: nowrap">${m.sender}</span>
+                                                    </div>
+                                                </div>
+                                        </g:else>
+                                    </g:each>
                                     </div>
-                                    <div class="col-xs-8" >
-                                        <span>This is the Subject</span>
-                                    </div>
-                                    <div class="col-xs-2" >
-                                        <span>Sender</span>
-                                    </div>
-                                </div>
-                                <div class="dashboardMessageRow">
-                                    <div class="col-xs-2" style="padding-left:0px;">
-                                        <span>11/25/16</span>
-                                    </div>
-                                    <div class="col-xs-8" >
-                                        <span>This is the Subject</span>
-                                    </div>
-                                    <div class="col-xs-2" >
-                                        <span>Sender</span>
-                                    </div>
-                                </div>
-                                <div class="dashboardMessageRow">
-                                    <div class="col-xs-2" style="padding-left:0px;">
-                                        <span>11/25/16</span>
-                                    </div>
-                                    <div class="col-xs-8" >
-                                        <span>This is the Subject</span>
-                                    </div>
-                                    <div class="col-xs-2" >
-                                        <span>Sender</span>
-                                    </div>
-                                </div>
+                                </g:each>
+
+
                             </div>
 
                         </div>
                     </div>
+
                 </div>
+
                 <div class="col-xs-4">
                     <div class="panel panel-default">
                         <div class="panel-body" style="background-color: rgb(45, 152, 124); color: white; padding-top:25px">
@@ -239,7 +249,7 @@
 
         </div>
 
-
+            <script src="${resource(dir: 'js', file: 'dashboard.js')}"></script>
 	</body>
-<script src="${resource(dir: 'js', file: 'dashboard.js')}"></script>
+
 </html>

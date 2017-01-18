@@ -1611,4 +1611,55 @@ class AsyncController {
 
     }
 
+    def sendMessage(){
+        log.info "GETTING QUESTIONS FOR RISK TYPE"
+        log.info params
+
+        def now = new Date()
+        def timestamp = now.toTimestamp()
+        log.info timestamp
+
+        try {
+            NeeisMessages m;
+
+            m = new portal.NeeisMessages(subject: params.subject,
+                    messageType: params.messageType, //firstMessage, replyMessage,
+                    body: params.messageBody,
+                    sender: session.user.email,
+                    recipient: params.recipient,
+                    sentDateTime: timestamp,
+                    attachments: "",
+                    replyTo: params.replyTo,
+                    messagesInChain: 0, //will be updated after insert
+                    messageChainID: params.messageChainID,
+                    unread: "true");
+
+            m.save(flush: true, failOnError: true)
+        }
+        catch (Exception e) {
+            log.info(e)
+        }
+
+        //Need to get and update number of messages in chain
+        def allMessagesInChain = NeeisMessages.findAllByMessageChainID(params.messageChainID);
+
+        def numMessagesInChain = allMessagesInChain[0].messagesInChain
+        numMessagesInChain = allMessagesInChain.size();
+
+
+        def updatedRecords = NeeisMessages.executeUpdate("update NeeisMessages set messagesInChain = ? where messageChainID = ?", [numMessagesInChain, Integer.parseInt(params.messageChainID)])
+
+
+        render "good"
+    }
+
+    def markMessagesRead() {
+        log.info "MARK MESSAGES READ"
+        log.info params
+
+        def updatedRecords = NeeisMessages.executeUpdate("update NeeisMessages set unread = ? where messageChainID = ?", ["false", Integer.parseInt(params.messageChainRead)])
+
+
+        render "good;" + params.messageChainRead
+    }
 }

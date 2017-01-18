@@ -1,0 +1,9 @@
+a.noStyleLink{
+    color: inherit; /* blue colors for links too */
+    text-decoration: inherit; /* no underline */
+
+}
+
+.unreadMessageChain{
+    font-weight: 600;
+}
