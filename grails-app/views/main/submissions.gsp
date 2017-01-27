@@ -4,6 +4,12 @@
     <meta name="layout" content="main">
     <link rel="stylesheet" href="${resource(dir: 'css', file: 'submissions.css')}" type="text/css">
 
+    <style>
+        .submissionOptionButton{
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+    </style>
 </head>
 
 <body>
@@ -21,8 +27,12 @@
         <g:elseif test="${user.userRole == "Underwriter"}">
             <span>Underwriter View</span>
         </g:elseif>
+        <div id="userRole" style="display:none">${user.userRole}</div>
     </div>
     <div class="col-xs-4 ">
+        %{--<g:link action="downloadPDF" style="" id="hiddenCertButton">--}%
+            %{--<img src="/portal/images/pdfIcon.png" height="32" width="32"> Download Cert</img>--}%
+        %{--</g:link>--}%
         <div class="input-group">
             <input type="text" class="form-control" id="submissionSearch" placeholder="Search">
             <span class="input-group-btn">
@@ -86,18 +96,32 @@
                                     <tr class="submissionRow" style="cursor:pointer">
                                 </g:else>
 
-                                    <th scope="row"><a href="./../main/submissionView?s=${s.aimQuoteID}">${s.aimQuoteID}</a></th>
-                                    <td>${s.namedInsured}</td>
-                                    <td>${s.coverages}</td>
-                                    <td>${s.submittedBy}</td>
-                                    <td>${s.submitDate}</td>
-                                    <td><g:if test="${s.statusCode == "NBR"}">
+                                    <th scope="row"><a href="./../main/submissionView?s=${s.aimQuoteID}" class="aimQuoteIDTD">${s.aimQuoteID}</a></th>
+                                    <td class="namedInsuredTD">${s.namedInsured}</td>
+                                    <td class="coveragesTD">${s.coverages}</td>
+                                    <td  class="submittedByTD">${s.submittedBy}</td>
+                                    <td  class="submitDateTD">${s.submitDate}</td>
+                                    <td class="submissionStatusTD"><g:if test="${s.statusCode == "NBR"}">
                                         New Submission Received
                                     </g:if>
                                         <g:elseif test="${s.statusCode == "QO"}">
                                             Quoted
+                                        </g:elseif>
+                                        <g:elseif test="${s.statusCode == "WRA"}">
+                                            Approval Requested
+                                        </g:elseif>
+                                        <g:elseif test="${s.statusCode == "WB3"}">
+                                            Approved
+                                        </g:elseif>
+                                        <g:elseif test="${s.statusCode == "BRQ"}">
+                                            Bind Requested
+                                        </g:elseif>
+                                        <g:elseif test="${s.statusCode == "BIF"}">
+                                            Bound
                                         </g:elseif></td>
-                                    <td><g:if test="${user.userRole == "Broker"}">
+
+
+                                    <td class="underwriterTD"><g:if test="${user.userRole == "Broker"}">
                                         ${s.underwriter}
                                     </g:if>
                                     <g:elseif test="${user.userRole == "Underwriter"}">
@@ -106,6 +130,10 @@
                                     </td>
                                     <td><a href="./../web-app/attachments/testpdf.pdf">my link</a></td>
 
+                                    %{--HIDDEN TDS--}%
+                                    <td class="statusCode" style="display:none">
+                                        ${s.statusCode}
+                                    </td>
                                 </tr>
 
 

@@ -1050,7 +1050,7 @@ function buildQuestionPanelBody(questionsForThisCategory, columns){
     var rightColumnHtml = "";
     var htmlString = "";
     var completedQuestionGroups = "";
-    alert(questionsForThisCategory);
+    //alert(questionsForThisCategory);
 
     if(columns==1){
         for(var r=0; r<questionsForThisCategory.split("&;&").length; r++){
@@ -1110,12 +1110,19 @@ function buildQuestionPanelBody(questionsForThisCategory, columns){
             htmlString = htmlString +
                 "</div>" +
                 "<div class='col-xs-6'>";
-            var groupName = questionsForThisCategory.split("&;&")[r+1].split("&,&")[15];
-            console.log("GROUP NAME : " + groupName);
-            if(r+1<questionsForThisCategory.split("&;&").length && $.inArray(groupName, completedQuestionGroups.split("&;&")) == -1){
-                console.log("QUESTION r1: " + questionsForThisCategory.split("&;&")[r+1].split("&,&"))
-                htmlString = htmlString + buildQuestion(questionsForThisCategory.split("&;&")[r+1].split("&,&"));
+            if(questionsForThisCategory.split("&;&")[r+1] == null){
+                console.info("GROUP NAME : " + questionsForThisCategory.split("&;&")[r+1])
             }
+            else{
+                var groupName = questionsForThisCategory.split("&;&")[r+1].split("&,&")[15];
+                //console.log("GROUP NAME : " + groupName);
+                if(r+1<questionsForThisCategory.split("&;&").length && $.inArray(groupName, completedQuestionGroups.split("&;&")) == -1){
+                    console.log("QUESTION r1: " + questionsForThisCategory.split("&;&")[r+1].split("&,&"))
+                    htmlString = htmlString + buildQuestion(questionsForThisCategory.split("&;&")[r+1].split("&,&"));
+                }
+            }
+
+
 
             htmlString = htmlString +
                 "</div>" +

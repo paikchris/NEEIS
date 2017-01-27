@@ -1,21 +1,37 @@
 $(document).ready(function () {
+    var thisUser = $("#thisUserIs").html().trim();
 
     $(".messageDate").each(function(){
         var dateFormattedString = convertUTCDateToLocalDate_messages($(this).html().trim().split(".")[0]);
         //alert(dateFormattedString)
         $(this).html(dateFormattedString)
     });
- 
-    $(".dashboardMessageRow").each(function(){
 
-        $(this).closest(".messageChainContainer").find(".unreadDiv").each(function(){
+    //Mark Email chains with Unread Messages and correct Sender Span
+    $(".messageChainContainer").each(function(){
+        $(this).find(".unreadDiv").each(function(){
             var unreadStatus = $(this).html();
-            //console.log(unreadStatus);
+            console.log(unreadStatus);
             if(unreadStatus == "true"){
-                $(this).closest(".dashboardMessageRow").addClass("unreadMessageChain");
+                $(this).closest(".messageChainContainer").find(".dashboardMessageRow").first().addClass("unreadMessageChain");
             }
-            unreadStatus = "";
-        })
+            //unreadStatus = "";
+        });
+
+        var messageWith = "";
+        $(this).find(".messageWith").each(function(){
+            var sender = $(this).html();
+            //console.log(unreadStatus);
+            if(sender === thisUser){
+
+            }
+            else{
+                messageWith = $(this).html();
+                return false;
+            }
+        });
+
+        $(this).find(".dashboardMessageRow").first().find(".messageWith").html(messageWith);
 
     });
 

@@ -37,4 +37,7 @@ public  java.lang.Object checkAgencyID() { return null;}
 public  java.lang.Object checkAgencyPIN() { return null;}
 public  java.lang.Object getQuestionsForRiskType() { return null;}
 public  java.lang.Object sendMessage() { return null;}
+public  java.lang.Object markMessagesRead() { return null;}
+public  java.lang.Object changeSubmissionStatus() { return null;}
+public  java.lang.Object getCert() { return null;}
 }

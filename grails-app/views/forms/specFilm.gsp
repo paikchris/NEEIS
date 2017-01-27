@@ -3,14 +3,14 @@
         <div class="col-xs-6">
             <div class="form-group">
                 <label for="nameOfProduction">Name Of Production Company</label>
-                <g:textField type="text" class="form-control showReview" name="nameOfProductionCompany"
+                <input type="text" class="form-control showReview" name="nameOfProductionCompany"
                              data-reviewName="Name Of Production Company"
                              id="nameOfProductionCompany" placeholder="Company Name"/>
             </div>
 
             <div class="form-group">
                 <label for="titleOfProduction">Title of Production</label>
-                <g:textField type="text" class="form-control showReview" name="titleOfProduction" id="titleOfProduction"
+                <input type="text" class="form-control showReview" name="titleOfProduction" id="titleOfProduction"
                              data-reviewName="Title of Production"
                              placeholder="Title of Production"/>
             </div>
@@ -31,7 +31,7 @@
 
             <div class="form-group">
                 <label for="nameOfPrincipal">Name(s) of Principal(s)</label>
-                <g:textField type="text" class="form-control showReview" name="nameOfPrincipal" id="nameOfPrincipal"
+                <input type="text" class="form-control showReview" name="nameOfPrincipal" id="nameOfPrincipal"
                              data-reviewName="Name of Principals"
                              placeholder="Name(s) of Principal(s)"/>
             </div>
@@ -46,7 +46,7 @@
                 </div>
                 <div class="row">
                     <div class="col-xs-9">
-                        <g:textField type="text" class="form-control showReview" name="numberOfYearsOfExperience"
+                        <input type="text" class="form-control showReview" name="numberOfYearsOfExperience"
                                      data-reviewName="Years Experience"
                                      id="numberOfYearsOfExperience" placeholder="# Years of Experience"/>
                     </div>
@@ -54,7 +54,7 @@
                         <form enctype="multipart/form-data">
                             <div class="fileUpload btn btn-primary">
                                 <span>Attach File</span>
-                                <input name="bioFile" type="file" class="file" id="bioFile"/>
+                                <input name="bioFile" type="file" class="file" id="bioFile" style="width:120px"/>
                             </div>
                         </form>
                     </div>
@@ -80,7 +80,7 @@
                     <!--attach bio/resume if available-->
                     <div class="form-group">
                         <div class="col-xs-9">
-                            <g:textField type="text" class="form-control showReview" name="listOfPriorLosses"
+                            <input type="text" class="form-control showReview" name="listOfPriorLosses"
                                          id="listOfPriorLosses" data-reviewName="Prior Losses"
                                          placeholder="List/Describe Prior Losses"/>
                         </div>
@@ -89,7 +89,7 @@
                             <form enctype="multipart/form-data">
                                 <div class="fileUpload btn btn-primary">
                                     <span>Attach File</span>
-                                    <input name="lossesFile" type="file" class="file" id="lossesFile"/>
+                                    <input name="lossesFile" type="file" class="file" id="lossesFile" style="width:120px"/>
                                 </div>
                             </form>
                         </div>
@@ -115,7 +115,7 @@
                     <!--attach bio/resume if available-->
                     <div class="form-group">
                         <div class="col-xs-9">
-                            <g:textField type="text" class="form-control showReview" name="listOfPriorFilms"
+                            <input type="text" class="form-control showReview" name="listOfPriorFilms"
                                          id="listOfPriorFilms" data-reviewName="Prior Films"
                                          placeholder="Prior Films"/>
                         </div>
@@ -161,6 +161,11 @@
                                                 data-reviewName="Type of Production" name="tvSeries"
                                                 id="tvSeriesCheckBox" value="TV Series"/> TV Series</p>
 
+                <div class="form-group control-label">
+                    <input type="text" class="form-control " name="numberOfEpisodes" id="specFilmNumEpisodesText"
+                                 placeholder="Number Of Episodes" style="display:none"/>
+                </div>
+
                 <p class="control-label"><input type="checkbox" class="productionTypeCheckbox commercial showReview"
                                                 data-reviewName="Type of Production" name="commercial"
                                                 value="Commercial"/> Commerical</p>
@@ -179,11 +184,6 @@
 
 
 
-                <div class="form-group control-label">
-                    <g:textField type="text" class="form-control " name="numberOfEpisodes" id="specFilmNumEpisodesText"
-                                 placeholder="Number Of Episodes" style="display:none"/>
-                </div>
-
                 <p class="control-label"><input type="checkbox" class="productionTypeCheckbox animationCGI showReview"
                                                 data-reviewName="Type of Production" name="animationCGI"
                                                 value="Animation CGI"/> Animation CGI</p>
@@ -193,7 +193,7 @@
                                                 id="otherProductionType" value="Other"/> Other</p>
 
                 <div class="form-group control-label">
-                    <g:textField type="text" class="form-control" name="specFilmOtherDescribe"
+                    <input type="text" class="form-control" name="specFilmOtherDescribe"
                                  id="specFilmOtherDescribe" placeholder="Please describe Other" style="display: none"/>
                 </div>
             </div>
@@ -250,7 +250,7 @@
                             <form enctype="multipart/form-data">
                                 <div class="fileUpload btn btn-primary">
                                     <span>Attach File</span>
-                                    <input name="pyroFile" type="file" class="file" id="pyroFile"/>
+                                    <input name="pyroFile" type="file" class="file" id="pyroFile" style="width:120px"/>
                                 </div>
                             </form>
                         </div>
@@ -258,6 +258,7 @@
                         <div class="col-xs-8">
                             <small>Please attach details of involvement of any Cast Member</small>
                         </div>
+
                     </div>
                     <div class="row fileNameContainer" style="padding-top:6px; display:none">
                         <div class="col-xs-9" style="text-align:right; font-size:11px">
@@ -283,7 +284,7 @@
                             <form enctype="multipart/form-data">
                                 <div class="fileUpload btn btn-primary">
                                     <span>Attach File</span>
-                                    <input name="stuntsFile" type="file" class="file" id="stuntsFile"/>
+                                    <input name="stuntsFile" type="file" class="file" id="stuntsFile" style="width:120px"/>
                                 </div>
                             </form>
                         </div>
@@ -291,6 +292,55 @@
                         <div class="col-xs-8">
                             <small>Please attach details of involvement of any Cast Member</small>
                         </div>
+
+                        <div class="row"></div>
+                        <br>
+
+                        <div class="col-xs-3" style="margin-left:20px">
+                            <form enctype="multipart/form-data">
+                                <div class="fileUpload btn btn-primary">
+                                    <span>AnimalPDF</span>
+                                    <input name="animalPDF" type="file" class="file" style="width:120px"/>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-xs-8">
+                            <small>Please complete Animal Questionnaire</small>
+                        </div>
+
+                        <div class="row"></div>
+                        <br>
+
+                        <div class="col-xs-3" style="margin-left:20px">
+                            <form enctype="multipart/form-data">
+                                <div class="fileUpload btn btn-primary">
+                                    <span>DronePDF</span>
+                                    <input name="dronePDF" class="file" type="file" style="width:120px"/>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="col-xs-8">
+                            <small>Please complete Drone Questionnaire</small>
+                        </div>
+                        <br>
+                        <br>
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label for="stuntCoordinator">Name of Stunt Coordinator</label>
+                            <input type="text" name="name" class=" showReview form-control" data-reviewName="Name of Stunt Coordinator" placeholder="Stunt Coordinator"/>
+                                </div>
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label for="signing">Are Participants Signing Waivers?</label>
+                                <input type="text" name="name" class="showReview form-control" data-reviewName="Are Participants Signing Waivers?" placeholder="Y/N"/>
+                            </div>
+                        </div>
+
+
+
+
                     </div>
                     <div class="row" style="padding-top:6px; display:none">
                         <div class="col-xs-9" style="text-align:right; font-size:11px">
@@ -318,7 +368,165 @@
 
             </div>
             <br>
-        </div>
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label>Do you do post production or special effects for others?</label><br>
+                    <input type="radio" name="postProductionForOthers"
+                           class="showReview"
+                           value="Yes"
+                           data-reviewName="Do you do post production or special effects for others?"
+                           id="postProductionForOthersYes_RadioButton"> Yes
+                    <input type="radio" name="postProductionForOthers"
+                           class=""
+                           value="No"
+                           data-reviewName="Do you do post production or special effects for others?"
+                           id="postProductionForOthersNo_RadioButton"
+            checked="checked"> No
+            </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label>Are you involved in film distribution?</label><br>
+                    <input type="radio" name="filmDistribution"
+                           class="showReview"
+                           value="Yes"
+                           data-reviewName="Are you involved in film distribution?"
+                           id="filmDistributionYes_RadioButton"> Yes
+                    <input type="radio" name="filmDistribution"
+                           class=""
+                           value="No"
+                           data-reviewName="Are you involved in film distribution?"
+                           id="filmDistributionNo_RadioButton"
+                           checked="checked"> No
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label>Has your insurance have ever been cancelled or declined?</label><br>
+                    <input type="radio" name="insuranceCancelled"
+                           class="showReview"
+                           value="Yes"
+                           data-reviewName="Has your insurance have ever been cancelled or declined?"
+                           id="insuranceCancelledYes_RadioButton"> Yes
+                    <input type="radio" name="insuranceCancelled"
+                           class=""
+                           value="No"
+                           data-reviewName="Has your insurance have ever been cancelled or declined?"
+                           id="insuranceCancelledNo_RadioButton"
+                           checked="checked"> No
+                </div>
+            </div>
+            <div id="insuranceCancelledContainer" style="display:none">
+            <div class="col-xs-12">
+                %{--<div class="form-group">--}%
+                    %{--<label for="cancelledDeclinedExplain"></label>--}%
+                    <input type="text" class=" showReview form-control" name="name" data-reviewName="Explain why it was cancelled or declined" placeholder="Please explain why it was cancelled or declined"/>
+                %{--</div>--}%
+            </div>
+                    </div>
+
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label>Misc Equipment Coverage Requested?</label><br>
+                    <input type="radio" name="equipmentOwnedRented"
+                           class="showReview"
+                           value="Yes"
+                           data-reviewName="Misc Equipment Coverage Requested?"
+                           id="equipmentOwnedRentedYes_RadioButton"> Yes
+                    <input type="radio" name="equipmentOwnedRented"
+                           class=""
+                           value="No"
+                           data-reviewName="Misc Equipment Coverage Requested?"
+                           id="equipmentOwnedRentedNo_RadioButton"
+                           checked="checked"> No
+                </div>
+            </div>
+            <div id="equipmentOwnedRentedContainer" style="display:none">
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <input type="radio" name="equipmentOwned"
+                           class=""
+                           value="owned"
+                           id="equipmentOwned"> Owned
+                    <input type="radio" name="equipmentRented"
+                           class=""
+                           value="rented"
+                           id="equipmentRented"
+                           checked="checked"> Rented
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label for="equipmentLimitRequested">What Equipment Limit is Requested?</label>
+                    <input type="text" id="equipmentLimit" class=" showReview form-control" name="name" data-reviewName="Requested Equipment Limit" placeholder="\$USD"/>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label for="equipmentSchedule">Provide Equipment Schedule if any one item exceeds $10,000 in value</label>
+                    <input type="text" id="equipmentSchedule" class="showReview form-control" name="name" data-reviewName="Equipment Schedule" placeholder="Equipment schedule"/>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label for="equipmentLocation">Where is equipment kept when not in use?</label>
+                    <input type="text" id="equipmentLocation" class="showReview form-control" name="name" data-reviewName="Where is equipment kept when not in use?" placeholder="Location of equipment"/>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label for="equipmentSecurityMeasures">Provide security measures against theft, loss, and damage to equipment</label>
+                    <input type="text" id="equipmentSecurity" class="showReview form-control" name="name" data-reviewName="Security Measures against theft, loss, and damage" placeholder="Equipment security measures"/>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label for="equipmentInventoryAndProcedures">What method of inventory do you use? Please describe procedures and how often</label>
+                    <input type="text" id="equipmentInventory" class="showReview form-control" name="name" data-reviewName="Method of Inventory" placeholder="equipment inventory and procedures"/>
+                </div>
+            </div>
+                </div>
+
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label>Is Foreign GL, Hired Auto and Workers Comp Required?</label><br>
+                    <input type="radio" name="foreignGL"
+                           class="showReview"
+                           value="Yes"
+                           data-reviewName="Is Foreign GL, Hired Auto and Workers Comp Required?"
+                           id="foreignGLYes_RadioButton"> Yes
+                    <input type="radio" name="foreignGL"
+                           class=""
+                           value="No"
+                           data-reviewName="Is Foreign GL, Hired Auto and Workers Comp Required?"
+                           id="foreignGLNo_RadioButton"
+                           checked="checked"> No
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label>Do you require Film Producers Error and Omissions Liability? If yes, what limits? Please complete online application and submit for quoting</label><br>
+                    <input type="radio" name="errorOmissionsLiability"
+                           class="showReview"
+                           value="Yes"
+                           data-reviewName="Do you require Film Producer Error and Omissions Liability? If yes, what limits? Please complete online application and submit for quoting"
+                           id="errorOmissionsLiabilityYes_RadioButton"> Yes
+                    <input type="radio" name="errorOmissionsLiability"
+                           class=""
+                           value="No"
+                           data-reviewName="Do you require Film Producers Error and Omissions Liability? If yes, what limits? Please complete online application and submit for quoting"
+                           id="errorOmissionsLiabilityNo_RadioButton"
+                           checked="checked"> No
+                </div>
+            </div>
+            <div id="errorOmissionsLiabilityContainer" style="display:none">
+                <input type="text" id="errorOmissionsLiability" class="showReview form-control" name="name" data-reviewName="Error and Omission Limit" placeholder="\$USD"/>
+                </div>
+            </div>
+            %{--</div>--}%
+        %{--</div>--}%
         %{--</div>--}%
 
         <div class="col-xs-6">
@@ -328,7 +536,7 @@
 
             <div class="col-xs-9">
                 <div class="form-group">
-                    <g:textField type="text" class="totalBudget" class="form-control" name="totalBudget"
+                    <input type="text" class="totalBudget" class="form-control" name="totalBudget"
                                  id="totalBudgetInput" placeholder="\$USD" required="required" readonly="readonly"/>
                 </div>
             </div>
@@ -337,7 +545,7 @@
                 <form enctype="multipart/form-data">
                     <div class="fileUpload btn btn-primary">
                         <span>Attach File</span>
-                        <input name="budgetFile" type="file" class="file" id="budgetFile"/>
+                        <input name="budgetFile" type="file" class="file" id="budgetFile" style="width:120px"/>
                     </div>
                 </form>
             </div>
@@ -377,7 +585,7 @@
             <div class="col-xs-12">
                 <div class="form-group">
                     <label for="producer">Producer</label>
-                    <g:textField type="text" class="form-control showReview" data-reviewName="Producer" id="producer"
+                    <input type="text" class="form-control showReview" data-reviewName="Producer" id="producer"
                                  name="producer" placeholder="Producer"/>
                 </div>
             </div>
@@ -386,7 +594,7 @@
             <div class="col-xs-12">
                 <div class="form-group">
                     <label for="director">Director</label>
-                    <g:textField type="text" class="form-control showReview" data-reviewName="Director" id="director"
+                    <input type="text" class="form-control showReview" data-reviewName="Director" id="director"
                                  name="director" placeholder="Director"/>
                 </div>
             </div>
@@ -394,20 +602,36 @@
             <div class="col-xs-12" id="questionSourceFinancing" style="display: none;">
                 <div class="form-group">
                     <label for="sourceOfFinancing">Source of Financing</label>
-                    <g:textField type="text" class="form-control showReview" data-reviewName="Source of Financing"
+                    <input type="text" class="form-control showReview" data-reviewName="Source of Financing"
                                  id="sourceOfFinancing" name="sourceOfFinancing"
                                  placeholder="Source"/>
 
                 </div>
             </div>
-        <div class="col-xs-12" id="questionCompletionBondRequired" style="display: none;">
+        <div class="col-xs-12">
             <div class="form-group">
-                <p class="control-label"><input type="checkbox"
-                                                class="showReview"
-                                                data-reviewName="Completion Bond Required" name="completionBondRequired"
-                                                value="Yes"/> Completion Bond Required?</p>
+                <label>Completion Bond Required</label><br>
+                <input type="radio" name="completionBondRequired"
+                       class="showReview"
+                       value="Yes"
+                       data-reviewName="Completion Bond Required?"
+                       id="completionBondRequiredYes_RadioButton"> Yes
+                <input type="radio" name="completionBondRequired"
+                       class=""
+                       value="No"
+                       data-reviewName="Completion Bond Required?"
+                       id="completionBondRequiredNo_RadioButton"
+                       checked="checked"> No
             </div>
         </div>
+        %{--<div class="col-xs-12" id="questionCompletionBondRequired" style="display: none;">--}%
+            %{--<div class="form-group">--}%
+                %{--<p class="control-label"><input type="checkbox"--}%
+                                                %{--class="showReview"--}%
+                                                %{--data-reviewName="Completion Bond Required" name="completionBondRequired"--}%
+                                                %{--value="Yes"/> Completion Bond Required?</p>--}%
+            %{--</div>--}%
+        %{--</div>--}%
 
         <div id="questionFilmingLocations" style = 'display: none;'>
             <div class="row col-xs-12">
@@ -426,7 +650,7 @@
                     <form enctype="multipart/form-data">
                         <div class="fileUpload btn btn-primary">
                             <span>Attach File</span>
-                            <input name="doodFile" type="file" class="file" id="doodFile"/>
+                            <input name="doodFile" type="file" class="file" id="doodFile" style="width:120px"/>
                         </div>
                     </form>
                 </div>
@@ -445,7 +669,7 @@
                 <div class="locationFilm">
                     <div class="form-group col-xs-6">
                         <h5 class="filmingLocationHeader" style="font-size: 16px;">Filming Location #1</h5>
-                        <g:textField type="text" class="form-control" id="filmingLocation"
+                        <input type="text" class="form-control" id="filmingLocation"
                                      name="filmLocation" placeholder="Location"/>
                     </div>
 
@@ -492,7 +716,7 @@
         </div>
         <div class="row col-xs-12">
             <div class="col-xs-9">
-                <g:textField type="text" class="form-control showReview" data-reviewName="Story / Synopsis" id="story"
+                <input type="text" class="form-control showReview" data-reviewName="Story / Synopsis" id="story"
                              name="story" placeholder="Story"/>
             </div>
             <div class="col-xs-3">
@@ -500,7 +724,7 @@
                     <form enctype="multipart/form-data">
                         <div class="fileUpload btn btn-primary">
                             <span>Attach File</span>
-                            <input name="treatmentFile" type="file" class="file" id="treatmentFile"/>
+                            <input name="treatmentFile" type="file" class="file" id="treatmentFile" style="width:120px"/>
                         </div>
                     </form>
                 </div>
@@ -516,22 +740,61 @@
 
         </div>
 
-        <div id="questionsCast">
+        <div class="row col-xs-12" id="questionsCast" style="display:none">
+            <br><br>
             <div class="col-xs-12">
-                <br>
+                <h3>Cast Detail</h3>
+            </div>
+
+            <div class="col-xs-12">
+                <label for="storySynopsis">Number of Cast Members</label>
+            </div>
+            <div class="col-xs-2">
                 <div class="form-group">
-                    <label for="storySynopsis">Number of Cast Members</label>
-                <g:textField type="text" class="form-control showReview" data-reviewName="Number of Cast Members" id="numberOfCastMembers"
-                             name="numberOfCastMembers" placeholder="#"/>
+                    <input type="text" class="form-control showReview" data-reviewName="Number of Cast Members" id="numberOfCastMembers"
+                                 name="numberOfCastMembers" placeholder="#"/>
                 </div>
             </div>
+            <div class="col-xs-10">
+            </div>
+
             <div class="col-xs-12">
-                <div class="form-group">
-                    <label for="storySynopsis">Cast Member Name, Age, Role</label>
-                    <g:textField type="text" class="form-control showReview" data-reviewName="Cast Member Name, Age, Role" id="castMemberInfo"
-                                 name="castMemberInfo" placeholder=""/>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <label>Cast Member Name</label>
+                    </div>
+                    <div class="col-xs-2">
+                        <label>Age</label>
+                    </div>
+                    <div class="col-xs-4">
+                        <label>Role</label>
+                    </div>
                 </div>
             </div>
+            <div id="castMemberDetailContainer" class="col-xs-12">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <input type="text" class="form-control showReview castMemberName" data-reviewName="Cast Member Name, Age, Role"
+                                         name="castMemberName" placeholder=""/>
+                        </div>
+                    </div>
+                    <div class="col-xs-2">
+                        <div class="form-group">
+                            <input type="text" class="form-control showReview castMemberAge" data-reviewName="Cast Member Name, Age, Role"
+                                         name="castMemberAge" placeholder=""/>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <input type="text" class="form-control showReview castMemberRole" data-reviewName="Cast Member Name, Age, Role"
+                                         name="castMemberRole" placeholder=""/>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
             <div class="col-xs-12">
                 <div class="form-group">
                     <label for="storySynopsis">Any Cast Member with a film project immediately following this film project?</label>
@@ -546,21 +809,51 @@
                            checked="checked"> No
                 </div>
             </div>
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label for="storySynopsis">Complete Cast Medical exam</label>
-                    <g:textField type="text" class="form-control showReview" data-reviewName="Complete Cast Medical Exam" id="completeMedical"
-                                 name="completeMedical" placeholder=""/>
-                </div>
-            </div>
+            %{--<div class="col-xs-12">--}%
+                %{--<div class="form-group">--}%
+                    %{--<label for="storySynopsis">Complete Cast Medical exam</label>--}%
+                    %{--<input type="text" class="form-control showReview" data-reviewName="Complete Cast Medical Exam" id="completeMedical"--}%
+                                 %{--name="completeMedical" placeholder=""/>--}%
+                %{--</div>--}%
+            %{--</div>--}%
+            %{--<div class="row col-xs-12">--}%
+                %{--<div class="col-xs-9">--}%
+                    %{--<label for="castMedical">Attach Cast Medical</label>--}%
+                %{--</div>--}%
+            %{--</div>--}%
+            %{--<div class="row col-xs-12">--}%
+                %{--<div class="col-xs-9">--}%
+                    %{--<input type="text" class="form-control showReview" data-reviewName="Cast Medical" id="story"--}%
+                                 %{--name="castMedical" placeholder=""/>--}%
+                %{--</div>--}%
+                %{--<div class="col-xs-3">--}%
+                    %{--<div class="form-group">--}%
+                        %{--<form enctype="multipart/form-data">--}%
+                            %{--<div class="fileUpload btn btn-primary">--}%
+                                %{--<span>Attach File</span>--}%
+                                %{--<input name="castMedicalFile" type="file" class="file" id="castMedicalFile" style="width:120px"/>--}%
+                            %{--</div>--}%
+                        %{--</form>--}%
+                    %{--</div>--}%
+                %{--</div>--}%
+            %{--</div>--}%
+            %{--<div class="col-xs-12 fileNameContainer" style="margin-top:-6px; display: none">--}%
+                %{--<div class="col-xs-9" style="text-align:right; font-size:11px; padding-right: 30px;">--}%
+                    %{--<span class="fileNameSpan" id="castMedicalFileSpan">File Name</span>--}%
+                %{--</div>--}%
+                %{--<div class="col-xs-3" style="margin-left:-15px;">--}%
+                    %{--<button type="button" class="btn btn-default btn-xs attachClearButton">Clear</button>--}%
+                %{--</div>--}%
 
+            %{--</div>--}%
         </div>
 
         <div id="questionTotalAbove" style="display: none">
             <div class="col-xs-12" >
+                <br>
                 <div class="form-group">
                     <label for="storySynopsis">Total Above-The-Line</label>
-                    <g:textField type="text" class="form-control showReview" data-reviewName="Total Above-The-Line" id="totalAboveLine"
+                    <input type="text" class="form-control showReview" data-reviewName="Total Above-The-Line" id="totalAboveLine"
                                  name="totalAboveLine" placeholder="total"/>
                 </div>
             </div>
@@ -570,7 +863,7 @@
             <div class="col-xs-12">
                 <div class="form-group">
                     <label for="storySynopsis">Total Below-The-Line</label>
-                    <g:textField type="text" class="form-control showReview" data-reviewName="Total Below-The-Line" id="totalBelowLine"
+                    <input type="text" class="form-control showReview" data-reviewName="Total Below-The-Line" id="totalBelowLine"
                                  name="totalBelowLine" placeholder="total"/>
                 </div>
             </div>
@@ -581,11 +874,40 @@
             <div class="col-xs-12">
                 <div class="form-group">
                     <label for="storySynopsis">Total Post Production Cost</label>
-                    <g:textField type="text" class="form-control showReview" data-reviewName="Total Post Production Cost" id="totalPostProductionCost"
+                    <input type="text" class="form-control showReview" data-reviewName="Total Post Production Cost" id="totalPostProductionCost"
                                  name="totalPostProductionCost" placeholder="totalPost"/>
                 </div>
             </div>
         </div>
+        <div class="col-xs-12">
+            <div class="form-group">
+                <label for="projectsOutsideUS">Projects Outside the US (%) </label>
+                <input type="text" class="form-control" name="name" placeholder="%"/>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="form-group">
+                <label for="totalEmployees">Total number of employees</label>
+                <input type="text" class="form-control" name="name" placeholder="Country"/>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="form-group">
+                <label for="annualPayroll">Annual Payroll</label>
+                <input type="text" class="form-control" name="name" placeholder="\$USD"/>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="form-group">
+                <label for="umbrellaRequested">Umbrella Limit Requested</label>
+                <input type="text" class="form-control" name="name" placeholder="\$USD"/>
+            </div>
+        </div>
+
+
+
+
+
 
         <div id="">
             <div class="col-xs-12" id="workCompCoverageRequested">
@@ -596,14 +918,30 @@
                                                 value=""/> Work Comp Coverage Requested
                 </p>
             </div>
-            <div class="row col-xs-12" id="questionWillPayrollServiceProvideWC">
-                <p class="control-label"><input type="checkbox"
-                                                class=""
-                                                data-reviewName="" name=""
-
-                                                value=""/> Will Payroll Service Co provide primary Work Comp Coverage?
-                </p>
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label>Will Payroll Service Co provide primary Work Comp Coverage?</label><br>
+                    <input type="radio" name="primaryWorkCompCoverage"
+                           class="showReview"
+                           value="Yes"
+                           data-reviewName="Will Payroll Service Co provide primary Work Comp Coverage?"
+                           id="primaryWorkCompCoverageYes_RadioButton"> Yes
+                    <input type="radio" name="primaryWorkCompCoverage"
+                           class=""
+                           value="No"
+                           data-reviewName="Will Payroll Service Co provide primary Work Comp Coverage?"
+                           id="primaryWorkCompCoverageNo_RadioButton"
+                           checked="checked"> No
+                </div>
             </div>
+            %{--<div class="row col-xs-12" id="questionWillPayrollServiceProvideWC">--}%
+                %{--<p class="control-label"><input type="checkbox"--}%
+                                                %{--class=""--}%
+                                                %{--data-reviewName="" name=""--}%
+
+                                                %{--value=""/> Will Payroll Service Co provide primary Work Comp Coverage?--}%
+                %{--</p>--}%
+            %{--</div>--}%
 
             <div id="statesOfHire">
                 <div class="row col-xs-12">
@@ -613,7 +951,7 @@
                 </div>
                 <div class="row col-xs-12">
                     <div class="col-xs-9">
-                        <g:textField type="text" class="form-control showReview" data-reviewName="States of Hire & Total Payroll Each State"
+                        <input type="text" class="form-control showReview" data-reviewName="States of Hire & Total Payroll Each State"
                                      name="statesOfHire" placeholder=""/>
                     </div>
                 </div>
@@ -627,7 +965,7 @@
                 </div>
                 <div class="row col-xs-12">
                     <div class="col-xs-9">
-                        <g:textField type="text" class="form-control showReview" data-reviewName="Names of Officers, Title, % of Ownership"
+                        <input type="text" class="form-control showReview" data-reviewName="Names of Officers, Title, % of Ownership"
                                      name="namesOfOfficers" placeholder=""/>
                     </div>
                 </div>
@@ -642,7 +980,7 @@
                 </div>
                 <div class="row col-xs-12">
                     <div class="col-xs-9">
-                        <g:textField type="text" class="form-control showReview" data-reviewName="Name of Officers to be Excluded under WC"
+                        <input type="text" class="form-control showReview" data-reviewName="Name of Officers to be Excluded under WC"
                                      name="namesOfOfficersExcluded" placeholder=""/>
                     </div>
                 </div>
@@ -661,7 +999,7 @@
             </p>
         </div>
 
-        <div class='form-group col-xs-12' style="padding-left: 40px; margin-top:-20px;">
+        <div class='form-group col-xs-12' style="padding-left: 40px; margin-top:-20px;" id="EPKGProductsDiv">
             <span class='coverageInput' style="display:none" id="PIPChoiceInput"><input type="radio" name="EPKGRadio"
                                                                                         class="coverageRadioButton EPKG"
                                                                                         value="PIP CHOI"
@@ -711,6 +1049,12 @@
         </div>
 
         <div class='form-group col-xs-12 ' id="EPKGoptions" style="padding-left: 40px; display:none; ">
+            %{--<p id="EPKGCASTOption" style=" font-size:12px; margin:0px; display:none"><input type='checkbox'--}%
+                                                                                            %{--class='additionalCoverageCheckboxEPKG FWCNWCCheckbox'--}%
+                                                                                            %{--name='coverage' value="CAST"--}%
+                                                                                            %{--id='EPKGCASTAdditionalCoverage'/> Cast Insurance (Up to 10 Artists)--}%
+                %{--<br></p>--}%
+
             <span style="font-weight: 400px; font-size:12px;">Optional Coverages</span>
             <br>
 
@@ -718,7 +1062,46 @@
                                                                               class='additionalCoverageCheckboxEPKG'
                                                                               name='coverage' value="NOHA01"
                                                                               id='EPKGNOHAAdditionalCoverage'/> Non Owned Hired Auto Physical Damage
+                </p>
+
+            <p id="EPKGCASTEssentialOption" style=" font-size:12px; margin:0px;"><input type='checkbox'
+                                                                                        class='additionalCoverageCheckboxEPKG '
+                                                                                        name='coverage' value="CAST"
+                                                                                        id='EPKGCASTEssentialAdditionalCoverage'/> Cast Essential Elements
                 <br></p>
+            <div class="col-xs-12" style="padding-top: 5px;padding-left: 20px; display: none;" id="castEssentialDiv">
+                <input type="text" style='font-size: 12px;margin-top: 0px; margin-bottom:10px; width: 35px; margin-right:2px;' name="commercial"
+                       class="CPK" value="" id="castEssentialInput">
+                <span style="margin-bottom: 0px; font-size: 11px;"># of Elements</span>
+
+            </div>
+            %{--<p class="FILMWITHCASTNOWCOptions" style=" font-size:12px; margin:0px; display:none;"><input type='checkbox'--}%
+                                                                                                                         %{--class='additionalCoverageCheckboxEPKG FWCNWCCheckbox'--}%
+                                                                                                                         %{--name='coverage' value="Money"--}%
+                                                                                                                         %{--id='EPKGMoneySecurityAdditionalCoverage'/> Money & Securities--}%
+                %{--<br></p>--}%
+            <p class="FILMWITHCASTNOWCOptions" style=" font-size:12px; margin:0px; display:none"><input type='radio'
+                                                                                            name="FILMWITHCASTNOWCOptions"
+                                                                                            class='additionalCoverageCheckboxEPKG FWCNWCCheckbox'
+                                                                                            name='coverage'
+                                                                                            value="CIVIL100"
+                                                                                            id='EPKGFWCNWCCIVIL100AdditionalCoverage'/> Civil Authority (US Only) - $100K Limit
+            </p>
+
+            <p class="FILMWITHCASTNOWCOptions" style=" font-size:12px; margin:0px; display:none"><input type='radio'
+                                                                                            name="FILMWITHCASTNOWCOptions"
+                                                                                            class='additionalCoverageCheckboxEPKG FWCNWCCheckbox'
+                                                                                            name='coverage'
+                                                                                            value="CIVIL500"
+                                                                                            id='EPKGFWCNWCCIVIL500AdditionalCoverage'/> Civil Authority (US Only) - Over $100K, Refer Only Subj to MP
+            </p>
+            <p class="FILMWITHCASTNOWCOptions" style=" font-size:12px; margin:0px; display:none;"><input type='checkbox'
+                                                                                                                         class='additionalCoverageCheckboxEPKG FWCNWCCheckbox'
+                                                                                                                         name='coverage' value="Money"
+                                                                                                                         id='EPKGFWCNWCAnimalAdditionalCoverage'/> Animal Mortality
+                <br></p>
+
+
 
             <p class="PIP5Options" style=" font-size:12px; margin:0px; display:none"><input type='radio'
                                                                                             name="PIP5RadioOptionCoverage"
@@ -906,49 +1289,12 @@
 %{--<p><input type="checkbox" name="blanketAdditionalInsuredEndorsement" /> Blanket Additional Insured Endorsement </p>--}%
 %{--<p><input type="checkbox" name="waiverOfSubrogation" /> Wavier Of Subrogation </p>--}%
 %{--<p><input type="checkbox" name="hiredAndNonOwnedAutoLiability" /> Hired and Non-Owned Auto Liability </p>--}%
-%{--<g:textField type="text" class="form-control" name="costOfHire" placeholder="Enter Cost of Hire:"/>--}%
+%{--<input type="text" class="form-control" name="costOfHire" placeholder="Enter Cost of Hire:"/>--}%
 %{--<p><input type="checkbox" name="productionPortfolio" /> Production Portfolio </p>--}%
 %{--<!-- input table for production portfolio -->--}%
 %{--<p><input type="checkbox" name="workersCompensation" /> Workers Compensation </p>--}%
-%{--<g:textField type="text" class="form-control" name="fein" placeholder="FEIN"/>--}%
-%{--<!--MUST BE SECURED-->--}%
-%{--<g:textField type="text" class="form-control" name="stateOfHire" placeholder="State of Hire:"/>--}%
-%{--<p><input type="checkbox" name="primary" /> Primary </p>--}%
-%{--<p><input type="checkbox" name="contingent" /> Contingent, if contingent please provide name of Payroll Co. If Primary Workers Compensation desired, please complete supplemental application. </p>--}%
-%{--<!-- ONLY if contingent is selected add in drop text field to enter Payroll Co. -->--}%
-%{--<g:textField type="text" class="form-control" name="payrollCo" placeholder="Enter name of Payroll Co:"/>--}%
-%{--<p><input type="checkbox" name="umbrellaExcessLiability" /> Umbrella Excess Liability </p>--}%
-%{--<!-- if Umbrella Excess Liability is selected add in drop text field to enter limits-->--}%
-%{--<g:textField type="text" class="form-control" name="enterLimitsUmbrella" placeholder="Enter Limits:"/>--}%
-%{--<p><input type="checkbox" name="generalLiability" /> General Liability </p>--}%
-%{--<p><input type="checkbox" name="hiredAndNonOwnedAuto" /> Hired & Non-Owned Auto </p>--}%
-%{--<p><input type="checkbox" name="workersCompensationUmbrella" /> Workers Compensation </p>--}%
-%{--<p><input type="checkbox" name="foreignExposures" /> Foreign Exposures </p>--}%
-%{--</div>--}%
-
-
-%{--<div class="form-group">--}%
-%{--<label for="completedBy">Completed by:</label>--}%
-%{--<g:textField type="text" class="form-control" name="completedBy" placeholder="Enter Your Name"/>--}%
-%{--</div>--}%
-%{--<div class="form-group">--}%
-%{--<label for="completedDate">Date of Completion</label>--}%
-%{--<g:textField type="text" class="form-control" name="completedDate" placeholder="MM/DD/YYYY"/>--}%
-%{--</div>--}%
-
-%{--<div class="form-group">--}%
-%{--<label for="attachments">Select Attachments Provided:</label>--}%
-%{--<p><input type="checkbox" name="resumeOfKeyPersonnel" /> Resume of Key Personnel </p>--}%
-%{--<p><input type="checkbox" name="treatmentAndFilmingSchedule" /> Treatment and Filming Schedule </p>--}%
-%{--<p><input type="checkbox" name="topSheetOfBudget" /> Top Sheet of Budget </p>--}%
-%{--<p><input type="checkbox" name="supplementalApplication" /> Supplemental Application </p>--}%
-
-%{--</div>--}%
-
-
+%{--<input type="text" class="form-control" name="fein" placeholde</p>--}%
 
 </div>
 
 </div>
-
-             

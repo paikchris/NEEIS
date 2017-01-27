@@ -1179,7 +1179,7 @@
                                             </div>
                                             <div class="form-group col-xs-2">
                                                 <label class="control-label">Interest</label>
-                                                <select class="form-control showReview" name="interest"  data-reviewName="Interest" id="interestSelect">
+                                                <select class="form-control interestSelect showReview" name="interest"  data-reviewName="Interest" id="interestSelect">
                                                     <option value="invalid" selected="selected">Owner</option>
                                                     <option value="corporation" selected="selected">Leasee</option>
                                                 </select>

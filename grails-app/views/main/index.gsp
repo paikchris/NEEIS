@@ -5,6 +5,7 @@
         <link rel="stylesheet" href="${resource(dir: 'css', file: 'dashboard.css')}" type="text/css">
 	</head>
 	<body>
+    <div id="thisUserIs" style="display:none">${user.email}</div>
         <div class="container-fluid">
             <div class="row">
                 <div class="col-xs-12">
@@ -48,20 +49,20 @@
                                         </g:if>
                                         <g:else>
                                             <g:if test="${j == 1}">
-                                                <div class="dashboardMessageRow unreadMessageChain" id="${m.messageChainID}_Row" style="cursor:pointer;">
+                                                <div class="dashboardMessageRow" id="${m.messageChainID}_Row" style="cursor:pointer;">
                                             </g:if>
                                             <g:else>
                                                 <div class="dashboardMessageRow" id="${m.messageChainID}_Row" style="cursor:pointer; display:none">
                                             </g:else>
                                                     <div class="unreadDiv" style="display: none;">${m.unread}</div>
                                                     <div class="messageChainID" style="display: none;">${m.messageChainID}</div>
-                                                    <div class="col-xs-2" style="overflow: hidden;" style="padding-left:0px;">
+                                                    <div class="col-xs-2" style="overflow: hidden; padding-left:0px;" style="padding-left:0px;">
                                                         <span class="messageDate" style="white-space: nowrap">${m.sentDateTime}</span>
                                                     </div>
                                                     <div class="col-xs-6" style="overflow: hidden;" >
                                                         <span class="messageSubject" style="white-space: nowrap">${m.subject}</span>
                                                     </div>
-                                                    <div class="col-xs-4" style="overflow: hidden;">
+                                                    <div class="col-xs-4" style="overflow: hidden; padding-right: 0px;">
                                                         <span class="messageWith" style="white-space: nowrap">${m.sender}</span>
                                                     </div>
                                                 </div>

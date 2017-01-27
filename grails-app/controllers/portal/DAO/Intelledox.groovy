@@ -6,6 +6,9 @@ import sun.misc.BASE64Decoder
 import groovy.xml.*
 import wslite.soap.*
 import wslite.http.auth.*
+import org.apache.commons.net.ftp.FTPClient
+import org.apache.commons.net.ftp.FTP;
+import sun.misc.BASE64Decoder;
 
 class Intelledox {
 
@@ -29,7 +32,8 @@ class Intelledox {
 \t\t<name>${jsonSerial.getAt("nameOfProductionCompany")} </name>
 \t\t<date> ${jsonSerial.getAt("dateAdded").substring(1, jsonSerial.getAt("dateAdded").length()-1).split(" ")[0]} </date>
 \t\t<phone> ${jsonSerial.getAt("phoneNumber")} </phone>
-\t\t<address> ${jsonSerial.getAt("streetNameMailing")}, ${jsonSerial.getAt("cityMailing")}, ${jsonSerial.getAt("stateMailing")} ${jsonSerial.getAt("zipCodeMailing")} </address>
+\t\t<address> ${jsonSerial.getAt("streetNameMailing")} </address>
+\t\t<addressState>  ${jsonSerial.getAt("cityMailing")}, ${jsonSerial.getAt("stateMailing")} ${jsonSerial.getAt("zipCodeMailing")} </addressState>
 \t\t<agent> ${jsonSerial.getAt("brokerFirstName")} ${jsonSerial.getAt("brokerLastName")} </agent>
 \t\t<agentEmail> ${jsonSerial.getAt("brokerEmail")} </agentEmail>
 \t\t<agentPhone> ${jsonSerial.getAt("brokerPhoneNumber")} </agentPhone>
@@ -43,6 +47,8 @@ class Intelledox {
 \t\t<primaryEmail> ${jsonSerial.getAt("namedInsuredEmail")} </primaryEmail>
 \t\t<physicalAddress> ${jsonSerial.getAt("streetNameMailing")}, ${jsonSerial.getAt("cityMailing")}, ${jsonSerial.getAt("stateMailing")}, ${jsonSerial.getAt("zipCodeMailing")} </physicalAddress>
 \t\t<website> ${jsonSerial.getAt("website")} </website>
+\t\t<total> Total: </total>
+\t\t<totalCost> ${jsonSerial.getAt("premiumAllLOBTotal")} </totalCost>
 \t</basicInfo>
 \t
 \t""";
@@ -52,12 +58,23 @@ class Intelledox {
         if(jsonSerial.getAt("premSummary").split(";&&;").size() > 0) {
             log.info("PREM SUMMARY");
             jsonSerial.getAt("premSummary").split(";&&;").each{
+                log.info("PREM SUMMARY" + it);
                 if(it.length() > 0){
-                    soapXML = soapXML + """
+                    if(it.split(";&;")[0] == "Taxes and Fees" || it.split(";&;")[0] == "Premium Distribution"){
+                        soapXML = soapXML + """
 \t\t<premiumSummary package="${it.split(";&;")[0]}">
 
-\t\t\t<cost> ${it.split(";&;")[1]} </cost>
+\t\t\t<cost>  </cost>
 \t\t</premiumSummary>"""
+                    }
+                    else {
+                        soapXML = soapXML + """
+\t\t<premiumSummary package="   ${it.split(";&;")[0]}">
+
+\t\t\t<cost>${it.split(";&;")[1]} </cost>
+\t\t</premiumSummary>"""
+                    }
+
                 }
                 else{
 
@@ -65,10 +82,11 @@ class Intelledox {
             }
         }
         else{
+            log.info jsonSerial.getAt("premiumAllLOBTotal")
             soapXML = soapXML + """
 \t\t<premiumSummary package="Total">
 
-\t\t\t<cost> 0 </cost>
+\t\t\t<cost>  </cost>
 \t\t</premiumSummary>"""
         }
 
@@ -259,12 +277,25 @@ soapXML = soapXML + """
         def response = client.send(SOAPAction:'http://services.dpm.com.au/intelledox/GenerateWithData', soapXML)
 
         log.info response.text
-
+        def fileName = "Indication.pdf"
+        log.info("NEW FOLDER QUOTE = " + jsonSerial.getAt("allQuoteIDs"))
+        def quoteID = jsonSerial.getAt("allQuoteIDs").split(",")[0].split(";")[0]
         def a = new XmlSlurper().parseText(response.text)
         def nodeToSerialize = a."**".find {it.name() == 'BinaryFile'}
 //        def nodeAsText = XmlUtil.serialize()
 //        log.info nodeToSerialize.text()
-        def webrootDir = org.codehaus.groovy.grails.web.context.ServletContextHolder.getServletContext().getRealPath("/attachments/testpdf.pdf");
+
+//        def folder = new File( 'A/B' )
+        // If it doesn't exist
+//        if( !folder.exists() ) {
+//            // Create all folders up-to and including B
+//            folder.mkdirs()
+//        }
+
+        def webrootDir = org.codehaus.groovy.grails.web.context.ServletContextHolder.getServletContext().getRealPath("/attachments/${quoteID}/${fileName}");
+        def folderPath = org.codehaus.groovy.grails.web.context.ServletContextHolder.getServletContext().getRealPath("/attachments/${quoteID}/")
+        def folder = new File ( folderPath)
+        folder.mkdirs()
 //        DataOutputStream os = new DataOutputStream(new FileOutputStream(webrootDir));
         BASE64Decoder decoder = new BASE64Decoder();
         byte[] decodedBytes = decoder.decodeBuffer(nodeToSerialize.text());
@@ -283,12 +314,14 @@ soapXML = soapXML + """
         out.close();
         is.close();
 
+        ftpFileToAIM(fileName,quoteID);
+
         return "good"
     }
 
-    def createCertificatePDF(jsonSerial){
-        log.info "INTELLEDOX"
-        log.info "JSON ==== " + jsonSerial
+    def createCertificatePDF(){
+        log.info "INTELLEDOX CERT"
+//        log.info "JSON ==== " + jsonSerial
 
         def soapXML = """<x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:int="http://services.dpm.com.au/intelledox/">
     <x:Header/>
@@ -296,104 +329,105 @@ soapXML = soapXML + """
         <int:GenerateWithData>
             <int:userName>admin</int:userName>
             <int:password>admin</int:password>
-            <int:projectGroupGuid>a2962264-75d3-42a6-9a48-389a7cb59520</int:projectGroupGuid>
+            <int:projectGroupGuid>8285f070-4e75-4ab2-a265-e81d7e4b2517</int:projectGroupGuid>
             <int:providedData>
                 <int:ProvidedData>
                     <int:DataServiceGuid>2c1ce06a-100f-40c8-b4d4-af4057349532</int:DataServiceGuid>
                     <int:Data><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <application>
 \t<certificate>
-\t\t<date>${jsonSerial.getAt("")} </date>
-\t\t<producer>${jsonSerial.getAt("")} </producer>
-\t\t<producerAddress>${jsonSerial.getAt("")} </producerAddress>
-\t\t<insured>${jsonSerial.getAt("")} </insured>
-\t\t<insuredAddress>${jsonSerial.getAt("")} </insuredAddress>
-\t\t<contactName>${jsonSerial.getAt("")} </contactName>
-\t\t<contactPhone>${jsonSerial.getAt("")} </contactPhone>
-\t\t<contactFax>${jsonSerial.getAt("")} </contactFax>
-\t\t<contactEmail>${jsonSerial.getAt("")} </contactEmail>
-\t\t<insurer>${jsonSerial.getAt("")} </insurer>
-\t\t<NAIC>${jsonSerial.getAt("")} </NAIC>
-\t\t<certificateNumber>${jsonSerial.getAt("")} </certificateNumber>
-\t\t<revisionNumber>${jsonSerial.getAt("")} </revisionNumber>
+\t\t
+\t\t<date>n</date>
+\t\t<producer>n</producer>
+\t\t<producerAddress>n</producerAddress>
+\t\t<insured>n</insured>
+\t\t<insuredAddress>n</insuredAddress>
+\t\t<contactName>n</contactName>
+\t\t<contactPhone>n</contactPhone>
+\t\t<contactFax>n</contactFax>
+\t\t<contactEmail>n</contactEmail>
+\t\t<insurer>n</insurer>
+\t\t<NAIC>n</NAIC>
+\t\t<certificateNumber>n</certificateNumber>
+\t\t<revisionNumber>n</revisionNumber>
 
-\t\t<insrltrGen>${jsonSerial.getAt("")} </insrltrGen>
-\t\t<cbGenCommercialGeneralLiability>${jsonSerial.getAt("")} </cbGenCommercialGeneralLiability>
-\t\t<cbGenClaimsMade>${jsonSerial.getAt("")} </cbGenClaimsMade>
-\t\t<cbGenOccur>${jsonSerial.getAt("")} </cbGenOccur>
-\t\t<cbGenPolicy>${jsonSerial.getAt("")} </cbGenPolicy>
-\t\t<cbGenProject>${jsonSerial.getAt("")} </cbGenProject>
-\t\t<cbGenLoc>${jsonSerial.getAt("")} </cbGenLoc>
-\t\t<genAddl>${jsonSerial.getAt("")} </genAddl>
-\t\t<genSubr>${jsonSerial.getAt("")} </genSubr>
-\t\t<generalPolicyNumber>${jsonSerial.getAt("")} </generalPolicyNumber>
-\t\t<genStart>${jsonSerial.getAt("")} </genStart>
-\t\t<genEnd>${jsonSerial.getAt("")} </genEnd>
-\t\t<genEachLimit>${jsonSerial.getAt("")} </genEachLimit>
-\t\t<genFireLimit>${jsonSerial.getAt("")} </genFireLimit>
-\t\t<genMedLimit>${jsonSerial.getAt("")} </genMedLimit>
-\t\t<genPersonalLimit>${jsonSerial.getAt("")} </genPersonalLimit>
-\t\t<genAggregateLimit>${jsonSerial.getAt("")} </genAggregateLimit>
-\t\t<genProductsLimit>${jsonSerial.getAt("")} </genProductsLimit>
+\t\t<insrltrGen>A</insrltrGen>
+\t\t<cbGenCommercialGeneralLiability>cb</cbGenCommercialGeneralLiability>
+\t\t<cbGenClaimsMade>cb</cbGenClaimsMade>
+\t\t<cbGenOccur>cb</cbGenOccur>
+\t\t<cbGenPolicy>cb</cbGenPolicy>
+\t\t<cbGenProject>cb</cbGenProject>
+\t\t<cbGenLoc>cb</cbGenLoc>
+\t\t<genAddl>Y</genAddl>
+\t\t<genSubr>Y</genSubr>
+\t\t<generalPolicyNumber>n</generalPolicyNumber>
+\t\t<genStart>n</genStart>
+\t\t<genEnd>n</genEnd>
+\t\t<genEachLimit>1</genEachLimit>
+\t\t<genFireLimit>1</genFireLimit>
+\t\t<genMedLimit>1</genMedLimit>
+\t\t<genPersonalLimit>1</genPersonalLimit>
+\t\t<genAggregateLimit>1</genAggregateLimit>
+\t\t<genProductsLimit>1</genProductsLimit>
 
-\t\t<insrltrAuto>${jsonSerial.getAt("")} </insrltrAuto>
-\t\t<cbAutoAny>${jsonSerial.getAt("")} </cbAutoAny>
-\t\t<cbAutoAllOwned>${jsonSerial.getAt("")} </cbAutoAllOwned>
-\t\t<cbAutoHiredAuto>${jsonSerial.getAt("")} </cbAutoHiredAuto>
-\t\t<cbAutoPhysicalDamages>${jsonSerial.getAt("")} </cbAutoPhysicalDamages>
-\t\t<cbAutoScheduledAuto>${jsonSerial.getAt("")} </cbAutoScheduledAuto>
-\t\t<cbAutoNonOwnedAuto>${jsonSerial.getAt("")} </cbAutoNonOwnedAuto>
-\t\t<autoAddl>${jsonSerial.getAt("")} </autoAddl>
-\t\t<autoSubr>${jsonSerial.getAt("")} </autoSubr>
-\t\t<autoPolicyNumber>${jsonSerial.getAt("")} </autoPolicyNumber>
-\t\t<autoStart>${jsonSerial.getAt("")} </autoStart>
-\t\t<autoEnd>${jsonSerial.getAt("")} </autoEnd>
-\t\t<autoCombinedSingleLimit>${jsonSerial.getAt("")} </autoCombinedSingleLimit>
-\t\t<autoBodilyInjuryPersonLimit>${jsonSerial.getAt("")} </autoBodilyInjuryPersonLimit>
-\t\t<autoBodilyInjuryAccidentLimit>${jsonSerial.getAt("")} </autoBodilyInjuryAccidentLimit>
-\t\t<autoPropertyDamageLimit>${jsonSerial.getAt("")} </autoPropertyDamageLimit>
+\t\t<insrltrAuto>A</insrltrAuto>
+\t\t<cbAutoAny>cb</cbAutoAny>
+\t\t<cbAutoAllOwned>cb</cbAutoAllOwned>
+\t\t<cbAutoHiredAuto>cb</cbAutoHiredAuto>
+\t\t<cbAutoPhysicalDamages>cb</cbAutoPhysicalDamages>
+\t\t<cbAutoScheduledAuto>cb</cbAutoScheduledAuto>
+\t\t<cbAutoNonOwnedAuto>cb</cbAutoNonOwnedAuto>
+\t\t<autoAddl>Y</autoAddl>
+\t\t<autoSubr>Y</autoSubr>
+\t\t<autoPolicyNumber>n</autoPolicyNumber>
+\t\t<autoStart>n</autoStart>
+\t\t<autoEnd>n</autoEnd>
+\t\t<autoCombinedSingleLimit>1</autoCombinedSingleLimit>
+\t\t<autoBodilyInjuryPersonLimit>1</autoBodilyInjuryPersonLimit>
+\t\t<autoBodilyInjuryAccidentLimit>1</autoBodilyInjuryAccidentLimit>
+\t\t<autoPropertyDamageLimit>1</autoPropertyDamageLimit>
 
-\t\t<insrltrUmbrella>${jsonSerial.getAt("")} </insrltrUmbrella>
-\t\t<cbUmbrellaLiab>${jsonSerial.getAt("")} </cbUmbrellaLiab>
-\t\t<cbUmbrellaExcessLiab>${jsonSerial.getAt("")} </cbUmbrellaExcessLiab>
-\t\t<cbUmbrellaDeductible>${jsonSerial.getAt("")} </cbUmbrellaDeductible>
-\t\t<cbUmbrellaRetention>${jsonSerial.getAt("")} </cbUmbrellaRetention>
-\t\t<cbUmbrellaOccur>${jsonSerial.getAt("")} </cbUmbrellaOccur>
-\t\t<cbUmbrellaClaimsMade>${jsonSerial.getAt("")} </cbUmbrellaClaimsMade>
-\t\t<umbrellaRetentionLimit>${jsonSerial.getAt("")} </umbrellaRetentionLimit>
-\t\t<umbrellaAddl>${jsonSerial.getAt("")} </umbrellaAddl>
-\t\t<umbrellaSubr>${jsonSerial.getAt("")} </umbrellaSubr>
-\t\t<umbrellaPolicyNumber>${jsonSerial.getAt("")} </umbrellaPolicyNumber>
-\t\t<umbrellaStart>${jsonSerial.getAt("")} </umbrellaStart>
-\t\t<umbrellaEnd>${jsonSerial.getAt("")} </umbrellaEnd>
-\t\t<umbrellaEachOccurrenceLimit>${jsonSerial.getAt("")} </umbrellaEachOccurrenceLimit>
-\t\t<umbrellaAggregateLimit>${jsonSerial.getAt("")} </umbrellaAggregateLimit>
+\t\t<insrltrUmbrella>A</insrltrUmbrella>
+\t\t<cbUmbrellaLiab>cb</cbUmbrellaLiab>
+\t\t<cbUmbrellaExcessLiab>cb</cbUmbrellaExcessLiab>
+\t\t<cbUmbrellaDeductible>cb</cbUmbrellaDeductible>
+\t\t<cbUmbrellaRetention>cb</cbUmbrellaRetention>
+\t\t<cbUmbrellaOccur>cb</cbUmbrellaOccur>
+\t\t<cbUmbrellaClaimsMade>cb</cbUmbrellaClaimsMade>
+\t\t<umbrellaRetentionLimit>1</umbrellaRetentionLimit>
+\t\t<umbrellaAddl>Y</umbrellaAddl>
+\t\t<umbrellaSubr>Y</umbrellaSubr>
+\t\t<umbrellaPolicyNumber>n</umbrellaPolicyNumber>
+\t\t<umbrellaStart>n</umbrellaStart>
+\t\t<umbrellaEnd>n</umbrellaEnd>
+\t\t<umbrellaEachOccurrenceLimit>1</umbrellaEachOccurrenceLimit>
+\t\t<umbrellaAggregateLimit>1</umbrellaAggregateLimit>
 
-\t\t<insrltrWorkersComp>${jsonSerial.getAt("")} </insrltrWorkersComp>
-\t\t<cbWorkerCompMemberExcluded>${jsonSerial.getAt("")} </cbWorkerCompMemberExcluded>
-\t\t<workersCompDescriptionNH>${jsonSerial.getAt("")} </workersCompDescriptionNH>
-\t\t<workersCompSubr>${jsonSerial.getAt("")} </workersCompSubr>
-\t\t<workersCompPolicyNumber>${jsonSerial.getAt("")} </workersCompPolicyNumber>
-\t\t<workersCompStart>${jsonSerial.getAt("")} </workersCompStart>
-\t\t<workersCompEnd>${jsonSerial.getAt("")} </workersCompEnd>
-\t\t<cbWorkersCompStatutoryLimits>${jsonSerial.getAt("")} </cbWorkersCompStatutoryLimits>
-\t\t<cbWorkersCompOther>${jsonSerial.getAt("")} </cbWorkersCompOther>
-\t\t<workersCompEachAccidentLimit>${jsonSerial.getAt("")} </workersCompEachAccidentLimit>
-\t\t<workersCompDiseaseEmployeeLimit>${jsonSerial.getAt("")} </workersCompDiseaseEmployeeLimit>
-\t\t<workersCompDiseasePolicyLimit>${jsonSerial.getAt("")} </workersCompDiseasePolicyLimit>
+\t\t<insrltrWorkersComp>A</insrltrWorkersComp>
+\t\t<cbWorkerCompMemberExcluded>cb</cbWorkerCompMemberExcluded>
+\t\t<workersCompDescriptionNH>n</workersCompDescriptionNH>
+\t\t<workersCompSubr>Y</workersCompSubr>
+\t\t<workersCompPolicyNumber>n</workersCompPolicyNumber>
+\t\t<workersCompStart>n</workersCompStart>
+\t\t<workersCompEnd>n</workersCompEnd>
+\t\t<cbWorkersCompStatutoryLimits>cb</cbWorkersCompStatutoryLimits>
+\t\t<cbWorkersCompOther>cb</cbWorkersCompOther>
+\t\t<workersCompEachAccidentLimit>1</workersCompEachAccidentLimit>
+\t\t<workersCompDiseaseEmployeeLimit>1</workersCompDiseaseEmployeeLimit>
+\t\t<workersCompDiseasePolicyLimit>1</workersCompDiseasePolicyLimit>
 
-\t\t<insrltrOther>${jsonSerial.getAt("")} </insrltrOther>
-\t\t<riskType>${jsonSerial.getAt("")} </riskType>
-\t\t<otherAddl>${jsonSerial.getAt("")} </otherAddl>
-\t\t<otherSubr>${jsonSerial.getAt("")} </otherSubr>
-\t\t<otherPolicyNumber>${jsonSerial.getAt("")} </otherPolicyNumber>
-\t\t<otherStart>${jsonSerial.getAt("")} </otherStart>
-\t\t<otherEnd>${jsonSerial.getAt("")} </otherEnd>
-\t\t<otherLimit>${jsonSerial.getAt("")} </otherLimit>
+\t\t<insrltrOther>A</insrltrOther>
+\t\t<riskType>n</riskType>
+\t\t<otherAddl>Y</otherAddl>
+\t\t<otherSubr>Y</otherSubr>
+\t\t<otherPolicyNumber>n</otherPolicyNumber>
+\t\t<otherStart>n</otherStart>
+\t\t<otherEnd>n</otherEnd>
+\t\t<otherLimit>1</otherLimit>
 
-\t\t<additionalRemarks>${jsonSerial.getAt("")} </additionalRemarks>
-\t\t<certificateHolder>${jsonSerial.getAt("")} </certificateHolder>
-
+\t\t<additionalRemarks>Remarks</additionalRemarks>
+\t\t<certificateHolder>Cert Holder</certificateHolder>
+\t\t
 \t</certificate>
 </application>]]></int:Data>
                 </int:ProvidedData>
@@ -417,9 +451,10 @@ soapXML = soapXML + """
 
         def a = new XmlSlurper().parseText(response.text)
         def nodeToSerialize = a."**".find {it.name() == 'BinaryFile'}
+
 //        def nodeAsText = XmlUtil.serialize()
 //        log.info nodeToSerialize.text()
-        def webrootDir = org.codehaus.groovy.grails.web.context.ServletContextHolder.getServletContext().getRealPath("/attachments/testpdf.pdf");
+        def webrootDir = org.codehaus.groovy.grails.web.context.ServletContextHolder.getServletContext().getRealPath("/attachments/${jsonSerial.getAt("quoteID")}/testcert.pdf");
 //        DataOutputStream os = new DataOutputStream(new FileOutputStream(webrootDir));
         BASE64Decoder decoder = new BASE64Decoder();
         byte[] decodedBytes = decoder.decodeBuffer(nodeToSerialize.text());
@@ -440,4 +475,73 @@ soapXML = soapXML + """
 
         return "good"
     }
+
+    def ftpFileToAIM(localFileName, quoteID){
+        log.info("FTP FILE TO AIM")
+
+        def bioFile;
+        def lossesFile;
+        def pyroFile;
+        def stuntsFile;
+        def doodFile;
+        def treatmentFile;
+        def budgetFile;
+
+//        def webrootDir = servletContext.getRealPath("/attachments/") //app directory
+        def fileName;
+        log.info "INTELLEDOX QUOTE ID = " + quoteID
+        boolean done = false;
+
+
+//        log.info(webrootDir)
+        String server = "74.100.162.203";
+        int port = 21;
+        String user = "web_ftp";
+        String pass = "Get@4Files";
+
+        FTPClient ftpClient = new FTPClient();
+        try {
+
+            ftpClient.connect(server, port);
+            ftpClient.login(user, pass);
+            ftpClient.enterLocalPassiveMode();
+
+            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+
+
+            fileName = localFileName
+//            File fileDest = new File(webrootDir, fileName)
+            File firstLocalFile = new File("/universe/Neeis/web-app/attachments/${quoteID}", fileName)
+            String firstRemoteFile = "/AIMAPP/ATTACHTEST/${quoteID}/" + fileName;
+            InputStream inputStream = new FileInputStream(firstLocalFile);
+
+            log.info("Start uploading first file");
+            done = ftpClient.storeFile(firstRemoteFile, inputStream);
+            inputStream.close();
+
+
+            if (done) {
+                log.info("The file is uploaded successfully.");
+            }
+
+
+        } catch (IOException ex) {
+            log.info("Error: " + ex.getMessage());
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (ftpClient.isConnected()) {
+                    ftpClient.logout();
+                    ftpClient.disconnect();
+                }
+            } catch (IOException ex) {
+                log.info ex
+                ex.printStackTrace();
+            }
+        }
+
+        log.info "Upload Completed"
+
+    }
 }
+

@@ -8,27 +8,48 @@ var pipChoiceExtra = "";
 var pipChoiceProps = "";
 var pipChoiceThird = "";
 var pipChoiceNOHA = "";
+var pipChoiceCast = "";
+var pipChoiceCastEssential = "";
 
 var riskHasCast = false;
 var riskHasWC = false;
+
 $(document).ready(function () {
-    riskChosen = $("li.active").children("a.riskOptionLink").html().trim();
+
+    var riskChosen = $("li.active").children("a.riskOptionLink").html().trim();
 
     if(riskChosen === "Film Projects Without Cast (No Work Comp)"){
         riskHasCast = false;
-        riskhasWC = false;
+        riskHasWC = false;
     }
     else if(riskChosen === "Film Projects Without Cast (With Work Comp)"){
         riskHasCast = false;
-        riskhasWC = true;
+        riskHasWC = true;
     }
     else if(riskChosen === "Film Projects With Cast (No Work Comp)"){
         riskHasCast = true;
-        riskhasWC = false;
+        riskHasWC = false;
+        $('#EPKGCASTOption').css("display", "");
+        //$('#EPKGCASTEssentialOption').css("display", "");
+        $(document.body).on('change', '#EPKGCASTEssentialAdditionalCoverage' ,function(){
+            if($("#EPKGCASTEssentialAdditionalCoverage").is(':checked')) {
+                $('#castEssentialDiv').css("display", "");
+            }
+            else{
+                $('#castEssentialDiv').css("display", "none");
+                $("#castEssentialInput").prop("checked", false);
+            }
+        });
+
+        //REMOVE PHYSICAL LOCATION INFO PARTS
+        $('.physicalAddressNumBuildings').parent().remove();
+        $('.physicalAddressHabUnits').parent().remove();
+        $('.physicalAddressCommSqFt').parent().remove();
+        $('.interestSelect').parent().remove();
     }
     else if(riskChosen === "Film Projects With Cast (With Work Comp)"){
         riskHasCast = true;
-        riskhasWC = true;
+        riskHasWC = true;
     }
 
     if(riskHasCast){
@@ -39,6 +60,7 @@ $(document).ready(function () {
         $('#questionFilmingLocations').css('display','');
         $('#questionSourceFinancing').css('display','');
         $('#questionCompletionBondRequired').css('display','');
+        $('#questionsCast').css('display','');
 
 
     }
@@ -72,6 +94,64 @@ $(document).ready(function () {
         else{
             $('#filmingLocationInfo').css("display", "none");
         }
+    });
+
+    $(document.body).on('change', 'input[name="postProductionForOthers"]' ,function(){
+        //alert();
+            if ($(this).attr("value") == "Yes") {
+                $("#hideMe").css('display',"");
+            }
+            if ($(this).attr("value") == "No") {
+                $("#hideMe").css('display',"none");
+            }
+    });
+    //NUMBER OF CAST MEMBERS
+    $(document.body).on('keyup', '#numberOfCastMembers' ,function(){
+        if($.isNumeric($(this).val())){
+            var htmlString = "<div class='row'>" +
+                "<div class='col-xs-6'>" +
+                "<div class='form-group'>" +
+                "<input type='text' class='form-control showReview castMemberName' data-reviewName='Cast Member Name, Age, Role'" +
+                "name='castMemberName' placeholder='Name'/>" +
+                "</div>" +
+                "</div>" +
+                "<div class='col-xs-2'>" +
+                "<div class='form-group'>" +
+                "<input type='text' class='form-control showReview castMemberAge' data-reviewName='Cast Member Name, Age, Role'" +
+                "name='castMemberAge' placeholder='Age'/>" +
+                "</div>" +
+                "</div>" +
+                "<div class='col-xs-4'>" +
+                "<div class='form-group'>" +
+                "<input type='text' class='form-control showReview castMemberRole' data-reviewName='Cast Member Name, Age, Role'" +
+                "name='castMemberRole' placeholder='Role'/>" +
+                "</div>" +
+                "</div>" +
+                "</div>";
+
+            var finalString = "";
+            if(parseInt($(this).val() <=10)){
+                for(var i =0; i < parseInt($(this).val()); i++){
+                    finalString = finalString + htmlString;
+                }
+            }
+            else{
+                alert("Please enter only up to 10 cast members.")
+                $(this).val("10");
+                for(var i =0; i < 10; i++){
+                    finalString = finalString + htmlString;
+                }
+            }
+
+            $('#castMemberDetailContainer').html(finalString);
+        }
+        else{
+            $(this).val("");
+        }
+
+
+
+
     });
 
     $(document.body).on('change', '.productionInvolvesCheckbox' ,function(){
@@ -130,7 +210,33 @@ $(document).ready(function () {
             $('#stuntsHazardousActivitiesAttachContainer').css("display", "none");
         }
     });
-
+    $(document.body).on('change', 'input[name="insuranceCancelled"]' ,function(){
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#insuranceCancelledContainer").css('display',"");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#insuranceCancelledContainer").css('display',"none");
+        }
+    });
+    $(document.body).on('change', 'input[name="equipmentOwnedRented"]' ,function(){
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#equipmentOwnedRentedContainer").css('display',"");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#equipmentOwnedRentedContainer").css('display',"none");
+        }
+    });
+    $(document.body).on('change', 'input[name="errorOmissionsLiability"]' ,function(){
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#errorOmissionsLiabilityContainer").css('display',"");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#errorOmissionsLiabilityContainer").css('display',"none");
+        }
+    });
     // Cast Member Insurance
     $(document.body).on('change', '#castInsuranceRequiredCheckBox' ,function(){
         if($("#castInsuranceRequiredCheckBox").is(':checked')) {
@@ -324,8 +430,19 @@ $(document.body).on('click', '.removeCastMember' ,function() {
 // add and remove filming location
     $(document.body).on('change', '#PIP1InputRadio, #PIP2InputRadio, #PIP3InputRadio, #PIP4InputRadio, #PIP5InputRadio, #PIPChoiceInputRadio' ,function(){
         //alert($('#PIP3InputRadio').is(':checked'));
+        var riskChosen = $("li.active").children("a.riskOptionLink").html().trim();
         $("#EPKGoptions").css("display","");
-        $("#EPKGNOHAOption").css("display","");
+
+
+        if(riskChosen === "Film Projects With Cast (No Work Comp)"){
+            $("#EPKGNOHAOption").css("display","none");
+            $("#EPKGCASTEssentialOption").css("display","");
+        }
+        else{
+            $("#EPKGNOHAOption").css("display","");
+            $("#EPKGCASTEssentialOption").css("display","none");
+        }
+
         if($('#PIP1InputRadio').is(':checked') || $('#PIP2InputRadio').is(':checked') ||
             $('#PIP3InputRadio').is(':checked') || $('#PIP4InputRadio').is(':checked') ||
             $('#PIP5InputRadio').is(':checked') || $('#PIPChoiceInputRadio').is(':checked')){
@@ -344,6 +461,7 @@ $(document.body).on('click', '.removeCastMember' ,function() {
             $('#PIPChoice_MiscRented').prop("checked", true);
             $('#PIPChoice_Props').prop("checked", true);
             $('#PIPChoice_ThirdParty').prop("checked", true);
+
         }
         else{
             $('#pipChoiceSelections').css('display', 'none');
@@ -384,8 +502,20 @@ $(document.body).on('click', '.removeCastMember' ,function() {
                 $('#proposedTermLength').val(60 + " Days");
                 $("#CPKCGLcoverage").trigger('change');
             }
-            $("#EPKGoptions").css("display","none");
+
+            if(riskChosen === "Film Projects With Cast (No Work Comp)"){
+                $("#EPKGoptions").css("display","");
+                $("#EPKGNOHAOption").css("display","none");
+
+            }
+            else{
+                $("#EPKGoptions").css("display","none");
+                $("#EPKGNOHAOption").css("display","");
+            }
+
             $('#EPKGNOHAAdditionalCoverage').prop("checked", false);
+
+
         }
         else if($('#PIP5InputRadio').is(':checked')){
             $("#EPKGoptions").css("display","");
@@ -395,11 +525,26 @@ $(document.body).on('click', '.removeCastMember' ,function() {
         }
 
 
+
+
     });
 
-    $(document.body).on('change', '#EPKGcoverage' ,function(){
+        $(document.body).on('change', '#EPKGcoverage' ,function(){
         //alert();
         if($('#EPKGcoverage').is(':checked') ){
+            if(riskChosen === "Film Projects With Cast (No Work Comp)"){
+                $(".FILMWITHCASTNOWCOptions").css("display","");
+                //$('#EPKGCASTAdditionalCoverage').prop("checked", true);
+                //$('#EPKGCASTAdditionalCoverage').trigger('click');
+                //$('#EPKGCASTEssentialOption').css("display","");
+
+
+            }
+            else{
+                //$('#EPKGCASTAdditionalCoverage').prop("checked", false);
+                $("FILMWITHCASTNOWCOptions").css("display","none");
+                //$('#EPKGCASTEssentialOption').css("display","none");
+            }
             //alert();
             if($("#PIPChoiceInput").is(":visible")){
                 $('#PIPChoiceInputRadio').prop("checked", true);
@@ -685,11 +830,28 @@ $(document.body).on('click', '.removeCastMember' ,function() {
             $('.PIPCHOILimitsInput').val($("#totalBudgetConfirm").val().split(".")[0]);
             $('.CPKNOHALimitsInput').val($("#totalBudgetConfirm").val().split(".")[0]);
 
+            //var tempLimit = $("#totalBudgetInput").val().replace(/\$|,/g, '')
+            //console.log("LIMIT AMOUNT1 === " + tempLimit)
+            //if(riskChosen === "Film Projects With Cast (No Work Comp)"){
+            //    tempLimit = parseInt($("#totalBudgetInput").val().replace(/\$|,/g, ''));
+            //    tempLimit = Math.ceil(tempLimit / 1000) * 1000;
+            //}
+            //console.log("LIMIT AMOUNT === " + tempLimit)
+
+
             pipChoiceMisc = $("#totalBudgetConfirm").val().split(".")[0];
             pipChoiceExtra = $("#totalBudgetConfirm").val().split(".")[0];
             pipChoiceProps = $("#totalBudgetConfirm").val().split(".")[0];
             pipChoiceThird = $("#totalBudgetConfirm").val().split(".")[0];
             pipChoiceNOHA = $("#totalBudgetConfirm").val().split(".")[0];
+            pipChoiceCast = $("#totalBudgetConfirm").val().split(".")[0];
+            pipChoiceCastEssential = $("#totalBudgetConfirm").val().split(".")[0];
+
+            //pipChoiceMisc = formatMoney(tempLimit);
+            //pipChoiceExtra = formatMoney(tempLimit);
+            //pipChoiceProps = formatMoney(tempLimit);
+            //pipChoiceThird = formatMoney(tempLimit);
+            //pipChoiceNOHA = formatMoney(tempLimit);
             getProductsForRisk();
         }
         else{
@@ -729,10 +891,26 @@ $(document.body).on('click', '.removeCastMember' ,function() {
             currentChecked = $('#EPKGCIVIL500AdditionalCoverage').attr('id');
         }
     });
-    $(document.body).on('change', '.coverageInput, .additionalCoverageCheckboxCPKCGL, #EPKGNOHAAdditionalCoverage, #totalBudgetConfirm, .additionalCoverageCheckboxPIP5, .PIPCHOIOption' ,function(){
+    $(document.body).on('change', '.coverageInput, .additionalCoverageCheckboxCPKCGL, #EPKGNOHAAdditionalCoverage, #EPKGcoverage' +
+        '#EPKGCASTEssentialAdditionalCoverage, .FWCNWCCheckbox, #totalBudgetConfirm, .additionalCoverageCheckboxPIP5, .PIPCHOIOption, #castEssentialInput' ,function(){
         ratePremiums(this);
-
+        //alert();
     });
+
+    //$(document.body).on('change', '.PIPCHOILimitsInput' ,function(){
+    //    //alert();
+    //    var tempLimit = parseInt($(this).val().replace(/\$|,/g, ''));
+    //    //console.log("LIMIT AMOUNT1 === " + tempLimit)
+    //    if(riskChosen === "Film Projects With Cast (No Work Comp)"){
+    //        tempLimit = Math.ceil(tempLimit / 1000) * 1000;
+    //        //limitAmount = tempLimit
+    //    }
+    //    //console.log("LIMIT AMOUNT === " + tempLimit)
+    //    $(this).val(formatMoney(tempLimit));
+    //    $(this).trigger('keyup');
+    //
+    //});
+
 
     $(document.body).on('keyup', '.PIPCHOILimitsInput' ,function(){
         //console.log("change");
@@ -764,6 +942,12 @@ $(document.body).on('click', '.removeCastMember' ,function() {
             minPremium = 100;
             maxLimit = 1000000;
         }
+        else if(coverageLine.indexOf("Cast Insurance") > -1){
+            rate = 1.1;
+            minPremium = 100;
+            maxLimit = 1000000;
+        }
+
 
         if(limitAmount > maxLimit){
             //alert("Maximum Limit for this Product is  " + maxLimit);
@@ -773,13 +957,22 @@ $(document.body).on('click', '.removeCastMember' ,function() {
             limitAmount = maxLimit;
         }
 
-        if(termLength <= 30){
-            premium = ((((limitAmount * rate)/365)* termLength)*10);
+        if(coverageLine.indexOf("Cast Insurance") > -1){
+            console.log("LIMIT AMOUNT1 === " + limitAmount)
+            console.log("RATE AMOUNT1 === " + rate)
+            premium = (limitAmount * rate) / 100;
         }
         else{
-            premium = limitAmount * rate;
+            if(termLength <= 30){
+                premium = ((((limitAmount * rate)/365)* termLength)*10);
+            }
+            else{
+                premium = limitAmount * rate;
+            }
         }
 
+
+        console.log("PREMIUM AMOUNT1 === " + premium)
         //alert(limitAmount + "+" + rate + "=" + premium);
         if(premium < minPremium){
             premium = minPremium;
@@ -818,6 +1011,7 @@ $(document.body).on('click', '.removeCastMember' ,function() {
 
         totalUpPremiumAndTax();
         var elem = document.createElement('textarea');
+        pipchoiceLimits = "";
         $('.PIPCHOILimitsInput').each(function( index ) {
             elem.innerHTML = $(this).parent().siblings(".coverageColumn").children().first().html();
             var decoded = elem.value;
@@ -828,6 +1022,8 @@ $(document.body).on('click', '.removeCastMember' ,function() {
             else{
                 pipchoiceLimits = pipchoiceLimits + decoded + "&;&" + $(this).val() + "&;;&";
             }
+
+
 
             if(decoded === "Miscellaneous Rented Equipment"){
                 pipChoiceMisc = $(this).val();
@@ -843,6 +1039,12 @@ $(document.body).on('click', '.removeCastMember' ,function() {
             }
             else if(decoded === "Hired Auto Physical Damage"){
                 pipChoiceNOHA = $(this).val();
+            }
+            else if(decoded === "Cast Insurance"){
+                pipChoiceCast = $(this).val();
+            }
+            else if(decoded === "Cast Essential"){
+                pipChoiceCastEssential = $(this).val();
             }
         });
 
@@ -894,14 +1096,50 @@ function ratePremiums(thisObj){
     var additionalProducts = "";
     var pipChoiOptions = "";
 
-    $(".coverageRadioButton").each(function( index ) {
-        if($(this).is(':checked')){
-            productsSelected = productsSelected + $(this).attr('class').replace("coverageRadioButton ","") + ":" + $( this ).val() + ",";
-            if($(this).hasClass("CPK")){
+
+
+
+    ///////////////////////////// Film Projects With Cast (No Work Comp)
+    if(riskChosen === "Film Projects With Cast (No Work Comp)"){
+        if($('#EPKGcoverage').is(':checked')) {
+            productsSelected = productsSelected + "EPKG" + ":" + "EPKG37"+ ",";
+        }
+        if($('#CPKInputRadio').is(':checked')) {
+            productsSelected = productsSelected + $('#CPKInputRadio').attr('class').replace("coverageRadioButton ","") + ":" + $('#CPKInputRadio').val() + ",";
+            if($('#CPKInputRadio').hasClass("CPK")){
                 productsSelected = productsSelected + "NOAL" + ":" + "NOAL01" + ",";
             }
         }
-    });
+        if($('#CGLInputRadio').is(':checked')) {
+            productsSelected = productsSelected + $('#CGLInputRadio').attr('class').replace("coverageRadioButton ","") + ":" + $('#CGLInputRadio').val() + ",";
+        }
+        //if($('#EPKGCASTAdditionalCoverage').is(':checked')){
+        //    additionalProducts = additionalProducts + "EPKGCASTAdditionalCoverage" + ":" + "EPKGCASTAdditionalCoverage" + ",";
+        //}
+
+        if($('#EPKGCASTEssentialAdditionalCoverage').is(':checked')){
+            additionalProducts = additionalProducts + "EPKGCASTEssentialAdditionalCoverage" + ":" + "EPKGCASTEssentialAdditionalCoverage" + ",";
+        }
+
+        $(".additionalCoverageCheckboxEPKG").each(function( index ) {
+            if($(this).is(':checked')){
+                additionalProducts = additionalProducts + $( this ).attr("id") + ":" + $( this ).attr("id") + ",";
+            }
+        });
+    }
+    else{
+        $(".coverageRadioButton").each(function( index ) {
+            if($(this).is(':checked')){
+                productsSelected = productsSelected + $(this).attr('class').replace("coverageRadioButton ","") + ":" + $( this ).val() + ",";
+                if($(this).hasClass("CPK")){
+                    productsSelected = productsSelected + "NOAL" + ":" + "NOAL01" + ",";
+                }
+            }
+        });
+    }
+
+    ///////////////////////////// Film Projects With Cast (No Work Comp)
+
 
     $("#EPKGNOHAAdditionalCoverage").each(function( index ) {
         if($(this).is(':checked')){
@@ -926,11 +1164,12 @@ function ratePremiums(thisObj){
             additionalProducts = additionalProducts + $( this ).attr("id") + ":" + $( this ).attr("id") + ",";
         }
     });
+
+
     //alert(productsSelected);
 
     var CGLNOALLimit = "";
     var elem = document.createElement('textarea');
-
     $('.PIPCHOILimitsInput').each(function( index ) {
         elem.innerHTML = $(this).parent().siblings(".coverageColumn").children().first().html();
         var decoded = elem.value;
@@ -941,6 +1180,14 @@ function ratePremiums(thisObj){
         else{
             pipchoiceLimits = pipchoiceLimits + decoded + "&;&" + $(this).val() + "&;;&";
         }
+
+        //var tempLimit = $("#totalBudgetInput").val().replace(/\$|,/g, '')
+        //console.log("LIMIT AMOUNT1 === " + tempLimit)
+        //if(riskChosen === "Film Projects With Cast (No Work Comp)"){
+        //    tempLimit = parseInt($("#totalBudgetInput").val().replace(/\$|,/g, ''));
+        //    tempLimit = Math.ceil(tempLimit / 1000) * 1000;
+        //}
+        //console.log("LIMIT AMOUNT === " + tempLimit)
 
         if(decoded === "Miscellaneous Rented Equipment"){
             pipChoiceMisc = $(this).val();
@@ -957,8 +1204,14 @@ function ratePremiums(thisObj){
         else if(decoded === "Hired Auto Physical Damage"){
             pipChoiceNOHA = $(this).val();
         }
+        else if(decoded === "Cast Insurance"){
+            pipChoiceCast = $(this).val();
+        }
+        else if(decoded === "Cast Essential"){
+            pipChoiceCastEssential = $(this).val();
+        }
     });
-    console.log(pipChoiceMisc);
+    //console.log(pipChoiceMisc);
     $('.CPKNOHALimitsInput').each(function( index ) {
         elem.innerHTML = $(this).parent().siblings(".coverageColumn").children().first().html();
         var decoded = elem.value;
@@ -970,6 +1223,7 @@ function ratePremiums(thisObj){
 
     if(productsSelected.length > 0 && parseFloat($("#totalBudgetInput").val().replace(/\$|,/g, '')) > 0) {
             //console.log($('#costOfHireInput').val());
+        //alert(pipchoiceLimits)
         $.ajax({
             method: "POST",
             url: "/portal/Async/ratePremiums",
@@ -981,7 +1235,8 @@ function ratePremiums(thisObj){
                 additionalProducts: additionalProducts,
                 totalBudget: $("#totalBudgetInput").val().replace(/\$|,/g, ''),
                 proposedTermLength: $("#proposedTermLength").val(),
-                costOfHire: $('#costOfHireInput').val().replace(/\$|,/g, '')
+                costOfHire: $('#costOfHireInput').val().replace(/\$|,/g, ''),
+                castEssentialNum: $('#castEssentialInput').val()
 
             }
         })
@@ -1106,6 +1361,14 @@ function ratePremiums(thisObj){
 
                     var limitLines = Object.keys(responseJSON.coverages[i].limits);
                     if(responseJSON.coverages[i].coverageCode === "EPKG"){
+                        if(limitLines.indexOf("Cast Insurance") > -1){
+                            limitLines.splice(limitLines.indexOf("Cast Insurance"), 1);
+                            limitLines.push("Cast Insurance");
+                        }
+                        if(limitLines.indexOf("Cast Essential") > -1){
+                            limitLines.splice(limitLines.indexOf("Cast Essential"), 1);
+                            limitLines.push("Cast Essential");
+                        }
                         if(limitLines.indexOf("Negative Film & Videotape") > -1){
                             limitLines.splice(limitLines.indexOf("Negative Film & Videotape"), 1);
                             limitLines.push("Negative Film & Videotape");
@@ -1117,6 +1380,10 @@ function ratePremiums(thisObj){
                         if(limitLines.indexOf("Miscellaneous Rented Equipment") > -1){
                             limitLines.splice(limitLines.indexOf("Miscellaneous Rented Equipment"), 1);
                             limitLines.push("Miscellaneous Rented Equipment");
+                        }
+                        if(limitLines.indexOf("INC:Non-Owned Auto Physical Damage") > -1){
+                            limitLines.splice(limitLines.indexOf("INC:Non-Owned Auto Physical Damage"), 1);
+                            limitLines.push("INC:Non-Owned Auto Physical Damage");
                         }
                         if(limitLines.indexOf("Extra Expense") > -1){
                             limitLines.splice(limitLines.indexOf("Extra Expense"), 1);
@@ -1134,10 +1401,17 @@ function ratePremiums(thisObj){
                             limitLines.splice(limitLines.indexOf("Office Contents"), 1);
                             limitLines.push("Office Contents");
                         }
-
+                        if(limitLines.indexOf("Money & Securities") > -1){
+                            limitLines.splice(limitLines.indexOf("Money & Securities"), 1);
+                            limitLines.push("Money & Securities");
+                        }
                         if(limitLines.indexOf("Civil Authority (US Only)") > -1){
                             limitLines.splice(limitLines.indexOf("Civil Authority (US Only)"), 1);
                             limitLines.push("Civil Authority (US Only)");
+                        }
+                        if(limitLines.indexOf("Animal Mortality") > -1){
+                            limitLines.splice(limitLines.indexOf("Animal Mortality"), 1);
+                            limitLines.push("Animal Mortality");
                         }
 
                         if(limitLines.indexOf("Animal Mortality Under Cast Insurance (Domestic Birds/Fish)") > -1){
@@ -1198,9 +1472,9 @@ function ratePremiums(thisObj){
                             limitLines.push("Fire Damage (Any One Fire)");
                         }
 
-                        if(limitLines.indexOf("\$5,000 Medical Payments (Per Person)") > -1){
-                            limitLines.splice(limitLines.indexOf("\$5,000 Medical Payments (Per Person)"), 1);
-                            limitLines.push("\$5,000 Medical Payments (Per Person)");
+                        if(limitLines.indexOf("Medical Payments (Per Person)") > -1){
+                            limitLines.splice(limitLines.indexOf("Medical Payments (Per Person)"), 1);
+                            limitLines.push("Medical Payments (Per Person)");
                         }
                         if(limitLines.indexOf("Increased Agg Limit") > -1){
                             limitLines.splice(limitLines.indexOf("Increased Agg Limit"), 1);
@@ -1214,9 +1488,9 @@ function ratePremiums(thisObj){
                             limitLines.splice(limitLines.indexOf("Waiver of Subrogation"), 1);
                             limitLines.push("Waiver of Subrogation");
                         }
-                        if(limitLines.indexOf("Additional Charge to Include $5,000 Medical Payments") > -1){
-                            limitLines.splice(limitLines.indexOf("Additional Charge to Include $5,000 Medical Payments"), 1);
-                            limitLines.push("Additional Charge to Include $5,000 Medical Payments");
+                        if(limitLines.indexOf("Additional Charge to Include Medical Payments") > -1){
+                            limitLines.splice(limitLines.indexOf("Additional Charge to Include Medical Payments"), 1);
+                            limitLines.push("Additional Charge to Include Medical Payments");
                         }
 
 
@@ -1265,6 +1539,16 @@ function ratePremiums(thisObj){
                                 "</div>" +
                                 "<div class='col-xs-2 limitColumn'>";
                         }
+                        if(key === "INC:Non-Owned Auto Physical Damage"){
+                            limitDeductibleString = limitDeductibleString + "<span>" + key.split(":")[1] + "</span>" +
+                                "</div>" +
+                                "<div class='col-xs-2 limitColumn' style='line-height: 1.3'>";
+                        }
+                        else if(key === "Cast Essential"){
+                            limitDeductibleString = limitDeductibleString + "<span>" + key + "</span>" +
+                                "</div>" +
+                                "<div class='col-xs-2 limitColumn' style='line-height: 1.3'>";
+                        }
                         else{
                             limitDeductibleString = limitDeductibleString + "<span>" + key + "</span>" +
                             "</div>" +
@@ -1277,26 +1561,48 @@ function ratePremiums(thisObj){
                             if(key === "Hired Auto Physical Damage"){
                                 limitDeductibleString = limitDeductibleString + "<span>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
                             }
+                            else if(key === "Cast Essential"){
+                                limitDeductibleString = limitDeductibleString + "<span style='font-size:9px'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
+                            }
                             else{
                                 limitDeductibleString = limitDeductibleString + "<input class='form-control PIPCHOILimitsInput " + key.replace(/\s+/g, '').replace(/[^a-zA-Z-]/g, '') +"' type='text' placeholder = '$' name='numBuildings' " +
                                     "style='font-size: 12px;padding: 2px;margin-top: 3px; margin-bottom:3px; height: 20px;'/>";
                             }
 
                         }
+
                         else if(responseJSON.coverages[i].coverageCode === "NOAL" && CPKincluded){
                             limitDeductibleString = limitDeductibleString + "<span>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
                         }
                         else{
-                            limitDeductibleString = limitDeductibleString + "<span>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
+                            if(key === "Cast Essential" ){
+                                limitDeductibleString = limitDeductibleString + "<span style='font-size:11px'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
+                            }
+                            else if(key === "INC:Non-Owned Auto Physical Damage"){
+                                limitDeductibleString = limitDeductibleString + "<span style='font-size:11px;'>" + formatMoney(responseJSON.coverages[i].limits[key].split(":")[0]) + "</span>";
+                            }
+                            else{
+                                limitDeductibleString = limitDeductibleString + "<span>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
+                            }
+
                         }
 
 
 
 
-                        limitDeductibleString = limitDeductibleString + "</div>" +
-                            "<div class='col-xs-2 premiumColumn'>" +
-                            "<span class='" + responseJSON.coverages[i].productCode.replace(/ /g,'') + "PremiumLine' >" + formatMoney(premiumForCoverageLine) + "</span>" +
-                            "</div>";
+                        limitDeductibleString = limitDeductibleString + "</div>";
+
+                        if(key === "Cast Essential"){
+                            limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 premiumColumn' style=''>" +
+                                "<span class='" + responseJSON.coverages[i].productCode.replace(/ /g,'') + "PremiumLine' >" + formatMoney(premiumForCoverageLine) + "</span>" +
+                                "</div>";
+                        }
+                        else{
+                            limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 premiumColumn'>" +
+                                "<span class='" + responseJSON.coverages[i].productCode.replace(/ /g,'') + "PremiumLine' >" + formatMoney(premiumForCoverageLine) + "</span>" +
+                                "</div>";
+                        }
+
                         if(key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
                             responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")){
                             limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 deductibleColumn'>" +
@@ -1305,11 +1611,14 @@ function ratePremiums(thisObj){
                                 "<span class='NOHADeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles["Non-Owned Auto Physical Damage"])  +
                                 "</span>";
                         }
-
+                        else if(key === "Cast Essential"){
+                            limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 deductibleColumn' style=''>" +
+                                "<span class='" + responseJSON.coverages[i].productCode.replace(/ /g,'') + "DeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles[key])  +
+                                "</span>";
+                        }
                         else{
                             limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 deductibleColumn'>" +
                                 "<span class='" + responseJSON.coverages[i].productCode.replace(/ /g,'') + "DeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles[key])  +
-
                                 "</span>";
                         }
                             limitDeductibleString = limitDeductibleString + "</div>" +
@@ -1329,6 +1638,8 @@ function ratePremiums(thisObj){
                         "<span'>" + "-" + "</span>" +
                         "</div>" +
                         "</div>";
+                    limitDeductibleString = limitDeductibleString + "<span id='" + responseJSON.coverages[i].coverageCode + "_RateInfo' style='display:none'>" +
+                        responseJSON.coverages[i].rateInfo + "</span>";
                     limitDeductibleString = limitDeductibleString + "<br>";
 
                     var lobLines = Object.keys(responseJSON.coverages[i].lobDist);
@@ -1407,7 +1718,15 @@ function ratePremiums(thisObj){
                 }
 
                 $('.PIPCHOILimitsInput').maskMoney({prefix:'$', precision:"0"});
-                $('.PIPCHOILimitsInput').val($("#totalBudgetInput").val().split(".")[0]);
+
+                //var tempLimit = parseInt($("#totalBudgetInput").val().replace(/\$|,/g, ''));
+                //console.log("LIMIT AMOUNT1 === " + tempLimit)
+                //if(riskChosen === "Film Projects With Cast (No Work Comp)"){
+                //    tempLimit = Math.ceil(tempLimit / 1000) * 1000;
+                //}
+                //console.log("LIMIT AMOUNT === " + tempLimit / 1000)
+
+                $('.PIPCHOILimitsInput').val($("#totalBudgetInput").val());
                 if(pipChoiceMisc.length > 0){
                     $(".MiscellaneousRentedEquipment").val(pipChoiceMisc);
                 }
@@ -1422,7 +1741,12 @@ function ratePremiums(thisObj){
                 }
                 if(pipChoiceNOHA.length > 0){
                     $(".HiredAutoPhysicalDamage").val(pipChoiceNOHA);
-
+                }
+                if(pipChoiceCast.length > 0){
+                    $(".CastInsurance").val(pipChoiceCast);
+                }
+                if(pipChoiceCastEssential.length > 0){
+                    $(".CastEssential").val(pipChoiceCastEssential);
                 }
 
                 $('.PIPCHOILimitsInput').trigger("keyup");

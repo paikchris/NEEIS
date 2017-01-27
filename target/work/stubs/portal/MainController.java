@@ -25,6 +25,8 @@ public  portal.DAO.AIMSQL getAimDAO() { return (portal.DAO.AIMSQL)null;}
 public  void setAimDAO(portal.DAO.AIMSQL value) { }
 public  java.lang.Object getDownloadPDF() { return null;}
 public  void setDownloadPDF(java.lang.Object value) { }
+public  java.lang.Object getDownloadCert() { return null;}
+public  void setDownloadCert(java.lang.Object value) { }
 public  java.lang.Object checkUser() { return null;}
 public  java.lang.Object index() { return null;}
 public  java.lang.Object newSubmission() { return null;}
@@ -32,8 +34,10 @@ public  java.lang.Object messages() { return null;}
 public  java.lang.Object submitSubmission() { return null;}
 public  java.lang.Object checkNamedInsured() { return null;}
 public  java.lang.Object sandbox() { return null;}
+public  java.lang.Object certs() { return null;}
 public  java.lang.Object syncProductsFromAIM() { return null;}
 public  java.lang.Object submissions() { return null;}
 public  java.lang.Object submissionView() { return null;}
 public  java.lang.Object newSubmissionConfirm() { return null;}
+public  java.lang.Object getGroupedMessages() { return null;}
 }

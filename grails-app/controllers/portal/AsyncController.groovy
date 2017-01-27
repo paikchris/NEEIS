@@ -12,6 +12,7 @@ import groovy.json.JsonBuilder
 import java.text.DecimalFormat
 import portal.DAO.*
 import java.text.SimpleDateFormat;
+import java.text.NumberFormat;
 import org.apache.commons.net.ftp.FTPClient
 import org.apache.commons.net.ftp.FTP;
 import sun.misc.BASE64Decoder;
@@ -43,74 +44,81 @@ class AsyncController {
                 log.info test
 
                 renderString = renderString + it + "&,&" + test.coverageName + "&;&"
-                if (params.riskType == "Film Projects Without Cast (No Work Comp)" || params.riskType == "Specific Film Projects Test") {
+                if (params.riskType == "Film Projects Without Cast (No Work Comp)" || params.riskType == "Film Projects With Cast (No Work Comp)" ||params.riskType == "Specific Film Projects Test") {
 
                     if (it == "EPKG") {
 //                        log.info "SPECIFIC FILM" + params.totalGrossBudget.toFloat()
-                        if (params.totalGrossBudget.toFloat() <= 500000) {
-                            aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                    "FROM lkpProduct " +
-                                    "WHERE (ProductID = 'PIP CHOI') AND (ActiveFlag = 'Y')") {
-                                renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
-                            }
-                            aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                    "FROM lkpProduct " +
-                                    "WHERE (ProductID = 'PIP 2') AND (ActiveFlag = 'Y')") {
-                                renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
-                            }
+                        if (params.riskType == "Film Projects With Cast (No Work Comp)"){
 
-                            if (params.totalGrossBudget.toFloat() <= 100000) {
+                        }
+                        else{
+                            if (params.totalGrossBudget.toFloat() <= 500000) {
                                 aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
                                         "FROM lkpProduct " +
-                                        "WHERE (ProductID = 'PIP 1') AND (ActiveFlag = 'Y')") {
+                                        "WHERE (ProductID = 'PIP CHOI') AND (ActiveFlag = 'Y')") {
                                     renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
                                 }
-                            }
-                            if ((params.totalGrossBudget.toFloat() >= 1 && params.totalGrossBudget.toFloat() <= 300000)) {
                                 aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
                                         "FROM lkpProduct " +
-                                        "WHERE (ProductID = 'PIP 3') AND (ActiveFlag = 'Y')") {
+                                        "WHERE (ProductID = 'PIP 2') AND (ActiveFlag = 'Y')") {
                                     renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
                                 }
-                            }
-                            if ((params.totalGrossBudget.toFloat() > 300000 && params.totalGrossBudget.toFloat() <= 400000)) {
-                                aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                        "FROM lkpProduct " +
-                                        "WHERE (ProductID = 'PIP 4') AND (ActiveFlag = 'Y')") {
-                                    renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
+
+                                if (params.totalGrossBudget.toFloat() <= 100000) {
+                                    aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
+                                            "FROM lkpProduct " +
+                                            "WHERE (ProductID = 'PIP 1') AND (ActiveFlag = 'Y')") {
+                                        renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
+                                    }
+                                }
+                                if ((params.totalGrossBudget.toFloat() >= 1 && params.totalGrossBudget.toFloat() <= 300000)) {
+                                    aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
+                                            "FROM lkpProduct " +
+                                            "WHERE (ProductID = 'PIP 3') AND (ActiveFlag = 'Y')") {
+                                        renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
+                                    }
+                                }
+                                if ((params.totalGrossBudget.toFloat() > 300000 && params.totalGrossBudget.toFloat() <= 400000)) {
+                                    aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
+                                            "FROM lkpProduct " +
+                                            "WHERE (ProductID = 'PIP 4') AND (ActiveFlag = 'Y')") {
+                                        renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
+                                    }
+                                }
+                                if ((params.totalGrossBudget.toFloat() > 400000 && params.totalGrossBudget.toFloat() <= 500000)) {
+                                    aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
+                                            "FROM lkpProduct " +
+                                            "WHERE (ProductID = 'PIP 5') AND (ActiveFlag = 'Y')") {
+                                        renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
+                                    }
                                 }
                             }
-                            if ((params.totalGrossBudget.toFloat() > 400000 && params.totalGrossBudget.toFloat() <= 500000)) {
+                            else if (params.totalGrossBudget.toFloat() > 500000) {
                                 aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
                                         "FROM lkpProduct " +
                                         "WHERE (ProductID = 'PIP 5') AND (ActiveFlag = 'Y')") {
+                                    log.info("${it.CoverageID} : ${it.ProductID}")
                                     renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
                                 }
+
+                                aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
+                                        "FROM lkpProduct " +
+                                        "WHERE (ProductID = 'PIP CHOI') AND (ActiveFlag = 'Y')") {
+                                    renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
+                                }
+                                aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
+                                        "FROM lkpProduct " +
+                                        "WHERE (ProductID = 'PIP 2') AND (ActiveFlag = 'Y')") {
+                                    renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
+                                }
+
+
                             }
                         }
-                        else if (params.totalGrossBudget.toFloat() > 500000) {
-                            aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                    "FROM lkpProduct " +
-                                    "WHERE (ProductID = 'PIP 5') AND (ActiveFlag = 'Y')") {
-                                log.info("${it.CoverageID} : ${it.ProductID}")
-                                renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
-                            }
-
-                            aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                    "FROM lkpProduct " +
-                                    "WHERE (ProductID = 'PIP CHOI') AND (ActiveFlag = 'Y')") {
-                                renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
-                            }
-                            aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                    "FROM lkpProduct " +
-                                    "WHERE (ProductID = 'PIP 2') AND (ActiveFlag = 'Y')") {
-                                renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
-                            }
 
 
-                        }
-
-                    } else if (it == "CPK") {
+                    }
+                    else if (it == "CPK") {
                         aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
                                 "FROM lkpProduct " +
                                 "WHERE (CoverageID = '" + it + "') AND (ActiveFlag = 'Y')") {
@@ -430,11 +438,14 @@ class AsyncController {
         log.info(params);
         Sql aimsql = new Sql(dataSource_aim)
 
+        NumberFormat moneyFormat = NumberFormat.getCurrencyInstance();
+
         def jsonResponse = "";
         def arrayOfCoverageDetails = [];
         def pipChoiceLimitsArray = params.pipChoiceLimits.split("&;;&");
         def pipChoiceLimitsMap = [:]
         def termLength = params.proposedTermLength.split(" ")[0].toInteger();
+
 
         if (params.pipChoiceLimits.length() > 1) {
             for (def i = 0; i < pipChoiceLimitsArray.size(); i++) {
@@ -444,7 +455,7 @@ class AsyncController {
         }
 
 
-        if (params.riskType == "Film Projects Without Cast (No Work Comp)" || params.riskType == "Specific Film Projects Test") {
+        if (params.riskType == "Film Projects Without Cast (No Work Comp)" || params.riskType == "Film Projects With Cast (No Work Comp)" || params.riskType == "Specific Film Projects Test") {
             def NOHALOB = "";
             def NOHALimitsMap = [:];
             def NOHADeductsMap = [:];
@@ -467,6 +478,7 @@ class AsyncController {
                     def endorseString = "";
                     def lobString = "";
                     def additionaLOBString = "";
+                    def rateInfo = "";
 
                     //GET DEFAULT LIMITS, DEDUCTIBLES, AND TERMS FOR PRODUCT IN DMU AIM
 
@@ -516,6 +528,9 @@ class AsyncController {
                             def rate = miscRentedEquipRateMinPrem[0];
                             def minPremium = miscRentedEquipRateMinPrem[1];
 
+
+                            rateInfo = "EPKG\tRate\tPremium\tCoverage\tMin Prem\n";
+
                             //CUSTOM DEDUCTIBLES
                             def tempDeductiblesMap = [:];
 
@@ -534,10 +549,12 @@ class AsyncController {
 
                                 if (pipChoiceLimitsMap["Miscellaneous Rented Equipment"]) {
                                     tempLimit = pipChoiceLimitsMap["Miscellaneous Rented Equipment"].toDouble();
+
                                 } else {
                                     tempLimit = params.totalBudget.toDouble();
 
                                 }
+
 
                                 if(termLength <= 30){
                                     premium = ((premium/365) * termLength) * 10
@@ -556,6 +573,10 @@ class AsyncController {
                                 tempDeductiblesMap["Miscellaneous Rented Equipment"] = calcPIP3Deductibles(params.totalBudget.toDouble())
                                 productTotalPremium = productTotalPremium + premium;
                                 premiumsMap["Miscellaneous Rented Equipment"] = [rate, premium];
+
+
+//                                log.info(formatter.format(amt));
+                                rateInfo = rateInfo + "EPKG\t${rate}\t${moneyFormat.format(premium)}\tMiscellaneous Rented Equipment\t${moneyFormat.format(minPremium)}\n";
                             }
                             else{
                                 limitsMap.remove("Miscellaneous Rented Equipment")
@@ -575,6 +596,8 @@ class AsyncController {
                                 tempDeductiblesMap["Props, Sets & Wardrobe"] = calcPIP3Deductibles(params.totalBudget.toDouble())
                                 productTotalPremium = productTotalPremium + premium;
                                 premiumsMap["Props, Sets & Wardrobe"] = [rate, premium];
+                                rateInfo = rateInfo + "EPKG\t${rate}\t${moneyFormat.format(premium)}\tProps, Sets & Wardrobe\t${moneyFormat.format(minPremium)}\n";
+
                             }
                             else{
                                 limitsMap.remove("Props, Sets & Wardrobe")
@@ -594,6 +617,8 @@ class AsyncController {
                                 tempDeductiblesMap["Third Party Prop Damage Liab"] = calcPIP3Deductibles(params.totalBudget.toDouble())
                                 productTotalPremium = productTotalPremium + premium;
                                 premiumsMap["Third Party Prop Damage Liab"] = [rate, premium];
+                                rateInfo = rateInfo + "EPKG\t${rate}\t${moneyFormat.format(premium)}\tThird Party Prop Damage Liab\t${moneyFormat.format(minPremium)}\n";
+
                             }
                             else{
                                 limitsMap.remove("Third Party Prop Damage Liab")
@@ -613,6 +638,8 @@ class AsyncController {
                                 tempDeductiblesMap["Extra Expense"] = calcPIP3Deductibles(params.totalBudget.toDouble())
                                 productTotalPremium = productTotalPremium + premium;
                                 premiumsMap["Extra Expense"] = [rate, premium];
+                                rateInfo = rateInfo + "EPKG\t${rate}\t${moneyFormat.format(premium)}\tExtra Expense\t${moneyFormat.format(minPremium)}\n";
+
                             }
                             else{
                                 limitsMap.remove("Extra Expense")
@@ -620,19 +647,46 @@ class AsyncController {
                             }
 
 
+//                          IF FILM WITH CAST AND NO WC, ROUND LIMITS TO NEAREST 1000'S
+                            tempLimit = params.totalBudget.toDouble()
+//                            if(params.riskType == "Film Projects With Cast (No Work Comp)"){
+//                                tempLimit = Math.ceil(tempLimit / 1000) * 1000;
+////                                limitsMap["Negative Film & Videotape"] = "\$" + String.format("%.0f", tempLimit.trunc())
+////                                limitsMap["Faulty Stock & Camera Processing"] = "\$" + String.format("%.0f", tempLimit.trunc())
+//
+//                                if (params.additionalProducts.contains("EPKGCASTAdditionalCoverage")) {
+//                                    def castPremium = (params.totalBudget.toDouble() *  1.1) / 100
+//                                    premiumsMap["Cast Insurance (Up to 10)"] = ["flat", castPremium];
+//                                    tempDeductiblesMap["Cast Insurance (Up to 10)"] = "Nil";
+//                                    limitsMap["Cast Insurance (Up to 10)"] = "\$" + String.format("%.0f", tempLimit.trunc());
+//                                    productTotalPremium = productTotalPremium + castPremium;
+//                                }
+//                                if (params.additionalProducts.contains("EPKGCASTEssentialAdditionalCoverage")) {
+//                                    def castPremium = (params.totalBudget.toDouble() *  1.1) / 100
+//                                    premiumsMap["Cast Essential"] = ["flat", "incl"];
+//                                    tempDeductiblesMap["Cast Essential"] = "Nil";
+//                                    limitsMap["Cast Essential"] = "Incl. Under Cast" ;
+//                                    productTotalPremium = productTotalPremium + castPremium;
+//                                }
+//                            }
+
                             if (params.productsSelected.contains("NOHA")) {
                                 def NOHARateMinPrem = ["flat", 750];
 
                                 premiumsMap["Hired Auto Physical Damage"] = NOHARateMinPrem;
                                 tempDeductiblesMap["Hired Auto Physical Damage"] = "10% of Loss (\$1,500 Min / \$10,000)";
                                 limitsMap["Hired Auto Physical Damage"] = "\$1,000,000"
+                                rateInfo = rateInfo + "EPKG\t${rate}\t${moneyFormat.format(premium)}\tHired Auto Physical Damage\t${moneyFormat.format(minPremium)}\n";
+
                             } else {
                                 limitsMap.remove("Hired Auto Physical Damage")
                                 deductsMap.remove("Hired & Non-Owned Auto Physical Damage")
                             }
                             deductsMap = tempDeductiblesMap;
 
-                        } else if (productID == "PIP 1") {
+
+                        }
+                        else if (productID == "PIP 1") {
                             def negativeFilmVideoRateMinPrem = ["flat", "incl"];
                             def faultyStockCameraProcessingRateMinPrem = ["flat", "incl"];
                             def miscRentedEquipRateMinPrem = ["flat", "incl"];
@@ -651,6 +705,43 @@ class AsyncController {
                             premiumsMap["Third Party Prop Damage Liab"] = thirdPartyPropDamageRateMinPrem;
                             premiumsMap["Extra Expense"] = extraExpenseRateMinPrem;
 
+                            rateInfo = "EPKG\tRate\tPremium\tCoverage\tMin Prem\n";
+                            rateInfo = rateInfo + "EPKG\tflat\t\$500\t\t\n";
+                            rateInfo = rateInfo + "EPKG\tflat\tincl\tNegative Film & Videotape\t\n";
+                            rateInfo = rateInfo + "EPKG\tflat\tincl\tFaulty Stock & Camera Processing\t\n";
+                            rateInfo = rateInfo + "EPKG\tflat\tincl\tMiscellaneous Rented Equipment\t\n";;
+                            rateInfo = rateInfo + "EPKG\tflat\tincl\tProps, Sets & Wardrobe\t\n";
+                            rateInfo = rateInfo + "EPKG\tflat\tincl\tThird Party Prop Damage Liab\t\n";
+                            rateInfo = rateInfo + "EPKG\tflat\tincl\tExtra Expense\t\n";
+
+
+
+
+
+//                          IF FILM WITH CAST AND NO WC, ROUND LIMITS TO NEAREST 1000'S
+                            def tempLimit = params.totalBudget.toDouble()
+//                            if(params.riskType == "Film Projects With Cast (No Work Comp)"){
+//                                tempLimit = Math.ceil(tempLimit / 1000) * 1000;
+//                                limitsMap["Negative Film & Videotape"] = "\$" + String.format("%.0f", tempLimit.trunc())
+//                                limitsMap["Faulty Stock & Camera Processing"] = "\$" + String.format("%.0f", tempLimit.trunc())
+//
+//                                if (params.additionalProducts.contains("EPKGCASTAdditionalCoverage")) {
+//                                    def castPremium = (params.totalBudget.toDouble() *  1.1) / 100
+//                                    premiumsMap["Cast Insurance"] = ["flat", castPremium];
+//                                    deductsMap["Cast Insurance"] = "Nil";
+//                                    limitsMap["Cast Insurance"] = "\$" + String.format("%.0f", tempLimit.trunc());
+//                                    productTotalPremium = productTotalPremium + castPremium;
+//                                }
+//                                if (params.additionalProducts.contains("EPKGCASTEssentialAdditionalCoverage")) {
+//                                    def castPremium = (params.totalBudget.toDouble() *  1.1) / 100
+//                                    premiumsMap["Cast Essential"] = ["flat", "incl"];
+//                                    deductsMap["Cast Essential"] = "Nil";
+//                                    limitsMap["Cast Essential"] = "Incl. Under Cast" ;
+//                                    productTotalPremium = productTotalPremium + castPremium;
+//                                }
+//                            }
+
+
                             if (params.productsSelected.contains("NOHA")) {
                                 def NOHARateMinPrem = ["flat", 500];
 
@@ -658,26 +749,14 @@ class AsyncController {
                                 deductsMap["Hired Auto Physical Damage"] = "10% of Loss (\$1,500 Min / \$10,000)";
                                 limitsMap["Hired Auto Physical Damage"] = "\$1,000,000"
                                 productTotalPremium = productTotalPremium + NOHARateMinPrem[1]
+                                rateInfo = rateInfo + "EPKG\tflat\t\$500\tHired Auto Physical Damage\t\n";
                             } else {
                                 limitsMap.remove("Hired Auto Physical Damage")
                                 deductsMap.remove("Hired & Non-Owned Auto Physical Damage")
                             }
-//                            if(params.productsSelected.contains("NOHA")){
-//                                def NOHARateMinPrem = ["flat",500];
 //
-//                                limitsMap.remove("Hired Auto Physical Damage")
-//                                deductsMap.remove("Hired & Non-Owned Auto Physical Damage")
-//
-//                                NOHAPremiumsMap["Hired Auto Physical Damage"] = NOHARateMinPrem
-//                                NOHALimitsMap["Hired Auto Physical Damage"] =  "Up to \$1,000,000"
-//                                NOHADeductsMap["Hired Auto Physical Damage"] = "10% of Loss (\$3,500 Min / \$10,000)"
-//                                NOHALOB = "Hired Auto Physical Damage" + "\t" + 500 + "\t" + "-\t" + "-\r"
-//                            }
-//                            else{
-//                                limitsMap.remove("Hired Auto Physical Damage")
-//                                deductsMap.remove("Hired Auto Physical Damage")
-//                            }
-                        } else if (productID == "PIP 2") {
+                        }
+                        else if (productID == "PIP 2") {
                             def PIP2premium = 1000;
                             def negativeFilmVideoRateMinPrem = ["flat", "incl"];
                             def faultyStockCameraProcessingRateMinPrem = ["flat", "incl"];
@@ -700,6 +779,40 @@ class AsyncController {
                             premiumsMap["Office Contents"] = officeContentsRateMinPrem;
 
 
+                            rateInfo = "EPKG\tRate\tPremium\tCoverage\tMin Prem\n";
+                            rateInfo = rateInfo + "EPKG\tflat\t\$1,000\t\t\n";
+                            rateInfo = rateInfo + "EPKG\tflat\tincl\tNegative Film & Videotape\t\n";
+                            rateInfo = rateInfo + "EPKG\tflat\tincl\tFaulty Stock & Camera Processing\t\n";
+                            rateInfo = rateInfo + "EPKG\tflat\tincl\tMiscellaneous Rented Equipment\t\n";;
+                            rateInfo = rateInfo + "EPKG\tflat\tincl\tProps, Sets & Wardrobe\t\n";
+                            rateInfo = rateInfo + "EPKG\tflat\tincl\tThird Party Prop Damage Liab\t\n";
+                            rateInfo = rateInfo + "EPKG\tflat\tincl\tExtra Expense\t\n";
+                            rateInfo = rateInfo + "EPKG\tflat\tincl\tOffice Contents\t\n";
+
+                            //IF FILM WITH CAST AND NO WC, ROUND LIMITS TO NEAREST 1000'S
+                            def tempLimit = params.totalBudget.toDouble()
+//                            if(params.riskType == "Film Projects With Cast (No Work Comp)"){
+//                                tempLimit = Math.ceil(tempLimit / 1000) * 1000;
+//                                limitsMap["Negative Film & Videotape"] = "\$" + String.format("%.0f", tempLimit.trunc())
+//                                limitsMap["Faulty Stock & Camera Processing"] = "\$" + String.format("%.0f", tempLimit.trunc())
+//
+//                                if (params.additionalProducts.contains("EPKGCASTAdditionalCoverage")) {
+//                                    def castPremium = (params.totalBudget.toDouble() *  1.1) / 100
+//                                    premiumsMap["Cast Insurance"] = ["flat", castPremium];
+//                                    deductsMap["Cast Insurance"] = "Nil";
+//                                    limitsMap["Cast Insurance"] = "\$" + String.format("%.0f", tempLimit.trunc());
+//                                    productTotalPremium = productTotalPremium + castPremium;
+//                                }
+//                                if (params.additionalProducts.contains("EPKGCASTEssentialAdditionalCoverage")) {
+//                                    def castPremium = (params.totalBudget.toDouble() *  1.1) / 100
+//                                    premiumsMap["Cast Essential"] = ["flat", "incl"];
+//                                    deductsMap["Cast Essential"] = "Nil";
+//                                    limitsMap["Cast Essential"] = "Incl. Under Cast" ;
+//                                    productTotalPremium = productTotalPremium + castPremium;
+//                                }
+//                            }
+
+
                             if (params.productsSelected.contains("NOHA")) {
                                 def NOHARateMinPrem = ["flat", 500];
 
@@ -707,6 +820,7 @@ class AsyncController {
                                 deductsMap["Hired Auto Physical Damage"] = "10% of Loss (\$1,500 Min / \$10,000)";
                                 limitsMap["Hired Auto Physical Damage"] = "\$1,000,000"
                                 productTotalPremium = productTotalPremium + NOHARateMinPrem[1]
+                                rateInfo = rateInfo + "EPKG\tflat\t\$500\tHired Auto Physical Damage\t\n";
                             } else {
                                 limitsMap.remove("Hired Auto Physical Damage")
                                 deductsMap.remove("Hired & Non-Owned Auto Physical Damage")
@@ -726,7 +840,8 @@ class AsyncController {
 //                                limitsMap.remove("Hired Auto Physical Damage")
 //                                deductsMap.remove("Hired Auto Physical Damage")
 //                            }
-                        } else if (productID == "PIP 3") {
+                        }
+                        else if (productID == "PIP 3") {
                             def premium = 0.0;
                             def negativeFilmVideoRateMinPrem = [0.6, 1500];
                             def faultyStockCameraProcessingRateMinPrem = ["flat", "incl"];
@@ -754,6 +869,39 @@ class AsyncController {
                             premiumsMap["Extra Expense"] = extraExpenseRateMinPrem;
                             premiumsMap["Office Contents"] = officeContentsRateMinPrem;
 
+                            rateInfo = "EPKG\tRate\tPremium\tCoverage\tMin Prem\n";
+                            rateInfo = rateInfo + "EPKG\t${rate}\t${moneyFormat.format(productTotalPremium)}\t\t${moneyFormat.format(minPremium)}\n";
+                            rateInfo = rateInfo + "EPKG\t\tincl\tNegative Film & Videotape\t\n";
+                            rateInfo = rateInfo + "EPKG\t\tincl\tFaulty Stock & Camera Processing\t\n";
+                            rateInfo = rateInfo + "EPKG\t\tincl\tMiscellaneous Rented Equipment\t\n";;
+                            rateInfo = rateInfo + "EPKG\t\tincl\tProps, Sets & Wardrobe\t\n";
+                            rateInfo = rateInfo + "EPKG\t\tincl\tThird Party Prop Damage Liab\t\n";
+                            rateInfo = rateInfo + "EPKG\t\tincl\tExtra Expense\t\n";
+                            rateInfo = rateInfo + "EPKG\t\tincl\tOffice Contents\t\n";
+
+                            //IF FILM WITH CAST AND NO WC, ROUND LIMITS TO NEAREST 1000'S
+                            def tempLimit = params.totalBudget.toDouble()
+//                            if(params.riskType == "Film Projects With Cast (No Work Comp)"){
+//                                tempLimit = Math.ceil(tempLimit / 1000) * 1000;
+//                                limitsMap["Negative Film & Videotape"] = "\$" + String.format("%.0f", tempLimit.trunc())
+//                                limitsMap["Faulty Stock & Camera Processing"] = "\$" + String.format("%.0f", tempLimit.trunc())
+//
+//                                if (params.additionalProducts.contains("EPKGCASTAdditionalCoverage")) {
+//                                    def castPremium = (params.totalBudget.toDouble() *  1.1) / 100
+//                                    premiumsMap["Cast Insurance"] = ["flat", castPremium];
+//                                    deductsMap["Cast Insurance"] = "Nil";
+//                                    limitsMap["Cast Insurance"] = "\$" + String.format("%.0f", tempLimit.trunc());
+//                                    productTotalPremium = productTotalPremium + castPremium;
+//                                }
+//                                if (params.additionalProducts.contains("EPKGCASTEssentialAdditionalCoverage")) {
+//                                    def castPremium = (params.totalBudget.toDouble() *  1.1) / 100
+//                                    premiumsMap["Cast Essential"] = ["flat", "incl"];
+//                                    deductsMap["Cast Essential"] = "Nil";
+//                                    limitsMap["Cast Essential"] = "Incl. Under Cast" ;
+//                                    productTotalPremium = productTotalPremium + castPremium;
+//                                }
+//                            }
+
 
                             if (true) {
                                 def NOHARateMinPrem = ["flat", "incl"];
@@ -761,6 +909,7 @@ class AsyncController {
                                 premiumsMap["Non-Owned Auto Physical Damage"] = NOHARateMinPrem;
                                 deductsMap["Non-Owned Auto Physical Damage"] = "10% of Loss (\$1,500 Min / \$10,000)";
                                 limitsMap["Non-Owned Auto Physical Damage"] = "\$1,000,000"
+                                rateInfo = rateInfo + "EPKG\t\tincl\tNon-Owned Auto Physical Damage\t\n";
 
                                 limitsMap.remove("Hired Auto Physical Damage")
                                 deductsMap.remove("Hired Auto Physical Damage")
@@ -769,7 +918,8 @@ class AsyncController {
                                 limitsMap.remove("Hired Auto Physical Damage")
                                 deductsMap.remove("Hired Auto Physical Damage")
                             }
-                        } else if (productID == "PIP 4") {
+                        }
+                        else if (productID == "PIP 4") {
                             def premium = 0.0
                             def negativeFilmVideoRateMinPrem = [0.6, 2000];
                             def faultyStockCameraProcessingRateMinPrem = ["flat", "incl"];
@@ -798,12 +948,26 @@ class AsyncController {
                             premiumsMap["Extra Expense"] = extraExpenseRateMinPrem;
                             premiumsMap["Office Contents"] = officeContentsRateMinPrem;
 
+                            rateInfo = "EPKG\tRate\tPremium\tCoverage\tMin Prem\n";
+                            rateInfo = rateInfo + "EPKG\t${rate}\t${moneyFormat.format(productTotalPremium)}\t\t${moneyFormat.format(minPremium)}\n";
+                            rateInfo = rateInfo + "EPKG\t\tincl\tNegative Film & Videotape\t\n";
+                            rateInfo = rateInfo + "EPKG\t\tincl\tFaulty Stock & Camera Processing\t\n";
+                            rateInfo = rateInfo + "EPKG\t\tincl\tMiscellaneous Rented Equipment\t\n";;
+                            rateInfo = rateInfo + "EPKG\t\tincl\tProps, Sets & Wardrobe\t\n";
+                            rateInfo = rateInfo + "EPKG\t\tincl\tThird Party Prop Damage Liab\t\n";
+                            rateInfo = rateInfo + "EPKG\t\tincl\tExtra Expense\t\n";
+                            rateInfo = rateInfo + "EPKG\t\tincl\tOffice Contents\t\n";
+
+                            //IF FILM WITH CAST AND NO WC, ROUND LIMITS TO NEAREST 1000'S
+                            def tempLimit = params.totalBudget.toDouble()
+
                             if (true) {
                                 def NOHARateMinPrem = ["flat", "incl"];
 
                                 premiumsMap["Non-Owned Auto Physical Damage"] = NOHARateMinPrem;
                                 deductsMap["Non-Owned Auto Physical Damage"] = "10% of Loss (\$1,500 Min / \$10,000)";
                                 limitsMap["Non-Owned Auto Physical Damage"] = "\$1,000,000"
+                                rateInfo = rateInfo + "EPKG\t\tincl\tNon-Owned Auto Physical Damage\t\n";
 
                                 limitsMap.remove("Hired Auto Physical Damage")
                                 deductsMap.remove("Hired Auto Physical Damage")
@@ -812,7 +976,8 @@ class AsyncController {
                                 limitsMap.remove("Hired Auto Physical Damage")
                                 deductsMap.remove("Hired Auto Physical Damage")
                             }
-                        } else if (productID == "PIP 5") {
+                        }
+                        else if (productID == "PIP 5") {
                             def premium = 0.0
                             def negativeFilmVideoRateMinPrem = [0.6, 2500];
                             def faultyStockCameraProcessingRateMinPrem = ["flat", "incl"];
@@ -839,9 +1004,20 @@ class AsyncController {
                             premiumsMap["Extra Expense"] = extraExpenseRateMinPrem;
                             premiumsMap["Office Contents"] = officeContentsRateMinPrem;
 
+                            rateInfo = "EPKG\tRate\tPremium\tCoverage\tMin Prem\n";
+                            rateInfo = rateInfo + "EPKG\t\tincl\tNegative Film & Videotape\t\n";
+                            rateInfo = rateInfo + "EPKG\t\tincl\tFaulty Stock & Camera Processing\t\n";
+                            rateInfo = rateInfo + "EPKG\t\tincl\tMiscellaneous Rented Equipment\t\n";;
+                            rateInfo = rateInfo + "EPKG\t\tincl\tProps, Sets & Wardrobe\t\n";
+                            rateInfo = rateInfo + "EPKG\t\tincl\tThird Party Prop Damage Liab\t\n";
+                            rateInfo = rateInfo + "EPKG\t\tincl\tExtra Expense\t\n";
+                            rateInfo = rateInfo + "EPKG\t\tincl\tOffice Contents\t\n";
 
+                            //IF FILM WITH CAST AND NO WC, ROUND LIMITS TO NEAREST 1000'S
+                            def tempLimit = params.totalBudget.toDouble()
 
                             def tempDeductsMap = [:];
+
 
 
                             if (params.additionalProducts.contains("EPKGCIVIL100AdditionalCoverage")) {
@@ -849,11 +1025,13 @@ class AsyncController {
                                 deductsMap["Civil Authority (US Only)"] = "\$3500";
                                 limitsMap["Civil Authority (US Only)"] = "\$100000";
                                 productTotalPremium = productTotalPremium + civilAuthority100Limit[1];
+                                rateInfo = rateInfo + "EPKG\tflat\t\$250\tCivil Authority (US Only)\t\n";
                             } else if (params.additionalProducts.contains("EPKGCIVIL500AdditionalCoverage")) {
                                 premiumsMap["Civil Authority (US Only)"] = civilAuthority500Limit;
                                 deductsMap["Civil Authority (US Only)"] = "\$5000";
                                 limitsMap["Civil Authority (US Only)"] = "\$500000";
                                 productTotalPremium = productTotalPremium + civilAuthority500Limit[1];
+                                rateInfo = rateInfo + "EPKG\tflat\t\$500\tCivil Authority (US Only)\t\n";
                             }
 
                             if (params.additionalProducts.contains("EPKGBirdsFishAdditionalCoverage")) {
@@ -861,42 +1039,49 @@ class AsyncController {
                                 deductsMap["Animal Mortality Under Cast Insurance (Domestic Birds/Fish)"] = "\$1500";
                                 limitsMap["Animal Mortality Under Cast Insurance (Domestic Birds/Fish)"] = "\$25000";
                                 productTotalPremium = productTotalPremium + 100;
+                                rateInfo = rateInfo + "EPKG\tflat\t\$100\tAnimal Mortality Under Cast Insurance (Domestic Birds/Fish)\t\n";
                             }
                             if (params.additionalProducts.contains("EPKGDogsAdditionalCoverage")) {
                                 premiumsMap["Animal Mortality Under Cast Insurance (Dogs w/ Breed Exceptions)"] = ["flat", 150];
                                 deductsMap["Animal Mortality Under Cast Insurance (Dogs w/ Breed Exceptions)"] = "\$1500";
                                 limitsMap["Animal Mortality Under Cast Insurance (Dogs w/ Breed Exceptions)"] = "\$25000";
                                 productTotalPremium = productTotalPremium + 150;
+                                rateInfo = rateInfo + "EPKG\tflat\t\$150\tAnimal Mortality Under Cast Insurance (Dogs w/ Breed Exceptions)\t\n";
+
                             }
                             if (params.additionalProducts.contains("EPKGReptilesAdditionalCoverage")) {
                                 premiumsMap["Animal Mortality Under Cast Insurance (Reptiles (Non-Venomous))"] = ["flat", 150];
                                 deductsMap["Animal Mortality Under Cast Insurance (Reptiles (Non-Venomous))"] = "\$1500";
                                 limitsMap["Animal Mortality Under Cast Insurance (Reptiles (Non-Venomous))"] = "\$25000";
                                 productTotalPremium = productTotalPremium + 150;
+                                rateInfo = rateInfo + "EPKG\tflat\t\$150\tAnimal Mortality Under Cast Insurance (Reptiles (Non-Venomous))\t\n";
                             }
                             if (params.additionalProducts.contains("EPKGSmallOtherAdditionalCoverage")) {
                                 premiumsMap["Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))"] = ["flat", 250];
                                 deductsMap["Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))"] = "\$1500";
                                 limitsMap["Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))"] = "\$25000";
                                 productTotalPremium = productTotalPremium + 200;
+                                rateInfo = rateInfo + "EPKG\tflat\t\$200\tAnimal Mortality Under Cast Insurance (Small Domestic Animals (Other))\t\n";
                             }
                             if (params.additionalProducts.contains("EPKGFarmAnimalsAdditionalCoverage")) {
                                 premiumsMap["Animal Mortality Under Cast Insurance (Farm Animals)"] = ["flat", 250];
                                 deductsMap["Animal Mortality Under Cast Insurance (Farm Animals)"] = "\$1500";
                                 limitsMap["Animal Mortality Under Cast Insurance (Farm Animals)"] = "\$25000";
                                 productTotalPremium = productTotalPremium + 250;
+                                rateInfo = rateInfo + "EPKG\tflat\t\$250\tAnimal Mortality Under Cast Insurance (Farm Animals)\t\n";
                             }
                             if (params.additionalProducts.contains("EPKGWildCatsAdditionalCoverage")) {
                                 premiumsMap["Animal Mortality Under Cast Insurance (Wild Cats (Caged))"] = ["flat", 500];
                                 deductsMap["Animal Mortality Under Cast Insurance (Wild Cats (Caged))"] = "\$1500";
                                 limitsMap["Animal Mortality Under Cast Insurance (Wild Cats (Caged))"] = "\$25000";
                                 productTotalPremium = productTotalPremium + 500;
+                                rateInfo = rateInfo + "EPKG\tflat\t\$500\tAnimal Mortality Under Cast Insurance (Wild Cats (Caged))\t\n";
                             }
                             if (params.additionalProducts.contains("EPKGOtherReferAdditionalCoverage")) {
                                 premiumsMap["Animal Mortality Under Cast Insurance (All Others - Refer Only)"] = ["flat", "Refer"];
                                 deductsMap["Animal Mortality Under Cast Insurance (All Others - Refer Only)"] = "\$1500";
                                 limitsMap["Animal Mortality Under Cast Insurance (All Others - Refer Only)"] = "\$25000";
-
+                                rateInfo = rateInfo + "EPKG\tflat\tRefer\tAnimal Mortality Under Cast Insurance (All Others - Refer Only)\t\n";
                             }
 
                             if (true) {
@@ -905,6 +1090,9 @@ class AsyncController {
                                 premiumsMap["Non-Owned Auto Physical Damage"] = NOHARateMinPrem;
                                 deductsMap["Non-Owned Auto Physical Damage"] = "10% of Loss (\$1,500 Min / \$10,000)";
                                 limitsMap["Non-Owned Auto Physical Damage"] = "\$1,000,000"
+
+                                rateInfo = rateInfo + "EPKG\t\tincl\tNon-Owned Auto Physical Damage\t\n";
+
 
                                 limitsMap.remove("Hired Auto Physical Damage")
                                 deductsMap.remove("Hired Auto Physical Damage")
@@ -919,8 +1107,140 @@ class AsyncController {
                             } else {
                                 productTotalPremium = minPremium
                             }
+                            rateInfo = rateInfo + "EPKG\t${rate}\t${moneyFormat.format(productTotalPremium)}\t\t${moneyFormat.format(minPremium)}\n";
+
+                        }
+                        else if (productID == "EPKG37"){
+                            def tempLimitsMap = [:]
+                            def tempDeductsMap = [:]
+                            def tempPremiumsMap = [:]
+                            def premium = 0.0
+                            def castInsuranceMinPrem = ["flat", "incl"];
+                            def negativeFilmVideoRateMinPrem = ["flat", "incl"];
+                            def faultyStockCameraProcessingRateMinPrem = ["flat", "incl"];
+                            def miscRentedEquipRateMinPrem = ["flat", "incl"];
+                            def propsSetWardrobeRateMinPrem = ["flat", "incl"];
+                            def thirdPartyPropDamageRateMinPrem = ["flat", "incl"];
+                            def extraExpenseRateMinPrem = ["flat", "incl"];
+                            def officeContentsRateMinPrem = ["flat", "incl"];
+
+                            //CALCULATE IF MINIMUM PREMIUM IS MET
+                            ///GPC RATE = .65-1.45
+                            ///NIPC RATE = .5-1.10
+                            def rate = 1;
+                            def minPremium = 5750;
+
+                            if (((params.totalBudget.toDouble() * rate) / 100) > minPremium) {
+                                premium = (params.totalBudget.toDouble() * rate) / 100;
+                            } else {
+                                premium = minPremium
+                            }
+                            productTotalPremium = premium
+
+                            tempPremiumsMap["Negative Film & Videotape"] = negativeFilmVideoRateMinPrem;
+                            tempPremiumsMap["Faulty Stock & Camera Processing"] = faultyStockCameraProcessingRateMinPrem;
+                            tempPremiumsMap["Miscellaneous Rented Equipment"] = miscRentedEquipRateMinPrem;
+                            tempPremiumsMap["Props, Sets & Wardrobe"] = propsSetWardrobeRateMinPrem;
+                            tempPremiumsMap["Third Party Prop Damage Liab"] = thirdPartyPropDamageRateMinPrem;
+                            tempPremiumsMap["Extra Expense"] = extraExpenseRateMinPrem;
+                            tempPremiumsMap["Office Contents"] = officeContentsRateMinPrem;
+
+                            tempLimitsMap["Negative Film & Videotape"] = "\$" + params.totalBudget;
+                            tempLimitsMap["Faulty Stock & Camera Processing"] = "\$" + params.totalBudget;
+                            tempLimitsMap["Miscellaneous Rented Equipment"] = "\$1,000,000";
+                            tempLimitsMap["Props, Sets & Wardrobe"] = "\$1,000,000";
+                            tempLimitsMap["Third Party Prop Damage Liab"] = "\$1,000,000";
+                            tempLimitsMap["Extra Expense"] = "\$1,000,000";
+                            tempLimitsMap["Office Contents"] = "\$50,000";
+
+                            tempDeductsMap["Negative Film & Videotape"] = "\$5,000";
+                            tempDeductsMap["Faulty Stock & Camera Processing"] = "\$5,000";
+                            tempDeductsMap["Miscellaneous Rented Equipment"] = "\$3,500";
+                            tempDeductsMap["Props, Sets & Wardrobe"] = "\$2,500";
+                            tempDeductsMap["Third Party Prop Damage Liab"] = "\$2,500";
+                            tempDeductsMap["Extra Expense"] = "\$3,500";
+                            tempDeductsMap["Office Contents"] = "\$1,000";
 
 
+
+                            if(params.riskType == "Film Projects With Cast (No Work Comp)"){
+                                def tempLimit = params.totalBudget.toDouble()
+                                tempLimit = Math.ceil(tempLimit / 1000) * 1000;
+
+                                tempPremiumsMap["Cast Insurance (Up to 10)"] = ["flat", premium];
+                                tempDeductsMap["Cast Insurance (Up to 10)"] = "\$25,000";
+                                tempLimitsMap["Cast Insurance (Up to 10)"] = "\$" + String.format("%.0f", tempLimit.trunc());
+
+                                tempPremiumsMap["INC:Non-Owned Auto Physical Damage"] = ["flat", "incl"];
+                                tempLimitsMap["INC:Non-Owned Auto Physical Damage"] = "Included Under Misc. Rented Equip." ;
+//                                tempDeductsMap["INC:Non-Owned Auto Physical Damage"] = "";
+                                tempDeductsMap["INC:Non-Owned Auto Physical Damage"] = "10% of Loss (\$1,500 Min / \$10,000)";
+
+                                tempPremiumsMap["Money & Securities"] = ["flat", "incl"];
+                                tempDeductsMap["Money & Securities"] = "\$1,000";
+                                tempLimitsMap["Money & Securities"] = "\$50,000";
+
+                                //IF FILM WITH CAST AND NO WC, ROUND LIMITS TO NEAREST 1000'S
+                                tempLimitsMap["Negative Film & Videotape"] = "\$" + String.format("%.0f", tempLimit.trunc())
+                                tempLimitsMap["Faulty Stock & Camera Processing"] = "\$" + String.format("%.0f", tempLimit.trunc())
+
+                                rateInfo = "EPKG\tRate\tPremium\tCoverage\tMin Prem\n";
+                                rateInfo = rateInfo + "EPKG\t${rate}\t${moneyFormat.format(premium)}\t\t${moneyFormat.format(minPremium)}\n";
+                                rateInfo = rateInfo + "EPKG\t\tincl\tNegative Film & Videotape\t\n";
+                                rateInfo = rateInfo + "EPKG\t\tincl\tFaulty Stock & Camera Processing\t\n";
+                                rateInfo = rateInfo + "EPKG\t\tincl\tMiscellaneous Rented Equipment\t\n";;
+                                rateInfo = rateInfo + "EPKG\t\tincl\tProps, Sets & Wardrobe\t\n";
+                                rateInfo = rateInfo + "EPKG\t\tincl\tThird Party Prop Damage Liab\t\n";
+                                rateInfo = rateInfo + "EPKG\t\tincl\tExtra Expense\t\n";
+                                rateInfo = rateInfo + "EPKG\t\tincl\tOffice Contents\t\n";
+                                rateInfo = rateInfo + "EPKG\t\tincl\tNon-Owned Auto Physical Damage\t\n";
+                                rateInfo = rateInfo + "EPKG\t\tincl\tMoney & Securities\t\n";
+
+                                if (params.additionalProducts.contains("EPKGCASTEssentialAdditionalCoverage")) {
+                                    def castPremium = (params.totalBudget.toDouble() *  1.1) / 100
+                                    def castEssentialNum = params.castEssentialNum.toInteger();
+                                    def costPerEssential = 3500;
+                                    def totalCastEssentialCost = costPerEssential*castEssentialNum
+                                    tempPremiumsMap["Cast Essential"] = ["flat", totalCastEssentialCost];
+                                    tempDeductsMap["Cast Essential"] = "Nil";
+                                    tempLimitsMap["Cast Essential"] = "Included Under Cast" ;
+                                    productTotalPremium = productTotalPremium + (totalCastEssentialCost);
+                                    rateInfo = rateInfo + "EPKG\t1.1\t${totalCastEssentialCost}\tCast Essential\t\n";
+
+                                }
+
+                                if (params.additionalProducts.contains("EPKGFWCNWCCIVIL100AdditionalCoverage")) {
+                                    tempPremiumsMap["Civil Authority (US Only)"] = ["flat", 250];
+                                    tempDeductsMap["Civil Authority (US Only)"] = "\$7,000";
+                                    tempLimitsMap["Civil Authority (US Only)"] = "\$100,000";
+                                    productTotalPremium = productTotalPremium + 250;
+                                    rateInfo = rateInfo + "EPKG\tflat\t\$250\tCivil Authority (US Only)\t\n";
+                                } else if (params.additionalProducts.contains("EPKGFWCNWCCIVIL500AdditionalCoverage")) {
+                                    tempPremiumsMap["Civil Authority (US Only)"] = ["flat", 550];
+                                    tempDeductsMap["Civil Authority (US Only)"] = "\$10,000";
+                                    tempLimitsMap["Civil Authority (US Only)"] = "\$100,000+";
+                                    productTotalPremium = productTotalPremium + 550;
+                                    rateInfo = rateInfo + "EPKG\tflat\t\$550\tCivil Authority (US Only)\t\n";
+
+                                }
+
+                                if (params.additionalProducts.contains("EPKGFWCNWCAnimalAdditionalCoverage")) {
+                                    tempPremiumsMap["Animal Mortality"] = ["flat", 250];
+                                    tempDeductsMap["Animal Mortality"] = "\$2,500";
+                                    tempLimitsMap["Animal Mortality"] = "\$2,500";
+                                    productTotalPremium = productTotalPremium + 250;
+                                    rateInfo = rateInfo + "EPKG\tflat\t\$250\tAnimal Mortality\t\n";
+                                }
+
+                                if (params.additionalProducts.contains("EPKGMoneySecurityAdditionalCoverage")) {
+
+                                    productTotalPremium = productTotalPremium + 0;
+                                }
+                                lobString = "Entertainment Package" + "\t" + Math.ceil(productTotalPremium) + "\t" + "28\t" + "15\r"
+                                limitsMap = tempLimitsMap
+                                deductsMap = tempDeductsMap
+                                premiumsMap = tempPremiumsMap
+                            }
                         }
                     } else if (coverageID == "CGL" || coverageID == "CPK") {
 
@@ -931,19 +1251,20 @@ class AsyncController {
                         def tempLimitsMap = [:]
                         def tempDeductsMap = [:]
                         def tempPremiumsMap = [:]
-                        if(termLength <= 60){
-                            tempLimitsMap["Blanket Additional Insured Endorsement"] = "";
-                            tempDeductsMap["Blanket Additional Insured Endorsement"] = "";
-                        }
-                        if (termLength <= 30) {
-                            rate = 0.319
-                            minPremium = 450
-
+                        if(params.riskType == "Film Projects With Cast (No Work Comp)"){
+                            if(termLength <= 60){
+                                tempLimitsMap["Blanket Additional Insured Endorsement"] = "";
+                                tempDeductsMap["Blanket Additional Insured Endorsement"] = "";
+                            }
                             if (params.additionalProducts.contains("AGGAdditionalCoverage")) {
                                 tempLimitsMap["General Aggregate Limit"] = "\$2000000"
+                                rate = 0.324
+                                minPremium = 1750
                             }
                             else{
                                 tempLimitsMap["General Aggregate Limit"] = "\$1000000"
+                                rate = 0.319
+                                minPremium = 1500
                             }
                             tempLimitsMap["Products & Completed Operations"] = "\$1000000"
                             tempLimitsMap["Personal & Advertising Injury"] = "\$1000000"
@@ -951,33 +1272,63 @@ class AsyncController {
                             tempLimitsMap["Fire Damage (Any One Fire)"] = "\$100000"
 
 
-                            tempDeductsMap["General Aggregate Limit"] = ""
-                            tempDeductsMap["Products & Completed Operations"] = ""
-                            tempDeductsMap["Personal & Advertising Injury"] = ""
-                            tempDeductsMap["Each Occurrence"] = ""
+                            tempDeductsMap["General Aggregate Limit"] = "Nil"
+                            tempDeductsMap["Products & Completed Operations"] = "Nil"
+                            tempDeductsMap["Personal & Advertising Injury"] = "Nil"
+                            tempDeductsMap["Each Occurrence"] = "Nil"
                             tempDeductsMap["Fire Damage (Any One Fire)"] = "Nil"
 
-                        } else {
-                            rate = 0.324
-                            minPremium = 1000
-
-                            if (params.additionalProducts.contains("AGGAdditionalCoverage")) {
-                                tempLimitsMap["General Aggregate Limit"] = "\$2000000"
-                            }
-                            else{
-                                tempLimitsMap["General Aggregate Limit"] = "\$1000000"
-                            }
-                            tempLimitsMap["Products & Completed Operations"] = "\$1000000"
-                            tempLimitsMap["Personal & Advertising Injury"] = "\$1000000"
-                            tempLimitsMap["Each Occurrence"] = "\$1000000"
-                            tempLimitsMap["Fire Damage (Any One Fire)"] = "\$100000"
-
-                            tempDeductsMap["General Aggregate Limit"] = ""
-                            tempDeductsMap["Products & Completed Operations"] = ""
-                            tempDeductsMap["Personal & Advertising Injury"] = ""
-                            tempDeductsMap["Each Occurrence"] = ""
-                            tempDeductsMap["Fire Damage (Any One Fire)"] = "Nil"
                         }
+                        else{
+                            if(termLength <= 60){
+                                tempLimitsMap["Blanket Additional Insured Endorsement"] = "";
+                                tempDeductsMap["Blanket Additional Insured Endorsement"] = "Nil";
+                            }
+                            if (termLength <= 30) {
+                                rate = 0.319
+                                minPremium = 450
+
+                                if (params.additionalProducts.contains("AGGAdditionalCoverage")) {
+                                    tempLimitsMap["General Aggregate Limit"] = "\$2000000"
+                                }
+                                else{
+                                    tempLimitsMap["General Aggregate Limit"] = "\$1000000"
+                                }
+                                tempLimitsMap["Products & Completed Operations"] = "\$1000000"
+                                tempLimitsMap["Personal & Advertising Injury"] = "\$1000000"
+                                tempLimitsMap["Each Occurrence"] = "\$1000000"
+                                tempLimitsMap["Fire Damage (Any One Fire)"] = "\$100000"
+
+
+                                tempDeductsMap["General Aggregate Limit"] = "Nil"
+                                tempDeductsMap["Products & Completed Operations"] = "Nil"
+                                tempDeductsMap["Personal & Advertising Injury"] = "Nil"
+                                tempDeductsMap["Each Occurrence"] = "Nil"
+                                tempDeductsMap["Fire Damage (Any One Fire)"] = "Nil"
+
+                            } else {
+                                rate = 0.324
+                                minPremium = 1000
+
+                                if (params.additionalProducts.contains("AGGAdditionalCoverage")) {
+                                    tempLimitsMap["General Aggregate Limit"] = "\$2000000"
+                                }
+                                else{
+                                    tempLimitsMap["General Aggregate Limit"] = "\$1000000"
+                                }
+                                tempLimitsMap["Products & Completed Operations"] = "\$1000000"
+                                tempLimitsMap["Personal & Advertising Injury"] = "\$1000000"
+                                tempLimitsMap["Each Occurrence"] = "\$1000000"
+                                tempLimitsMap["Fire Damage (Any One Fire)"] = "\$100000"
+
+                                tempDeductsMap["General Aggregate Limit"] = "Nil"
+                                tempDeductsMap["Products & Completed Operations"] = "Nil"
+                                tempDeductsMap["Personal & Advertising Injury"] = "Nil"
+                                tempDeductsMap["Each Occurrence"] = "Nil"
+                                tempDeductsMap["Fire Damage (Any One Fire)"] = "Nil"
+                            }
+                        }
+
                         log.info "RATE " + rate
                         log.info "params.totalBudget " + params.totalBudget
 
@@ -1070,81 +1421,82 @@ class AsyncController {
 
                         if(coverageID == "CGL"){
                             lobString = "Commercial General Liability" + "\t" + Math.ceil(productTotalPremium) + "\t" + "28\t" + "15\r"
+                            rateInfo = "CGL\tRate\tPremium\tCoverage\tMin Prem\n";
                         }
                         else if(coverageID == "CPK"){
                             lobString = "Commercial Package" + "\t" + Math.ceil(productTotalPremium) + "\t" + "28\t" + "15\r"
+                            rateInfo = "CPK\tRate\tPremium\tCoverage\tMin Prem\n";
                         }
 
                         log.info "PREMIUMS " + lobString
 
-//                        if (params.productsSelected.contains("NOAL")) {
-//                            def NOHARateMinPrem = [6.0, 500.0];
-//                            if (termLength <= 30) {
-//                                NOHARateMinPrem = [6.0, 450.0];
-//                            } else {
-//                                NOHARateMinPrem = [6.0, 550.0];
-//                            }
-//
-//
-//                            def NOHApremium = 0.0;
-//
-//                            def NOHArate = NOHARateMinPrem[0];
-//                            def NOHAminPremium = NOHARateMinPrem[1];
-//
-//                            def costOfHire = 0;
-//                            if (params.costOfHire.length() > 0) {
-//                                costOfHire = params.costOfHire.toDouble()
-//                            }
-//                            if (((costOfHire * NOHArate) / 100) > NOHAminPremium) {
-//                                NOHApremium = (double) (costOfHire * NOHArate) / 100;
-//                            } else {
-//                                NOHApremium = (double) NOHAminPremium
-//                            }
-//
-//                            //NOAL:Aggregate Limit
-//                            tempPremiumsMap["Non-Owned & Hired Auto Liability"] = [6.0, NOHApremium.round(2)];
-//                            tempDeductsMap["Non-Owned & Hired Auto Liability"] = "";
-//                            tempLimitsMap["Non-Owned & Hired Auto Liability"] = "Up to \$1,000,000"
-//                            productTotalPremium = productTotalPremium + NOHApremium
-//
-//                            limitsMap.remove("Hired Auto Physical Damage")
-//                            deductsMap.remove("Hired Auto Physical Damage")
-//
-//                        } else {
-//                            limitsMap.remove("Hired Auto Physical Damage")
-//                            deductsMap.remove("Hired Auto Physical Damage")
-//                        }
+
+                        rateInfo = rateInfo + "${coverageID}\t${rate}\t${moneyFormat.format(productTotalPremium)}\t\t${moneyFormat.format(minPremium)}\n";
+                        rateInfo = rateInfo + "${coverageID}\t\tincl\tGeneral Aggregate Limit\t\n";
+                        rateInfo = rateInfo + "${coverageID}\t\tincl\tProducts & Completed Operations\t\n";
+                        rateInfo = rateInfo + "${coverageID}\t\tincl\tPersonal & Advertising Injury\t\n";;
+                        rateInfo = rateInfo + "${coverageID}\t\tincl\tEach Occurrence\t\n";
+                        rateInfo = rateInfo + "${coverageID}\t\tincl\tFire Damage (Any One Fire)\t\n";
+
+                        rateInfo = rateInfo + "${coverageID}\t\tincl\tMedical Expense Limit (Any One Person)\t\n";
 
                         if (params.additionalProducts) {
                             if (params.additionalProducts.contains("BAIAdditionalCoverage")) {
-                                tempPremiumsMap["Blanket Additional Insured Endorsement"] = ["flat", 250];
-                                tempDeductsMap["Blanket Additional Insured Endorsement"] = "";
-                                tempLimitsMap["Blanket Additional Insured Endorsement"] = ""
-                                productTotalPremium = productTotalPremium + 250
+                                if(params.riskType == "Film Projects With Cast (No Work Comp)"){
+                                    tempPremiumsMap["Blanket Additional Insured Endorsement"] = ["flat", 500];
+                                    tempDeductsMap["Blanket Additional Insured Endorsement"] = "";
+                                    tempLimitsMap["Blanket Additional Insured Endorsement"] = ""
+                                    productTotalPremium = productTotalPremium + 500
+                                    rateInfo = rateInfo + "${coverageID}\tflat\t\$500\tBlanket Additional Insured Endorsement\t\n";
+                                }
+                                else{
+                                    tempPremiumsMap["Blanket Additional Insured Endorsement"] = ["flat", 250];
+                                    tempDeductsMap["Blanket Additional Insured Endorsement"] = "";
+                                    tempLimitsMap["Blanket Additional Insured Endorsement"] = ""
+                                    productTotalPremium = productTotalPremium + 250
+                                    rateInfo = rateInfo + "${coverageID}\tflat\t\$250\tBlanket Additional Insured Endorsement\t\n";
+                                }
+
                             }
                             if (params.additionalProducts.contains("WOSAdditionalCoverage")) {
                                 tempPremiumsMap["Waiver of Subrogation"] = ["flat", 100];
                                 tempDeductsMap["Waiver of Subrogation"] = "";
                                 tempLimitsMap["Waiver of Subrogation"] = ""
                                 productTotalPremium = productTotalPremium + 100
+                                rateInfo = rateInfo + "${coverageID}\tflat\t\$100\tWaiver of Subrogation\t\n";
                             }
                             if (params.additionalProducts.contains("EAIAdditionalCoverage")) {
-                                tempPremiumsMap["Additional Charge to Include \$5,000 Medical Payments"] = ["flat", 100];
-                                tempDeductsMap["Additional Charge to Include \$5,000 Medical Payments"] = "";
-                                tempLimitsMap["Additional Charge to Include \$5,000 Medical Payments"] = ""
+                                tempPremiumsMap["Additional Charge to Include Medical Payments"] = ["flat", 100];
+                                tempDeductsMap["Additional Charge to Include Medical Payments"] = "";
+                                tempLimitsMap["Additional Charge to Include Medical Payments"] = "\$5,000"
                                 productTotalPremium = productTotalPremium + 100
+                                rateInfo = rateInfo + "${coverageID}\tflat\t\$100\tAdditional Charge to Include Medical Payments\t\n";
                             }
                             if (params.additionalProducts.contains("MEDAdditionalCoverage")) {
-                                tempPremiumsMap["\$5,000 Medical Payments (Per Person)"] = ["flat", 100];
-                                tempDeductsMap["\$5,000 Medical Payments (Per Person)"] = "";
-                                tempLimitsMap["\$5,000 Medical Payments (Per Person)"] = ""
+                                tempPremiumsMap["Medical Payments (Per Person)"] = ["flat", 100];
+                                tempDeductsMap["Medical Payments (Per Person)"] = "";
+                                tempLimitsMap["Medical Payments (Per Person)"] = "\$5,000"
                                 productTotalPremium = productTotalPremium + 100
+                                rateInfo = rateInfo + "${coverageID}\tflat\t\$100\tMedical Payments (Per Person)\t\n";
+
                             }
                             if (params.additionalProducts.contains("AGGAdditionalCoverage")) {
-                                tempPremiumsMap["Increased Agg Limit"] = ["flat", 250];
-                                tempDeductsMap["Increased Agg Limit"] = "";
-                                tempLimitsMap["Increased Agg Limit"] = ""
-                                productTotalPremium = productTotalPremium + 250
+                                if(params.riskType == "Film Projects With Cast (No Work Comp)"){
+                                    tempPremiumsMap["Increased Agg Limit"] = ["flat", ""];
+                                    tempDeductsMap["Increased Agg Limit"] = "";
+                                    tempLimitsMap["Increased Agg Limit"] = ""
+//                                    productTotalPremium = productTotalPremium + 250
+                                    rateInfo = rateInfo + "${coverageID}\t\t\tIncreased Agg Limit\t\n";
+
+                                }
+                                else{
+                                    tempPremiumsMap["Increased Agg Limit"] = ["flat", 250];
+                                    tempDeductsMap["Increased Agg Limit"] = "";
+                                    tempLimitsMap["Increased Agg Limit"] = ""
+                                    productTotalPremium = productTotalPremium + 250
+                                    rateInfo = rateInfo + "${coverageID}\tflat\t\$250\tIncreased Agg Limit\t\n";
+                                }
+
                             }
 
                         }
@@ -1158,7 +1510,11 @@ class AsyncController {
                             def NOHARateMinPrem = [6.0, 500.0];
                             if (termLength <= 30) {
                                 NOHARateMinPrem = [6.0, 450.0];
-                            } else {
+                            }
+                            else if(params.riskType == "Film Projects With Cast (No Work Comp)"){
+                                NOHARateMinPrem = [6.0, 500.0];
+                            }
+                            else {
                                 NOHARateMinPrem = [6.0, 550.0];
                             }
 
@@ -1183,6 +1539,7 @@ class AsyncController {
                             deductsMap["Non-Owned & Hired Auto Liability"] = "";
                             limitsMap["Non-Owned & Hired Auto Liability"] = "\$1,000,000"
                             productTotalPremium = productTotalPremium + NOHApremium
+                            rateInfo = rateInfo + "${coverageID}\t${NOHArate}\t${moneyFormat.format(NOHApremium)}\tNon-Owned & Hired Auto Liability\t\n";
 
                             limitsMap.remove("Hired Auto Physical Damage")
                             deductsMap.remove("Hired Auto Physical Damage")
@@ -1236,6 +1593,7 @@ class AsyncController {
                     log.info deductsMap
 
 
+
                     def limitsMapJson = JsonOutput.toJson(limitsMap)
                     def deductsMapJson = JsonOutput.toJson(deductsMap)
                     def premiumsMapJson = JsonOutput.toJson(premiumsMap)
@@ -1267,7 +1625,8 @@ class AsyncController {
                             lobDist: new JsonSlurper().parseText(lobDistMapJson),
                             terms: subjectString,
                             endorse: endorseString,
-                            beginTerms: beginTerms
+                            beginTerms: beginTerms,
+                            rateInfo: rateInfo
                     )
                     arrayOfCoverageDetails.add(new JsonSlurper().parseText(coverageJson))
                 }
@@ -1362,14 +1721,15 @@ class AsyncController {
         Sql aimsql = new Sql(dataSource_aim)
 
         def resultsString = "";
+//        def taxState = testjson.getAt("stateMailing");
         def taxCodes = [:];
 
                 aimsql.eachRow("SELECT     TransCode, TransTypeID, Description, FlatAmount_Flag, Rate, CollectedBy, AllowOverRide, State, FlagUserSelected, AP_AccountID, IncludeFees, RoundingRule, \n" +
                 "                      RecordKey_PK, PremiumBasis, BasisSection, FlatRateFlag, TaxValue, TaxCodeID, FlagFullyEarned, FlagPolicyOnly, TaxRate, MinAmount, MaxAmount, AppliesTo, \n" +
                 "                      CompanyID, Municipality\n" +
                 "FROM         dvTaxTable\n" +
-                "WHERE     (State LIKE 'CA') AND (ISNULL(Municipality, '') = '') OR\n" +
-                "                      (State LIKE 'CA') AND (Municipality = '')\n" +
+                "WHERE     (State LIKE '${params.state}') AND (ISNULL(Municipality, '') = '') OR\n" +
+                "                      (State LIKE '${params.state}') AND (Municipality = '')\n" +
                 "ORDER BY Description") {
 
             taxCodes["${it.TransCode}"] =  it.Description;
@@ -1380,17 +1740,15 @@ class AsyncController {
                 "                      FlagPolicyOnly, AdmittedTax, FlagFullyEarned, ZipCodeStart, ZipCodeEnd, FlagUserSelected, MinAmount, MaxAmount, PremiumBasis, BasisSection, \n" +
                 "                      FlagNonResidentTax, AppliesTo, ExcludeTRIA, FlagUseEndorsementDate, Municipality, ExemptInsuredTax\n" +
                 "FROM         TaxTable WITH (NOLOCK)\n" +
-                "WHERE     (State = 'CA') AND ('11/27/2016' BETWEEN Effective AND Expiration) AND (ISNULL(AppliesTo, 'ALL') = 'ALL') AND (ISNULL(AdmittedTax, 'N') = 'N') AND \n" +
+                "WHERE     (State = '${params.state}') AND ('11/27/2016' BETWEEN Effective AND Expiration) AND (ISNULL(AppliesTo, 'ALL') = 'ALL') AND (ISNULL(AdmittedTax, 'N') = 'N') AND \n" +
                 "                      (ISNULL(ExemptInsuredTax, 'N') = 'N') OR\n" +
-                "                      (State = 'CA') AND ('11/27/2016' BETWEEN Effective AND Expiration) AND (ISNULL(AdmittedTax, 'N') = 'N') AND (ISNULL(ExemptInsuredTax, 'N') = 'N') AND \n" +
+                "                      (State = '${params.state}') AND ('11/27/2016' BETWEEN Effective AND Expiration) AND (ISNULL(AdmittedTax, 'N') = 'N') AND (ISNULL(ExemptInsuredTax, 'N') = 'N') AND \n" +
                 "                      (AppliesTo = 'RES')\n" +
                 "ORDER BY TaxLine, SUBSTRING(CoverageID, 1, 25)") {
 
             resultsString = resultsString + it.TaxCodeID + "&,&" + taxCodes["${it.TaxCodeID}"] + "&,&" + it.TaxValue +  "&;;&";
         }
-
-
-
+        log.info "TAX STRING ==== " +resultsString
 
         render resultsString
     }
@@ -1618,9 +1976,9 @@ class AsyncController {
         def now = new Date()
         def timestamp = now.toTimestamp()
         log.info timestamp
-
+        NeeisMessages m;
         try {
-            NeeisMessages m;
+
 
             m = new portal.NeeisMessages(subject: params.subject,
                     messageType: params.messageType, //firstMessage, replyMessage,
@@ -1635,19 +1993,22 @@ class AsyncController {
                     unread: "true");
 
             m.save(flush: true, failOnError: true)
+
+            m.messageChainID = m.id;
+            m.save(flush: true, failOnError: true)
         }
         catch (Exception e) {
             log.info(e)
         }
 
         //Need to get and update number of messages in chain
-        def allMessagesInChain = NeeisMessages.findAllByMessageChainID(params.messageChainID);
+        def allMessagesInChain = NeeisMessages.findAllByMessageChainID(m.messageChainID);
 
         def numMessagesInChain = allMessagesInChain[0].messagesInChain
         numMessagesInChain = allMessagesInChain.size();
 
 
-        def updatedRecords = NeeisMessages.executeUpdate("update NeeisMessages set messagesInChain = ? where messageChainID = ?", [numMessagesInChain, Integer.parseInt(params.messageChainID)])
+        def updatedRecords = NeeisMessages.executeUpdate("update NeeisMessages set messagesInChain = ? where messageChainID = ?", [numMessagesInChain, m.messageChainID])
 
 
         render "good"
@@ -1657,9 +2018,64 @@ class AsyncController {
         log.info "MARK MESSAGES READ"
         log.info params
 
+
         def updatedRecords = NeeisMessages.executeUpdate("update NeeisMessages set unread = ? where messageChainID = ?", ["false", Integer.parseInt(params.messageChainRead)])
 
 
+
+
         render "good;" + params.messageChainRead
+    }
+
+    def changeSubmissionStatus(){
+        log.info "CHANGE SUBMISSION STATUS"
+        log.info params
+        Sql aimsql = new Sql(dataSource_aim)
+
+        def updatedRecords = Submissions.executeUpdate("update Submissions set statusCode = ? where aimQuoteID = ?", [params.statusCode, params.aimQuoteID])
+
+        aimsql.execute "UPDATE dbo.Version\n" +
+                "SET StatusID = '" + params.statusCode +  "'\n" +
+                "WHERE QuoteID = " + params.aimQuoteID + "; ";
+
+        aimsql.execute "UPDATE dbo.Quote\n" +
+                "SET StatusID = '" + params.statusCode +  "'\n" +
+                "WHERE QuoteID = " + params.aimQuoteID + "; ";
+
+        render "good"
+
+    }
+
+    def getCert(){
+        log.info "GENERATING CERT"
+        log.info params
+
+        aimDAO.generateCert();
+
+        render "good"
+    }
+
+    def saveSubmissionDraft(){
+        log.info "SAVE DRAFT SUBMISSION"
+        log.info params
+
+        def timestamp = now.toTimestamp()
+        log.info timestamp
+
+        SavedSubmissions m;
+        try {
+            m = new portal.SavedSubmissions(saveName: "autoSave_" + timestamp,
+                    user: session.user.id, //firstMessage, replyMessage,
+                    saveDateTime: timestamp,
+                    autosaveFlag: "Y");
+
+            m.save(flush: true, failOnError: true)
+
+        }
+        catch (Exception e) {
+            log.info(e)
+        }
+
+        render "good"
     }
 }

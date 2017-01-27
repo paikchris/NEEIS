@@ -23,5 +23,7 @@ public  void setStateAbbrevToNameMAP(java.lang.Object value) { }
 public  java.lang.Object test() { return null;}
 public  java.lang.Object saveNewSubmission(java.lang.Object policyFormJSON, java.lang.Object dataSource_aim, java.lang.Object user, java.lang.Object underwriter) { return null;}
 public  java.lang.Object saveToQuote(java.lang.Object policyFormJSON, java.lang.Object dataSource_aim, java.lang.Object insuredID) { return null;}
+public  java.lang.Object updateSubmissionStatus() { return null;}
 public  java.lang.Object insertUserIntoAIMPhoneBook(java.lang.Object user) { return null;}
+public  java.lang.Object generateCert() { return null;}
 }

@@ -246,6 +246,13 @@ class MainController {
         [user: session.user]
     }
 
+    def certs() {
+        log.info ("certs")
+        log.info (params)
+
+        [user: session.user]
+    }
+
     def syncProductsFromAIM(){
         
     }
@@ -611,8 +618,9 @@ class MainController {
 
     def downloadPDF = {
 //        def sub = Submissions.get(params.id)
-        def webrootDir = servletContext.getRealPath("/attachments/")
-        def file = new File(webrootDir, "testpdf.pdf")
+        log.info params
+        def webrootDir = servletContext.getRealPath("/attachments/${params.q}")
+        def file = new File(webrootDir, "Indication.pdf")
             if (file.exists())
             {
                 response.setContentType("application/octet-stream") // or or image/JPEG or text/xml or whatever type the file is
@@ -621,6 +629,19 @@ class MainController {
             }
             else render "Error!" // appropriate error handling
         }
+
+    def downloadCert = {
+//        def sub = Submissions.get(params.id)
+        def webrootDir = servletContext.getRealPath("/attachments/")
+        def file = new File(webrootDir, "testcert.pdf")
+        if (file.exists())
+        {
+            response.setContentType("application/octet-stream") // or or image/JPEG or text/xml or whatever type the file is
+            response.setHeader("Content-disposition", "attachment;filename=\"${file.name}\"")
+            response.outputStream << file.bytes
+        }
+        else render "Error!" // appropriate error handling
+    }
 
     def getGroupedMessages(){
         def messages;
@@ -640,17 +661,23 @@ class MainController {
             log.info "TESTING == " + it
             def messagesInChain = messages.findAll { m -> m.messageChainID == it }
 
-            def conversationWith = ""
+            def conversationWith = "";
             messagesInChain.each{
-                if(it.sender == session.user.email){
-                }
-                else{
-                    conversationWith = it.sender
 
+                if(it.sender != session.user.email){
+                    conversationWith = it.sender
                     return false;
                 }
-            }
+                else if(it.recipient != session.user.email){
+                    conversationWith = it.recipient
+                    return false;
+                }
+                else{
 
+
+                }
+            }
+            log.info "TESTING == " + conversationWith
             messagesInChain.add(0, conversationWith)
             groupedMessages.add(messagesInChain)
         }

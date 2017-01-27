@@ -93,7 +93,12 @@ class AIMSQL {
 
         def quoteID =0;
         def allQuoteIDs = "";
-//        log.info testjson.getAt("namedInsured")
+        log.info ("CLG LOB ==== " + testjson.getAt("cglLOB"))
+        def accountExec = underwriter;
+        def accountExecName = "Name";
+        if(accountExec == "jason"){
+            accountExecName = "Jason DeBolt"
+        }
         def stateNameToAbbrevMAP = [
                 "":"",
                 Alabama:"AL",
@@ -174,11 +179,16 @@ class AIMSQL {
         def timestamp = now.toTimestamp()
         log.info testjson.getAt("stateMailing")
 
+//        SELECT     Name, City, IDCode, NameKeyPK
+//        FROM         dvSearchAssociations
+//        ORDER BY Name
+//        Commercial Wholesale = 3941 -> GroupKey
+
         /////////SAVE INSURED
         def map = [InsuredID:"'${insuredID}'",
-                   NamedInsured: "'${testjson.getAt("namedInsured")}'",
+                   NamedInsured: "'${testjson.getAt("namedInsured")replaceAll("'","''")}'",
                    NameType: "'B'",
-                   DBAName: "'${testjson.getAt("namedInsured")}'",
+                   DBAName: "'${testjson.getAt("namedInsured").replaceAll("'","''")}'",
                    Prefix: 'NULL',
                    First_Name: 'NULL',
                    Last_Name: 'NULL',
@@ -192,7 +202,7 @@ class AIMSQL {
                    Zip: "'${testjson.getAt("zipCodeMailing")}'",
                    AddressID: 'NULL',
                    ProducerID: "'TVD'",
-                   AcctExec: "'UserID'",
+                   AcctExec: "'${accountExecName}'",
                    AcctAsst: 'NULL',
                    CSR: 'NULL',
                    Entity: 'NULL',
@@ -203,7 +213,7 @@ class AIMSQL {
                    MailCity: "'${testjson.getAt("cityMailing")}'",
                    MailState: "'${testjson.getAt("stateMailing")}'",
                    MailZip: "'${testjson.getAt("zipCodeMailing")}'",
-                   ContactName: 'NULL',
+                   ContactName: "'${testjson.getAt("namedInsured").replaceAll("'","''")}'",
                    Phone: "'${testjson.getAt("phoneNumber")}'",
                    Fax: 'NULL',
                    EMail: "'${testjson.getAt("namedInsuredEmail")}'",
@@ -211,7 +221,7 @@ class AIMSQL {
                    SSN: "'${testjson.getAt("FEINSSN")}'",
                    PhoneExt: 'NULL',
                    WorkPhone: 'NULL',
-                   AcctExecID: "'UserID'",
+                   AcctExecID: "'${accountExec}'",
                    AcuityKey: 'NULL',
                    DateAdded: "'${timestamp.format("MM/dd/yyyy hh:mm:ss a")}'",
                    VehicleCount: 'NULL',
@@ -220,13 +230,13 @@ class AIMSQL {
                    Employees: 'NULL',
                    Payroll: 'NULL',
                    SicID: "'${testjson.getAt("SIC")}'",
-                   Attention: 'NULL',
+                   Attention: "'${user.firstName} ${user.lastName}'",
                    ContactID: 'NULL',
                    ClaimCount: 'NULL',
                    PolicyCount: 'NULL',
                    TeamID: "'TeamID'",
                    InsuredKey_PK: "'${insuredID}'",
-                   GroupKey_FK: 'NULL',
+                   GroupKey_FK: "'3941'", //COMMERCIAL WHOLESALE
                    FlagProspect: "'N'",
                    FlagAssigned: 'NULL',
                    MembershipTypeID: 'NULL',
@@ -299,44 +309,23 @@ class AIMSQL {
 
             def productID = it;
             log.info "PRODUCT ID === " + productID
-            aimsql.eachRow("SELECT Limits, Deduct, Subject, Endorse, LobDistrib, ActiveFlag, CompanyID " +
-                    "FROM Product " +
-                    "WHERE (ProductID = '" + productID + "') ") {
-                productMap['productLimits'] = it.Limits
-                productMap['productDeduct'] = it.Deduct
-                productMap['productSubject'] = it.Subject
-                productMap['productEndorse'] = it.Endorse
-                productMap['productLobDistrib'] = it.LobDistrib
-                productMap['productCompanyID'] = it.CompanyID
-                log.info "Product === " + it
-            }
-
-            def companyMap = [:]
-            aimsql.eachRow("SELECT Name " +
-                    "FROM Company " +
-                    "WHERE (CompanyID = '" + productMap['productCompanyID'] + "') ") {
-
-                log.info "COMPANY === " + it.Name
-                companyMap['companyName'] = it.Name
-            }
-
-            log.info "Quote ID: " + quoteID
-            /////////SAVE VERSION
-            def proposedTermLength = testjson.getAt("proposedTermLength").split(" ")[0].toInteger();
-            log.info proposedTermLength
-
-
+            def premium ="";
+            def premiumRaw = "";
+            def stringLOB = "";
             def limitsString = "";
             def deductsString = "";
             def coverageID = "";
-            def stringLOB = "";
-            if(productID == "PIP CHOI" || productID == "PIP 1" || productID == "PIP 2"|| productID == "PIP 3"|| productID == "PIP 4"|| productID == "PIP 5"){
+
+            if(productID == "PIP CHOI" || productID == "PIP 1" || productID == "PIP 2"|| productID == "PIP 3"|| productID == "PIP 4"||
+                    productID == "PIP 5" || productID == "EPKG37"){
                 limitsString = testjson.getAt("EPKGlimitsString");
                 deductsString = testjson.getAt("EPKGdeductsString");
                 coverageID = "EPKG";
                 if(testjson.getAt("epkgLOB").length() > 1){
                     stringLOB = testjson.getAt("epkgLOB");
                 }
+                premium = testjson.getAt("EPKGPremium").replaceAll('[$,]', '')
+                premiumRaw = testjson.getAt("EPKGPremium")
             }
             else if(productID == "BARCPKSF" || productID == "BARCPKGP"||productID == "BARCPKGC"){
                 limitsString = testjson.getAt("CPKlimitsString");
@@ -345,11 +334,104 @@ class AIMSQL {
 
                 if(testjson.getAt("cpkLOB").length() > 1){
                     stringLOB = testjson.getAt("cpkLOB");
+                    premium = testjson.getAt("CPKPremium").replaceAll('[$,]', '')
+                    premiumRaw = testjson.getAt("CPKPremium")
+                    coverageID = "CPK";
                 }
                 else if(testjson.getAt("cglLOB").length() > 1){
                     stringLOB = testjson.getAt("cglLOB");
+                    premium = testjson.getAt("CGLPremium").replaceAll('[$,]', '')
+                    premiumRaw = testjson.getAt("CGLPremium")
+                    coverageID = "CGL";
                 }
             }
+            log.info "Test ID === "
+
+            aimsql.eachRow("SELECT Limits, Deduct, Subject, Endorse, LobDistrib, ActiveFlag, CompanyID, GrossComm, AgentComm, Rate " +
+                    "FROM Product " +
+                    "WHERE (ProductID = '" + productID + "') ") {
+                log.info "Product === " + it
+                productMap['productLimits'] = it.Limits
+                productMap['productDeduct'] = it.Deduct
+                productMap['productSubject'] = it.Subject
+                productMap['productEndorse'] = it.Endorse
+                productMap['productLobDistrib'] = it.LobDistrib
+                productMap['productCompanyID'] = it.CompanyID
+                productMap['productGrossComm'] = it.GrossComm
+                productMap['productAgentComm'] = it.AgentComm
+                productMap['productRate'] = it.Rate
+
+                productMap['productLobDistribSched'] = it.LobDistrib
+                productMap['productRateInfo'] = "";
+
+                if(coverageID == "EPKG"){
+                    productMap['productLobDistribSched'] = it.LobDistrib.split('\n')[0].split('\t')[0] + "\t" + premiumRaw + "\t15.0"
+                    productMap['productLobDistrib'] = "EPKG\t" + premium + "\t28.0\t15.0\t\n" +
+                            "\t\t0\t0\t\n" +
+                            "\t\t0\t0\t\n" +
+                            "\t\t0\t0\t\n" +
+                            "\t\t0\t0\t\n" +
+                            "\t\t0\t0\t\n" +
+                            "\t\t0\t0\t\n" +
+                            "\t\t0\t0\t";
+
+                    productMap['productRateInfo'] = testjson.getAt("EPKGRateInfo");
+
+                }
+                else if(coverageID == "CPK"){
+                    productMap['productLobDistribSched'] = "Commercial General Liability\t" + testjson.getAt("CPKPremiumOnly") + "\t15.0\n" +
+                            "NOA Liability\t" + testjson.getAt("NOALPremiumOnly") + "\t15.0"
+                    productMap['productLobDistrib'] = "CGL\t" + testjson.getAt("CPKPremiumOnly").replaceAll('[$,]', '') + "\t28.0\t15.0\t\n" +
+                            "NOAL\t" + testjson.getAt("NOALPremiumOnly").replaceAll('[$,]', '') + "\t28.0\t15.0\t\n" +
+                            "\t\t0\t0\t\n" +
+                            "\t\t0\t0\t\n" +
+                            "\t\t0\t0\t\n" +
+                            "\t\t0\t0\t\n" +
+                            "\t\t0\t0\t\n" +
+                            "\t\t0\t0\t";
+                    productMap['productRateInfo'] = testjson.getAt("CPKRateInfo");
+
+                    productMap['productEndorse'] = testjson.getAt("endorseInsert")
+
+                }
+                else if(coverageID == "CGL"){
+                    productMap['productLobDistribSched'] = "Commercial General Liability\t" + premiumRaw + "\t15.0"
+                    productMap['productLobDistrib'] = "CGL\t" + premium + "\t28.0\t15.0\t\n" +
+                            "\t\t0\t0\t\n" +
+                            "\t\t0\t0\t\n" +
+                            "\t\t0\t0\t\n" +
+                            "\t\t0\t0\t\n" +
+                            "\t\t0\t0\t\n" +
+                            "\t\t0\t0\t\n" +
+                            "\t\t0\t0\t";
+                    productMap['productRateInfo'] = testjson.getAt("CGLRateInfo");
+                    
+                }
+                else{
+                    productMap['productLobDistribSched'] = it.LobDistrib
+                }
+                log.info "Product LOB DISTRIB SCHED === " + it.LobDistrib
+            }
+            log.info "AFTER Product === "
+            def companyMap = [:]
+            aimsql.eachRow("SELECT Name, NAIC " +
+                    "FROM Company " +
+                    "WHERE (CompanyID = '" + productMap['productCompanyID'] + "') ") {
+
+                log.info "COMPANY === " + it.Name
+                companyMap['companyName'] = it.Name
+                companyMap['companyNAIC'] = it.NAIC
+            }
+
+            log.info "Quote ID: " + quoteID
+            /////////SAVE VERSION
+            def proposedTermLength = testjson.getAt("proposedTermLength").split(" ")[0].toInteger();
+            log.info proposedTermLength
+
+
+
+
+
 
 
 
@@ -499,7 +581,90 @@ class AIMSQL {
 //            def LOB_Deduct1Value= deductVal1.trim().replaceAll("[^\\d.]", "").isEmpty() ? "" : Double.parseDouble(deductVal1);
 //            def LOB_Deduct2Value =  deductVal2.trim().replaceAll("[^\\d.]", "").isEmpty() ? "" : Double.parseDouble(deductVal2);
 
-            log.info "TEST ===== " +  LOB_Coverage1.length()
+            //GET TAX INFO
+            def taxCodes = [:];
+            def taxState = testjson.getAt("stateMailing");
+//            taxState = "CA"//TESTING PURPOSE ONLY REMOVE LATER
+            aimsql.eachRow("SELECT     TransCode, TransTypeID, Description, FlatAmount_Flag, Rate, CollectedBy, AllowOverRide, State, FlagUserSelected, AP_AccountID, IncludeFees, RoundingRule, \n" +
+                    "                      RecordKey_PK, PremiumBasis, BasisSection, FlatRateFlag, TaxValue, TaxCodeID, FlagFullyEarned, FlagPolicyOnly, TaxRate, MinAmount, MaxAmount, AppliesTo, \n" +
+                    "                      CompanyID, Municipality\n" +
+                    "FROM         dvTaxTable\n" +
+                    "WHERE     (State LIKE '${taxState}') AND (ISNULL(Municipality, '') = '') OR\n" +
+                    "                      (State LIKE '${taxState}') AND (Municipality = '')\n" +
+                    "ORDER BY Description") {
+
+                taxCodes["${it.TransCode}"] =  it.Description;
+            }
+            log.info "TAX AMOUNT sldkfjsldjf+"
+            def agentCommCalculation = premium.toDouble() * (productMap['productAgentComm']/100);
+
+            def taxString= "";
+            def tax1Amount = "";
+            def tax2Amount = "";
+            def tax3Amount = "";
+            def tax4Amount = "";
+
+            def tax1Name = "";
+            def tax2Name = "";
+            def tax3Name = "";
+            def tax4Name = "";
+
+            def taxesPaidBy = "";
+            def taxesPaidByID = "";
+            def taxCount = 0;
+            aimsql.eachRow("SELECT     State, TaxValue, FlatRateFlag, Effective, Expiration, IncludeFees, PK_TaxID, CountyID, TaxCodeID, CompanyID, TaxValueNew, CollectedBy, PaidTo, AllowOverRide, \n" +
+                    "                      RoundingRule, TaxLine, TaxPercentange, CoverageID_Old, TaxPercentage, StateName, DateAdded, CreatedByID, SystemReq, RecordKey_PK, CoverageID, \n" +
+                    "                      FlagPolicyOnly, AdmittedTax, FlagFullyEarned, ZipCodeStart, ZipCodeEnd, FlagUserSelected, MinAmount, MaxAmount, PremiumBasis, BasisSection, \n" +
+                    "                      FlagNonResidentTax, AppliesTo, ExcludeTRIA, FlagUseEndorsementDate, Municipality, ExemptInsuredTax\n" +
+                    "FROM         TaxTable WITH (NOLOCK)\n" +
+                    "WHERE     (State = '${taxState}') AND ('11/27/2016' BETWEEN Effective AND Expiration) AND (ISNULL(AppliesTo, 'ALL') = 'ALL') AND (ISNULL(AdmittedTax, 'N') = 'N') AND \n" +
+                    "                      (ISNULL(ExemptInsuredTax, 'N') = 'N') OR\n" +
+                    "                      (State = '${taxState}') AND ('11/27/2016' BETWEEN Effective AND Expiration) AND (ISNULL(AdmittedTax, 'N') = 'N') AND (ISNULL(ExemptInsuredTax, 'N') = 'N') AND \n" +
+                    "                      (AppliesTo = 'RES')\n" +
+                    "ORDER BY TaxLine, SUBSTRING(CoverageID, 1, 25)") {
+                taxCount++;
+//                log.info "TAX AMOUNT ++"  +  (premium.toDouble() * it.TaxValue)
+                if(taxCount == 1){
+                    tax1Amount = premium.toDouble() * it.TaxValue;
+                    tax1Name = taxCodes["${it.TaxCodeID}"]
+                    taxesPaidByID = it.CompanyID
+                }
+                else if(taxCount == 2){
+                    tax2Amount = premium.toDouble() * it.TaxValue;
+                    tax2Name = taxCodes["${it.TaxCodeID}"]
+                }
+                if(taxCount == 3){
+                    tax3Amount = premium.toDouble() * it.TaxValue;
+                    tax3Name = taxCodes["${it.TaxCodeID}"]
+                }
+                if(taxCount == 4){
+                    tax4Amount = premium.toDouble() * it.TaxValue;
+                    tax4Name = taxCodes["${it.TaxCodeID}"]
+                }
+                taxString = taxString + it.TaxCodeID + "\t" + (premium.toDouble() * it.TaxValue) + "\t" + it.CollectedBy +
+                        "\t" + it.CompanyID + "\t" + it.RoundingRule + "\t" + it.TaxValue + "\n";
+
+                taxesPaidBy = it.CollectedBy;
+
+            }
+            log.info "TAX AMOUNT ++"  +  taxString
+
+
+            log.info "Premium ===== " +  premium
+            def brokerFee= testjson.getAt("brokerFee").replaceAll('[$,]', '')
+            def webQuoteFee = 0.0
+            def webQuoteFeeNoTax = 20.0
+            def webQuoteFeeString = "\$20.00"
+            def feeSchedule = "Policy Fee\t" + webQuoteFeeString + "\n"
+            def versionPremDist = "FEE" + "\t" + "20" + "\t" + "A" + "\t00\tY\tN\t\n"
+
+            log.info "BROKER FEE ===== " +  brokerFee
+            if(brokerFee?.trim() && Double.parseDouble(brokerFee) > 0){
+                feeSchedule = feeSchedule + "Broker Fee\t" + testjson.getAt("brokerFee")
+                versionPremDist =  versionPremDist + "ABF" + "\t" + brokerFee + "\t" + "R" + "\tRAGENT\tY\tN\t\n"
+                webQuoteFeeNoTax = webQuoteFeeNoTax + Double.parseDouble(brokerFee)
+            }
+
             def versionmap = [QuoteID: "'${quoteID}'",
                               VerOriginal: "'A'",
                               Version: "'A'",
@@ -513,7 +678,10 @@ class AIMSQL {
                               VersionID: "'${quoteID}A'" ,
                               CompanyID:"'${productMap['productCompanyID'].replaceAll("'","''")}'",
                               ProductID:"'${productID}'" ,
-                              Premium: "'${testjson.getAt("premiumAllLOBTotal").replaceAll('[$,]', '')}'",
+                              Premium: "'${premium}'",
+                              Non_Premium: "'${webQuoteFee}'",
+                              NonTax_Premium: "'${webQuoteFeeNoTax}'",
+                              FlagFeeCalc:"'N'",
                               Quoted:"'${timestamp.format('yyyyMMdd HH:mm:ss.SSS')}'",
                               Limits:"'${limitsString}'",
                               Subject:"'${productMap['productSubject'].replaceAll("'","''")}'",
@@ -521,22 +689,28 @@ class AIMSQL {
                               Taxed: "'Y'",
                               MEP: "''",
                               Rate:"''",
-                              GrossComm:"''",
-                              AgentComm:"''",
+                              LobDistrib: "'${productMap['productLobDistrib']}'",
+                              LobDistribSched: "'${productMap['productLobDistribSched']}'",
+                              GrossComm:"'${productMap['productGrossComm']}'",
+                              AgentComm:"'${productMap['productAgentComm']}'",
                               Deductible:"'${deductsString}'",
                               CoInsure:"''",
                               StatusID:"'QO'",
                               MarketID:"'SAFELL'",
-                              Tax1:"''",
-                              Tax2:"''",
-                              Tax3:"''",
-                              Tax4:"''",
+                              Tax1:"'${tax1Amount}'",
+                              Tax2:"'${tax2Amount}'",
+                              Tax3:"'${tax3Amount}'",
+                              Tax4:"'${tax4Amount}'",
+                              TaxesPaidBy:"'${taxesPaidBy}'",
+                              TaxesPaidByID:"'${taxesPaidByID}'",
+                              FeeSchedule:"'${feeSchedule}'",
+                              PremDistrib:"'${versionPremDist}'",
                               FormID:"'OCR'",
-                              RateInfo:"''",
-                              CommPaid:"''",
-                              ProposedEffective:"''",
-                              ProposedExpiration:"''",
-                              TaxDistrib:"''",
+                              RateInfo:"'${productMap['productRateInfo']}'",
+                              CommPaid:"'${agentCommCalculation}'",
+                              ProposedEffective:"'${testjson.getAt("proposedEffectiveDate")}'" ,
+                              ProposedExpiration:"'${testjson.getAt("proposedExpirationDate")}'" ,
+                              TaxDistrib:"'${taxString}'",
                               DeductType:"''",
                               LOB_Limit1:"'${LOB_Limit1}'",
                               LOB_Limit2:"'${LOB_Limit2}'",
@@ -566,10 +740,10 @@ class AIMSQL {
                               LOB_Coverage6:"'${LOB_Coverage6}'",
                               LOB_DeductType1:"'${LOB_DeductType1}'",
                               LOB_DeductType2:"'${LOB_DeductType2}'",
-                              TaxwoTRIA1:"'0.00'",
-                              TaxwoTRIA2:"'0.00'",
-                              TaxwoTRIA3:"'0.00'",
-                              TaxwoTRIA4:"'0.00'",
+                              TaxwoTRIA1:"'${tax1Amount}'",
+                              TaxwoTRIA2:"'${tax2Amount}'",
+                              TaxwoTRIA3:"'${tax3Amount}'",
+                              TaxwoTRIA4:"'${tax4Amount}'",
                               LOB_Coverage7:"'${LOB_Coverage7}'",
                               LOB_Coverage8:"'${LOB_Coverage8}'",
                               LOB_Limit7:"'${LOB_Limit7}'",
@@ -578,12 +752,12 @@ class AIMSQL {
                               LOB_Limit8Value:"'${LOB_Limit8Value}'",
                               PremiumProperty:"'0.00'",
                               PremiumLiability:"'0.00'",
-                              PremiumOther:"'23423.00'",
-                              Tax1Name:"''",
-                              Tax2Name:"''",
-                              Tax3Name:"''",
-                              Tax4Name:"''",
-                              AgentDeposit:"'-4099.03'",
+                              PremiumOther:"'0.00'",
+                              Tax1Name:"'${tax1Name}'",
+                              Tax2Name:"'${tax2Name}'",
+                              Tax3Name:"'${tax3Name}'",
+                              Tax4Name:"'${tax4Name}'",
+                              AgentDeposit:"'-${agentCommCalculation}'",
                               TaxwoTRIA5:"'0.00'",
                               Tax5:"'0.00'",
                               Tax5Name:"''",
@@ -600,8 +774,9 @@ class AIMSQL {
                               Tax7:"'0.00'",
                               Tax8:"'0.00'",
                               InsuredDeposit:"'0.00'",
-                              AgentDepositwoTRIA:"'-4099.03'",
-                              InsuredDepositwoTRIA:"'0.00'"
+                              AgentDepositwoTRIA:"'-${agentCommCalculation}'",
+                              InsuredDepositwoTRIA:"'0.00'",
+                              ReferenceKey_FK:"'${referenceID}'"
             ]
             aimsql.execute "INSERT INTO dbo.Version (QuoteID, VerOriginal, Version, Financed, Taxed, Brokerage, Indicator, DirectBillFlag, ProposedTerm, UnderLyingCoverage, " +
                     "PolicyTerm, VersionID, CompanyID, ProductID, Premium, Quoted, Limits, Subject, Endorsement, MEP, Rate, GrossComm, AgentComm, Deductible, " +
@@ -611,7 +786,8 @@ class AIMSQL {
                     "TerrorTaxes, FlagMultiOption, LOB_Coverage1, LOB_Coverage2, LOB_Coverage3, LOB_Coverage4, LOB_Coverage5, LOB_Coverage6, LOB_DeductType1, LOB_DeductType2, " +
                     "TaxwoTRIA1, TaxwoTRIA2, TaxwoTRIA3, TaxwoTRIA4, LOB_Coverage7, LOB_Coverage8, LOB_Limit7, LOB_Limit8, LOB_Limit7Value, LOB_Limit8Value, PremiumProperty, " +
                     "PremiumLiability, PremiumOther, Tax1Name, Tax2Name, Tax3Name, Tax4Name, AgentDeposit, TaxwoTRIA5, Tax5, Tax5Name, LOB_Coverage9, LOB_Limit9, LOB_Limit9Value, " +
-                    "TaxwoTRIA6, Tax6Name, TaxwoTRIA7, Tax7Name, TaxwoTRIA8, Tax8Name, Tax6, Tax7, Tax8, InsuredDeposit, AgentDepositwoTRIA, InsuredDepositwoTRIA) " +
+                    "TaxwoTRIA6, Tax6Name, TaxwoTRIA7, Tax7Name, TaxwoTRIA8, Tax8Name, Tax6, Tax7, Tax8, InsuredDeposit, AgentDepositwoTRIA, InsuredDepositwoTRIA," +
+                    "Non_Premium, NonTax_Premium, FlagFeeCalc, TaxesPaidBy, TaxesPaidByID, FeeSchedule, PremDistrib, LobDistribSched, LobDistrib, ReferenceKey_FK) " +
                     "values " +
                     "($versionmap.QuoteID, $versionmap.VerOriginal, $versionmap.Version, $versionmap.Financed, $versionmap.Taxed, $versionmap.Brokerage, $versionmap.Indicator, $versionmap.DirectBillFlag, $versionmap.ProposedTerm, $versionmap.UnderLyingCoverage, " +
                     "$versionmap.PolicyTerm, $versionmap.VersionID, $versionmap.CompanyID, $versionmap.ProductID, $versionmap.Premium, $versionmap.Quoted, $versionmap.Limits, $versionmap.Subject, $versionmap.Endorsement, $versionmap.MEP, $versionmap.Rate, $versionmap.GrossComm, $versionmap.AgentComm, $versionmap.Deductible, " +
@@ -621,19 +797,25 @@ class AIMSQL {
                     "$versionmap.TerrorTaxes, $versionmap.FlagMultiOption, $versionmap.LOB_Coverage1, $versionmap.LOB_Coverage2, $versionmap.LOB_Coverage3, $versionmap.LOB_Coverage4, $versionmap.LOB_Coverage5, $versionmap.LOB_Coverage6, $versionmap.LOB_DeductType1, $versionmap.LOB_DeductType2, " +
                     "$versionmap.TaxwoTRIA1, $versionmap.TaxwoTRIA2, $versionmap.TaxwoTRIA3, $versionmap.TaxwoTRIA4, $versionmap.LOB_Coverage7, $versionmap.LOB_Coverage8, $versionmap.LOB_Limit7, $versionmap.LOB_Limit8, $versionmap.LOB_Limit7Value, $versionmap.LOB_Limit8Value, $versionmap.PremiumProperty, " +
                     "$versionmap.PremiumLiability, $versionmap.PremiumOther, $versionmap.Tax1Name, $versionmap.Tax2Name, $versionmap.Tax3Name, $versionmap.Tax4Name, $versionmap.AgentDeposit, $versionmap.TaxwoTRIA5, $versionmap.Tax5, $versionmap.Tax5Name, $versionmap.LOB_Coverage9, $versionmap.LOB_Limit9, $versionmap.LOB_Limit9Value, " +
-                    "$versionmap.TaxwoTRIA6, $versionmap.Tax6Name, $versionmap.TaxwoTRIA7, $versionmap.Tax7Name, $versionmap.TaxwoTRIA8, $versionmap.Tax8Name, $versionmap.Tax6, $versionmap.Tax7, $versionmap.Tax8, $versionmap.InsuredDeposit, $versionmap.AgentDepositwoTRIA, $versionmap.InsuredDepositwoTRIA)"
+                    "$versionmap.TaxwoTRIA6, $versionmap.Tax6Name, $versionmap.TaxwoTRIA7, $versionmap.Tax7Name, $versionmap.TaxwoTRIA8, $versionmap.Tax8Name, $versionmap.Tax6, $versionmap.Tax7, $versionmap.Tax8, $versionmap.InsuredDeposit, $versionmap.AgentDepositwoTRIA, $versionmap.InsuredDepositwoTRIA," +
+                    "$versionmap.Non_Premium, $versionmap.NonTax_Premium, $versionmap.FlagFeeCalc, $versionmap.TaxesPaidBy, $versionmap.TaxesPaidByID, $versionmap.FeeSchedule, $versionmap.PremDistrib, $versionmap.LobDistribSched, $versionmap.LobDistrib, $versionmap.ReferenceKey_FK)"
 
-            def accountExec = underwriter;
-            def totalBudget = Double.parseDouble(testjson.getAt("totalBudget").minus("\$").minus(","));
+            log.info("Testing Step = " + testjson.getAt("totalBudgetConfirm"))
 
+            def totalBudget = Double.parseDouble(testjson.getAt("totalBudgetConfirm").replaceAll('[$,]', ''));
+            log.info("Testing Step1")
 
             log.info accountExec
 
+
+
             def quotemap = [QuoteID: "'${quoteID}'",
                             ProducerID:"'TVD'",
-                            NamedInsured:"'${testjson.getAt("namedInsured")}'",
+                            NamedInsured:"'${testjson.getAt("namedInsured")replaceAll("'","''")}'",
                             UserID:"'web'",
                             Received: "'${timestamp.format("yyyyMMdd HH:mm:ss.SSS")}'",
+                            Acknowledged: "'${timestamp.format("yyyyMMdd HH:mm:ss.SSS")}'",
+                            Quoted: "'${timestamp.format("yyyyMMdd HH:mm:ss.SSS")}'",
                             TeamID:"'01'",
                             DivisionID:"'00'",
                             StatusID:"'QO'",
@@ -652,7 +834,7 @@ class AIMSQL {
                             CsrID:"'web'",
                             ReferenceID: "'${referenceID}'",
                             SubmitGrpID:"'${quoteID}'",
-                            TaxState:"''",
+                            TaxState:"'${taxState}'",
                             CoverageID:"'${coverageID}'",
                             SuspenseFlag:"'N'",
                             ClaimsFlag:"'N'",
@@ -673,21 +855,60 @@ class AIMSQL {
                             MailCity:"''",
                             MailState:"''",
                             MailZip:"''",
+                            Attention: "'${user.firstName} ${user.lastName}'",
                             Quoted:"'${timestamp.format("yyyyMMdd HH:mm:ss.SSS")}'",
                             Effective:"'${timestamp.format("yyyyMMdd HH:mm:ss.SSS")}'"
             ]
-            aimsql.execute "INSERT INTO dbo.Quote (QuoteID ,ProducerID ,NamedInsured ,UserID ,Received ,TeamID ,DivisionID ,StatusID ,CreatedID ,\n" +
+            aimsql.execute "INSERT INTO dbo.Quote (QuoteID ,ProducerID ,NamedInsured ,UserID ,Received , Acknowledged, Quoted, TeamID ,DivisionID ,StatusID ,CreatedID ,\n" +
                     "                Renewal ,OpenItem ,VersionCounter ,InsuredID ,Description ,Address1 ,Address2 ,City ,State ,Zip ,AcctExec ,\n" +
                     "                CsrID ,ReferenceID ,SubmitGrpID ,TaxState ,CoverageID ,SuspenseFlag ,ClaimsFlag ,ActivePolicyFlag ,LossHistory ,\n" +
                     "                LargeLossHistory ,Exposures ,AIM_TransDate ,AccountKey_FK ,SubmitTypeID ,FlagRPG ,CountryID ,FlagTaxExempt ,\n" +
-                    "                FlagNonResidentAgt ,DBAName ,MailAddress1 ,MailAddress2 ,MailCity ,MailState ,MailZip ) values " +
-                    "($quotemap.QuoteID ,$quotemap.ProducerID ,$quotemap.NamedInsured ,$quotemap.UserID ,$quotemap.Received ,$quotemap.TeamID ,$quotemap.DivisionID ,$quotemap.StatusID ,$quotemap.CreatedID ," +
+                    "                FlagNonResidentAgt ,DBAName ,MailAddress1 ,MailAddress2 ,MailCity ,MailState ,MailZip, Attention ) values " +
+                    "($quotemap.QuoteID ,$quotemap.ProducerID ,$quotemap.NamedInsured ,$quotemap.UserID ,$quotemap.Received ,$quotemap.Acknowledged ,$quotemap.Quoted,$quotemap.TeamID ,$quotemap.DivisionID ,$quotemap.StatusID ,$quotemap.CreatedID ," +
                     "$quotemap.Renewal ,$quotemap.OpenItem ,$quotemap.VersionCounter ,$quotemap.InsuredID ,$quotemap.Description ,$quotemap.Address1 ,$quotemap.Address2 ,$quotemap.City ,$quotemap.State ,$quotemap.Zip ,$quotemap.AcctExec ," +
                     "$quotemap.CsrID ,$quotemap.ReferenceID ,$quotemap.SubmitGrpID ,$quotemap.TaxState ,$quotemap.CoverageID ,$quotemap.SuspenseFlag ,$quotemap.ClaimsFlag ,$quotemap.ActivePolicyFlag ,$quotemap.LossHistory ," +
                     "$quotemap.LargeLossHistory ,$quotemap.Exposures ,$quotemap.AIM_TransDate ,$quotemap.AccountKey_FK ,$quotemap.SubmitTypeID ,$quotemap.FlagRPG ,$quotemap.CountryID ,$quotemap.FlagTaxExempt ," +
-                    "$quotemap.FlagNonResidentAgt ,$quotemap.DBAName ,$quotemap.MailAddress1 ,$quotemap.MailAddress2 ,$quotemap.MailCity ,$quotemap.MailState ,$quotemap.MailZip )"
+                    "$quotemap.FlagNonResidentAgt ,$quotemap.DBAName ,$quotemap.MailAddress1 ,$quotemap.MailAddress2 ,$quotemap.MailCity ,$quotemap.MailState ,$quotemap.MailZip, $quotemap.Attention )"
 
+//            declare @p1 int
+//            set @p1=82255
+//            exec dbo.GetKeyField  @KeyValue=@p1 output,@FieldName='ReferenceID'
+//            select @p1
+            def riskDetailKey = "";
+            aimsql.call("{call dbo.GetKeyField(${Sql.INTEGER}, 'ReferenceID')}") { num ->
+                log.info "ReferenceID $num"
+                riskDetailKey = num
+            }
 
+//            declare @p1 int
+//            set @p1=3168138
+//            exec dbo.GetKeyField  @KeyValue=@p1 output,@FieldName='RecordKey'
+//            select @p1
+            def recordKey = "";
+            aimsql.call("{call dbo.GetKeyField(${Sql.INTEGER}, 'RecordKey')}") { num ->
+                log.info "ReferenceID $num"
+                recordKey = num
+            }
+
+            def unitsAtRisk = [Description: "'EPKGTEST'",
+                            DateAdded: "'${timestamp.format("yyyyMMdd HH:mm:ss.SSS")}'",
+                            RiskDetailKey_PK: "'${riskDetailKey}'",//NEW ONE
+                            ActiveFlag: "'Y'",
+                            InsuredKey_FK: "${map.InsuredKey_PK}", //Insured.InsuredKey_PK
+                            ReferenceKey_FK:"${versionmap.ReferenceKey_FK}",//Version.ReferenceKEY
+                            RecordKey_PK:"'${recordKey}'",//NEW ONE
+                               CategoryID:"''",
+                               ValuedOn:"''",
+                               Valuation:"'N'",
+                               SerialNumber:"'N'",
+                               DateAcquired:"''"
+            ]
+
+            aimsql.execute "INSERT INTO dbo.taaRiskDetail_SchedProperty (ReferenceKey_FK ,RiskDetailKey_PK ,Description ,CategoryID ,ValuedOn ,Valuation ,SerialNumber ," +
+                    "DateAdded ,ActiveFlag ,DateAcquired ,InsuredKey_FK ,RecordKey_PK )  " +
+                    "VALUES " +
+                    "($unitsAtRisk.ReferenceKey_FK, $unitsAtRisk.RiskDetailKey_PK, $unitsAtRisk.Description , $unitsAtRisk.CategoryID, $unitsAtRisk.ValuedOn, $unitsAtRisk.Valuation, " +
+                    "$unitsAtRisk.SerialNumber,$unitsAtRisk.DateAdded, $unitsAtRisk.ActiveFlag, $unitsAtRisk.DateAcquired, $unitsAtRisk.InsuredKey_FK, $unitsAtRisk.RecordKey_PK)"
 
             def taaQuoteMap = [QuoteID: "'${quoteID}'"]
 
@@ -735,8 +956,8 @@ class AIMSQL {
         }
 
 
-
-
+        testjson['allQuoteIDs'] = allQuoteIDs;
+        log.info("BEFORE SENDING TO INTELLEDOX = "+  testjson['allQuoteIDs'])
 
         asyncController.createIndicationPDF(testjson)
 
@@ -752,13 +973,20 @@ class AIMSQL {
         def now = new Date()
         def timestamp = now.toTimestamp()
 
-
-
-
         return insuredID
+    }
+
+    def updateSubmissionStatus(){
+
     }
 
     def insertUserIntoAIMPhoneBook(user){
 
+    }
+
+    def generateCert(){
+        asyncController.createCertificatePDF()
+
+        return "good"
     }
 }

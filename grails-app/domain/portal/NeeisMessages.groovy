@@ -27,6 +27,6 @@ class NeeisMessages {
         attachments nullable:true
         replyTo nullable:true
         body nullable:true
-
+        messageChainID nullable:true
     }
 }

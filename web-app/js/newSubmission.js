@@ -12,7 +12,7 @@ var stateNameToAbbrevMAP = {
     "Colorado": "CO",
     "Connecticut": "CT",
     "Delaware": "DE",
-    "District Of Columbia": "DC",
+    "District of Columbia": "DC",
     "Florida": "FL",
     "Georgia": "GA",
     "Hawaii": "HI",
@@ -134,7 +134,7 @@ $(document).ready(function () {
     $(document).on('focusout', ':input[required]:visible', function (){
         console.log($(this).val());
         if($(this).val().length > 0){
-            if($(this).attr("id") === "phoneNumber" && ($(this).val().trim() === "(___)___-____")){
+            if($(this).attr("id") === "phoneNumber" && ($(this).val().trim() === "(___) ___-____")){
                 $(this).closest(".form-group").addClass("has-error");
             }
             else if($(this).attr("id") === "stateMailing" && ($(this).val() === "invalid")){
@@ -203,6 +203,7 @@ $(document).ready(function () {
 
 
         if($(this).attr('id') === "proposedEffectiveDate"){
+            var riskChosen = $("li.active").children("a.riskOptionLink").html().trim();
             if (mdyEffectiveDateObject.getTime() < today.getTime()) {
                 console.log(e);
                 //alert("]Effective Date must be a present or future date");
@@ -211,6 +212,23 @@ $(document).ready(function () {
                 $(this).val(today.getMonth()+1 + "/" + today.getDate() + "/" + today.getFullYear());
                 datesAreValid = false;
             }
+            else if(riskChosen === "Film Projects With Cast (No Work Comp)"){
+                var termLengthTemp;
+                var datesAreValidTemp = true;
+                var todayTemp = new Date();
+                todayTemp.setHours(0, 0, 0, 0);
+                var mdyEffectiveTemp = $('#proposedEffectiveDate').val().split('/');
+                var mdyEffectiveDateObjectTemp = new Date(mdyEffectiveTemp[2], mdyEffectiveTemp[0]-1, mdyEffectiveTemp[1]);
+                var dayTemp = mdyEffectiveDateObjectTemp.getDate();
+                if (dayTemp < 10) { dayTemp = '0' + dayTemp; }
+                var monthIndexTemp = mdyEffectiveDateObjectTemp.getMonth() + 1;
+                if (monthIndexTemp < 10) { monthIndexTemp = '0' + monthIndexTemp; }
+                var yearTemp = mdyEffectiveDateObject.getFullYear();
+                yearTemp = mdyEffectiveDateObjectTemp.getFullYear() + 1;
+                $("#proposedExpirationDate").val( (monthIndexTemp) + "/" + dayTemp + "/" + yearTemp);
+                $('#proposedTermLength').val(365 + " Days");
+            }
+
         }
 
 
@@ -236,6 +254,13 @@ $(document).ready(function () {
                     $('#alertMessageContent').html("Expiration Date must be after the Effective Date");
                     $('#alertMessageModal').modal('show');
                     $(this).val("");
+                    $('#proposedTermLength').val("");
+                    datesAreValid = false;
+                }
+                if(days > 365){
+                    $('#alertMessageContent').html("Policy Term cannot exceed 1 year");
+                    $('#alertMessageModal').modal('show');
+                    $('#proposedExpirationDate').val("");
                     $('#proposedTermLength').val("");
                     datesAreValid = false;
                 }
@@ -533,7 +558,7 @@ $(document).ready(function () {
     $(document.body).on('focus', '.phoneNumberMask' ,function(){
         //this.value = this.value.replace(/(\d{3})\-?(\d{3})\-?(\d{4})/,'$1-$2-$3');
         //alert ("OK");
-        $(".phoneNumberMask").mask("(999)999-9999");
+        $(".phoneNumberMask").mask("(999) 999-9999");
     });
 
 
@@ -620,10 +645,10 @@ $(document).ready(function () {
                             head.appendChild(script);
                         });
                     }
-                    else if (riskChosen === "Film Projects Without Cast (With Work Comp)") {
+                    else if (riskChosen === "Film Projects Without Cast (With Work Comp)" || riskChosen === "Film Projects With Cast (With Work Comp)") {
                         window.location.href = "http://www.neeis.com/d/users/sign_in";
                     }
-                    else if (riskChosen.includes("Film Projects") ) {
+                    else if (riskChosen.indexOf("Film Projects") > -1) {
                         //$("#step2test").load("./../forms/specFilm"); // test of loading forms
                         var finishedLoading1 = false;
                         var finishedLoading2 = false;
@@ -666,7 +691,7 @@ $(document).ready(function () {
 
 
                     }
-                    else if (riskChosen.includes("Comedian") ){
+                    else if (riskChosen.indexOf("Comedian") > -1 ){
                         $("#riskSpecificInsert").load("./../forms/otherForm #riskSpecificInfo", function () {
 
                             var head = document.getElementsByTagName('head')[0];
@@ -716,6 +741,7 @@ $(document).ready(function () {
                             }
                         });
                     }
+                    getProductsForRisk()
                 }
                 else {
                     alert("Please select a risk option");
@@ -725,7 +751,7 @@ $(document).ready(function () {
 
             }
             else if (e.target.id == "nextButtonStep2") {
-                if(riskChosen.includes("Film Projects")){
+                if(riskChosen.indexOf("Film Projects") > -1){
                     if(!($('#EPKGcoverage').is(':checked') || $('#CPKCGLcoverage').is(':checked'))){
 
                         $('#loadingModal').hide();
@@ -769,43 +795,85 @@ $(document).ready(function () {
                 var epkgLOB = "";
                 var cpkLOB = "";
                 var cglLOB = "";
+                var pipChoiRateInfo = "";
+                var pip1RateInfo = "";
+                var pip2RateInfo = "";
+                var pip3RateInfo = "";
+                var pip4RateInfo = "";
+                var pip5RateInfo = "";
+                var EPKG37RateInfo = "";
+                var CPKRateInfo = "";
+                var CGLRateInfo = "";
+                var EPKGRateInfo = "";
+                var NOALRateInfo = "";
 
-                if($('#PIPChoiceInputRadio').is(':checked')){
-                    productID = productID + "PIP CHOI" + ";";
+                if(riskChosen === "Film Projects With Cast (No Work Comp)"){
+                    if($('#EPKGcoverage').is(':checked')){
+                        productID = productID + "EPKG37" + ";";
+                        //EPKG37RateInfo = $('#EPKG37_RateInfo').html();
+                        //data["EPKG37RateInfo"] = EPKG37RateInfo;
+                    }
+                    EPKGRateInfo = $('#EPKG_RateInfo').html();
+                    data["EPKGRateInfo"] = EPKGRateInfo;
                 }
-                if($('#PIP1InputRadio').is(':checked')){
-                    productID = productID + "PIP 1" + ";";
+                else{
+                    if($('#PIPChoiceInputRadio').is(':checked')){
+                        productID = productID + "PIP CHOI" + ";";
+                        //pipChoiRateInfo = $('#PIPCHOI_RateInfo').html();
+                        //data["pipChoiRateInfo"] = pipChoiRateInfo;
+
+                    }
+                    if($('#PIP1InputRadio').is(':checked')){
+                        productID = productID + "PIP 1" + ";";
+                        //pip1RateInfo = $('#PIP1_RateInfo').html();
+                        //data["pip1RateInfo"] = pip1RateInfo;
+                    }
+                    if($('#PIP2InputRadio').is(':checked')){
+                        productID = productID + "PIP 2" + ";";
+                        //pip2RateInfo = $('#PIP2_RateInfo').html();
+                        //data["pip2RateInfo"] = pip2RateInfo;
+                    }
+                    if($('#PIP3InputRadio').is(':checked')){
+                        productID = productID + "PIP 3" + ";";
+                        //pip3RateInfo = $('#PIP3_RateInfo').html();
+                        //data["pip3RateInfo"] = pip3RateInfo;
+                    }
+                    if($('#PIP4InputRadio').is(':checked')){
+                        productID = productID + "PIP 4" + ";";
+                        //pip4RateInfo = $('#PIP4_RateInfo').html();
+                        //data["pip4RateInfo"] = pip4RateInfo;
+                    }
+                    if($('#PIP5InputRadio').is(':checked')){
+                        productID = productID + "PIP 5" + ";";
+                        //pip5RateInfo = $('#PIP5_RateInfo').html();
+                        //data["pip5RateInfo"] = pip5RateInfo;
+                    }
+                    EPKGRateInfo = $('#EPKG_RateInfo').html();
+                    data["EPKGRateInfo"] = EPKGRateInfo;
                 }
-                if($('#PIP2InputRadio').is(':checked')){
-                    productID = productID + "PIP 2" + ";";
-                }
-                if($('#PIP3InputRadio').is(':checked')){
-                    productID = productID + "PIP 3" + ";";
-                }
-                if($('#PIP4InputRadio').is(':checked')){
-                    productID = productID + "PIP 4" + ";";
-                }
-                if($('#PIP5InputRadio').is(':checked')){
-                    productID = productID + "PIP 5" + ";";
-                }
+
                 if($('#CPKInputRadio').is(':checked')){
                     if(termLength >30){
-                        if(riskChosen === "Film Projects Without Cast (No Work Comp)"){
+                        if(riskChosen === "Film Projects Without Cast (No Work Comp)" || riskChosen === "Film Projects With Cast (No Work Comp)"){
                             productID = productID + "BARCPKSF" + ";";
                         }
                         else if(riskChosen === "Annual Blanket Film Projects (DICE)"){
                             productID = productID + "BARCPKGP" + ";";
                         }
 
+
                     }
                     else if(termLength<=30){
                         productID = productID + "BARCPKGC" + ";";
                     }
+                    CPKRateInfo = $('#CPK_RateInfo').html();
+                    NOALRateInfo = $('#NOAL_RateInfo').html();
+                    data["CPKRateInfo"] = CPKRateInfo + NOALRateInfo;
 
                 }
                 if($('#CGLInputRadio').is(':checked')){
                     if(termLength >30){
-                        if(riskChosen === "Film Projects Without Cast (No Work Comp)"){
+                        if(riskChosen === "Film Projects Without Cast (No Work Comp)" || riskChosen === "Film Projects With Cast (No Work Comp)"){
                             productID = productID + "BARCPKSF" + ";";
                         }
                         else if(riskChosen === "Annual Blanket Film Projects (DICE)"){
@@ -816,6 +884,8 @@ $(document).ready(function () {
                     else if(termLength<=30){
                         productID = productID + "BARCPKGC" + ";";
                     }
+                    CGLRateInfo = $('#CGL_RateInfo').html();
+                    data["CGLRateInfo"] = CGLRateInfo;
                 }
                 if(productID.length == 0){
                     validSubmission = false;
@@ -833,7 +903,7 @@ $(document).ready(function () {
                                 $(this).find('.deductibleColumn').children().first().html() + ";&&;";
                             EPKGlimitsString = EPKGlimitsString + $(this).find('.limitColumn').children().first().val() + "\tEPKG:" +$(this).find('.coverageColumn').children().first().html() + "\n";
                             EPKGdeductsString = EPKGdeductsString + $(this).find('.deductibleColumn').children().first().html() + "\tEPKG:" +$(this).find('.coverageColumn').children().first().html() + "\n";
-
+                            console.log(EPKGlimitsString)
                         }
                         else{
                             epkgLOB = epkgLOB + $(this).find('.coverageColumn').children().first().html() + " ;&;" + $(this).find('.limitColumn').children().first().html() + " ;&;" +
@@ -856,7 +926,23 @@ $(document).ready(function () {
                         CPKlimitsString = CPKlimitsString + $(this).find('.limitColumn').children().first().html() + "\tCPK:" + $(this).find('.coverageColumn').children().first().html() + "\n";
                         CPKdeductsString = CPKdeductsString + $(this).find('.deductibleColumn').children().first().html() + "\tCPK:" + $(this).find('.coverageColumn').children().first().html() + "\n";
 
+
+
+
                     });
+                    //ADD NOAL
+                    if($('#CPKInputRadio').is(':checked')){
+                        $('div#limitsDeductPremiumInsert div.NOAL_LOBRow').each(function () {
+                            cpkLOB = cpkLOB + $(this).find('.coverageColumn').children().first().html() + " ;&;" + $(this).find('.limitColumn').children().first().html() + " ;&;" +
+                                $(this).find('.deductibleColumn').children().first().html() + ";&&;";
+                            CPKlimitsString = CPKlimitsString + $(this).find('.limitColumn').children().first().html() + "\tNOAL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+                            CPKdeductsString = CPKdeductsString + $(this).find('.deductibleColumn').children().first().html() + "\tNOAL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+
+
+
+
+                        });
+                    }
 
                     $('div#limitsDeductPremiumInsert div.CGL_LOBRow').each(function () {
                         cglLOB = cglLOB + $(this).find('.coverageColumn').children().first().html() + " ;&;" + $(this).find('.limitColumn').children().first().html() + " ;&;" +
@@ -868,6 +954,7 @@ $(document).ready(function () {
                 }
 
                 var premSummary = "";
+                premSummary = premSummary + "Premium Distribution" + ";&;" + "" + ";&&;";
                 $('#coverageOptionsReview div#premDistributionInsert div.row').each(function(){
                     if($(this).hasClass("TotalPremiumRow")){
                         premSummary = premSummary + $(this).find('.lineOfBusinessSpan').html() + ";&;" + $(this).find('.totalPremiumSpan').html() + ";&&;";
@@ -877,6 +964,16 @@ $(document).ready(function () {
                         premSummary = premSummary + $(this).find('.lineOfBusinessSpan').html() + ";&;" + $(this).find('.premiumSpan').html() + ";&&;";
                     }
                 });
+                if($('.taxDescriptionSpan').length){
+                    premSummary = premSummary + "Taxes and Fees" + ";&;" + "" + ";&&;";
+                    $('#coverageOptionsReview div#taxRows div.row').each(function(){
+                        premSummary = premSummary + $(this).find('.taxDescriptionSpan').html() + ";&;" + $(this).find('.taxSpan').html() + ";&&;";
+                    });
+                }
+                if($('#brokerFeeInput').length && $('#brokerFeeInput').val().length > 0){
+                    premSummary = premSummary + "Broker Fee" + ";&;" + $('#brokerFeeInput').val() + ".00;&&;";
+                }
+                premSummary = premSummary + "Policy Fee" + ";&;" + "\$20.00" + ";&&;";
 
 
 
@@ -916,6 +1013,25 @@ $(document).ready(function () {
                 productionInvolves = productionInvolves.replace(/,\s*$/, "");
 
                 data["productionInvolves"] = productionInvolves;
+
+                if($('#EPKGPremiumLOBTotal').length){
+                    data["EPKGPremium"] = $('#EPKGPremiumLOBTotal').html();
+                }
+                 if($('#CGLPremiumLOBTotal').length){
+                    data["CGLPremium"] = $('#CGLPremiumLOBTotal').html();
+                }
+                 if($('#CPKPremiumLOBTotal').length){
+                     data["CPKPremium"] = $('#CPKPremiumLOBTotal').html();
+                     data["CPKPremiumOnly"] = $('#BARCPKGCPremiumTotal').html();
+                     data["NOALPremiumOnly"] = $('#NOAL01PremiumTotal').html();
+                     data["NOALcostOfHire"] = $('#costOfHireInput').val();
+                }
+                data["brokerFee"] = $('#brokerFeeInput').val();
+                console.log("Broker Fee = " + data["CPKPremium"])
+                //var taxDetails ="";
+                //$('.taxSpan').each(function(){
+                //    taxDetails = taxDetails + $(this).closeshtml() + "&;&" +
+                //});
 
 
                 if(validSubmission){
@@ -1365,7 +1481,7 @@ function testingModeFill(){
 function getProductsForRisk(){
     var riskChosen = $("li.active").children("a.riskOptionLink").html().trim();
 
-    if(riskChosen.includes("Film Projects")){
+    if(riskChosen.indexOf("Film Projects") > -1){
         $.ajax({
             method: "POST",
             url: "/portal/Async/getProductsForCoverage",
@@ -1392,7 +1508,22 @@ function getProductsForRisk(){
                         var productsArray = coverageAndProductsArray[i].split("&;&")[1];
                         //console.log("PROD ARRAY: " + productsArray);
 
-                        if(coverageID === "EPKG" && (riskChosen === "Film Projects Without Cast (No Work Comp)" || riskChosen === "Specific Film Projects Test")){
+                        if(coverageID === "EPKG" &&
+                            (riskChosen === "Film Projects Without Cast (No Work Comp)" ||
+                            riskChosen === "Film Projects With Cast (No Work Comp)" ||
+                            riskChosen === "Specific Film Projects Test")){
+
+                            ///////////////////////////// Film Projects With Cast (No Work Comp)
+                            if(riskChosen === "Film Projects With Cast (No Work Comp)"){
+                                $('#EPKGProductsDiv').css("display", "none");
+                                $('#EPKGoptions').css("margin-top", "-20px");
+                            }
+                            else{
+                                $('#EPKGProductsDiv').css("display", "");
+                                $('#EPKGoptions').css("margin-top", "0px");
+                            }
+                            /////////////////////////////
+
                             if(productsArray.indexOf("PIP CHOI") > -1){
                                 $('#PIPChoiceInput').css("display", "");
 
@@ -1443,6 +1574,7 @@ function getProductsForRisk(){
                                 if($('#EPKGcoverage').is(':checked')){
                                     $('#PIP5InputRadio').prop("checked", true);
                                     $(".PIP5Options").css('display', "");
+                                    $('.PIPCHOIOption').prop("checked", false);
                                 }
                             }
                             else{
@@ -1463,16 +1595,29 @@ function getProductsForRisk(){
 
                             if($('#EPKGcoverage').is(':checked')){
                                 $('#EPKGoptions').css("display", "");
+
+                                if(riskChosen === "Film Projects With Cast (No Work Comp)"){
+                                    $("#EPKGNOHAOption").css("display","none");
+                                }
+                                else{
+                                    $("#EPKGNOHAOption").css("display","");
+                                }
                             }
                             //
                         }
-                        else if(coverageID === "DICE" && (riskChosen === "Film Projects Without Cast (No Work Comp)" || riskChosen === "Specific Film Projects Test")){
+                        else if(coverageID === "DICE" &&
+                            (riskChosen === "Film Projects Without Cast (No Work Comp)" ||
+                            riskChosen === "Film Projects With Cast (No Work Comp)" ||
+                            riskChosen === "Specific Film Projects Test")){
                             $('.EPKGDiv').css("display", "none");
                             $('.CPKDiv').css("display", "none");
                             $('#DICEOptions').css("display", "");
                             $("#EPKGoptions").css("display","none");
                         }
-                        else if(coverageID === "SPECIFICFILMPROD" && (riskChosen === "Film Projects Without Cast (No Work Comp)" || riskChosen === "Specific Film Projects Test")){
+                        else if(coverageID === "SPECIFICFILMPROD" &&
+                            (riskChosen === "Film Projects Without Cast (No Work Comp)" ||
+                            riskChosen === "Film Projects With Cast (No Work Comp)" ||
+                            riskChosen === "Specific Film Projects Test")){
                             $('#SPECIFICOptions').css("display", "");
                         }
 
@@ -1563,11 +1708,19 @@ function getTaxInfo(){
     var day = date.getDate();
     var monthIndex = date.getMonth();
     var year = date.getFullYear();
+    var taxState = "CA"
+    if ($('#stateMailing').val() === "invalid"){
+        taxState = "CA"
+    }
+    else{
+        taxState = $('#stateMailing').val();
+    }
+    console.log("TAX State = " + taxState)
     $.ajax({
         method: "POST",
         url: "/portal/Async/getTaxInfo",
         data: {riskType: "",
-            state: "CA",
+            state: taxState,
             date: monthIndex+1 + "/" + day + "/" + year
         }
     })
@@ -1642,4 +1795,8 @@ function validateFields(){
 
 
     return valid;
+}
+
+function saveProgress(){
+
 }
