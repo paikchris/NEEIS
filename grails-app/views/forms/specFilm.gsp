@@ -20,11 +20,11 @@
                 <input type="radio" name="isReshootRadio"
                        class=""
                        value="Yes"
-                       id=""> Yes
+                       id="isReshootYes"> Yes
                 <input type="radio" name="isReshootRadio"
                        class=""
                        value="No"
-                       id=""
+                       id="isReshootNo"
                         checked="checked"> No
 
             </div>
@@ -137,25 +137,30 @@
 
                 <p class="control-label"><input type="checkbox" class="productionTypeCheckbox documentary showReview"
                                                 data-reviewName="Type of Production" name="documentary"
-                                                value="Documentary"/> Documentary</p>
+                                                value="Documentary"
+                                                id="productionType_Documentary"/> Documentary</p>
 
                 <p class="control-label"><input type="checkbox"
                                                 class="productionTypeCheckbox motionPictureFeatureFilms showReview"
                                                 data-reviewName="Type of Production"
                                                 name="motionPictureFeatureFilms"
-                                                value="Motion Picture Feature Films"/> Motion Picture Feature Films</p>
+                                                value="Motion Picture Feature Films"
+                                                id="productionType_MotionPicture"/> Motion Picture Feature Films</p>
 
                 <p class="control-label"><input type="checkbox" class="productionTypeCheckbox shortFilm showReview"
                                                 data-reviewName="Type of Production" name="shortFilm"
-                                                value="Short Film"/> Short Film</p>
+                                                value="Short Film"
+                                                id="productionType_ShortFilm"/> Short Film</p>
 
                 <p class="control-label"><input type="checkbox" class="productionTypeCheckbox tvMovie showReview"
                                                 data-reviewName="Type of Production" name="tvMovie"
-                                                value="TV Movie"/> TV Movie</p>
+                                                value="TV Movie"
+                                                id="productionType_TVMovie"/> TV Movie</p>
 
                 <p class="control-label"><input type="checkbox" class="productionTypeCheckbox tvPilotSpecial showReview"
                                                 data-reviewName="Type of Production" name="tvPilotSpecial"
-                                                value="TV Pilot"/> TV Pilot / Special</p>
+                                                value="TV Pilot"
+                                                id="productionType_TVPilot"/> TV Pilot / Special</p>
 
                 <p class="control-label"><input type="checkbox" class="productionTypeCheckbox tvSeries showReview"
                                                 data-reviewName="Type of Production" name="tvSeries"
@@ -168,25 +173,30 @@
 
                 <p class="control-label"><input type="checkbox" class="productionTypeCheckbox commercial showReview"
                                                 data-reviewName="Type of Production" name="commercial"
-                                                value="Commercial"/> Commerical</p>
+                                                value="Commercial"
+                                                id="productionType_Commercial"/> Commerical</p>
 
                 <p class="control-label"><input type="checkbox" class="productionTypeCheckbox infomercial showReview"
                                                 data-reviewName="Type of Production" name="infomercial"
-                                                value="Infomercial"/> Infomercial</p>
+                                                value="Infomercial"
+                                                id="productionType_Infomercial"/> Infomercial</p>
 
                 <p class="control-label"><input type="checkbox" class="productionTypeCheckbox educational showReview"
                                                 data-reviewName="Type of Production" name="educational"
-                                                value="Educational"/> Educational</p>
+                                                value="Educational"
+                                                id="productionType_Educational"/> Educational</p>
 
                 <p class="control-label"><input type="checkbox" class="productionTypeCheckbox trainingVideo showReview"
                                                 data-reviewName="Type of Production" name="trainingVideo"
-                                                value="Training Video"/> Training Video</p>
+                                                value="Training Video"
+                                                id="productionType_TrainingVideo"/> Training Video</p>
 
 
 
                 <p class="control-label"><input type="checkbox" class="productionTypeCheckbox animationCGI showReview"
                                                 data-reviewName="Type of Production" name="animationCGI"
-                                                value="Animation CGI"/> Animation CGI</p>
+                                                value="Animation CGI"
+                                                id="productionType_AnimationCGI"/> Animation CGI</p>
 
                 <p class="control-label"><input type="checkbox" class="productionTypeCheckbox other showReview"
                                                 data-reviewName="Type of Production" name="other"
@@ -205,38 +215,45 @@
                     <p class="control-label"><input type="checkbox"
                                                     class="productionInvolvesCheckbox useOfAnimals showReview"
                                                     data-reviewName="Special Hazards Declared" name="useOfAnimals"
-                                                    value="Use of Animals"/> Use of Animals</p>
+                                                    value="Use of Animals"
+                                                    id="productionInvolves_Animals"/> Use of Animals</p>
 
                     <p class="control-label"><input type="checkbox"
                                                     class="productionInvolvesCheckbox motorcycles showReview"
                                                     data-reviewName="Special Hazards Declared" name="motorcycles"
-                                                    value="Motorcycles"/> Motorcycles</p>
+                                                    value="Motorcycles"
+                                                    id="productionType_Motorcycles"/> Motorcycles</p>
 
                     <p class="control-label"><input type="checkbox"
                                                     class="productionInvolvesCheckbox airborneCrafts showReview"
                                                     data-reviewName="Special Hazards Declared" name="airborneCrafts"
-                                                    value="Airborne Crafts"/> Airborne Crafts</p>
+                                                    value="Airborne Crafts"
+                                                    id="productionType_AirborneCrafts"/> Airborne Crafts</p>
 
                     <p class="control-label"><input type="checkbox"
                                                     class="productionInvolvesCheckbox railroadCarsOrEquipment showReview"
                                                     data-reviewName="Special Hazards Declared" name="railroadCarsOrEquipment"
-                                                    value="Railroad Cars or Equipment"/> Railroad Cars or Equipment</p>
+                                                    value="Railroad Cars or Equipment"
+                                                    id="productionType_Railroad"/> Railroad Cars or Equipment</p>
 
                     <p class="control-label"><input type="checkbox"
                                                     class="productionInvolvesCheckbox underwaterFilming showReview"
                                                     data-reviewName="Special Hazards Declared" name="underwaterFilming"
-                                                    value="Underwater Filming"/> Underwater Filming
+                                                    value="Underwater Filming"
+                                                    id="productionType_UnderwaterFilming"/> Underwater Filming
                     </p>
 
                     <p class="control-label"><input type="checkbox"
                                                     class="productionInvolvesCheckbox specialVehicles showReview"
                                                     data-reviewName="Special Hazards Declared" name="specialVehicles"
-                                                    value="Special Vehicles"/> Special Vehicles</p>
+                                                    value="Special Vehicles"
+                                                    id="productionType_SpecialVehicles"/> Special Vehicles</p>
 
                     <p class="control-label"><input type="checkbox"
                                                     class="productionInvolvesCheckbox waterborneCrafts showReview"
                                                     data-reviewName="Special Hazards Declared" name="waterborneCrafts"
-                                                    value="Waterborne Crafts"/> Waterborne Crafts</p>
+                                                    value="Waterborne Crafts"
+                                                    id="productionType_WaterBorneCrafts"/> Waterborne Crafts</p>
 
                     <p class="control-label"><input type="checkbox"
                                                     class="productionInvolvesCheckbox pyrotechnics showReview"
@@ -267,7 +284,6 @@
                         <div class="col-xs-3">
                             <button type="button" class="btn btn-default btn-xs attachClearButton">Clear</button>
                         </div>
-
                     </div>
 
                     <p class="control-label"><input type="checkbox"
@@ -279,76 +295,102 @@
                     </p>
 
                     <div class="row attachFileContainer" id="stuntsHazardousActivitiesAttachContainer"
-                         style="margin-bottom: 20px; display:none">
-                        <div class="col-xs-3" style="margin-left:20px">
-                            <form enctype="multipart/form-data">
-                                <div class="fileUpload btn btn-primary">
-                                    <span>Attach File</span>
-                                    <input name="stuntsFile" type="file" class="file" id="stuntsFile" style="width:120px"/>
-                                </div>
-                            </form>
+                         style="margin-bottom: 20px; display:none; margin-left:0px;">
+                        <div class="row">
+                            <div class="col-xs-3" style="margin-left:20px">
+                                <form enctype="multipart/form-data">
+                                    <div class="fileUpload btn btn-primary">
+                                        <span>Attach File</span>
+                                        <input name="stuntsFile" type="file" class="file" id="stuntsFile" style="width:120px"/>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="col-xs-8" style="padding-left:0px; line-height: 30px;">
+                                <small>Please attach details of involvement of any Cast Member</small>
+                            </div>
+                        </div>
+                        <div class="row fileNameContainer" style="padding-top:6px; display:none">
+                            <div class="col-xs-3">
+                                <button type="button" class="btn btn-default btn-xs attachClearButton pull-right">Clear</button>
+                            </div>
+                            <div class="col-xs-9" style="font-size: 11px;padding-left: 20px;">
+                                <span class="fileNameSpan" id="stuntsFileSpan">File Name</span>
+                            </div>
+
                         </div>
 
-                        <div class="col-xs-8">
-                            <small>Please attach details of involvement of any Cast Member</small>
+
+                        <div class="row"></div>
+                        <br>
+
+                        <div class="row">
+                            <div class="col-xs-3" style="margin-left:20px">
+                                <form enctype="multipart/form-data">
+                                    <div class="fileUpload btn btn-primary">
+                                        <span>Attach File</span>
+                                        <input name="animalPDF" type="file" class="file" id="animalPDF" style="width:120px"/>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="col-xs-8" style="padding-left:0px; line-height: 30px;">
+                                <small>Please complete Animal Questionnaire</small>
+                            </div>
+                        </div>
+                        <div class="row fileNameContainer" style="padding-top:6px; display:none">
+                            <div class="col-xs-3">
+                                <button type="button" class="btn btn-default btn-xs attachClearButton pull-right">Clear</button>
+                            </div>
+                            <div class="col-xs-9" style="font-size: 11px;padding-left: 20px;">
+                                <span class="fileNameSpan" id="animalPDFSpan">File Name</span>
+                            </div>
+
                         </div>
 
                         <div class="row"></div>
                         <br>
 
-                        <div class="col-xs-3" style="margin-left:20px">
-                            <form enctype="multipart/form-data">
-                                <div class="fileUpload btn btn-primary">
-                                    <span>AnimalPDF</span>
-                                    <input name="animalPDF" type="file" class="file" style="width:120px"/>
-                                </div>
-                            </form>
+                        <div class="row">
+                            <div class="col-xs-3" style="margin-left:20px">
+                                <form enctype="multipart/form-data">
+                                    <div class="fileUpload btn btn-primary">
+                                        <span>Attach File</span>
+                                        <input name="dronePDF" type="file" class="file" id="dronePDF" style="width:120px"/>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="col-xs-8" style="padding-left:0px; line-height: 30px;">
+                                <small>Please complete Drone Questionnaire</small>
+                            </div>
                         </div>
-                        <div class="col-xs-8">
-                            <small>Please complete Animal Questionnaire</small>
+                        <div class="row fileNameContainer" style="padding-top:6px; display:none">
+                            <div class="col-xs-3">
+                                <button type="button" class="btn btn-default btn-xs attachClearButton pull-right">Clear</button>
+                            </div>
+                            <div class="col-xs-9" style="font-size: 11px;padding-left: 20px;">
+                                <span class="fileNameSpan" id="dronePDFSpan">File Name</span>
+                            </div>
+
                         </div>
 
-                        <div class="row"></div>
-                        <br>
-
-                        <div class="col-xs-3" style="margin-left:20px">
-                            <form enctype="multipart/form-data">
-                                <div class="fileUpload btn btn-primary">
-                                    <span>DronePDF</span>
-                                    <input name="dronePDF" class="file" type="file" style="width:120px"/>
-                                </div>
-                            </form>
-                        </div>
-
-                        <div class="col-xs-8">
-                            <small>Please complete Drone Questionnaire</small>
-                        </div>
-                        <br>
                         <br>
                         <div class="col-xs-12">
                             <div class="form-group">
                                 <label for="stuntCoordinator">Name of Stunt Coordinator</label>
-                            <input type="text" name="name" class=" showReview form-control" data-reviewName="Name of Stunt Coordinator" placeholder="Stunt Coordinator"/>
+                            <input type="text" name="name" class=" showReview form-control" data-reviewName="Name of Stunt Coordinator" placeholder="Stunt Coordinator" id="stuntCoordinatorName"/>
                                 </div>
                         </div>
                         <div class="col-xs-12">
                             <div class="form-group">
                                 <label for="signing">Are Participants Signing Waivers?</label>
-                                <input type="text" name="name" class="showReview form-control" data-reviewName="Are Participants Signing Waivers?" placeholder="Y/N"/>
+                                <input type="text" name="name" class="showReview form-control" data-reviewName="Are Participants Signing Waivers?" placeholder="Y/N" id="participantsSigningWaivers"/>
                             </div>
                         </div>
 
 
 
-
-                    </div>
-                    <div class="row" style="padding-top:6px; display:none">
-                        <div class="col-xs-9" style="text-align:right; font-size:11px">
-                            <span class="fileNameSpan" id="stuntsFileSpan">File Name</span>
-                        </div>
-                        <div class="col-xs-3">
-                            <button type="button" class="btn btn-default btn-xs attachClearButton">Clear</button>
-                        </div>
 
                     </div>
 
@@ -422,7 +464,8 @@
             <div class="col-xs-12">
                 %{--<div class="form-group">--}%
                     %{--<label for="cancelledDeclinedExplain"></label>--}%
-                    <input type="text" class=" showReview form-control" name="name" data-reviewName="Explain why it was cancelled or declined" placeholder="Please explain why it was cancelled or declined"/>
+                    <input type="text" class=" showReview form-control" name="name" data-reviewName="Explain why it was cancelled or declined" placeholder="Please explain why it was cancelled or declined"
+                    id="insuredCancelledExplain"/>
                 %{--</div>--}%
             </div>
                     </div>
@@ -522,7 +565,8 @@
                 </div>
             </div>
             <div id="errorOmissionsLiabilityContainer" style="display:none">
-                <input type="text" id="errorOmissionsLiability" class="showReview form-control" name="name" data-reviewName="Error and Omission Limit" placeholder="\$USD"/>
+                <input type="text" id="errorOmissionsLiability" class="showReview form-control" name="name" data-reviewName="Error and Omission Limit"
+                       id="errorOmissionsLimit" placeholder="\$USD"/>
                 </div>
             </div>
             %{--</div>--}%
@@ -536,8 +580,8 @@
 
             <div class="col-xs-9">
                 <div class="form-group">
-                    <input type="text" class="totalBudget" class="form-control" name="totalBudget"
-                                 id="totalBudgetInput" placeholder="\$USD" required="required" readonly="readonly"/>
+                    <input type="text" class="form-control totalBudget" class="form-control" name="totalBudget"
+                                 id="totalBudgetInput" placeholder="\$USD" required="required" disabled="disabled"/>
                 </div>
             </div>
 
@@ -680,7 +724,7 @@
                                placeholder="Hidden Text Field To Adjust Focus off Date" name="hiddenField"
                                style="display: none;"/>
                         <input class="form-control datepicker filmLocationStart" name="date" placeholder="MM/DD/YYY"
-                               type="text"/>
+                               type="text" id="filmLocationStartDate"/>
                         %{--</div>--}%
                     </div>
 
@@ -688,7 +732,8 @@
                         %{--<div class="form-group"> <!-- Date input -->--}%
                         <h5 class="endDateHeader" style="font-size: 16px;">End Date</h5>
                         <input class="form-control datepicker filmLocationEnd" name="date" placeholder="MM/DD/YYY"
-                               type="text"/>
+                               type="text" id="filmLocationEndDate"/>
+
                         %{--</div>--}%
                     </div>
 
@@ -776,7 +821,7 @@
                     <div class="col-xs-6">
                         <div class="form-group">
                             <input type="text" class="form-control showReview castMemberName" data-reviewName="Cast Member Name, Age, Role"
-                                         name="castMemberName" placeholder=""/>
+                                         name="castMemberName" placeholder="" />
                         </div>
                     </div>
                     <div class="col-xs-2">
@@ -801,11 +846,11 @@
                     <input type="radio" name="castMembersFilmAfterThis"
                            class=""
                            value="Yes"
-                           id=""> Yes
+                           id="castMembersFilmAfterThisYes"> Yes
                     <input type="radio" name="castMembersFilmAfterThis"
                            class=""
                            value="No"
-                           id=""
+                           id="castMembersFilmAfterThisNo"
                            checked="checked"> No
                 </div>
             </div>
@@ -882,25 +927,25 @@
         <div class="col-xs-12">
             <div class="form-group">
                 <label for="projectsOutsideUS">Projects Outside the US (%) </label>
-                <input type="text" class="form-control" name="name" placeholder="%"/>
+                <input type="text" class="form-control" name="name" placeholder="%" id="projectsOutsideUS"/>
             </div>
         </div>
         <div class="col-xs-12">
             <div class="form-group">
                 <label for="totalEmployees">Total number of employees</label>
-                <input type="text" class="form-control" name="name" placeholder="Country"/>
+                <input type="text" class="form-control" name="name" placeholder="Country" id="totalNumEmployees"/>
             </div>
         </div>
         <div class="col-xs-12">
             <div class="form-group">
                 <label for="annualPayroll">Annual Payroll</label>
-                <input type="text" class="form-control" name="name" placeholder="\$USD"/>
+                <input type="text" class="form-control" name="name" placeholder="\$USD" id="annualPayroll"/>
             </div>
         </div>
         <div class="col-xs-12">
             <div class="form-group">
                 <label for="umbrellaRequested">Umbrella Limit Requested</label>
-                <input type="text" class="form-control" name="name" placeholder="\$USD"/>
+                <input type="text" class="form-control" name="name" placeholder="\$USD" id="umbrellaLimitRequested"/>
             </div>
         </div>
 
@@ -914,7 +959,7 @@
                 <p class="control-label"><input type="checkbox"
                                                 class=""
                                                 data-reviewName="" name=""
-
+                                                id="workCompCoverageRequestedCheckbox"
                                                 value=""/> Work Comp Coverage Requested
                 </p>
             </div>
@@ -952,7 +997,7 @@
                 <div class="row col-xs-12">
                     <div class="col-xs-9">
                         <input type="text" class="form-control showReview" data-reviewName="States of Hire & Total Payroll Each State"
-                                     name="statesOfHire" placeholder=""/>
+                                     name="statesOfHire" placeholder="" id="statesOfHireAndPayroll"/>
                     </div>
                 </div>
             </div>
@@ -966,7 +1011,7 @@
                 <div class="row col-xs-12">
                     <div class="col-xs-9">
                         <input type="text" class="form-control showReview" data-reviewName="Names of Officers, Title, % of Ownership"
-                                     name="namesOfOfficers" placeholder=""/>
+                                     name="namesOfOfficers" placeholder="" id="namesOfficerTitleOwnership"/>
                     </div>
                 </div>
             </div>
@@ -981,7 +1026,7 @@
                 <div class="row col-xs-12">
                     <div class="col-xs-9">
                         <input type="text" class="form-control showReview" data-reviewName="Name of Officers to be Excluded under WC"
-                                     name="namesOfOfficersExcluded" placeholder=""/>
+                                     name="namesOfOfficersExcluded" placeholder="" id="officersExcluededUnderWC"/>
                     </div>
                 </div>
             </div>

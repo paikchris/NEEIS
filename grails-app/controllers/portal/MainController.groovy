@@ -620,7 +620,7 @@ class MainController {
 //        def sub = Submissions.get(params.id)
         log.info params
         def webrootDir = servletContext.getRealPath("/attachments/${params.q}")
-        def file = new File(webrootDir, "Indication.pdf")
+        def file = new File(webrootDir, "Indication A.pdf")
             if (file.exists())
             {
                 response.setContentType("application/octet-stream") // or or image/JPEG or text/xml or whatever type the file is

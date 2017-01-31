@@ -9,12 +9,19 @@ import wslite.http.auth.*
 import org.apache.commons.net.ftp.FTPClient
 import org.apache.commons.net.ftp.FTP;
 import sun.misc.BASE64Decoder;
+import portal.Utils.FileTransferHelper;
 
 class Intelledox {
 
-    def createIndicationPDF(jsonSerial){
+    def createIndicationPDF(jsonSerial, dataSource_aim){
         log.info "INTELLEDOX"
         log.info "JSON ==== " + jsonSerial
+
+        FileTransferHelper fileHelper = new FileTransferHelper();
+
+        def totalPolicyFee = 0;
+
+
 
         def soapXML = """<x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:int="http://services.dpm.com.au/intelledox/">
     <x:Header/>
@@ -29,26 +36,26 @@ class Intelledox {
                     <int:Data><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <application>
 \t<basicInfo>
-\t\t<name>${jsonSerial.getAt("nameOfProductionCompany")} </name>
-\t\t<date> ${jsonSerial.getAt("dateAdded").substring(1, jsonSerial.getAt("dateAdded").length()-1).split(" ")[0]} </date>
-\t\t<phone> ${jsonSerial.getAt("phoneNumber")} </phone>
-\t\t<address> ${jsonSerial.getAt("streetNameMailing")} </address>
-\t\t<addressState>  ${jsonSerial.getAt("cityMailing")}, ${jsonSerial.getAt("stateMailing")} ${jsonSerial.getAt("zipCodeMailing")} </addressState>
-\t\t<agent> ${jsonSerial.getAt("brokerFirstName")} ${jsonSerial.getAt("brokerLastName")} </agent>
-\t\t<agentEmail> ${jsonSerial.getAt("brokerEmail")} </agentEmail>
-\t\t<agentPhone> ${jsonSerial.getAt("brokerPhoneNumber")} </agentPhone>
-\t\t<submission> ${jsonSerial.getAt("quoteID").substring(1, jsonSerial.getAt("quoteID").length()-1)} </submission>
-\t\t<dateStart> ${jsonSerial.getAt("proposedEffectiveDate")} - ${jsonSerial.getAt("proposedExpirationDate")} </dateStart>
-\t\t<annualOrShort> ${jsonSerial.getAt("proposedTermLength")} </annualOrShort>
-\t\t<insuranceCompany> ${jsonSerial.getAt("insuranceCompany")} </insuranceCompany>
-\t\t<primaryName> ${jsonSerial.getAt("namedInsured")} </primaryName>
-\t\t<primaryPhone> ${jsonSerial.getAt("phoneNumber")} </primaryPhone>
-\t\t<primaryFax> ${jsonSerial.getAt("phoneNumber")} </primaryFax>
-\t\t<primaryEmail> ${jsonSerial.getAt("namedInsuredEmail")} </primaryEmail>
-\t\t<physicalAddress> ${jsonSerial.getAt("streetNameMailing")}, ${jsonSerial.getAt("cityMailing")}, ${jsonSerial.getAt("stateMailing")}, ${jsonSerial.getAt("zipCodeMailing")} </physicalAddress>
-\t\t<website> ${jsonSerial.getAt("website")} </website>
+\t\t<name>${jsonSerial.getAt("nameOfProductionCompany")}</name>
+\t\t<date>${jsonSerial.getAt("dateAdded").substring(1, jsonSerial.getAt("dateAdded").length()-1).split(" ")[0]}</date>
+\t\t<phone>${jsonSerial.getAt("phoneNumber")}</phone>
+\t\t<address>${jsonSerial.getAt("streetNameMailing")}</address>
+\t\t<addressState>${jsonSerial.getAt("cityMailing")}, ${jsonSerial.getAt("stateMailing")} ${jsonSerial.getAt("zipCodeMailing")}</addressState>
+\t\t<agent>${jsonSerial.getAt("brokerFirstName")} ${jsonSerial.getAt("brokerLastName")}</agent>
+\t\t<agentEmail>${jsonSerial.getAt("brokerEmail")}</agentEmail>
+\t\t<agentPhone>${jsonSerial.getAt("brokerPhoneNumber")}</agentPhone>
+\t\t<submission>${jsonSerial.getAt("quoteID").substring(1, jsonSerial.getAt("quoteID").length()-1)} </submission>
+\t\t<dateStart>${jsonSerial.getAt("proposedEffectiveDate")} - ${jsonSerial.getAt("proposedExpirationDate")} </dateStart>
+\t\t<annualOrShort>${jsonSerial.getAt("proposedTermLength")}</annualOrShort>
+\t\t<insuranceCompany>${jsonSerial.getAt("insuranceCompany")}</insuranceCompany>
+\t\t<primaryName>${jsonSerial.getAt("namedInsured")}</primaryName>
+\t\t<primaryPhone>${jsonSerial.getAt("phoneNumber")}</primaryPhone>
+\t\t<primaryFax>${jsonSerial.getAt("phoneNumber")}</primaryFax>
+\t\t<primaryEmail>${jsonSerial.getAt("namedInsuredEmail")}</primaryEmail>
+\t\t<physicalAddress>${jsonSerial.getAt("streetNameMailing")}, ${jsonSerial.getAt("cityMailing")}, ${jsonSerial.getAt("stateMailing")}, ${jsonSerial.getAt("zipCodeMailing")} </physicalAddress>
+\t\t<website> ${jsonSerial.getAt("website")}</website>
 \t\t<total> Total: </total>
-\t\t<totalCost> ${jsonSerial.getAt("premiumAllLOBTotal")} </totalCost>
+\t\t<totalCost>${jsonSerial.getAt("premiumAllLOBTotal")}</totalCost>
 \t</basicInfo>
 \t
 \t""";
@@ -66,6 +73,9 @@ class Intelledox {
 
 \t\t\t<cost>  </cost>
 \t\t</premiumSummary>"""
+                    }
+                    else if(it.split(";&;")[0] == "Policy Fee") {
+
                     }
                     else {
                         soapXML = soapXML + """
@@ -89,6 +99,14 @@ class Intelledox {
 \t\t\t<cost>  </cost>
 \t\t</premiumSummary>"""
         }
+
+
+///////////////////TOTAL POLICY FEE
+        soapXML = soapXML + """
+\t\t<premiumSummary package="Policy Fee">
+
+\t\t\t<cost>\$${jsonSerial.getAt("totalPolicyFee")}.00 </cost>
+\t\t</premiumSummary>"""
 
         soapXML = soapXML + """
 \t</premiumSummaryTable>
@@ -263,8 +281,8 @@ soapXML = soapXML + """
             </int:providedData>
             <int:options>
                 <int:ReturnDocuments>true</int:ReturnDocuments>
-                <int:RunProviders>false</int:RunProviders>
-                <int:LogGeneration>false</int:LogGeneration>
+                <int:RunProviders>1</int:RunProviders>
+                <int:LogGeneration>true</int:LogGeneration>
             </int:options>
         </int:GenerateWithData>
     </x:Body>
@@ -277,44 +295,34 @@ soapXML = soapXML + """
         def response = client.send(SOAPAction:'http://services.dpm.com.au/intelledox/GenerateWithData', soapXML)
 
         log.info response.text
-        def fileName = "Indication.pdf"
+        def fileName = "Indication A.pdf"
         log.info("NEW FOLDER QUOTE = " + jsonSerial.getAt("allQuoteIDs"))
         def quoteID = jsonSerial.getAt("allQuoteIDs").split(",")[0].split(";")[0]
         def a = new XmlSlurper().parseText(response.text)
         def nodeToSerialize = a."**".find {it.name() == 'BinaryFile'}
-//        def nodeAsText = XmlUtil.serialize()
-//        log.info nodeToSerialize.text()
-
-//        def folder = new File( 'A/B' )
-        // If it doesn't exist
-//        if( !folder.exists() ) {
-//            // Create all folders up-to and including B
-//            folder.mkdirs()
-//        }
-
-        def webrootDir = org.codehaus.groovy.grails.web.context.ServletContextHolder.getServletContext().getRealPath("/attachments/${quoteID}/${fileName}");
+        def pdfBinaryFile = nodeToSerialize.text();
         def folderPath = org.codehaus.groovy.grails.web.context.ServletContextHolder.getServletContext().getRealPath("/attachments/${quoteID}/")
-        def folder = new File ( folderPath)
-        folder.mkdirs()
-//        DataOutputStream os = new DataOutputStream(new FileOutputStream(webrootDir));
-        BASE64Decoder decoder = new BASE64Decoder();
-        byte[] decodedBytes = decoder.decodeBuffer(nodeToSerialize.text());
-//        os.writeBytes(decodedBytes)
-////        os.writeInt(nodeToSerialize.text());
-//        os.close();
+        log.info folderPath
+//        def webrootDir = org.codehaus.groovy.grails.web.context.ServletContextHolder.getServletContext().getRealPath("/attachments/${quoteID}/${fileName}");
+//        def folderPath = org.codehaus.groovy.grails.web.context.ServletContextHolder.getServletContext().getRealPath("/attachments/${quoteID}/")
+//        def folder = new File ( folderPath)
+//        folder.mkdirs()
+//
+//        BASE64Decoder decoder = new BASE64Decoder();
+//        byte[] decodedBytes = decoder.decodeBuffer(nodeToSerialize.text());
+//
+//        InputStream is = new ByteArrayInputStream(decodedBytes );
+//        DataOutputStream out = new DataOutputStream(new  BufferedOutputStream(new FileOutputStream(new File(webrootDir))));
+//        int c;
+//        while((c = is.read()) != -1) {
+//            out.writeByte(c);
+//        }
+//        out.close();
+//        is.close();
 
+        fileHelper.saveBinaryFileToLocalPath(pdfBinaryFile, folderPath, fileName);
 
-//        byte[] biteToRead = texto.getBytes();
-        InputStream is = new ByteArrayInputStream(decodedBytes );
-        DataOutputStream out = new DataOutputStream(new  BufferedOutputStream(new FileOutputStream(new File(webrootDir))));
-        int c;
-        while((c = is.read()) != -1) {
-            out.writeByte(c);
-        }
-        out.close();
-        is.close();
-
-        ftpFileToAIM(fileName,quoteID);
+        fileHelper.ftpFileToAIM(fileName, folderPath, quoteID, dataSource_aim);
 
         return "good"
     }
@@ -474,74 +482,6 @@ soapXML = soapXML + """
         is.close();
 
         return "good"
-    }
-
-    def ftpFileToAIM(localFileName, quoteID){
-        log.info("FTP FILE TO AIM")
-
-        def bioFile;
-        def lossesFile;
-        def pyroFile;
-        def stuntsFile;
-        def doodFile;
-        def treatmentFile;
-        def budgetFile;
-
-//        def webrootDir = servletContext.getRealPath("/attachments/") //app directory
-        def fileName;
-        log.info "INTELLEDOX QUOTE ID = " + quoteID
-        boolean done = false;
-
-
-//        log.info(webrootDir)
-        String server = "74.100.162.203";
-        int port = 21;
-        String user = "web_ftp";
-        String pass = "Get@4Files";
-
-        FTPClient ftpClient = new FTPClient();
-        try {
-
-            ftpClient.connect(server, port);
-            ftpClient.login(user, pass);
-            ftpClient.enterLocalPassiveMode();
-
-            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-
-
-            fileName = localFileName
-//            File fileDest = new File(webrootDir, fileName)
-            File firstLocalFile = new File("/universe/Neeis/web-app/attachments/${quoteID}", fileName)
-            String firstRemoteFile = "/AIMAPP/ATTACHTEST/${quoteID}/" + fileName;
-            InputStream inputStream = new FileInputStream(firstLocalFile);
-
-            log.info("Start uploading first file");
-            done = ftpClient.storeFile(firstRemoteFile, inputStream);
-            inputStream.close();
-
-
-            if (done) {
-                log.info("The file is uploaded successfully.");
-            }
-
-
-        } catch (IOException ex) {
-            log.info("Error: " + ex.getMessage());
-            ex.printStackTrace();
-        } finally {
-            try {
-                if (ftpClient.isConnected()) {
-                    ftpClient.logout();
-                    ftpClient.disconnect();
-                }
-            } catch (IOException ex) {
-                log.info ex
-                ex.printStackTrace();
-            }
-        }
-
-        log.info "Upload Completed"
-
     }
 }
 

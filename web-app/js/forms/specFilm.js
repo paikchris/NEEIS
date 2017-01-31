@@ -106,32 +106,34 @@ $(document).ready(function () {
             }
     });
     //NUMBER OF CAST MEMBERS
-    $(document.body).on('keyup', '#numberOfCastMembers' ,function(){
+    $(document.body).on('change', '#numberOfCastMembers' ,function(){
         if($.isNumeric($(this).val())){
-            var htmlString = "<div class='row'>" +
-                "<div class='col-xs-6'>" +
-                "<div class='form-group'>" +
-                "<input type='text' class='form-control showReview castMemberName' data-reviewName='Cast Member Name, Age, Role'" +
-                "name='castMemberName' placeholder='Name'/>" +
-                "</div>" +
-                "</div>" +
-                "<div class='col-xs-2'>" +
-                "<div class='form-group'>" +
-                "<input type='text' class='form-control showReview castMemberAge' data-reviewName='Cast Member Name, Age, Role'" +
-                "name='castMemberAge' placeholder='Age'/>" +
-                "</div>" +
-                "</div>" +
-                "<div class='col-xs-4'>" +
-                "<div class='form-group'>" +
-                "<input type='text' class='form-control showReview castMemberRole' data-reviewName='Cast Member Name, Age, Role'" +
-                "name='castMemberRole' placeholder='Role'/>" +
-                "</div>" +
-                "</div>" +
-                "</div>";
+            var htmlString = "";
 
             var finalString = "";
-            if(parseInt($(this).val() <=10)){
+            //alert($(this).val());
+            if(parseInt($(this).val()) <=10){
                 for(var i =0; i < parseInt($(this).val()); i++){
+                    htmlString = "<div class='row'>" +
+                        "<div class='col-xs-6'>" +
+                        "<div class='form-group'>" +
+                        "<input type='text' class='form-control  castMemberName' id='castMember" + i +  "NameInput' data-reviewName='Cast Member Name, Age, Role'" +
+                        "name='castMemberName' placeholder='Name'/>" +
+                        "</div>" +
+                        "</div>" +
+                        "<div class='col-xs-2'>" +
+                        "<div class='form-group'>" +
+                        "<input type='text' class='form-control  castMemberAge' id='castMember" + i +  "AgeInput' data-reviewName='Cast Member Name, Age, Role'" +
+                        "name='castMemberAge' placeholder='Age'/>" +
+                        "</div>" +
+                        "</div>" +
+                        "<div class='col-xs-4'>" +
+                        "<div class='form-group'>" +
+                        "<input type='text' class='form-control  castMemberRole' id='castMember" + i +  "RoleInput' data-reviewName='Cast Member Name, Age, Role'" +
+                        "name='castMemberRole' placeholder='Role'/>" +
+                        "</div>" +
+                        "</div>" +
+                        "</div>";
                     finalString = finalString + htmlString;
                 }
             }
@@ -139,6 +141,26 @@ $(document).ready(function () {
                 alert("Please enter only up to 10 cast members.")
                 $(this).val("10");
                 for(var i =0; i < 10; i++){
+                    htmlString = "<div class='row'>" +
+                    "<div class='col-xs-6'>" +
+                    "<div class='form-group'>" +
+                    "<input type='text' class='form-control  castMemberName' id='castMember" + i +  "NameInput' data-reviewName='Cast Member Name, Age, Role'" +
+                    "name='castMemberName' placeholder='Name'/>" +
+                    "</div>" +
+                    "</div>" +
+                    "<div class='col-xs-2'>" +
+                    "<div class='form-group'>" +
+                    "<input type='text' class='form-control  castMemberAge' id='castMember" + i +  "AgeInput' data-reviewName='Cast Member Name, Age, Role'" +
+                    "name='castMemberAge' placeholder='Age'/>" +
+                    "</div>" +
+                    "</div>" +
+                    "<div class='col-xs-4'>" +
+                    "<div class='form-group'>" +
+                    "<input type='text' class='form-control  castMemberRole' id='castMember" + i +  "RoleInput' data-reviewName='Cast Member Name, Age, Role'" +
+                    "name='castMemberRole' placeholder='Role'/>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>";
                     finalString = finalString + htmlString;
                 }
             }
@@ -159,6 +181,11 @@ $(document).ready(function () {
         if($(this).attr('id') === "productionInvolvesNoneAbove"){
             $(".productionInvolvesCheckbox").prop("checked", false);
             $("#productionInvolvesNoneAbove").prop("checked", true);
+            $('#stuntsHazardousActivitiesAttachContainer').css("display", "none");
+            $('#stuntCoordinatorName').css("display", "none");
+            $('#participantsSigningWaivers').css("display", "none");
+            $('#pyrotechnicsAttachContainer').css("display", "none");
+
             //$('#noneOfAboveWords').css("display", "none");
         }
         else{
@@ -205,18 +232,25 @@ $(document).ready(function () {
     $(document.body).on('change', '#stuntsHazardousCheckbox' ,function(){
         if($("#stuntsHazardousCheckbox").is(':checked')) {
             $('#stuntsHazardousActivitiesAttachContainer').css("display", "");
+            $('#stuntCoordinatorName').css("display", "");
+            $('#participantsSigningWaivers').css("display", "");
         }
         else{
             $('#stuntsHazardousActivitiesAttachContainer').css("display", "none");
+            $('#stuntCoordinatorName').css("display", "none");
+            $('#participantsSigningWaivers').css("display", "none");
+
         }
     });
     $(document.body).on('change', 'input[name="insuranceCancelled"]' ,function(){
         //alert();
         if ($(this).attr("value") == "Yes") {
             $("#insuranceCancelledContainer").css('display',"");
+            $("#insuredCancelledExplain").css('display',"");
         }
         if ($(this).attr("value") == "No") {
             $("#insuranceCancelledContainer").css('display',"none");
+            $("#insuredCancelledExplain").css('display',"none");
         }
     });
     $(document.body).on('change', 'input[name="equipmentOwnedRented"]' ,function(){
@@ -1079,6 +1113,8 @@ $(document.body).on('click', '.removeCastMember' ,function() {
 
         $("#NOAL01PremiumTotal").html(totalPremium);
     });
+
+
 });
 
 function checkPhotographyDates(){
@@ -1954,6 +1990,34 @@ function buildReview() {
                     "</div>";
                 reviewString = reviewString + "<br>";
             }
+            else if ($(this).attr("id") === "numberOfCastMembers") {
+
+
+                var answer = "";
+                $("#castMemberDetailContainer").find('.row').each(function(){
+                    if ($(this).css("display") != "none") {
+                        if($(this).find(".castMemberName").val().trim().length > 0){
+                            answer = answer + $(this).find(".castMemberName").val() + "," + $(this).find(".castMemberAge").val() + "," + $(this).find(".castMemberRole").val() + "\n"
+
+                        }
+                    }
+
+                });
+
+                if(answer === ""){
+                    answer = "To Follow";
+                }
+
+                reviewString = reviewString + "<div class='row'>" +
+                    "<div class='col-xs-3 text-left'>" +
+                    "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
+                    "</div>" +
+                    "<div class='col-xs-9'>" +
+                    "<div class='reviewSpan' id='reviewBrokerFee'>" + answer + "</div>" +
+                    "</div>" +
+                    "</div>";
+                reviewString = reviewString + "<br>";
+            }
             else {
                 var answer = "";
                 if ($(this).val().length > 0) {
@@ -2037,6 +2101,7 @@ function buildReview() {
     $('#reviewAttachedFilesInsert').html(filesInsert);
 
 }
+
 
 
 

@@ -345,7 +345,7 @@ class AIMSQL {
                     coverageID = "CGL";
                 }
             }
-            log.info "Test ID === "
+            log.info "Test ID === " + productID
 
             aimsql.eachRow("SELECT Limits, Deduct, Subject, Endorse, LobDistrib, ActiveFlag, CompanyID, GrossComm, AgentComm, Rate " +
                     "FROM Product " +
@@ -405,7 +405,7 @@ class AIMSQL {
                             "\t\t0\t0\t\n" +
                             "\t\t0\t0\t";
                     productMap['productRateInfo'] = testjson.getAt("CGLRateInfo");
-                    
+
                 }
                 else{
                     productMap['productLobDistribSched'] = it.LobDistrib
@@ -653,10 +653,10 @@ class AIMSQL {
             log.info "Premium ===== " +  premium
             def brokerFee= testjson.getAt("brokerFee").replaceAll('[$,]', '')
             def webQuoteFee = 0.0
-            def webQuoteFeeNoTax = 20.0
-            def webQuoteFeeString = "\$20.00"
+            def webQuoteFeeNoTax = 15.0
+            def webQuoteFeeString = "\$15.00"
             def feeSchedule = "Policy Fee\t" + webQuoteFeeString + "\n"
-            def versionPremDist = "FEE" + "\t" + "20" + "\t" + "A" + "\t00\tY\tN\t\n"
+            def versionPremDist = "FEE" + "\t" + "15" + "\t" + "A" + "\t00\tY\tN\t\n"
 
             log.info "BROKER FEE ===== " +  brokerFee
             if(brokerFee?.trim() && Double.parseDouble(brokerFee) > 0){
@@ -874,41 +874,41 @@ class AIMSQL {
 //            set @p1=82255
 //            exec dbo.GetKeyField  @KeyValue=@p1 output,@FieldName='ReferenceID'
 //            select @p1
-            def riskDetailKey = "";
-            aimsql.call("{call dbo.GetKeyField(${Sql.INTEGER}, 'ReferenceID')}") { num ->
-                log.info "ReferenceID $num"
-                riskDetailKey = num
-            }
+//            def riskDetailKey = "";
+//            aimsql.call("{call dbo.GetKeyField(${Sql.INTEGER}, 'ReferenceID')}") { num ->
+//                log.info "ReferenceID $num"
+//                riskDetailKey = num
+//            }
 
 //            declare @p1 int
 //            set @p1=3168138
 //            exec dbo.GetKeyField  @KeyValue=@p1 output,@FieldName='RecordKey'
 //            select @p1
-            def recordKey = "";
-            aimsql.call("{call dbo.GetKeyField(${Sql.INTEGER}, 'RecordKey')}") { num ->
-                log.info "ReferenceID $num"
-                recordKey = num
-            }
+//            def recordKey = "";
+//            aimsql.call("{call dbo.GetKeyField(${Sql.INTEGER}, 'RecordKey')}") { num ->
+//                log.info "ReferenceID $num"
+//                recordKey = num
+//            }
+//
+//            def unitsAtRisk = [Description: "'EPKGTEST'",
+//                            DateAdded: "'${timestamp.format("yyyyMMdd HH:mm:ss.SSS")}'",
+//                            RiskDetailKey_PK: "'${riskDetailKey}'",//NEW ONE
+//                            ActiveFlag: "'Y'",
+//                            InsuredKey_FK: "${map.InsuredKey_PK}", //Insured.InsuredKey_PK
+//                            ReferenceKey_FK:"${versionmap.ReferenceKey_FK}",//Version.ReferenceKEY
+//                            RecordKey_PK:"'${recordKey}'",//NEW ONE
+//                               CategoryID:"''",
+//                               ValuedOn:"''",
+//                               Valuation:"'N'",
+//                               SerialNumber:"'N'",
+//                               DateAcquired:"''"
+//            ]
 
-            def unitsAtRisk = [Description: "'EPKGTEST'",
-                            DateAdded: "'${timestamp.format("yyyyMMdd HH:mm:ss.SSS")}'",
-                            RiskDetailKey_PK: "'${riskDetailKey}'",//NEW ONE
-                            ActiveFlag: "'Y'",
-                            InsuredKey_FK: "${map.InsuredKey_PK}", //Insured.InsuredKey_PK
-                            ReferenceKey_FK:"${versionmap.ReferenceKey_FK}",//Version.ReferenceKEY
-                            RecordKey_PK:"'${recordKey}'",//NEW ONE
-                               CategoryID:"''",
-                               ValuedOn:"''",
-                               Valuation:"'N'",
-                               SerialNumber:"'N'",
-                               DateAcquired:"''"
-            ]
-
-            aimsql.execute "INSERT INTO dbo.taaRiskDetail_SchedProperty (ReferenceKey_FK ,RiskDetailKey_PK ,Description ,CategoryID ,ValuedOn ,Valuation ,SerialNumber ," +
-                    "DateAdded ,ActiveFlag ,DateAcquired ,InsuredKey_FK ,RecordKey_PK )  " +
-                    "VALUES " +
-                    "($unitsAtRisk.ReferenceKey_FK, $unitsAtRisk.RiskDetailKey_PK, $unitsAtRisk.Description , $unitsAtRisk.CategoryID, $unitsAtRisk.ValuedOn, $unitsAtRisk.Valuation, " +
-                    "$unitsAtRisk.SerialNumber,$unitsAtRisk.DateAdded, $unitsAtRisk.ActiveFlag, $unitsAtRisk.DateAcquired, $unitsAtRisk.InsuredKey_FK, $unitsAtRisk.RecordKey_PK)"
+//            aimsql.execute "INSERT INTO dbo.taaRiskDetail_SchedProperty (ReferenceKey_FK ,RiskDetailKey_PK ,Description ,CategoryID ,ValuedOn ,Valuation ,SerialNumber ," +
+//                    "DateAdded ,ActiveFlag ,DateAcquired ,InsuredKey_FK ,RecordKey_PK )  " +
+//                    "VALUES " +
+//                    "($unitsAtRisk.ReferenceKey_FK, $unitsAtRisk.RiskDetailKey_PK, $unitsAtRisk.Description , $unitsAtRisk.CategoryID, $unitsAtRisk.ValuedOn, $unitsAtRisk.Valuation, " +
+//                    "$unitsAtRisk.SerialNumber,$unitsAtRisk.DateAdded, $unitsAtRisk.ActiveFlag, $unitsAtRisk.DateAcquired, $unitsAtRisk.InsuredKey_FK, $unitsAtRisk.RecordKey_PK)"
 
             def taaQuoteMap = [QuoteID: "'${quoteID}'"]
 
@@ -954,12 +954,14 @@ class AIMSQL {
         if(allQuoteIDs.charAt(allQuoteIDs.length() - 1) == ','){
             allQuoteIDs = allQuoteIDs.substring(0, allQuoteIDs.length()-1);
         }
+        def totalPolicyFee = 15 * (allQuoteIDs.split(",").size());
 
 
+        testjson['totalPolicyFee'] = totalPolicyFee;
         testjson['allQuoteIDs'] = allQuoteIDs;
         log.info("BEFORE SENDING TO INTELLEDOX = "+  testjson['allQuoteIDs'])
 
-        asyncController.createIndicationPDF(testjson)
+        asyncController.createIndicationPDF(testjson, dataSource_aim)
 
         return allQuoteIDs
     }
@@ -984,9 +986,104 @@ class AIMSQL {
 
     }
 
+    def logFileUpload(localFileName, localFolderPath, quoteID, dataSource_aim){
+        Sql aimsql = new Sql(dataSource_aim)
+        def now = new Date()
+        def timestamp = now.toTimestamp()
+        def oleAttachKey = "";
+        def referenceKey_FK = "";
+        aimsql.call("{call dbo.GetKeyField(${Sql.INTEGER}, 'oleAttachKey')}") { num ->
+            log.info "oleAttachKey $num"
+            oleAttachKey = num
+        }
+
+        aimsql.eachRow("SELECT     ReferenceKey_FK\n" +
+                "FROM         Version\n" +
+                "WHERE     (QuoteID =  ${quoteID}) "
+                ) {
+
+            referenceKey_FK =  it.ReferenceKey_FK;
+        }
+
+        /////////SAVE INSURED
+        def map = [oleAttachKey_PK: "${oleAttachKey}",
+                   ownerKey_FK: "'${referenceKey_FK}'",
+                   fileName: "'${localFileName}'",
+                   dirPath: "'Z:\\ATTACH\\${quoteID}'",
+                   description: "''",
+                   fileTypeID: "'LOG'",
+                   addedByID: "'web'",
+                   dateAdded: "'${timestamp.format('yyyyMMdd HH:mm:ss.SSS')}'",
+                   modifiedByID: "NULL",
+                   dateModified: "NULL",
+                   allowChangeFlag: "'0'",
+                   OriginalFileNamePath: "'Z:\\ATTACH\\${quoteID}'",
+                   EMailReferenceKey_FK: "NULL",
+                   UNCPath: "'\\aimsql\\aimapp\\ATTACH\\${quoteID}'",
+                   FileSize: "NULL",
+                   DateTimeStamp: "NULL",
+                   Folder: "NULL",
+                   MD5Digest: "NULL",
+                   FlagAllowChange: "NULL",
+                   SecurityLvl: "NULL",
+                   CategoryID: "'OTH'",
+                   ActiveFlag: "NULL",
+                   Version: "NULL"
+        ]
+        aimsql.execute "insert into OleAttach1 " +
+                "(oleAttachKey_PK, ownerKey_FK, fileName, dirPath, description, fileTypeID, " +
+                "addedByID, dateAdded, modifiedByID, dateModified, allowChangeFlag, OriginalFileNamePath, " +
+                "EMailReferenceKey_FK, UNCPath, FileSize, DateTimeStamp, Folder, MD5Digest, " +
+                "FlagAllowChange, SecurityLvl, CategoryID, ActiveFlag, Version) " +
+                "values " +
+                "($map.oleAttachKey_PK, $map.ownerKey_FK, $map.fileName, $map.dirPath, $map.description, $map.fileTypeID, " +
+                "$map.addedByID, $map.dateAdded, $map.modifiedByID, $map.dateModified, $map.allowChangeFlag, $map.OriginalFileNamePath, " +
+                "$map.EMailReferenceKey_FK, $map.UNCPath, $map.FileSize, $map.DateTimeStamp, $map.Folder, $map.MD5Digest, " +
+                "$map.FlagAllowChange, $map.SecurityLvl, $map.CategoryID, $map.ActiveFlag, $map.Version) "
+
+        log.info "INSERTED INTO AIM"
+    }
+
     def generateCert(){
         asyncController.createCertificatePDF()
 
         return "good"
+    }
+
+    def getAttachmentsList(quoteID, dataSource_aim){
+        log.info("FTP FILE TO AIM")
+
+
+        Sql aimsql = new Sql(dataSource_aim)
+        def now = new Date()
+        def timestamp = now.toTimestamp()
+        def oleAttachKey = "";
+        def referenceKey_FK = "";
+
+        def renderString = "";
+
+        aimsql.eachRow("SELECT     ReferenceKey_FK\n" +
+                "FROM         Version\n" +
+                "WHERE     (QuoteID =  ${quoteID}) "
+        ) {
+
+            referenceKey_FK =  it.ReferenceKey_FK;
+
+        }
+
+        aimsql.eachRow("SELECT     *\n" +
+                "FROM         OleAttach1\n" +
+                "WHERE     (ownerKey_FK =  ${referenceKey_FK}) "
+        ) {
+            log.info ("ATTACHMENT: " + it);
+            renderString = renderString + it.fileName + "&,&" + it.FileSize + "&;&"
+        }
+
+        log.info renderString;
+
+        return renderString;
+
+
+
     }
 }

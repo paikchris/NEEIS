@@ -16,6 +16,7 @@ import java.text.NumberFormat;
 import org.apache.commons.net.ftp.FTPClient
 import org.apache.commons.net.ftp.FTP;
 import sun.misc.BASE64Decoder;
+import portal.Utils.FileTransferHelper;
 
 class AsyncController {
     def dataSource_aim
@@ -206,6 +207,57 @@ class AsyncController {
         render renderString
     }
 
+    def getAttachmentsList(){
+        log.info("GET LIST OF ATTACHMENTS")
+        log.info(params);
+
+        def renderString = aimDAO.getAttachmentsList(params.quoteID, dataSource_aim)
+
+        render renderString;
+    }
+
+    def ajaxDownloadAttachment = {
+        log.info("DOWNLOADING ATTACHMENT1")
+        log.info params
+
+        def webrootDir = servletContext.getRealPath("/attachments/0620862/")
+        def file = new File(webrootDir, "Indication A.pdf")
+        log.info "FILE BYTES"
+        log.info file.bytes
+        FileTransferHelper fileHelper = new FileTransferHelper();
+
+        byte[] renderStringBytesArray = fileHelper.getAIMAttachment(params.q, params.f);
+//        File testFile = new File();
+
+        log.info(renderStringBytesArray)
+        if (renderStringBytesArray)
+        {
+            response.setContentType("application/octet-stream") // or or image/JPEG or text/xml or whatever type the file is
+            response.setHeader("Content-disposition", "attachment;filename=\"${params.f}\"")
+            response.outputStream << renderStringBytesArray
+        }
+        else render "Error!" // appropriate error handling
+        }
+
+
+//    def ajaxDownloadAttachment(){
+//        log.info("DOWNLOADING ATTACHMENT")
+//        log.info(params);
+//
+//
+//        FileTransferHelper fileHelper = new FileTransferHelper();
+//
+//        def renderStringBinaryFile = fileHelper.getAIMAttachment();
+//
+//        if (renderStringBinaryFile)
+//        {
+//            response.setContentType("application/octet-stream") // or or image/JPEG or text/xml or whatever type the file is
+//            response.setHeader("Content-disposition", "attachment;filename=\"${"File.pdf"}\"")
+//            response.outputStream << renderStringBinaryFile.bytes
+//            log.info "DONE WITH RESPONSE" + renderStringBinaryFile.bytes
+//        }
+//    }
+
     def ajaxAttach() {
         log.info("CHECKING AJAX ATTACH BUTTON")
         log.info(params);
@@ -213,222 +265,132 @@ class AsyncController {
         def lossesFile;
         def pyroFile;
         def stuntsFile;
+        def animalPDF;
+        def dronePDF;
         def doodFile;
         def treatmentFile;
         def budgetFile;
 
-        def webrootDir = servletContext.getRealPath("/attachments/") //app directory
-        def fileName;
+        FileTransferHelper fileHelper = new FileTransferHelper();
+        Sql aimsql = new Sql(dataSource_aim)
+        params.quoteIDs.split(",").each{
+            def quoteID = it
+            def localFolderPath = servletContext.getRealPath("/attachments/${it}/") //app directory
+            def fileName;
 
-        boolean done = false;
-
-
-        log.info(webrootDir)
-        String server = "74.100.162.203";
-        int port = 21;
-        String user = "web_ftp";
-        String pass = "Get@4Files";
-
-        FTPClient ftpClient = new FTPClient();
-        try {
-
-            ftpClient.connect(server, port);
-            ftpClient.login(user, pass);
-            ftpClient.enterLocalPassiveMode();
-
-            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+            boolean done = false;
 
 
-            if (params.bioFile != "undefined") {
+            log.info(localFolderPath)
+            String server = "74.100.162.203";
+            int port = 21;
+            String user = "web_ftp";
+            String pass = "Get@4Files";
 
-                fileName = "bio - " + params.bioFile.getFileItem().name
-                log.info params.bioFile.getFileItem().name
-                File fileDest = new File(webrootDir, fileName)
-                bioFile = params.bioFile
-                bioFile.transferTo(fileDest)
-                log.info fileName
-                File firstLocalFile = new File("/universe/Neeis/web-app/attachments/", fileName)
-                String firstRemoteFile = "/AIMAPP/TESTJOHN/" + fileName;
-                InputStream inputStream = new FileInputStream(firstLocalFile);
-
-                log.info("Start uploading first file");
-                done = ftpClient.storeFile(firstRemoteFile, inputStream);
-                inputStream.close();
-
-            }
-
-            if (params.lossesFile != "undefined") {
-                fileName = "losses - " + params.lossesFile.getFileItem().name
-                File fileDest = new File(webrootDir, fileName)
-                lossesFile = params.lossesFile
-                lossesFile.transferTo(fileDest)
-                log.info fileName
-                File firstLocalFile = new File("/universe/Neeis/web-app/attachments/", fileName)
-                String firstRemoteFile = "/AIMAPP/TESTJOHN/" + fileName;
-                InputStream inputStream = new FileInputStream(firstLocalFile);
-
-                log.info("Start uploading first file");
-                done = ftpClient.storeFile(firstRemoteFile, inputStream);
-                inputStream.close();
-
-            }
-
-            if (params.pyroFile != "undefined") {
-                fileName = "pyro - " + params.pyroFile.getFileItem().name
-                File fileDest = new File(webrootDir, fileName)
-                pyroFile = params.pyroFile
-                pyroFile.transferTo(fileDest)
-                log.info fileName
-                File firstLocalFile = new File("/universe/Neeis/web-app/attachments/", fileName)
-                String firstRemoteFile = "/AIMAPP/TESTJOHN/" + fileName;
-                InputStream inputStream = new FileInputStream(firstLocalFile);
-
-                log.info("Start uploading first file");
-                done = ftpClient.storeFile(firstRemoteFile, inputStream);
-                inputStream.close();
-
-            }
-
-            if (params.stuntsFile != "undefined") {
-                fileName = "stunts - " + params.stuntsFile.getFileItem().name
-                File fileDest = new File(webrootDir, fileName)
-                stuntsFile = params.stuntsFile
-                stuntsFile.transferTo(fileDest)
-                log.info fileName
-                File firstLocalFile = new File("/universe/Neeis/web-app/attachments/", fileName)
-                String firstRemoteFile = "/AIMAPP/TESTJOHN/" + fileName;
-                InputStream inputStream = new FileInputStream(firstLocalFile);
-
-                log.info("Start uploading first file");
-                done = ftpClient.storeFile(firstRemoteFile, inputStream);
-                inputStream.close();
-
-            }
-
-            if (params.doodFile != "undefined") {
-                fileName = "dood - " + params.doodFile.getFileItem().name
-                File fileDest = new File(webrootDir, fileName)
-                doodFile = params.doodFile
-                doodFile.transferTo(fileDest)
-                log.info fileName
-                File firstLocalFile = new File("/universe/Neeis/web-app/attachments/", fileName)
-                String firstRemoteFile = "/AIMAPP/TESTJOHN/" + fileName;
-                InputStream inputStream = new FileInputStream(firstLocalFile);
-
-                log.info("Start uploading first file");
-                done = ftpClient.storeFile(firstRemoteFile, inputStream);
-                inputStream.close();
-
-            }
-
-            if (params.treatmentFile != "undefined") {
-                fileName = "treatment - " + params.treatmentFile.getFileItem().name
-                File fileDest = new File(webrootDir, fileName)
-                treatmentFile = params.treatmentFile
-                treatmentFile.transferTo(fileDest)
-                log.info fileName
-                File firstLocalFile = new File("/universe/Neeis/web-app/attachments/", fileName)
-                String firstRemoteFile = "/AIMAPP/TESTJOHN/" + fileName;
-                InputStream inputStream = new FileInputStream(firstLocalFile);
-
-                log.info("Start uploading first file");
-                done = ftpClient.storeFile(firstRemoteFile, inputStream);
-                inputStream.close();
-
-            }
-
-            if (params.budgetFile != "undefined") {
-//            fileName= "budget"+System.nanoTime()
-                fileName = "budget - " + params.budgetFile.getFileItem().name
-                File fileDest = new File(webrootDir, fileName)
-                budgetFile = params.budgetFile
-                budgetFile.transferTo(fileDest)
-                log.info fileName
-                File firstLocalFile = new File("/universe/Neeis/web-app/attachments/", fileName)
-                String firstRemoteFile = "/AIMAPP/TESTJOHN/" + fileName;
-                InputStream inputStream = new FileInputStream(firstLocalFile);
-
-                log.info("Start uploading first file");
-                done = ftpClient.storeFile(firstRemoteFile, inputStream);
-                inputStream.close();
-
-            }
-//        FTP for attachment files
-
-//        new FTPClient().with {
-//            connect "74.100.162.203"
-////            enterLocalPassiveMode()
-//            login "web_ftp", "Get@4Files"
-//            changeWorkingDirectory "./AIMAPP/"
-////            ftpClient.fileType = FTPClient.BINARY_FILE_TYPE
-//            def incomingFile = new File(webrootDir, fileName)
-//            incomingFile.withOutputStream { ostream -> retrieveFile "remotefilename", ostream }
-//            disconnect()
-//        }
-//        FTP for attachment files
-
-//        String server = "74.100.162.203";
-//        int port = 21;
-//        String user = "web_ftp";
-//        String pass = "Get@4Files";
-//
-//        FTPClient ftpClient = new FTPClient();
-//        try {
-//
-//            ftpClient.connect(server, port);
-//            ftpClient.login(user, pass);
-//            ftpClient.enterLocalPassiveMode();
-//
-//            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-
-            // APPROACH #1: uploads first file using an InputStream
-//            log.info fileName
-//            File firstLocalFile = new File("/universe/Neeis/web-app/attachments/",fileName)
-//            String firstRemoteFile = "/AIMAPP/TESTJOHN/" + fileName;
-//            InputStream inputStream = new FileInputStream(firstLocalFile);
-//
-//            log.info("Start uploading first file");
-//            boolean done = ftpClient.storeFile(firstRemoteFile, inputStream);
-//            inputStream.close();
-            if (done) {
-                log.info("The first file is uploaded successfully.");
-            }
-
-//            // APPROACH #2: uploads second file using an OutputStream
-//            File secondLocalFile = new File("E:/Test/Report.doc");
-//            String secondRemoteFile = "test/Report.doc";
-//            inputStream = new FileInputStream(secondLocalFile);
-//
-//            System.out.println("Start uploading second file");
-//            OutputStream outputStream = ftpClient.storeFileStream(secondRemoteFile);
-//            byte[] bytesIn = new byte[4096];
-//            int read = 0;
-//
-//            while ((read = inputStream.read(bytesIn)) != -1) {
-//                outputStream.write(bytesIn, 0, read);
-//            }
-//            inputStream.close();
-//            outputStream.close();
-//
-//            boolean completed = ftpClient.completePendingCommand();
-//            if (completed) {
-//                System.out.println("The second file is uploaded successfully.");
-//            }
-
-        } catch (IOException ex) {
-            log.info("Error: " + ex.getMessage());
-            ex.printStackTrace();
-        } finally {
+            FTPClient ftpClient = new FTPClient();
             try {
-                if (ftpClient.isConnected()) {
-                    ftpClient.logout();
-                    ftpClient.disconnect();
+
+                ftpClient.connect(server, port);
+                ftpClient.login(user, pass);
+                ftpClient.enterLocalPassiveMode();
+
+                ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+
+
+                if (params.bioFile != "undefined") {
+
+                    fileName = "bio-" + params.bioFile.getFileItem().name
+                    log.info params.bioFile.getFileItem().name
+                    def attachedFile = params.bioFile
+                    fileHelper.saveAttachedFileToLocalPath(attachedFile, localFolderPath, fileName)
+                    log.info fileName
+                    fileHelper.ftpFileToAIM(fileName, localFolderPath, quoteID, dataSource_aim)
+
                 }
-            } catch (IOException ex) {
-                log.info ex
-                ex.printStackTrace();
+
+                if (params.lossesFile != "undefined") {
+                    fileName = "losses-" + params.lossesFile.getFileItem().name
+                    log.info params.lossesFile.getFileItem().name
+                    def attachedFile = params.lossesFile
+                    fileHelper.saveAttachedFileToLocalPath(attachedFile, localFolderPath, fileName)
+                    log.info fileName
+                    fileHelper.ftpFileToAIM(fileName, localFolderPath, quoteID, dataSource_aim)
+                }
+
+                if (params.pyroFile != "undefined") {
+                    fileName = "pyro-" + params.pyroFile.getFileItem().name
+                    def attachedFile = params.pyroFile
+                    fileHelper.saveAttachedFileToLocalPath(attachedFile, localFolderPath, fileName)
+                    log.info fileName
+                    fileHelper.ftpFileToAIM(fileName, localFolderPath, quoteID, dataSource_aim)
+
+                }
+
+                if (params.stuntsFile != "undefined") {
+                    fileName = "stunts-" + params.stuntsFile.getFileItem().name
+                    log.info params.stuntsFile.getFileItem().name
+                    def attachedFile = params.stuntsFile
+                    fileHelper.saveAttachedFileToLocalPath(attachedFile, localFolderPath, fileName)
+                    log.info fileName
+                    fileHelper.ftpFileToAIM(fileName, localFolderPath, quoteID, dataSource_aim)
+
+                }
+
+                if (params.doodFile != "undefined") {
+                    fileName = "dood-" + params.doodFile.getFileItem().name
+                    log.info params.doodFile.getFileItem().name
+                    def attachedFile = params.doodFile
+                    fileHelper.saveAttachedFileToLocalPath(attachedFile, localFolderPath, fileName)
+                    log.info fileName
+                    fileHelper.ftpFileToAIM(fileName, localFolderPath, quoteID, dataSource_aim)
+
+                }
+
+                if (params.treatmentFile != "undefined") {
+                    fileName = "treatment-" + params.treatmentFile.getFileItem().name
+                    log.info params.treatmentFile.getFileItem().name
+                    def attachedFile = params.treatmentFile
+                    fileHelper.saveAttachedFileToLocalPath(attachedFile, localFolderPath, fileName)
+                    log.info fileName
+                    fileHelper.ftpFileToAIM(fileName, localFolderPath, quoteID, dataSource_aim)
+
+                }
+
+                if (params.budgetFile != "undefined") {
+//            fileName= "budget"+System.nanoTime()
+                    fileName = "budget-" + params.budgetFile.getFileItem().name
+                    log.info params.budgetFile.getFileItem().name
+                    def attachedFile = params.budgetFile
+                    fileHelper.saveAttachedFileToLocalPath(attachedFile, localFolderPath, fileName)
+                    log.info fileName
+                    fileHelper.ftpFileToAIM(fileName, localFolderPath, quoteID, dataSource_aim)
+
+                }
+                if (done) {
+                    log.info("The first file is uploaded successfully.");
+                }
+
+            } catch (IOException e) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                String exceptionAsString = sw.toString();
+                log.info("Error Details - " + exceptionAsString)
+            } finally {
+                try {
+                    if (ftpClient.isConnected()) {
+                        ftpClient.logout();
+                        ftpClient.disconnect();
+                    }
+                } catch (IOException ex) {
+                    log.info ex
+                    ex.printStackTrace();
+                }
             }
         }
+
+
+
+
 
         render "Upload Completed"
     }
@@ -1679,7 +1641,7 @@ class AsyncController {
         try {
             def quoteIDCoverages = aimDAO.saveNewSubmission(params.jsonSerial, dataSource_aim, session.user, accountExec)
             log.info "QuoteID: " + quoteIDCoverages
-
+//0620584;EPKG,0620585;CPK
 
             def now = new Date()
             def timestamp = now.toTimestamp()
@@ -1692,7 +1654,7 @@ class AsyncController {
                 quoteID = quoteID + it.split(";")[0] + ","
 
                 s = new portal.Submissions(submittedBy: session.user.email, aimQuoteID: it.split(";")[0], namedInsured: jsonParams.getAt("namedInsured"), submitDate: timestamp,
-                        coverages: it.split(";")[1], statusCode: "QO", underwriter: accountExec+"@neeis.com")
+                        coverages: it.split(";")[1], statusCode: "QO", underwriter: accountExec+"@neeis.com", questionAnswerMap: params.questionAnswerMap)
                 s.save(flush: true, failOnError: true)
             }
 
@@ -1702,7 +1664,10 @@ class AsyncController {
             }
         }
         catch (Exception e) {
-            log.info(e)
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
             quoteID = "Error Details - " + e
         }
 
@@ -1837,6 +1802,7 @@ class AsyncController {
 
         render resultsString
     }
+
 
     def checkAgencyID(){
         log.info "CHECKING AGENCY ID"

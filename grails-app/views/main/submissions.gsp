@@ -95,8 +95,13 @@
                                 <g:else>
                                     <tr class="submissionRow" style="cursor:pointer">
                                 </g:else>
-
+                                <g:if test="${user.userRole == "Broker"}">
+                                    <th scope="row"><a href="#" class="aimQuoteIDTD">${s.aimQuoteID}</a></th>
+                                </g:if>
+                                <g:elseif test="${user.userRole == "Underwriter"}">
                                     <th scope="row"><a href="./../main/submissionView?s=${s.aimQuoteID}" class="aimQuoteIDTD">${s.aimQuoteID}</a></th>
+                                </g:elseif>
+
                                     <td class="namedInsuredTD">${s.namedInsured}</td>
                                     <td class="coveragesTD">${s.coverages}</td>
                                     <td  class="submittedByTD">${s.submittedBy}</td>
@@ -128,7 +133,7 @@
                                         ${s.underwriter}
                                     </g:elseif>
                                     </td>
-                                    <td><a href="./../web-app/attachments/testpdf.pdf">my link</a></td>
+                                    <td><a class="attachmentsLink">Attachments</a></td>
 
                                     %{--HIDDEN TDS--}%
                                     <td class="statusCode" style="display:none">

@@ -59,10 +59,25 @@ var stateNameToAbbrevMAP = {
     "Puerto Rico'": "PR",
     "Virgin Islands": "VI"
 }
-
+var autoSaveMap = {};
+var loadedAutoSaveMap;
 
 $(document).ready(function () {
+    console.log(Cookies.getJSON("autosaveData"));
+    if(Cookies.getJSON("autosaveData") == undefined){
+        //alert("undefined!")
+    }
+    else{
+        //alert("load!")
+        $('#loadSaveModal').modal('show');
 
+    }
+    $(document).on('click', '#loadSaveOKButton', function (){
+        loadedAutoSaveMap  = Cookies.getJSON("autosaveData");
+        loadSaveFunction(loadedAutoSaveMap);
+    });
+
+    //alert(loadedAutoSaveMap);
 
     $('html,body').scrollTop(0);
     var testingMode = false; //SET TO TRUE IF TESTING
@@ -445,11 +460,45 @@ $(document).ready(function () {
     });
 
     $("#namedInsured").on('change', function() {
-        var nameString = $(this).val()
-        nameString = $(this).val().charAt(0).toUpperCase() + nameString.slice(1);
-        $("#nameOfProductionCompany").val(nameString);
+        console.log("UPPERCASING");
+        console.log($(this).val());
+        var nameString = $(this).val();
+        //nameString = $(this).val().charAt(0).toUpperCase() + nameString.slice(1);
+
+        var words = nameString.split(" ");
+        var output = "";
+        for (i = 0 ; i < words.length; i ++){
+            lowerWord = words[i].toLowerCase();
+            lowerWord = lowerWord.trim();
+            capitalizedWord = lowerWord.slice(0,1).toUpperCase() + lowerWord.slice(1);
+            output += capitalizedWord;
+            if (i != words.length-1){
+                output+=" ";
+            }
+        }//for
+        output[output.length-1] = '';
+
+        $(this).val(output);
+        console.log($(this).val());
+        $("#nameOfProductionCompany").val(output);
         $("#nameOfProductionCompany").attr('placeholder', '');
     });
+    //
+    //function capitalizeFirstLetterEachWordSplitBySpace(string){
+    //    var words = string.split(" ");
+    //    var output = "";
+    //    for (i = 0 ; i < words.length; i ++){
+    //        lowerWord = words[i].toLowerCase();
+    //        lowerWord = lowerWord.trim();
+    //        capitalizedWord = lowerWord.slice(0,1).toUpperCase() + lowerWord.slice(1);
+    //        output += capitalizedWord;
+    //        if (i != words.length-1){
+    //            output+=" ";
+    //        }
+    //    }//for
+    //    output[output.length-1] = '';
+    //    return output;
+    //}
 
     //FILL COVERAGE SELECT OPTIONS
     var coverageString = "<option value='invalid' selected='selected'>Please Select Coverage</option>";
@@ -1035,11 +1084,14 @@ $(document).ready(function () {
 
 
                 if(validSubmission){
+                    $('#progressBarHeader').html("Please wait, your submission is being processed.")
                     $('.progress-bar').attr('aria-valuenow', "75").animate({
                         width: "75%"
                     }, 10000);
 
                     var newSubmissionConfirmParam = "";
+                    autoSaveFunction();
+
                     $.ajax({
                         method: "POST",
                         url: "/portal/Async/saveSubmissionToAIM",
@@ -1048,11 +1100,13 @@ $(document).ready(function () {
                             proposedTermLength: $("#proposedTermLength").val(),
                             namedInsured: $('#namedInsured').val(),
                             coverageCodes: coverageCodes,
+                            questionAnswerMap: JSON.stringify(autoSaveMap),
                             jsonSerial: JSON.stringify(data)
                         }
                     })
                         .done(function (msg) {
                             //alert(msg);
+                            //0620584,0620585
                             if(!msg.startsWith("Error")){
                                 newSubmissionConfirmParam = msg;
                                 console.log("UPLOADING FILES");
@@ -1061,9 +1115,12 @@ $(document).ready(function () {
                                 var lossesFile = $('#lossesFile').get(0).files[0]
                                 var pyroFile = $('#pyroFile').get(0).files[0];
                                 var stuntsFile = $('#stuntsFile').get(0).files[0];
+                                //var animalPDF = $('#animalPDF').get(0).files[0];
+                                //var dronePDF = $('#dronePDF').get(0).files[0];
                                 var doodFile = $('#doodFile').get(0).files[0];
                                 var treatmentFile = $('#treatmentFile').get(0).files[0];
                                 var budgetFile = $('#budgetFile').get(0).files[0];
+                                var quoteIDs = msg;
 
                                 if(bioFile || lossesFile || pyroFile || stuntsFile || doodFile || treatmentFile || budgetFile){
                                     $('.progress-bar').attr('aria-valuenow', "75").animate({
@@ -1074,9 +1131,12 @@ $(document).ready(function () {
                                     formData.append('lossesFile', lossesFile);
                                     formData.append('pyroFile', pyroFile);
                                     formData.append('stuntsFile', stuntsFile);
+                                    //formData.append('animalPDF', stuntsFile);
+                                    //formData.append('dronePDF', stuntsFile);
                                     formData.append('doodFile', doodFile);
                                     formData.append('treatmentFile', treatmentFile);
                                     formData.append('budgetFile', budgetFile);
+                                    formData.append('quoteIDs', quoteIDs);
 
                                     $.ajax({
                                         method: "POST",
@@ -1307,8 +1367,152 @@ $(document).ready(function () {
 
     });
 
+    setInterval(function() {
+        // method to be executed;
+        autoSaveFunction()
+    }, 5000);
+
 
 });
+
+function loadSaveFunction(loadMap){
+    $('#progressBarHeader').html("Loading saved submission")
+    $('.progress-bar').attr('aria-valuenow', "0").css("width", "0%");
+    $('#progressBarModal').modal('show');
+    $('.progress-bar').attr('aria-valuenow', "75").animate({
+        width: "75%"
+    }, 3000);
+    var value;
+
+    $('a').each(function (){
+        if( $(this).html() ===  loadMap['riskChosen']){
+
+            //alert("click " + $(this).html())
+            var domObject = $(this);
+            //console.log($(domObject).html())
+            $(domObject).trigger('click');
+        }
+    });
+
+    if(loadMap['proposedEffectiveDate'].length > 0){
+        $('#proposedEffectiveDate').val(loadMap['proposedEffectiveDate']);
+        $("#proposedEffectiveDate").trigger("change");
+    }
+    if(loadMap['proposedExpirationDate'].length > 0){
+        $('#proposedExpirationDate').val(loadMap['proposedExpirationDate']);
+        $("#proposedExpirationDate").trigger("change");
+    }
+    if(loadMap['proposedTermLength'].length > 0){
+        $('#proposedTermLength').val(loadMap['proposedTermLength']);
+        //$("#proposedTermLength").trigger("change");
+    }
+    if(loadMap['totalBudgetConfirm'].length > 0){
+
+        $('#totalBudgetConfirm').val(loadMap['totalBudgetConfirm']);
+        $("#totalBudgetConfirm").trigger("change");
+
+    }
+    setTimeout(function() {
+
+        console.log("wait")
+        Object.keys(loadMap).forEach(function(key) {
+
+            value = loadMap[key];
+            //console.log("COOKIE VALUE = " + key + "-" + value);
+            var domObject = $('#' + key);
+            if ($(domObject).css("display") != "none") {
+                $(domObject).css('display', '');
+            }
+
+            if ($(domObject).is("select")) {
+                $(domObject).val(value);
+                //console.log("SELECT TYPE = " + domObject);
+                $(domObject).trigger("change");
+            }
+            else if ($(domObject).is(':checkbox')) {
+                //console.log("CHECKBOX TYPE = " + domObject);
+                if(value === true) {
+                    $(domObject).prop("checked", true);
+
+                }
+                else {
+                    $(domObject).prop("checked", false);
+                }
+                $(domObject).trigger("change");
+
+            }
+            else if ($(domObject).is(':radio')) {
+                //console.log("RADIO TYPE = " + domObject);
+                if(value === true) {
+                    $(domObject).prop("checked", true);
+                }
+                else {
+                    //$(domObject).prop("checked", false);
+                }
+                $(domObject).trigger("change");
+
+            }
+            else{
+                //console.log("ELSE TYPE = " + domObject);
+                $(domObject).val(value);
+                $(domObject).trigger("change");
+
+            }
+
+        });
+        $('.progress-bar').attr('aria-valuenow', "100").css("width", "100%");
+        $('#progressBarModal').modal('hide');
+    },2000);
+
+
+
+
+
+
+        //
+
+}
+
+function autoSaveFunction(){
+    //$( "*").each(function () {
+    //    autoSaveMap[$(this).attr('id')] = $(this).val();
+    //    //alert(autoSaveMap);
+    //
+    //});
+    autoSaveMap['riskChosen'] = $("li.active").children("a.riskOptionLink").html().trim();
+
+    //ALL VISIBLE INPUTS
+    $("input, select").each(function () {
+        if ($(this).css("display") != "none") {
+            if ($(this).is("select")) {
+                autoSaveMap[$(this).attr('id')] = $(this).val();
+            }
+            else if ($(this).is(':checkbox')) {
+                if ($(this).is(":checked")) {
+                    //alert($(this).val());
+                    autoSaveMap[$(this).attr('id')] = true;
+                }
+            }
+            else if ($(this).is(':radio')) {
+                if ($(this).is(":checked")) {
+                    //alert($(this).val());
+                    autoSaveMap[$(this).attr('id')] = true;
+                }
+            }
+            else if ($(this).is(':file')) {
+
+            }
+            else{
+                autoSaveMap[$(this).attr('id')] = $(this).val();
+            }
+
+        }
+    });
+    console.log(JSON.stringify(autoSaveMap))
+    Cookies.set("autosaveData", JSON.stringify(autoSaveMap), { expires: 7 });
+
+
+}
 
 //////////////////////////
 // This example displays an address form, using the autocomplete feature
@@ -1761,6 +1965,26 @@ function getTaxInfo(){
                 }
 
             });
+
+            var policyFeeTotal = 0;
+            if($('#EPKGcoverage').is(':checked')){
+                policyFeeTotal = policyFeeTotal + 15;
+            }
+            if($('#CPKCGLcoverage').is(':checked')){
+                policyFeeTotal = policyFeeTotal + 15;
+            }
+
+            htmlString = htmlString + "<div class='row " + "PolicyFee" +  "TaxRow' style= ''" + ">" +
+                "<div class='col-xs-4'>" +
+                "<span class='taxDescriptionSpan'>Policy Fee</span>" +
+                "</div>" +
+                "<div class='col-xs-3'>" +
+                "<span class='taxSpan'>$" + policyFeeTotal + ".00</span>" +
+                "</div>" +
+                "<div class='col-xs-3'>" +
+                "<span class=''>"  + "" + "</span>" +
+                "</div>" +
+                "</div>";
             //
             //alert(htmlString);
             //console.log("TAXING === ")

@@ -17,10 +17,19 @@
                     Submission ID
                 </strong>
                 <div class="col-xs-8">
-                    <g:each status="i" var="s" in="${submissionIDs.split(",")}">
-                        <a href="./../main/submissionView?s=${s}">${s}</a>
-                        <br>
-                    </g:each>
+                    <g:if test="${user.userRole == "Broker"}">
+                        <g:each status="i" var="s" in="${submissionIDs.split(",")}">
+                            <a href="#">${s}</a>
+                            <br>
+                        </g:each>
+                    </g:if>
+                    <g:elseif test="${user.userRole == "Underwriter"}">
+                        <g:each status="i" var="s" in="${submissionIDs.split(",")}">
+                            <a href="./../main/submissionView?s=${s}">${s}</a>
+                            <br>
+                        </g:each>
+                    </g:elseif>
+
                 </div>
             </div>
             <div class="row" style="padding-bottom: 6px;">

@@ -289,6 +289,105 @@ $(document).ready(function () {
 
 });
 
+$(document).on('click', '.attachmentsLink', function () {
+    $('#attachmentsViewModal').modal('show');
+
+    var quoteID = $(this).closest(".submissionRow").find(".aimQuoteIDTD").html().trim();
+
+    $.ajax({
+        method: "POST",
+        url: "/portal/Async/getAttachmentsList",
+        data: {
+            quoteID: quoteID
+        }
+    })
+        .done(function (msg) {
+            //alert(msg);
+            var htmlString = "<span id='quoteIDDownloadSpan' style='display:none'>" + quoteID + "</span>'";
+
+            var attachmentArray = msg.split("&;&");
+            attachmentArray.forEach(function(it) {
+
+                var fileName = it.split("&,&")[0];
+                var fileSize = it.split("&,&")[1];
+                if(fileName.trim().length > 0){
+                    var ext = fileName.split('.').pop().toLowerCase();
+
+                    var iconFilePath ="";
+
+                    //alert('Only .zip, .doc, .docx, .xlsx, .xls, .pdf are permitted');
+                    var iconFilePath = "";
+                    if (ext == "zip") {
+                        iconFilePath = "zipIcon.png"
+                    }
+                    else if (ext == "doc") {
+                        iconFilePath = "docIcon.png"
+                    }
+                    else if (ext == "docx") {
+                        iconFilePath = "docxIcon.png"
+                    }
+                    else if (ext == "xls") {
+                        iconFilePath = "xlsIcon.png"
+                    }
+                    else if (ext == "xlsx") {
+                        iconFilePath = "xlsxIcon.png"
+                    }
+                    else if (ext == "pdf") {
+                        iconFilePath = "pdfIcon.png"
+                    }
+                    else if (ext == "txt") {
+                        iconFilePath = "txtIcon.png"
+                    }
+                    else {
+                        iconFilePath = "fileIcon.png"
+                    }
+
+                    //$("#" + $(this).attr('id') + 'Span').closest(".fileNameContainer").css("display", "");
+                    //$("#" + $(this).attr('id') + 'Span').html("<img src='/portal/images/" + iconFilePath + "' height='16' width='16' style='margin-right:5px'/>" + name);
+
+
+
+                    htmlString = htmlString +
+                        "<div class='row fileRow' style='margin-top:10px; margin-bottom: 10px;'>" +
+                        "<div class='col-xs-12'>" +
+                        //"<button class='downloadFileButton btn btn-primary col-xs-2' style='margin-right:20px; margin-left:15px;'>" +
+                        "<a href='/portal/async/ajaxDownloadAttachment?q=" + quoteID + "&f=" + fileName+ "'>" +
+                            "<button class='btn btn-primary col-xs-2' style='margin-right:20px; margin-left:15px;'>Download</button>" +
+                        "</a>" +
+                        "<div class='col-xs-9'>" +
+                        "<img src='/portal/images/" + iconFilePath + "' height='24' width='24' style='margin-right:9px'/>" +
+                        "<span class='fileDescriptionSpan ' style='line-height: 30px;'>" + fileName +"</span>" +
+                        "</div>" +
+                        "</div>" +
+                        "</div>";
+                }
+
+            });
+
+            $("#attachmentRowsContainer").html(htmlString);
+
+        });
+
+
+});
+
+$(document).on('click', '.downloadFileButton', function () {
+    //alert("UNDER CONSTRUCTION");
+
+    var quoteID = $("#quoteIDDownloadSpan").html().trim();
+
+    //$.ajax({
+    //    method: "POST",
+    //    url: "/portal/Async/ajaxDownloadAttachment",
+    //    data: {
+    //        quoteID: quoteID
+    //    }
+    //})
+    //    .done(function (msg) {
+    //        console.log(msg)
+    //    });
+
+});
 
 function changeSubmissionStatus(submissionID, statusCode){
     $.ajax({
