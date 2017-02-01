@@ -63,7 +63,21 @@ var autoSaveMap = {};
 var loadedAutoSaveMap;
 
 $(document).ready(function () {
-    console.log(Cookies.getJSON("autosaveData"));
+   //console.log(Cookies.getJSON("autosaveData"));
+    setInterval(function() {
+        // method to be executed;
+        if($("li.active").children("a.riskOptionLink").html().trim().length > 0 &&
+            ($('#proposedEffectiveDate').val().length > 0 || $('#proposedExpirationDate').val().length > 0 || $('#totalBudgetConfirm').val().length > 1)){
+            autoSaveFunction();
+        }
+    }, 10000);
+    $(window).on('beforeunload', function ()
+    {
+        if($("li.active").children("a.riskOptionLink").html().trim().length > 0 &&
+            ($('#proposedEffectiveDate').val().length > 0 || $('#proposedExpirationDate').val().length > 0 || $('#totalBudgetConfirm').val().length > 1)){
+            autoSaveFunction();
+        }
+    });
     if(Cookies.getJSON("autosaveData") == undefined){
         //alert("undefined!")
     }
@@ -75,6 +89,10 @@ $(document).ready(function () {
     $(document).on('click', '#loadSaveOKButton', function (){
         loadedAutoSaveMap  = Cookies.getJSON("autosaveData");
         loadSaveFunction(loadedAutoSaveMap);
+    });
+    $(document).on('click', '#loadSaveNOButton', function (){
+        autoSaveMap = {};
+        Cookies.remove('autosaveData');
     });
 
     //alert(loadedAutoSaveMap);
@@ -125,20 +143,20 @@ $(document).ready(function () {
     //$(".deductibleColumn").on({
     //    mouseenter: function () {
     //        //stuff to do on mouse enter
-    //        console.log("Text has over-flowed");
+    //       //console.log("Text has over-flowed");
     //    },
     //    mouseleave: function () {
     //        //stuff to do on mouse leave
     //    }
     //});
     $(document).on('change', ':input[required]:visible', function (){
-        console.log($(this).val());
+       //console.log($(this).val());
         if($(this).val().length > 0){
             $(this).closest(".form-group").removeClass("has-error");
 
         }
         else{
-            console.log("has error");
+           //console.log("has error");
             $(this).closest(".form-group").addClass("has-error");
         }
     });
@@ -147,7 +165,7 @@ $(document).ready(function () {
         $('#nextButtonStep1').trigger('click');
     });
     $(document).on('focusout', ':input[required]:visible', function (){
-        console.log($(this).val());
+       //console.log($(this).val());
         if($(this).val().length > 0){
             if($(this).attr("id") === "phoneNumber" && ($(this).val().trim() === "(___) ___-____")){
                 $(this).closest(".form-group").addClass("has-error");
@@ -220,7 +238,7 @@ $(document).ready(function () {
         if($(this).attr('id') === "proposedEffectiveDate"){
             var riskChosen = $("li.active").children("a.riskOptionLink").html().trim();
             if (mdyEffectiveDateObject.getTime() < today.getTime()) {
-                console.log(e);
+               //console.log(e);
                 //alert("]Effective Date must be a present or future date");
                 $('#alertMessageContent').html("Effective Date must be a present or future date");
                 $('#alertMessageModal').modal('show');
@@ -329,7 +347,7 @@ $(document).ready(function () {
         var count = 0;
         for(var i=0; i< $(this).val().length ;i++){
             if(isNaN(string.charAt(i))){
-                console.log(string.charAt(i));
+               //console.log(string.charAt(i));
                 count =i;
                 break;
             }
@@ -363,7 +381,7 @@ $(document).ready(function () {
             $("#proposedExpirationDate").trigger('change');
         }
         else{
-            console.log(length);
+           //console.log(length);
             var today = new Date();
             today.setHours(0, 0, 0, 0);
             var mdyEffective = $('#proposedEffectiveDate').val().split('/');
@@ -428,7 +446,7 @@ $(document).ready(function () {
                    //alert( "Data Saved: " + msg );
 
                     //MSG RETURNS THE NUMBER OF MATCHES IN NAMEDINSURED AND ZIPCODE
-                    console.log(msg);
+                   //console.log(msg);
                     if(parseInt(msg) > 0){ //if THERE IS AT LEAST ONE MATCH
                         $("#namedInsured").closest(".form-group").addClass("has-error");
                         $("#namedInsured").siblings(".glyphicon-remove").css("display","");
@@ -460,8 +478,8 @@ $(document).ready(function () {
     });
 
     $("#namedInsured").on('change', function() {
-        console.log("UPPERCASING");
-        console.log($(this).val());
+       //console.log("UPPERCASING");
+       //console.log($(this).val());
         var nameString = $(this).val();
         //nameString = $(this).val().charAt(0).toUpperCase() + nameString.slice(1);
 
@@ -479,7 +497,7 @@ $(document).ready(function () {
         output[output.length-1] = '';
 
         $(this).val(output);
-        console.log($(this).val());
+       //console.log($(this).val());
         $("#nameOfProductionCompany").val(output);
         $("#nameOfProductionCompany").attr('placeholder', '');
     });
@@ -623,7 +641,7 @@ $(document).ready(function () {
         e.preventDefault();
         var $target = $($(this).attr('href')),
             $item = $(this);
-        console.log($('.btn-primary').html());
+       //console.log($('.btn-primary').html());
 
 
         if (!$item.hasClass('disabled')) {
@@ -811,7 +829,7 @@ $(document).ready(function () {
 
                     $('#principalPhotographyDateStart').val($('#proposedEffectiveDate').val());
                     $('#principalPhotographyDateEnd').val($('#proposedExpirationDate').val());
-
+                    $('#totalBudgetInput').val($('#totalBudgetConfirm').val());
                     $('#loadingModal').hide();
                 }
                 else{
@@ -952,7 +970,7 @@ $(document).ready(function () {
                                 $(this).find('.deductibleColumn').children().first().html() + ";&&;";
                             EPKGlimitsString = EPKGlimitsString + $(this).find('.limitColumn').children().first().val() + "\tEPKG:" +$(this).find('.coverageColumn').children().first().html() + "\n";
                             EPKGdeductsString = EPKGdeductsString + $(this).find('.deductibleColumn').children().first().html() + "\tEPKG:" +$(this).find('.coverageColumn').children().first().html() + "\n";
-                            console.log(EPKGlimitsString)
+                           //console.log(EPKGlimitsString)
                         }
                         else{
                             epkgLOB = epkgLOB + $(this).find('.coverageColumn').children().first().html() + " ;&;" + $(this).find('.limitColumn').children().first().html() + " ;&;" +
@@ -1076,7 +1094,7 @@ $(document).ready(function () {
                      data["NOALcostOfHire"] = $('#costOfHireInput').val();
                 }
                 data["brokerFee"] = $('#brokerFeeInput').val();
-                console.log("Broker Fee = " + data["CPKPremium"])
+               //console.log("Broker Fee = " + data["CPKPremium"])
                 //var taxDetails ="";
                 //$('.taxSpan').each(function(){
                 //    taxDetails = taxDetails + $(this).closeshtml() + "&;&" +
@@ -1109,7 +1127,7 @@ $(document).ready(function () {
                             //0620584,0620585
                             if(!msg.startsWith("Error")){
                                 newSubmissionConfirmParam = msg;
-                                console.log("UPLOADING FILES");
+                               //console.log("UPLOADING FILES");
                                 //ATTACH FILES
                                 var bioFile = $('#bioFile').get(0).files[0];
                                 var lossesFile = $('#lossesFile').get(0).files[0]
@@ -1147,19 +1165,29 @@ $(document).ready(function () {
                                         processData: false
                                     })
                                         .done(function (msg) {
-                                            console.log("Finished Uploading");
+                                           //console.log("Finished Uploading");
                                             $('.progress-bar').attr('aria-valuenow', "100").css("width", "100%");
                                             $('#progressBarModal').modal('hide');
+
+                                            //CLEAR AUTOSAVE INFO
+                                            autoSaveMap = {};
+                                            Cookies.remove('autosaveData');
+
                                             //REDIRECT TO SAVE SUCCESSFUL PAGE
                                             window.location.href = "./../main/newSubmissionConfirm.gsp?submissionID=" + newSubmissionConfirmParam;
                                         });
                                 }
                                 else{
-                                    console.log ("REDIRECTING");
+                                   //console.log ("REDIRECTING");
                                     $('.progress-bar').attr('aria-valuenow', "100").animate({
                                         width: "100%"
                                     }, 2000);
                                     $('#progressBarModal').modal('hide');
+
+                                    //CLEAR AUTOSAVE INFO
+                                    autoSaveMap = {};
+                                    Cookies.remove('autosaveData');
+
                                     //REDIRECT TO SAVE SUCCESSFUL PAGE
                                     window.location.href = "./../main/newSubmissionConfirm.gsp?submissionID=" + newSubmissionConfirmParam;
                                 }
@@ -1219,7 +1247,7 @@ $(document).ready(function () {
                 //        alert(xhr);
                 //    },
                 //    success: function (response, status, xhr) {
-                //        console.log(xhr);
+                //       //console.log(xhr);
                 //    }
                 //});
                 //
@@ -1234,7 +1262,7 @@ $(document).ready(function () {
                 //        alert(xhr);
                 //    },
                 //    success: function (response, status, xhr) {
-                //        console.log(response);
+                //       //console.log(response);
                 //    }
                 //});
                 return false;
@@ -1367,10 +1395,7 @@ $(document).ready(function () {
 
     });
 
-    setInterval(function() {
-        // method to be executed;
-        autoSaveFunction()
-    }, 5000);
+
 
 
 });
@@ -1414,11 +1439,11 @@ function loadSaveFunction(loadMap){
     }
     setTimeout(function() {
 
-        console.log("wait")
+        //console.log("wait")
         Object.keys(loadMap).forEach(function(key) {
 
             value = loadMap[key];
-            //console.log("COOKIE VALUE = " + key + "-" + value);
+            console.log("COOKIE VALUE = " + key + "-" + value);
             var domObject = $('#' + key);
             if ($(domObject).css("display") != "none") {
                 $(domObject).css('display', '');
@@ -1460,6 +1485,16 @@ function loadSaveFunction(loadMap){
             }
 
         });
+
+        if(loadMap['proposedEffectiveDate'].length == 0){
+            $('#proposedEffectiveDate').val("");
+            //$("#proposedEffectiveDate").trigger("change");
+        }
+        if(loadMap['proposedExpirationDate'].length == 0){
+            $('#proposedExpirationDate').val("");
+            //$("#proposedExpirationDate").trigger("change");
+        }
+
         $('.progress-bar').attr('aria-valuenow', "100").css("width", "100%");
         $('#progressBarModal').modal('hide');
     },2000);
@@ -1479,6 +1514,7 @@ function autoSaveFunction(){
     //    //alert(autoSaveMap);
     //
     //});
+    console.log("AUTOSAVING")
     autoSaveMap['riskChosen'] = $("li.active").children("a.riskOptionLink").html().trim();
 
     //ALL VISIBLE INPUTS
@@ -1508,7 +1544,7 @@ function autoSaveFunction(){
 
         }
     });
-    console.log(JSON.stringify(autoSaveMap))
+   //console.log(JSON.stringify(autoSaveMap))
     Cookies.set("autosaveData", JSON.stringify(autoSaveMap), { expires: 7 });
 
 
@@ -1828,6 +1864,7 @@ function getProductsForRisk(){
                     }
                 }
 
+               //console.log("CALL FROM GETPRODUCTS FOR RISK")
                 ratePremiums($('#totalBudgetConfirm'));
 
             });
@@ -1919,7 +1956,7 @@ function getTaxInfo(){
     else{
         taxState = $('#stateMailing').val();
     }
-    console.log("TAX State = " + taxState)
+   //console.log("TAX State = " + taxState)
     $.ajax({
         method: "POST",
         url: "/portal/Async/getTaxInfo",

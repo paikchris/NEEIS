@@ -966,6 +966,18 @@ class AIMSQL {
         return allQuoteIDs
     }
 
+    def updateSubmissionActivity(quoteID, description, statusCode, typeID, quoteVersion, dataSource_aim){
+        //        exec dbo.AddTransaction  @ReferenceID='0620022',@UserID='web',@Description='Quote version A',@Date='2016-10-11 08:03:02:477',@StatusID='QPF',
+//        @ImageID=NULL,@TypeID='R',@QuoteVersion='A',@ToNameKey=0,@DocTemplateID=NULL,@AttachmentIcon=0,@SourceDateTime='1899-12-30 00:00:00:000'
+        Sql aimsql = new Sql(dataSource_aim)
+        def now = new Date()
+        def timestamp = now.toTimestamp()
+        aimsql.call("{call dbo.AddTransaction( '${quoteID}', 'web', '${description}', '${timestamp.format('yyyy-MM-dd HH:mm:ss.SSS')}', '${statusCode}', NULL, '${typeID}'," +
+                " '${quoteVersion}', 0, NULL, 0, '1899-12-30 00:00:00:000')}") { num ->
+            log.info "ADD TRANSACTION ID $num"
+        }
+    }
+
     def saveToQuote(policyFormJSON, dataSource_aim, insuredID){
         log.info "AIMDAO SAVE"
         def testjson = new JsonSlurper().parseText(policyFormJSON)

@@ -268,23 +268,53 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '.generateCert', function () {
-        window.location='/portal/main/certs';
+        //window.location='/portal/main/certs';
 
-        //$.ajax({
-        //    method: "POST",
-        //    url: "/portal/Async/getCert",
-        //    data: {submissionID: "test"
-        //    }
-        //})
-        //    .done(function (msg) {
-        //        //alert(msg);
-        //        //$('#some_id').click(function() {
-        //        //
-        //        //});
-        //        window.location='/portal/main/downloadCert';
-        //    });
+        //get additional insureds
+
+        $('#certsModal').modal('show');
+
+
+    });
+    $(document).on('click', '#createCertButton', function () {
+        $.ajax({
+            method: "POST",
+            url: "/portal/Async/ajaxDownloadCert",
+            data: {submissionID: "test"
+            }
+        })
+            .done(function (msg) {
+                //alert(msg);
+                //$('#some_id').click(function() {
+                //
+                //});
+                window.location='/portal/main/downloadCert';
+            });
     });
 
+    $(document).on('change', '#additionalInsuredList', function () {
+        if($(this).find(":selected").val() != "invalid"){
+            var selectedOption = $(this).find(":selected").val();
+
+            $.ajax({
+                method: "POST",
+                url: "/portal/main/getCertWords",
+                data: {additionalID: selectedOption
+                }
+            })
+                .done(function (msg) {
+                    var opsText = msg.split("&;&")[0];
+                    var AIText = msg.split("&;&")[1];
+                    $('#operationTextArea').val(opsText);
+                    $('#AITextArea').val(AIText);
+                    //alert(msg);
+                    //$('#some_id').click(function() {
+                    //
+                    //});
+                    //window.location='/portal/main/downloadCert';
+                });
+        }
+    });
 
 
 });

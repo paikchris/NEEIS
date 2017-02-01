@@ -483,5 +483,164 @@ soapXML = soapXML + """
 
         return "good"
     }
+
+
+    def getCertificateBytes(params){
+        log.info "INTELLEDOX CERT BYTES"
+        log.info params
+
+        def soapXML = """<x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:int="http://services.dpm.com.au/intelledox/">
+    <x:Header/>
+    <x:Body>
+        <int:GenerateWithData>
+            <int:userName>admin</int:userName>
+            <int:password>admin</int:password>
+            <int:projectGroupGuid>8285f070-4e75-4ab2-a265-e81d7e4b2517</int:projectGroupGuid>
+            <int:providedData>
+                <int:ProvidedData>
+                    <int:DataServiceGuid>2c1ce06a-100f-40c8-b4d4-af4057349532</int:DataServiceGuid>
+                    <int:Data><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<application>
+\t<certificate>
+\t\t
+\t\t<date>n</date>
+\t\t<producer>n</producer>
+\t\t<producerAddress>n</producerAddress>
+\t\t<insured>n</insured>
+\t\t<insuredAddress>n</insuredAddress>
+\t\t<contactName>n</contactName>
+\t\t<contactPhone>n</contactPhone>
+\t\t<contactFax>n</contactFax>
+\t\t<contactEmail>n</contactEmail>
+\t\t<insurer>n</insurer>
+\t\t<NAIC>n</NAIC>
+\t\t<certificateNumber>n</certificateNumber>
+\t\t<revisionNumber>n</revisionNumber>
+
+\t\t<insrltrGen>A</insrltrGen>
+\t\t<cbGenCommercialGeneralLiability>cb</cbGenCommercialGeneralLiability>
+\t\t<cbGenClaimsMade>cb</cbGenClaimsMade>
+\t\t<cbGenOccur>cb</cbGenOccur>
+\t\t<cbGenPolicy>cb</cbGenPolicy>
+\t\t<cbGenProject>cb</cbGenProject>
+\t\t<cbGenLoc>cb</cbGenLoc>
+\t\t<genAddl>Y</genAddl>
+\t\t<genSubr>Y</genSubr>
+\t\t<generalPolicyNumber>n</generalPolicyNumber>
+\t\t<genStart>n</genStart>
+\t\t<genEnd>n</genEnd>
+\t\t<genEachLimit>1</genEachLimit>
+\t\t<genFireLimit>1</genFireLimit>
+\t\t<genMedLimit>1</genMedLimit>
+\t\t<genPersonalLimit>1</genPersonalLimit>
+\t\t<genAggregateLimit>1</genAggregateLimit>
+\t\t<genProductsLimit>1</genProductsLimit>
+
+\t\t<insrltrAuto>A</insrltrAuto>
+\t\t<cbAutoAny>cb</cbAutoAny>
+\t\t<cbAutoAllOwned>cb</cbAutoAllOwned>
+\t\t<cbAutoHiredAuto>cb</cbAutoHiredAuto>
+\t\t<cbAutoPhysicalDamages>cb</cbAutoPhysicalDamages>
+\t\t<cbAutoScheduledAuto>cb</cbAutoScheduledAuto>
+\t\t<cbAutoNonOwnedAuto>cb</cbAutoNonOwnedAuto>
+\t\t<autoAddl>Y</autoAddl>
+\t\t<autoSubr>Y</autoSubr>
+\t\t<autoPolicyNumber>n</autoPolicyNumber>
+\t\t<autoStart>n</autoStart>
+\t\t<autoEnd>n</autoEnd>
+\t\t<autoCombinedSingleLimit>1</autoCombinedSingleLimit>
+\t\t<autoBodilyInjuryPersonLimit>1</autoBodilyInjuryPersonLimit>
+\t\t<autoBodilyInjuryAccidentLimit>1</autoBodilyInjuryAccidentLimit>
+\t\t<autoPropertyDamageLimit>1</autoPropertyDamageLimit>
+
+\t\t<insrltrUmbrella>A</insrltrUmbrella>
+\t\t<cbUmbrellaLiab>cb</cbUmbrellaLiab>
+\t\t<cbUmbrellaExcessLiab>cb</cbUmbrellaExcessLiab>
+\t\t<cbUmbrellaDeductible>cb</cbUmbrellaDeductible>
+\t\t<cbUmbrellaRetention>cb</cbUmbrellaRetention>
+\t\t<cbUmbrellaOccur>cb</cbUmbrellaOccur>
+\t\t<cbUmbrellaClaimsMade>cb</cbUmbrellaClaimsMade>
+\t\t<umbrellaRetentionLimit>1</umbrellaRetentionLimit>
+\t\t<umbrellaAddl>Y</umbrellaAddl>
+\t\t<umbrellaSubr>Y</umbrellaSubr>
+\t\t<umbrellaPolicyNumber>n</umbrellaPolicyNumber>
+\t\t<umbrellaStart>n</umbrellaStart>
+\t\t<umbrellaEnd>n</umbrellaEnd>
+\t\t<umbrellaEachOccurrenceLimit>1</umbrellaEachOccurrenceLimit>
+\t\t<umbrellaAggregateLimit>1</umbrellaAggregateLimit>
+
+\t\t<insrltrWorkersComp>A</insrltrWorkersComp>
+\t\t<cbWorkerCompMemberExcluded>cb</cbWorkerCompMemberExcluded>
+\t\t<workersCompDescriptionNH>n</workersCompDescriptionNH>
+\t\t<workersCompSubr>Y</workersCompSubr>
+\t\t<workersCompPolicyNumber>n</workersCompPolicyNumber>
+\t\t<workersCompStart>n</workersCompStart>
+\t\t<workersCompEnd>n</workersCompEnd>
+\t\t<cbWorkersCompStatutoryLimits>cb</cbWorkersCompStatutoryLimits>
+\t\t<cbWorkersCompOther>cb</cbWorkersCompOther>
+\t\t<workersCompEachAccidentLimit>1</workersCompEachAccidentLimit>
+\t\t<workersCompDiseaseEmployeeLimit>1</workersCompDiseaseEmployeeLimit>
+\t\t<workersCompDiseasePolicyLimit>1</workersCompDiseasePolicyLimit>
+
+\t\t<insrltrOther>A</insrltrOther>
+\t\t<riskType>n</riskType>
+\t\t<otherAddl>Y</otherAddl>
+\t\t<otherSubr>Y</otherSubr>
+\t\t<otherPolicyNumber>n</otherPolicyNumber>
+\t\t<otherStart>n</otherStart>
+\t\t<otherEnd>n</otherEnd>
+\t\t<otherLimit>1</otherLimit>
+
+\t\t<additionalRemarks>Remarks</additionalRemarks>
+\t\t<certificateHolder>Cert Holder</certificateHolder>
+\t\t
+\t</certificate>
+</application>]]></int:Data>
+                </int:ProvidedData>
+            </int:providedData>
+            <int:options>
+                <int:ReturnDocuments>true</int:ReturnDocuments>
+                <int:RunProviders>false</int:RunProviders>
+                <int:LogGeneration>false</int:LogGeneration>
+            </int:options>
+        </int:GenerateWithData>
+    </x:Body>
+</x:Envelope>"""
+
+        log.info soapXML
+
+        def client = new SOAPClient('http://138.91.159.55/Produce/Service/GenerateDoc.asmx?WSDL')
+        client.authorization = new HTTPBasicAuthorization("admin", "admin")
+        def response = client.send(SOAPAction:'http://services.dpm.com.au/intelledox/GenerateWithData', soapXML)
+
+        log.info response.text
+
+        def a = new XmlSlurper().parseText(response.text)
+        def nodeToSerialize = a."**".find {it.name() == 'BinaryFile'}
+
+//        def nodeAsText = XmlUtil.serialize()
+//        log.info nodeToSerialize.text()
+//        def webrootDir = org.codehaus.groovy.grails.web.context.ServletContextHolder.getServletContext().getRealPath("/attachments/${jsonSerial.getAt("quoteID")}/testcert.pdf");
+//        DataOutputStream os = new DataOutputStream(new FileOutputStream(webrootDir));
+        BASE64Decoder decoder = new BASE64Decoder();
+//        log.info nodeToSerialize.text()
+        byte[] decodedBytes = decoder.decodeBuffer(nodeToSerialize.text());
+//        os.writeBytes(decodedBytes)
+////        os.writeInt(nodeToSerialize.text());
+//        os.close();
+
+
+//        byte[] biteToRead = texto.getBytes();
+//        InputStream is = new ByteArrayInputStream(decodedBytes );
+//        DataOutputStream out = new DataOutputStream(new  BufferedOutputStream(new FileOutputStream(new File(webrootDir))));
+//        int c;
+//        while((c = is.read()) != -1) {
+//            out.writeByte(c);
+//        }
+//        out.close();
+//        is.close();
+
+        return decodedBytes;
+    }
 }
 

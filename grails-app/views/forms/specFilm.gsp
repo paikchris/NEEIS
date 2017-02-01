@@ -492,42 +492,44 @@
                     <input type="radio" name="equipmentOwned"
                            class=""
                            value="owned"
-                           id="equipmentOwned"> Owned
+                           id="equipmentOwned"
+                           style="display: none;"> Owned
                     <input type="radio" name="equipmentRented"
                            class=""
                            value="rented"
                            id="equipmentRented"
-                           checked="checked"> Rented
+                           checked="checked"
+                           style="display: none;"> Rented
                 </div>
             </div>
             <div class="col-xs-12">
                 <div class="form-group">
                     <label for="equipmentLimitRequested">What Equipment Limit is Requested?</label>
-                    <input type="text" id="equipmentLimit" class=" showReview form-control" name="name" data-reviewName="Requested Equipment Limit" placeholder="\$USD"/>
+                    <input type="text" id="equipmentLimit" class=" showReview form-control" name="name" data-reviewName="Requested Equipment Limit" style="display: none;" placeholder="\$USD"/>
                 </div>
             </div>
             <div class="col-xs-12">
                 <div class="form-group">
                     <label for="equipmentSchedule">Provide Equipment Schedule if any one item exceeds $10,000 in value</label>
-                    <input type="text" id="equipmentSchedule" class="showReview form-control" name="name" data-reviewName="Equipment Schedule" placeholder="Equipment schedule"/>
+                    <input type="text" id="equipmentSchedule" class="showReview form-control" name="name" data-reviewName="Equipment Schedule" style="display: none;" placeholder="Equipment schedule"/>
                 </div>
             </div>
             <div class="col-xs-12">
                 <div class="form-group">
                     <label for="equipmentLocation">Where is equipment kept when not in use?</label>
-                    <input type="text" id="equipmentLocation" class="showReview form-control" name="name" data-reviewName="Where is equipment kept when not in use?" placeholder="Location of equipment"/>
+                    <input type="text" id="equipmentLocation" class="showReview form-control" name="name" data-reviewName="Where is equipment kept when not in use?" style="display: none;" placeholder="Location of equipment"/>
                 </div>
             </div>
             <div class="col-xs-12">
                 <div class="form-group">
                     <label for="equipmentSecurityMeasures">Provide security measures against theft, loss, and damage to equipment</label>
-                    <input type="text" id="equipmentSecurity" class="showReview form-control" name="name" data-reviewName="Security Measures against theft, loss, and damage" placeholder="Equipment security measures"/>
+                    <input type="text" id="equipmentSecurity" class="showReview form-control" name="name" data-reviewName="Security Measures against theft, loss, and damage" style="display: none;" placeholder="Equipment security measures"/>
                 </div>
             </div>
             <div class="col-xs-12">
                 <div class="form-group">
                     <label for="equipmentInventoryAndProcedures">What method of inventory do you use? Please describe procedures and how often</label>
-                    <input type="text" id="equipmentInventory" class="showReview form-control" name="name" data-reviewName="Method of Inventory" placeholder="equipment inventory and procedures"/>
+                    <input type="text" id="equipmentInventory" class="showReview form-control" name="name" data-reviewName="Method of Inventory" style="display: none;" placeholder="equipment inventory and procedures"/>
                 </div>
             </div>
                 </div>
@@ -566,7 +568,7 @@
             </div>
             <div id="errorOmissionsLiabilityContainer" style="display:none">
                 <input type="text" id="errorOmissionsLiability" class="showReview form-control" name="name" data-reviewName="Error and Omission Limit"
-                       id="errorOmissionsLimit" placeholder="\$USD"/>
+                       id="errorOmissionsLimit" style="display:none" placeholder="\$USD"/>
                 </div>
             </div>
             %{--</div>--}%
@@ -797,7 +799,7 @@
             <div class="col-xs-2">
                 <div class="form-group">
                     <input type="text" class="form-control showReview" data-reviewName="Number of Cast Members" id="numberOfCastMembers"
-                                 name="numberOfCastMembers" placeholder="#"/>
+                                 name="numberOfCastMembers" placeholder="#" style="display:none"/>
                 </div>
             </div>
             <div class="col-xs-10">
@@ -821,19 +823,19 @@
                     <div class="col-xs-6">
                         <div class="form-group">
                             <input type="text" class="form-control showReview castMemberName" data-reviewName="Cast Member Name, Age, Role"
-                                         name="castMemberName" placeholder="" />
+                                         name="castMemberName" placeholder="" style="display:none"/>
                         </div>
                     </div>
                     <div class="col-xs-2">
                         <div class="form-group">
                             <input type="text" class="form-control showReview castMemberAge" data-reviewName="Cast Member Name, Age, Role"
-                                         name="castMemberAge" placeholder=""/>
+                                         name="castMemberAge" placeholder="" style="display:none"/>
                         </div>
                     </div>
                     <div class="col-xs-4">
                         <div class="form-group">
                             <input type="text" class="form-control showReview castMemberRole" data-reviewName="Cast Member Name, Age, Role"
-                                         name="castMemberRole" placeholder=""/>
+                                         name="castMemberRole" placeholder="" style="display:none"/>
                         </div>
                     </div>
                 </div>

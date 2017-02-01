@@ -253,7 +253,7 @@
 			</div>
 			<div class="modal-footer">
 				<div class="" style="text-align: center">
-					<button type="button" class="btn btn-default " data-dismiss="modal" style="width: 75px;">No</button>
+					<button type="button" class="btn btn-default " data-dismiss="modal" id="loadSaveNOButton" style="width: 75px;">No</button>
 
 					<button type="button" class="btn btn-primary " data-dismiss="modal" id="loadSaveOKButton" style="width: 75px;">Yes</button>
 				</div>
@@ -282,6 +282,7 @@
 	</div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 <div class="modal" id="loadingModal"><!-- Place at bottom of page --></div>
+
 <div class="modal fade" tabindex="-1" role="dialog" id="attachmentsViewModal">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">

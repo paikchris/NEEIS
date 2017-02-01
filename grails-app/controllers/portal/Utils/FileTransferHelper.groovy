@@ -10,6 +10,7 @@ import org.apache.commons.net.ftp.FTPClient
 import org.apache.commons.net.ftp.FTP;
 import sun.misc.BASE64Decoder;
 import portal.DAO.AIMSQL;
+import grails.util.Environment
 
 class FileTransferHelper {
 
@@ -84,7 +85,15 @@ class FileTransferHelper {
             ftpClient.enterLocalPassiveMode();
 
             ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-
+            if (Environment.current == Environment.DEVELOPMENT) {
+                log.info("DEVELOPMENT")
+            } else
+            if (Environment.current == Environment.TEST) {
+                // insert Test environment specific code here
+            } else
+            if (Environment.current == Environment.PRODUCTION) {
+                log.info("PRODUCTION")
+            }
 
             String remoteFilePath = "/AIMAPP/ATTACHTEST/${quoteID}/";
             // Creates a directory

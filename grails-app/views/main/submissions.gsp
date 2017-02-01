@@ -28,6 +28,7 @@
             <span>Underwriter View</span>
         </g:elseif>
         <div id="userRole" style="display:none">${user.userRole}</div>
+        <div id="additionalInsuredListHidden" style="display:none">${additionalInsuredList}</div>
     </div>
     <div class="col-xs-4 ">
         %{--<g:link action="downloadPDF" style="" id="hiddenCertButton">--}%
@@ -151,6 +152,179 @@
         </div>
                 </div>
     </div>
+
 <script src="${resource(dir: 'js', file: 'submissions.js')}"></script>
 <script src="${resource(dir: 'js', file: 'jquery.maskMoney.min.js')}"></script>
+<div class="modal fade" tabindex="-1" role="dialog" id="certsModal">
+    <div class="modal-dialog" role="document" style="width: 820px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Certificates</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+
+
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h3 class="panel-title" style="font-size: 20px;">Additional Insureds List</h3>
+                            </div>
+
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div id="additionalInsuredsList">
+                                        <div class="col-xs-12">
+                                            <div class="form-group">
+                                                <label for="additionalInsuredsList">Select common Additional Insureds from the list below. The List includes the known certificate
+                                                requirements for the listed entities. You may add to this list. Once you have successfully generated
+                                                a correct certificate, click 'Save' and it will be added to the list below:</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group col-xs-6">
+                                            <label class="control-label"></label>
+                                            <select class="form-control showReview" name="additionalInsured" data-reviewName="additionalInsured"
+                                                    id="additionalInsuredList">
+                                                <option value="invalid" selected="selected">Select Additional Insured</option>
+                                                <g:each in="${additionalInsuredList}" var="a" status="i">
+                                                    <option value="${a.id}" >${a.description}</option>
+                                                </g:each>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group col-xs-12">
+
+                                            <input type="radio" name="additionalInsuredFilter"
+                                                   class=""
+                                                   value="All"
+                                                   id="all"
+                                                   checked="checked"> All
+                                            <input type="radio" name="additionalInsuredFilter"
+                                                   class=""
+                                                   value="Rental House"
+                                                   id="rentalHouse"
+                                                    style="margin-left:10px;"> Rental House
+                                            <input type="radio" name="additionalInsuredFilter"
+                                                   class=""
+                                                   value="Private Facility"
+                                                   id="privateFacility"
+                                                   style="margin-left:10px;"> Private Facility
+                                            <input type="radio" name="additionalInsuredFilter"
+                                                   class=""
+                                                   value="Municipal/State"
+                                                   id="municipalState"
+                                                   style="margin-left:10px;"> Municipal/State
+                                            <input type="radio" name="additionalInsuredFilter"
+                                                   class=""
+                                                   value="Other"
+                                                   id="other"
+                                                   style="margin-left:10px;"> Other
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        %{--OPERATIONSOPERATIONSOPERATIONSOPERATIONSOPERATIONSOPERATIONSOPERATIONSOPERATIONSOPERATIONS--}%
+
+
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h3 class="panel-title" style="font-size: 20px;">Operations</h3>
+                            </div>
+
+                            <div class="panel-body">
+                                <div id="operations">
+                                    <div class="row">
+                                        <div class="form-group col-xs-12">
+                                             <textarea class="form-control" rows="5" id="operationTextArea">The certificate holder is named as an Additional Insured but solely as respects to claims arising out of negligence of the Named Insured and is Loss Payee for rented property as their interests may appear.
+                                            </textarea>
+                                        </div>
+
+                                        <div class="form-group col-xs-12">
+                                            <input type="radio" name="opsRadio"
+                                                   class=""
+                                                   value="stdLossPayee"
+                                                   id="stdLossPayee"
+                                                   checked="checked"> Std Loss Payee
+                                            <input type="radio" name="opsRadio"
+                                                   class=""
+                                                   value="userDefined"
+                                                   id="userDefined"
+                                                   style="margin-left:10px;"> User Defined
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        %{--Additional InsuredAdditional InsuredAdditional InsuredAdditional InsuredAdditional InsuredAdditional InsuredAdditional InsuredAdditional Insured--}%
+
+
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h3 class="panel-title" style="font-size: 20px;">Additional Insured</h3>
+                            </div>
+
+                            <div class="panel-body">
+                                <div id="additionalInsured">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="form-group">
+                                                <p class="control-label"><input type="checkbox" class="evidenceOfInsuranceCheckbox showReview"
+                                                                                data-reviewName="Evidence Of Insurance" name="evidenceOfInsurance"
+                                                                                value="Evidence of Insurance"/> Evidence of Insurance</p>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-xs-12">
+                                            <textarea class="form-control" rows="5" id="AITextArea">The certificate holder is named as an Additional Insured but solely as respects to claims arising out of negligence of the Named Insured and is Loss Payee for rented property as their interests may appear.
+                                            </textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        %{--Certificate FormatCertificate FormatCertificate FormatCertificate FormatCertificate FormatCertificate FormatCertificate FormatCertificate FormatCertificate Format--}%
+
+
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h3 class="panel-title" style="font-size: 20px;">Certificate Format</h3>
+                            </div>
+
+                            <div class="panel-body">
+                                <div class="form-group col-xs-12">
+                                    <input type="radio" name="attachSummary"
+                                           class=""
+                                           value="attachSummary"
+                                           id="attachSummary"
+                                           checked="checked"
+                                           style="margin-left:10px;"> Attach Summary
+                                    <input type="checkbox" name="useAcordForm"
+                                           class=""
+                                           value="useAcordForm"
+                                           id="useAcordForm"
+                                           style="margin-left:10px;"> Use ACORD form(s) for AI or Waiver
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-primary">Done</button>
+                <button class="btn btn-primary" id="createCertButton" type="button" value="Upload" >Create Certificate</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 </body>

@@ -21,6 +21,7 @@ import portal.Utils.FileTransferHelper;
 class AsyncController {
     def dataSource_aim
     AIMSQL aimDAO = new AIMSQL();
+    Intelledox intelledoxHelper = new Intelledox();
 
     def getProductsForCoverage() {
         //GETTING LIST OF PRODUCTS AVAILABLE FOR EACH COVERAGE AVAILABLE FOR SUBMISSION RISK TYPE
@@ -220,10 +221,10 @@ class AsyncController {
         log.info("DOWNLOADING ATTACHMENT1")
         log.info params
 
-        def webrootDir = servletContext.getRealPath("/attachments/0620862/")
-        def file = new File(webrootDir, "Indication A.pdf")
-        log.info "FILE BYTES"
-        log.info file.bytes
+//        def webrootDir = servletContext.getRealPath("/attachments/0620862/")
+//        def file = new File(webrootDir, "Indication A.pdf")
+//        log.info "FILE BYTES"
+//        log.info file.bytes
         FileTransferHelper fileHelper = new FileTransferHelper();
 
         byte[] renderStringBytesArray = fileHelper.getAIMAttachment(params.q, params.f);
@@ -238,6 +239,130 @@ class AsyncController {
         }
         else render "Error!" // appropriate error handling
         }
+
+    def ajaxDownloadCert = {
+        log.info("DOWNLOADING CERT")
+        log.info params
+
+        def now = new Date()
+        def timestamp = now.toTimestamp()
+        params['date']= timestamp;
+        params['producer']= session.user.firstName + " " + session.user.lastName;
+        /*
+		<date>n</date>
+		<producer>n</producer>
+		<producerAddress>n</producerAddress>
+		<insured>n</insured>
+		<insuredAddress>n</insuredAddress>
+		<contactName>n</contactName>
+		<contactPhone>n</contactPhone>
+		<contactFax>n</contactFax>
+		<contactEmail>n</contactEmail>
+		<insurer>n</insurer>
+		<NAIC>n</NAIC>
+		<certificateNumber>n</certificateNumber>
+		<revisionNumber>n</revisionNumber>
+
+		<insrltrGen>A</insrltrGen>
+		<cbGenCommercialGeneralLiability>cb</cbGenCommercialGeneralLiability>
+		<cbGenClaimsMade>cb</cbGenClaimsMade>
+		<cbGenOccur>cb</cbGenOccur>
+		<cbGenPolicy>cb</cbGenPolicy>
+		<cbGenProject>cb</cbGenProject>
+		<cbGenLoc>cb</cbGenLoc>
+		<genAddl>Y</genAddl>
+		<genSubr>Y</genSubr>
+		<generalPolicyNumber>n</generalPolicyNumber>
+		<genStart>n</genStart>
+		<genEnd>n</genEnd>
+		<genEachLimit>1</genEachLimit>
+		<genFireLimit>1</genFireLimit>
+		<genMedLimit>1</genMedLimit>
+		<genPersonalLimit>1</genPersonalLimit>
+		<genAggregateLimit>1</genAggregateLimit>
+		<genProductsLimit>1</genProductsLimit>
+
+		<insrltrAuto>A</insrltrAuto>
+		<cbAutoAny>cb</cbAutoAny>
+		<cbAutoAllOwned>cb</cbAutoAllOwned>
+		<cbAutoHiredAuto>cb</cbAutoHiredAuto>
+		<cbAutoPhysicalDamages>cb</cbAutoPhysicalDamages>
+		<cbAutoScheduledAuto>cb</cbAutoScheduledAuto>
+		<cbAutoNonOwnedAuto>cb</cbAutoNonOwnedAuto>
+		<autoAddl>Y</autoAddl>
+		<autoSubr>Y</autoSubr>
+		<autoPolicyNumber>n</autoPolicyNumber>
+		<autoStart>n</autoStart>
+		<autoEnd>n</autoEnd>
+		<autoCombinedSingleLimit>1</autoCombinedSingleLimit>
+		<autoBodilyInjuryPersonLimit>1</autoBodilyInjuryPersonLimit>
+		<autoBodilyInjuryAccidentLimit>1</autoBodilyInjuryAccidentLimit>
+		<autoPropertyDamageLimit>1</autoPropertyDamageLimit>
+
+		<insrltrUmbrella>A</insrltrUmbrella>
+		<cbUmbrellaLiab>cb</cbUmbrellaLiab>
+		<cbUmbrellaExcessLiab>cb</cbUmbrellaExcessLiab>
+		<cbUmbrellaDeductible>cb</cbUmbrellaDeductible>
+		<cbUmbrellaRetention>cb</cbUmbrellaRetention>
+		<cbUmbrellaOccur>cb</cbUmbrellaOccur>
+		<cbUmbrellaClaimsMade>cb</cbUmbrellaClaimsMade>
+		<umbrellaRetentionLimit>1</umbrellaRetentionLimit>
+		<umbrellaAddl>Y</umbrellaAddl>
+		<umbrellaSubr>Y</umbrellaSubr>
+		<umbrellaPolicyNumber>n</umbrellaPolicyNumber>
+		<umbrellaStart>n</umbrellaStart>
+		<umbrellaEnd>n</umbrellaEnd>
+		<umbrellaEachOccurrenceLimit>1</umbrellaEachOccurrenceLimit>
+		<umbrellaAggregateLimit>1</umbrellaAggregateLimit>
+
+		<insrltrWorkersComp>A</insrltrWorkersComp>
+		<cbWorkerCompMemberExcluded>cb</cbWorkerCompMemberExcluded>
+		<workersCompDescriptionNH>n</workersCompDescriptionNH>
+		<workersCompSubr>Y</workersCompSubr>
+		<workersCompPolicyNumber>n</workersCompPolicyNumber>
+		<workersCompStart>n</workersCompStart>
+		<workersCompEnd>n</workersCompEnd>
+		<cbWorkersCompStatutoryLimits>cb</cbWorkersCompStatutoryLimits>
+		<cbWorkersCompOther>cb</cbWorkersCompOther>
+		<workersCompEachAccidentLimit>1</workersCompEachAccidentLimit>
+		<workersCompDiseaseEmployeeLimit>1</workersCompDiseaseEmployeeLimit>
+		<workersCompDiseasePolicyLimit>1</workersCompDiseasePolicyLimit>
+
+		<insrltrOther>A</insrltrOther>
+		<riskType>n</riskType>
+		<otherAddl>Y</otherAddl>
+		<otherSubr>Y</otherSubr>
+		<otherPolicyNumber>n</otherPolicyNumber>
+		<otherStart>n</otherStart>
+		<otherEnd>n</otherEnd>
+		<otherLimit>1</otherLimit>
+
+		<additionalRemarks>Remarks</additionalRemarks>
+		<certificateHolder>Cert Holder</certificateHolder>
+         */
+
+        byte[] renderStringBytesArray = intelledoxHelper.getCertificateBytes(params);
+//        File testFile = new File();
+//        String s = new String(bytes);
+        log.info(renderStringBytesArray)
+        if (renderStringBytesArray)
+        {
+            try{
+                log.info "building response"
+                response.setContentType("application/octet-stream") // or or image/JPEG or text/xml or whatever type the file is
+                response.setHeader("Content-disposition", "attachment;filename=\"${params.f}\"")
+                response.outputStream << renderStringBytesArray
+            }
+            catch(Exception e){
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                String exceptionAsString = sw.toString();
+                log.info("Error Details - " + exceptionAsString)
+            }
+
+        }
+        else render "Error!" // appropriate error handling
+    }
 
 
 //    def ajaxDownloadAttachment(){
@@ -2008,6 +2133,25 @@ class AsyncController {
                 "SET StatusID = '" + params.statusCode +  "'\n" +
                 "WHERE QuoteID = " + params.aimQuoteID + "; ";
 
+        def description = "";
+        def typeID = "";
+        def quoteVersion = "A";
+        if(params.statusCode == "WRA"){
+            description = "Web Approval Request"
+        }
+        else if(params.statusCode == "WB3"){
+            description = "Web Approved"
+        }
+        else if(params.statusCode == "BRQ"){
+            description = "Bind Request"
+        }
+        else if(params.statusCode == "BIF"){
+            description = "Binder In Force"
+        }
+
+
+        aimDAO.updateSubmissionActivity(params.aimQuoteID, description, params.statusCode, typeID, quoteVersion, dataSource_aim)
+
         render "good"
 
     }
@@ -2016,7 +2160,7 @@ class AsyncController {
         log.info "GENERATING CERT"
         log.info params
 
-        aimDAO.generateCert();
+//        aimDAO.generateCert();
 
         render "good"
     }

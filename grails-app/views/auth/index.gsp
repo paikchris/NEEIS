@@ -15,7 +15,7 @@
 
             </div>
             <div class="col-xs-4">
-                <div class="panel panel-default" >
+                <div class="panel panel-default" style="background: rgba(255, 255, 255, 0.9);">
                     <div class="panel-body">
                         <g:form controller="auth" action="login">
                             <div class="form-group">

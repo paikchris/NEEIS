@@ -65,7 +65,7 @@ class MainController {
             }
         }
         else if(session.user.userRole == "Underwriter"){
-            submissions = Submissions.findAllByUnderwriter(session.user.email,[sort: "submitDate",order: "desc", max:5])
+            submissions = Submissions.findAllByUnderwriterOrSubmittedBy(session.user.email,session.user.email,[sort: "submitDate",order: "desc", max:5])
             log.info(submissions)
             submissionsQuoted = submissions.collect();
             submissionsUnderReview = submissions.collect();
@@ -247,10 +247,90 @@ class MainController {
     }
 
     def certs() {
-        log.info ("certs")
+        log.info ("CERT MAIN PAGE")
         log.info (params)
+//
+//        SELECT     TOP (1) QuoteID, VersionBound, ProducerID, NamedInsured, TypeID, UserID, Attention, Received, Acknowledged, Quoted, TeamID, DivisionID, StatusID, CreatedID,
+//        Renewal, OldPolicyID, OldVersion, OldExpiration, OpenItem, Notes, PolicyID, VersionCounter, InsuredID, Description, FileLocation, Address1, Address2, City, State,
+//        Zip, Bound, Submitted, SubmitType, NoteAttached, AcctExec, InsuredInterest, RiskInformation, EC, BndPremium, BndFee, CompanyID, ProductID, Effective, Expiration,
+//        Setup, PolicyMailOut, BinderRev, PriorCarrier, TargetPremium, CsrID, PolicyVer, OldQuoteID, PolicyGrpID, PendingSuspenseID, ReferenceID, MapToID, SubmitGrpID,
+//        AcctAsst, TaxState, SicID, CoverageID, OldPremium, AddressID, OldEffective, TaxBasis, QuoteRequiredBy, RequiredLimits, RequiredDeduct, Retroactive,
+//        PrevCancelFlag, PrevNonRenew, PriorPremium, PriorLimits, UWCheckList, FileSetup, ContactID, SuspenseFlag, PriorDeductible, CategoryID, StructureID,
+//        RenewalStatusID, ClaimsFlag, ActivePolicyFlag, Assets, PublicEntity, VentureID, IncorporatedState, ReInsuranceFlag, TaxedPaidBy, LayeredCoverage, Employees,
+//        Stock_52wk, NetIncome, LossHistory, PriorLimitsNew, LargeLossHistory, DateOfApp, Stock_High, Stock_Low, Stock_Current, MarketCap, Exposures, AIM_TransDate,
+//        LostBusinessFlag, YearEst, LostBusiness_Carrier, LostBusiness_Premium, AccountKey_FK, FlagRewrite, flagWIP, RenewalQuoteID, QuoteDueDate, QuoteStatus,
+//        BinderExpires, TIV, InvoicedPremium, InvoicedFee, InvoicedCommRev, SplitAccount, FileCloseReason, FileCloseReasonID, SourceOfLeadID, ServiceUWID,
+//        SubmitTypeID, SubProducerID, AgtAccountNumber, BndMarketID, RefQuoteID, FlagHeldFile, HeldFileMessage, TermPremium, ProcessBatchKey_FK, PolicyInception,
+//        ClassID, ScheduleIRM, ClaimExpRM, DateAppRecvd, DateLossRunRecvd, CoverageEffective, CoverageExpired, SLA, Class, IRFileNum, IRDrawer, FlagOverRideBy,
+//        RackleyQuoteID, FlagCourtesyFiling, FlagRPG, CurrencyType, CurrencySymbol, FileNo, UserDefinedStr1, UserDefinedStr2, UserDefinedStr3, UserDefinedStr4,
+//        UserDefinedDate1, UserDefinedValue1, ReservedContractID, CountryID, RatingKey_FK, eAttached, NewField, TotalCoinsuranceLimit, TotalCoinsurancePremium,
+//        CurrencyExchRate, Invoiced, OtherLead, LeadCarrierID, RenewTypeID, IsoCode, CedingPolicyID, CedingPolicyDate, ConversionStatusID, FlagTaxExempt, Units,
+//        SubUnits, LicenseAgtKey_FK, ContractPlanKey_FK, AltStatusID, FlagNonResidentAgt, CedingPolicyEndDate, TargetPremPercent, AgentContactKey_FK, LAGACoverage,
+//        LAGALimoRateKey_FK, FirewallTeamID, CurrencyExchRate_Old, MarketCapValue, ExternalNoteFile, PriorRate, DBAName, MailAddress1, MailAddress2, MailCity,
+//        MailState, MailZip, RatingID_FK, HereOn, TaxMunicipality
+//        FROM         Quote
+//        WHERE     (QuoteID IN ('0622031', '0622032', '0622033', '0622034')) AND (CoverageID IN ('CPK', 'CGL')) AND (StatusID IN ('BND', 'BIF', 'PIF'))
 
-        [user: session.user]
+//CGL was 0622031, InsuredID = 87532
+
+//        SELECT     TOP (1) InsuredID, NamedInsured, NameType, DBAName, Prefix, First_Name, Last_Name, Middle_Name, Suffix, CombinedName, Address1, Address2, City, State, Zip,
+//        AddressID, ProducerID, Reference, AcctExec, AcctAsst, CSR, Entity, FormMakerName, DirectBillFlag, MailAddress1, MailAddress2, MailCity, MailState, MailZip,
+//        ContactName, Phone, Fax, EMail, DateOfBirth, SSN, PhoneExt, WorkPhone, AcctExecID, AcuityKey, DateAdded, VehicleCount, BusinessStructureID, NCCI, Employees,
+//        Payroll, SicID, Attention, ContactID, ClaimCount, PolicyCount, TeamID, InsuredKey_PK, GroupKey_FK, FlagProspect, FlagAssigned, MembershipTypeID, ParentKey_FK,
+//        License, CareOfKey_FK, Website, SLA, Exempt, RackleyClientKey_FK, MapToID, Notes, Country, FileNo, DateConverted, UserDefinedStr1, UserDefinedStr2,
+//        UserDefinedStr3, UserDefinedStr4, UserDefinedDate1, UserDefinedValue1, CountryID, AcctgInsuredID, ParentInsuredName, FlagParentInsured,
+//        NotUsed_AcuityID
+//        FROM         Insured
+//        WHERE     (InsuredID = '87532')
+
+        //AccountKey_FK = 87533
+//        TableKey_FK=17561 (Constant)
+        //ContactID=3631 (Use as NameKeyPK)
+
+//        SELECT     TOP (1) QuoteID, VersionBound, ProducerID, NamedInsured, TypeID, UserID, Attention, Received, Acknowledged, Quoted, TeamID, DivisionID, StatusID, CreatedID,
+//        Renewal, OldPolicyID, OldVersion, OldExpiration, OpenItem, Notes, PolicyID, VersionCounter, InsuredID, Description, FileLocation, Address1, Address2, City, State,
+//        Zip, Bound, Submitted, SubmitType, NoteAttached, AcctExec, InsuredInterest, RiskInformation, EC, BndPremium, BndFee, CompanyID, ProductID, Effective, Expiration,
+//        Setup, PolicyMailOut, BinderRev, PriorCarrier, TargetPremium, CsrID, PolicyVer, OldQuoteID, PolicyGrpID, PendingSuspenseID, ReferenceID, MapToID, SubmitGrpID,
+//        AcctAsst, TaxState, SicID, CoverageID, OldPremium, AddressID, OldEffective, TaxBasis, QuoteRequiredBy, RequiredLimits, RequiredDeduct, Retroactive,
+//        PrevCancelFlag, PrevNonRenew, PriorPremium, PriorLimits, UWCheckList, FileSetup, ContactID, SuspenseFlag, PriorDeductible, CategoryID, StructureID,
+//        RenewalStatusID, ClaimsFlag, ActivePolicyFlag, Assets, PublicEntity, VentureID, IncorporatedState, ReInsuranceFlag, TaxedPaidBy, LayeredCoverage, Employees,
+//        Stock_52wk, NetIncome, LossHistory, PriorLimitsNew, LargeLossHistory, DateOfApp, Stock_High, Stock_Low, Stock_Current, MarketCap, Exposures, AIM_TransDate,
+//        LostBusinessFlag, YearEst, LostBusiness_Carrier, LostBusiness_Premium, AccountKey_FK, FlagRewrite, flagWIP, RenewalQuoteID, QuoteDueDate, QuoteStatus,
+//        BinderExpires, TIV, InvoicedPremium, InvoicedFee, InvoicedCommRev, SplitAccount, FileCloseReason, FileCloseReasonID, SourceOfLeadID, ServiceUWID,
+//        SubmitTypeID, SubProducerID, AgtAccountNumber, BndMarketID, RefQuoteID, FlagHeldFile, HeldFileMessage, TermPremium, ProcessBatchKey_FK, PolicyInception,
+//        ClassID, ScheduleIRM, ClaimExpRM, DateAppRecvd, DateLossRunRecvd, CoverageEffective, CoverageExpired, SLA, Class, IRFileNum, IRDrawer, FlagOverRideBy,
+//        RackleyQuoteID, FlagCourtesyFiling, FlagRPG, CurrencyType, CurrencySymbol, FileNo, UserDefinedStr1, UserDefinedStr2, UserDefinedStr3, UserDefinedStr4,
+//        UserDefinedDate1, UserDefinedValue1, ReservedContractID, CountryID, RatingKey_FK, eAttached, NewField, TotalCoinsuranceLimit, TotalCoinsurancePremium,
+//        CurrencyExchRate, Invoiced, OtherLead, LeadCarrierID, RenewTypeID, IsoCode, CedingPolicyID, CedingPolicyDate, ConversionStatusID, FlagTaxExempt, Units,
+//        SubUnits, LicenseAgtKey_FK, ContractPlanKey_FK, AltStatusID, FlagNonResidentAgt, CedingPolicyEndDate, TargetPremPercent, AgentContactKey_FK, LAGACoverage,
+//        LAGALimoRateKey_FK, FirewallTeamID, CurrencyExchRate_Old, MarketCapValue, ExternalNoteFile, PriorRate, DBAName, MailAddress1, MailAddress2, MailCity,
+//        MailState, MailZip, RatingID_FK, HereOn, TaxMunicipality
+//        FROM         Quote
+//        WHERE     (QuoteID = '0622030')
+
+//        SELECT     TOP (1) ReferenceID, RecordKey_PK, TableKey_FK, Description, ProdType, PolTerm, NameOfProduction, Contact, ContactEmail, ContactPhone, ContactFax, BusType,
+//        PhysicalAddress, YearsExperience, Terms, Budget, KeyPersonnel, ProposedDate, PPDates, BioResume, BioResumeStunt, Script, NamedInsureds, Risks,
+//        ProductionTypes, OtherProdDesc, MediaType, ViewFrequency, Locations, Principals, NoProdsPerYear, MaxCostOneProd, PostForOthers, Officers, PhotographyStart,
+//        PhotographyEnd, PayrollCompany, SourceOfFinance, Website, Losses, STUNTS, StuntQ, PYROS, PyroQ, ColdSoreQ, Health, Warranty, VetCert, ACORD, Effective,
+//        Expires, DriverName, DriverLicNo, RentalHouse, RentalHouseAddr, RentalStart, RentalEnd, EXPLAIN, FEINSSN, WC_SchedMod, SystemReq
+//        FROM         tud_UWInfo
+//        WHERE     (ReferenceID = '87533') AND (TableKey_FK = '17561')
+
+//
+
+
+//        SELECT     TOP (1) NameKeyPK, Name, IDCode, NameTypeID, TypeID, Address1, Address2, City, State, PostalCode, AddressKey, Country, MailAddress1, MailAddress2, MailCity,
+//        MailState, MailPostalCode, MailAddressKey, Phone, Extension, Fax, PhoneAltType, Home, PhoneAltType2, Remarks, Title, OwnerKey_FK, Email, URL, StatusID,
+//        ActiveFlag, SSN_TaxID, FlagPhysicalAddr, FlagAccountingAddr, FlagPrimaryContact, FlagCompany, PositionID, TitleID, Salutation, CreatedByID, DateAdded,
+//        DateModified, SortName, OwnerID, CustomGrpID, FlagContact, PreviousPhone, PreviousFax, AcctExec, CsrID, AcctExecName, CsrName, OtherGroupID,
+//        FlagUseOwnerPhone, FlagUseOwnerFax, FlagUseOwnerAddress, MktRepID, MktRepName, CommMethodID, AcctgEMail, MobilePhone, PhoneOther, ExchangeKey_FK,
+//        FlagPhoneBookOnly, LicenseNbr, UserField1, ModifiedByID, MapToID, NameTypeSubID, AcctgAddress1, AcctgAddress2, AcctgCity, AcctgPostalCode, AcctgState,
+//        Flag1099, GLAcct, DefaultInvAmt, Terms, DefaultInvDescription, Contact, AcctgPhone, AcctgFax, DefaultInvBasis, FlagMonthlyPayment, FlagOneTime,
+//        LastStatementKey_FK, CountryID, MailCountryID
+//        FROM         taaNameMaster
+//        WHERE     (NameKeyPK = '36311')
+
+
     }
 
     def syncProductsFromAIM(){
@@ -272,7 +352,7 @@ class MainController {
             }
         }
         else if(session.user.userRole == "Underwriter"){
-            submissions = Submissions.findAllByUnderwriter(session.user.email,[sort: "submitDate",order: "desc"])
+            submissions = Submissions.findAllByUnderwriterOrSubmittedBy(session.user.email,session.user.email,[sort: "submitDate",order: "desc"])
             log.info(submissions)
             submissions.each{
 
@@ -286,8 +366,37 @@ class MainController {
             }
         }
 
-        [user: session.user, submissions:submissions]
+        def additionalInsuredList;
+        try{
+            log.info session.user.company
+            additionalInsuredList = Certwords.findAllByProducerid(session.user.company,[sort: "description",order: "desc"]);
+            log.info additionalInsuredList;
+        }
+        catch (Exception e){
+            log.info e
+        }
 
+
+        [user: session.user, submissions: submissions, additionalInsuredList: additionalInsuredList]
+
+
+    }
+
+    def getCertWords(){
+        log.info ("GETTING CERT WORDS")
+        log.info (params)
+
+        def additionalInsuredList;
+        try{
+            log.info params.additionalID
+            additionalInsuredList = Certwords.get(params.additionalID);
+            log.info additionalInsuredList;
+        }
+        catch (Exception e){
+            log.info e
+        }
+
+        render "" + additionalInsuredList.ops + "&;&" + additionalInsuredList.additionalInsured
     }
 
     def submissionView(){

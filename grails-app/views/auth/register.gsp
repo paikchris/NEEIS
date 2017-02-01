@@ -16,7 +16,7 @@
 
             </div>
             <div class="col-xs-6">
-                <div class="panel panel-default" >
+                <div class="panel panel-default" style="background: rgba(255, 255, 255, 0.9);" >
                     <div class="panel-body" style=" padding: 22px;">
                     <g:if test="${registerError != null}">
                         <div class="alert alert-danger" role="alert">${registerError}</div>

@@ -61,9 +61,26 @@ $(document).ready(function () {
         $('#questionSourceFinancing').css('display','');
         $('#questionCompletionBondRequired').css('display','');
         $('#questionsCast').css('display','');
-
-
+        $('#numberOfCastMembers').css('display','');
+        $('.castMemberName').css('display','');
+        $('.castMemberAge').css('display','');
+        $('.castMemberRole').css('display','');
     }
+    else{
+        $('#questionListPriorFilmProjects').css('display','none');
+        $('#questionTotalAbove').css('display','none');
+        $('#questionTotalBelow').css('display','none');
+        $('#questionTotalPost').css('display','none');
+        $('#questionFilmingLocations').css('display','none');
+        $('#questionSourceFinancing').css('display','none');
+        $('#questionCompletionBondRequired').css('display','none');
+        $('#questionsCast').css('display','none');
+        $('#numberOfCastMembers').css('display','none');
+        $('.castMemberName').css('display','none');
+        $('.castMemberAge').css('display','none');
+        $('.castMemberRole').css('display','none');
+    }
+
 
     if(riskHasWC){
         $('#questionListPriorFilmProjects').css('display','');
@@ -177,7 +194,7 @@ $(document).ready(function () {
     });
 
     $(document.body).on('change', '.productionInvolvesCheckbox' ,function(){
-        console.log("CHECKBOX")
+       //console.log("CHECKBOX")
         if($(this).attr('id') === "productionInvolvesNoneAbove"){
             $(".productionInvolvesCheckbox").prop("checked", false);
             $("#productionInvolvesNoneAbove").prop("checked", true);
@@ -257,18 +274,35 @@ $(document).ready(function () {
         //alert();
         if ($(this).attr("value") == "Yes") {
             $("#equipmentOwnedRentedContainer").css('display',"");
+            $("#equipmentOwned").css('display',"");
+            $("#equipmentRented").css('display',"");
+            $("#equipmentLimit").css('display',"");
+            $("#equipmentSchedule").css('display',"");
+            $("#equipmentLocation").css('display',"");
+            $("#equipmentSecurity").css('display',"");
+            $("#equipmentInventory").css('display',"");
         }
         if ($(this).attr("value") == "No") {
             $("#equipmentOwnedRentedContainer").css('display',"none");
+            $("#equipmentOwned").css('display',"none");
+            $("#equipmentRented").css('display',"none");
+            $("#equipmentLimit").css('display',"none");
+            $("#equipmentSchedule").css('display',"none");
+            $("#equipmentLocation").css('display',"none");
+            $("#equipmentSecurity").css('display',"none");
+            $("#equipmentInventory").css('display',"none");
         }
     });
     $(document.body).on('change', 'input[name="errorOmissionsLiability"]' ,function(){
         //alert();
         if ($(this).attr("value") == "Yes") {
             $("#errorOmissionsLiabilityContainer").css('display',"");
+            $("#errorOmissionsLiability").css('display',"");
         }
         if ($(this).attr("value") == "No") {
             $("#errorOmissionsLiabilityContainer").css('display',"none");
+            $("#errorOmissionsLiability").css('display',"none");
+
         }
     });
     // Cast Member Insurance
@@ -843,7 +877,7 @@ $(document.body).on('click', '.removeCastMember' ,function() {
 
     //Coverage Checkboxes
     $(document.body).on('keyup', '#totalBudgetConfirm' ,function(){
-        console.log($(this).val());
+       //console.log($(this).val());
         if($(this).val().trim().length > 0 && $(this).val() != "$0.00"){
             $('#coverageOptionsReview').addClass("panel-primary");
             $('#coverageOptionsReview').removeClass("panel-default");
@@ -855,12 +889,12 @@ $(document.body).on('click', '.removeCastMember' ,function() {
             //    getProductsForRisk();
             //}
 
-            console.log("budget confirm rating");
+           //console.log("budget confirm rating");
             var budget = $(this).val();
             $("#totalBudgetInput").val(budget);
             $("#totalBudgetConfirm").val(budget);
 
-            console.log($("#totalBudgetConfirm").val().split(".")[0]);
+           //console.log($("#totalBudgetConfirm").val().split(".")[0]);
             $('.PIPCHOILimitsInput').val($("#totalBudgetConfirm").val().split(".")[0]);
             $('.CPKNOHALimitsInput').val($("#totalBudgetConfirm").val().split(".")[0]);
 
@@ -906,6 +940,7 @@ $(document.body).on('click', '.removeCastMember' ,function() {
         //ratePremiums(this);
     });
     $(document.body).on('keyup', '#costOfHireInput' ,function() {
+       //console.log("CALL FROM COST OF HIRE")
         ratePremiums(this);
     });
 
@@ -927,7 +962,12 @@ $(document.body).on('click', '.removeCastMember' ,function() {
     });
     $(document.body).on('change', '.coverageInput, .additionalCoverageCheckboxCPKCGL, #EPKGNOHAAdditionalCoverage, #EPKGcoverage' +
         '#EPKGCASTEssentialAdditionalCoverage, .FWCNWCCheckbox, #totalBudgetConfirm, .additionalCoverageCheckboxPIP5, .PIPCHOIOption, #castEssentialInput' ,function(){
-        ratePremiums(this);
+       //console.log("CALL FROM COVERAGEINPUT CHANGE AND OTHERS")
+       //console.log($(this));
+        if($('#totalBudgetConfirm').val().length > 1){
+            ratePremiums($('#totalBudgetconfirm'));
+        }
+
         //alert();
     });
 
@@ -992,8 +1032,8 @@ $(document.body).on('click', '.removeCastMember' ,function() {
         }
 
         if(coverageLine.indexOf("Cast Insurance") > -1){
-            console.log("LIMIT AMOUNT1 === " + limitAmount)
-            console.log("RATE AMOUNT1 === " + rate)
+           //console.log("LIMIT AMOUNT1 === " + limitAmount)
+           //console.log("RATE AMOUNT1 === " + rate)
             premium = (limitAmount * rate) / 100;
         }
         else{
@@ -1006,7 +1046,7 @@ $(document.body).on('click', '.removeCastMember' ,function() {
         }
 
 
-        console.log("PREMIUM AMOUNT1 === " + premium)
+       //console.log("PREMIUM AMOUNT1 === " + premium)
         //alert(limitAmount + "+" + rate + "=" + premium);
         if(premium < minPremium){
             premium = minPremium;
@@ -1091,7 +1131,7 @@ $(document.body).on('click', '.removeCastMember' ,function() {
 
 
     $(document.body).on('keyup', '.CPKNOHALimitsInput' ,function() {
-        console.log("change");
+       //console.log("change");
         var limitAmount = $(this).val().replace(/\$|,/g, '');
         var rate = .06;
         var minPremium = 500;
@@ -1124,7 +1164,7 @@ function checkPhotographyDates(){
 
 
 function ratePremiums(thisObj){
-    console.log("rating");
+  console.log("Rating Premiums");
     var val = $(thisObj).val();
     var riskChosen = $("li.active").children("a.riskOptionLink").html().trim();
     var prodString = $(".productsSelect option[value='" + val + "']").text();
@@ -1257,7 +1297,7 @@ function ratePremiums(thisObj){
     });
     //console.log(pipchoiceLimits);
 
-    if(productsSelected.length > 0 && parseFloat($("#totalBudgetInput").val().replace(/\$|,/g, '')) > 0) {
+    if(productsSelected.length > 0 && parseFloat($("#totalBudgetConfirm").val().replace(/\$|,/g, '')) > 0) {
             //console.log($('#costOfHireInput').val());
         //alert(pipchoiceLimits)
         $.ajax({
@@ -1269,7 +1309,7 @@ function ratePremiums(thisObj){
                 pipChoiOptions: pipChoiOptions,
                 pipChoiceLimits: pipchoiceLimits.replace(/\$|,/g, ''),
                 additionalProducts: additionalProducts,
-                totalBudget: $("#totalBudgetInput").val().replace(/\$|,/g, ''),
+                totalBudget: $("#totalBudgetConfirm").val().replace(/\$|,/g, ''),
                 proposedTermLength: $("#proposedTermLength").val(),
                 costOfHire: $('#costOfHireInput').val().replace(/\$|,/g, ''),
                 castEssentialNum: $('#castEssentialInput').val()
@@ -1733,7 +1773,7 @@ function ratePremiums(thisObj){
                 //$("#premDistributionInsert").html(lobDistString);
 
                 //Add NOAL to CPK if valid
-                console.log("lENGTH = " + $('.NOAL01PremiumTotal').length)
+               //console.log("lENGTH = " + $('.NOAL01PremiumTotal').length)
                 if($('#NOAL01PremiumTotal').length > 0){
                     var noalPrem = $('#NOAL01PremiumTotal').html();
                     var cpkPrem = $('#BARCPKGCPremiumTotal').html();
@@ -2083,7 +2123,7 @@ function buildReview() {
                 iconFilePath = "fileIcon.png"
             }
 
-            console.log("Change: " + file);
+           //console.log("Change: " + file);
 
             var name = file.name;
             var size = file.size;
