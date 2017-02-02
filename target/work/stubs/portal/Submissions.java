@@ -32,6 +32,8 @@ public  java.lang.String getUnderwriter() { return (java.lang.String)null;}
 public  void setUnderwriter(java.lang.String value) { }
 public  java.lang.String getSeenByUW() { return (java.lang.String)null;}
 public  void setSeenByUW(java.lang.String value) { }
+public  java.lang.String getQuestionAnswerMap() { return (java.lang.String)null;}
+public  void setQuestionAnswerMap(java.lang.String value) { }
 public static  java.lang.Object getConstraints() { return null;}
 public static  void setConstraints(java.lang.Object value) { }
 }

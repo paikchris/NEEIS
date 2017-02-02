@@ -117,8 +117,8 @@ $(document).ready(function () {
             }
             else if(userRole ==="Underwriter"){
                 htmlString = htmlString + "<tr class='submissionQuickOptions' style='background: rgba(132, 204, 210, 0.21);'>" +
-                    "<td class='QOaimQuoteID'>" + aimQuoteID +  "</td>" +
-                    "<td class='QOstatusCode'>" + statusCode +  "</td>" +
+                    "<td class='QOaimQuoteID' style='display:none'>" + aimQuoteID +  "</td>" +
+                    "<td class='QOstatusCode' style='display:none'>" + statusCode +  "</td>" +
                     "<td colspan='8'>" +
                     "<div class='col-xs-6'>" +
 
@@ -270,26 +270,30 @@ $(document).ready(function () {
     $(document).on('click', '.generateCert', function () {
         //window.location='/portal/main/certs';
 
-        //get additional insureds
-
+        //get quote id
+        $('#certificateQuoteID').html($(this).closest('.submissionQuickOptions').find('.QOaimQuoteID').html().trim());
         $('#certsModal').modal('show');
 
 
     });
     $(document).on('click', '#createCertButton', function () {
-        $.ajax({
-            method: "POST",
-            url: "/portal/Async/ajaxDownloadCert",
-            data: {submissionID: "test"
-            }
-        })
-            .done(function (msg) {
-                //alert(msg);
-                //$('#some_id').click(function() {
-                //
-                //});
-                window.location='/portal/main/downloadCert';
-            });
+        var certQuoteID = $('#certificateQuoteID').html();
+        window.location='/portal/main/downloadCert?quoteID='+certQuoteID;
+
+        //$.ajax({
+        //    method: "POST",
+        //    url: "/portal/Async/downloadCert",
+        //    data: {submissionID: "test",
+        //        quoteID: certQuoteID
+        //    }
+        //})
+        //    .done(function (msg) {
+        //        //alert(msg);
+        //        //$('#some_id').click(function() {
+        //        //
+        //        //});
+        //        //
+        //    });
     });
 
     $(document).on('change', '#additionalInsuredList', function () {

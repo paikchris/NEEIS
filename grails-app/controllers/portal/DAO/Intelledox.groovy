@@ -13,6 +13,7 @@ import portal.Utils.FileTransferHelper;
 
 class Intelledox {
 
+
     def createIndicationPDF(jsonSerial, dataSource_aim){
         log.info "INTELLEDOX"
         log.info "JSON ==== " + jsonSerial
@@ -320,33 +321,24 @@ soapXML = soapXML + """
 
         log.info response.text
         def fileName = "Indication A.pdf"
-        log.info("NEW FOLDER QUOTE = " + jsonSerial.getAt("allQuoteIDs"))
-        def quoteID = jsonSerial.getAt("allQuoteIDs").split(",")[0].split(";")[0]
+
         def a = new XmlSlurper().parseText(response.text)
         def nodeToSerialize = a."**".find {it.name() == 'BinaryFile'}
         def pdfBinaryFile = nodeToSerialize.text();
-        def folderPath = org.codehaus.groovy.grails.web.context.ServletContextHolder.getServletContext().getRealPath("/attachments/${quoteID}/")
-        log.info folderPath
-//        def webrootDir = org.codehaus.groovy.grails.web.context.ServletContextHolder.getServletContext().getRealPath("/attachments/${quoteID}/${fileName}");
-//        def folderPath = org.codehaus.groovy.grails.web.context.ServletContextHolder.getServletContext().getRealPath("/attachments/${quoteID}/")
-//        def folder = new File ( folderPath)
-//        folder.mkdirs()
-//
-//        BASE64Decoder decoder = new BASE64Decoder();
-//        byte[] decodedBytes = decoder.decodeBuffer(nodeToSerialize.text());
-//
-//        InputStream is = new ByteArrayInputStream(decodedBytes );
-//        DataOutputStream out = new DataOutputStream(new  BufferedOutputStream(new FileOutputStream(new File(webrootDir))));
-//        int c;
-//        while((c = is.read()) != -1) {
-//            out.writeByte(c);
-//        }
-//        out.close();
-//        is.close();
 
-        fileHelper.saveBinaryFileToLocalPath(pdfBinaryFile, folderPath, fileName);
+        log.info("NEW FOLDER QUOTE = " + jsonSerial.getAt("allQuoteIDs"))
+//        def quoteID = jsonSerial.getAt("allQuoteIDs").split(",")[0].split(";")[0]
 
-        fileHelper.ftpFileToAIM(fileName, folderPath, quoteID, dataSource_aim);
+        jsonSerial.getAt("allQuoteIDs").split(",").each {
+            def quoteID = it.split(";")[0]
+            def folderPath = org.codehaus.groovy.grails.web.context.ServletContextHolder.getServletContext().getRealPath("/attachments/${quoteID}/")
+            log.info folderPath
+
+            fileHelper.saveBinaryFileToLocalPath(pdfBinaryFile, folderPath, fileName);
+
+            fileHelper.ftpFileToAIM(fileName, folderPath, quoteID, dataSource_aim);
+        }
+
 
         return "good"
     }
@@ -509,9 +501,10 @@ soapXML = soapXML + """
     }
 
 
-    def getCertificateBytes(params){
+    def createCertPDF(params, dataSource_aim){
         log.info "INTELLEDOX CERT BYTES"
         log.info params
+        FileTransferHelper fileHelper = new FileTransferHelper();
 
         def soapXML = """<x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:int="http://services.dpm.com.au/intelledox/">
     <x:Header/>
@@ -639,32 +632,23 @@ soapXML = soapXML + """
 
         log.info response.text
 
+        log.info response.text
+        def fileName = "testCert.pdf"
+
         def a = new XmlSlurper().parseText(response.text)
         def nodeToSerialize = a."**".find {it.name() == 'BinaryFile'}
+        def pdfBinaryFile = nodeToSerialize.text();
 
-//        def nodeAsText = XmlUtil.serialize()
-//        log.info nodeToSerialize.text()
-//        def webrootDir = org.codehaus.groovy.grails.web.context.ServletContextHolder.getServletContext().getRealPath("/attachments/${jsonSerial.getAt("quoteID")}/testcert.pdf");
-//        DataOutputStream os = new DataOutputStream(new FileOutputStream(webrootDir));
-        BASE64Decoder decoder = new BASE64Decoder();
-//        log.info nodeToSerialize.text()
-        byte[] decodedBytes = decoder.decodeBuffer(nodeToSerialize.text());
-//        os.writeBytes(decodedBytes)
-////        os.writeInt(nodeToSerialize.text());
-//        os.close();
+//        def quoteID = it.split(";")[0]
+        def folderPath = org.codehaus.groovy.grails.web.context.ServletContextHolder.getServletContext().getRealPath("/attachments/")
+        log.info folderPath
+
+        fileHelper.saveBinaryFileToLocalPath(pdfBinaryFile, folderPath, fileName);
+
+        fileHelper.ftpFileToAIM(fileName, folderPath, params.quoteID, dataSource_aim);
 
 
-//        byte[] biteToRead = texto.getBytes();
-//        InputStream is = new ByteArrayInputStream(decodedBytes );
-//        DataOutputStream out = new DataOutputStream(new  BufferedOutputStream(new FileOutputStream(new File(webrootDir))));
-//        int c;
-//        while((c = is.read()) != -1) {
-//            out.writeByte(c);
-//        }
-//        out.close();
-//        is.close();
-
-        return decodedBytes;
+        return folderPath + "/" + fileName;
     }
 }
 

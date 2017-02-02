@@ -23,6 +23,10 @@ public  java.lang.Object getDataSource_aim() { return null;}
 public  void setDataSource_aim(java.lang.Object value) { }
 public  portal.DAO.AIMSQL getAimDAO() { return (portal.DAO.AIMSQL)null;}
 public  void setAimDAO(portal.DAO.AIMSQL value) { }
+public  java.lang.Object getTimeZone() { return null;}
+public  void setTimeZone(java.lang.Object value) { }
+public  java.lang.Object getDateFormat() { return null;}
+public  void setDateFormat(java.lang.Object value) { }
 public  java.lang.Object getDownloadPDF() { return null;}
 public  void setDownloadPDF(java.lang.Object value) { }
 public  java.lang.Object getDownloadCert() { return null;}
@@ -37,6 +41,7 @@ public  java.lang.Object sandbox() { return null;}
 public  java.lang.Object certs() { return null;}
 public  java.lang.Object syncProductsFromAIM() { return null;}
 public  java.lang.Object submissions() { return null;}
+public  java.lang.Object getCertWords() { return null;}
 public  java.lang.Object submissionView() { return null;}
 public  java.lang.Object newSubmissionConfirm() { return null;}
 public  java.lang.Object getGroupedMessages() { return null;}

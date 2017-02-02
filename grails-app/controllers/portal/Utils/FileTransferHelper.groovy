@@ -16,19 +16,13 @@ class FileTransferHelper {
     Random random = new Random();
 
     def saveAttachedFileToLocalPath(attachedFile, localFolderPath, fileName){
-        log.info "SAVING ATTACHED FILE"
-        File fileDest = new File(localFolderPath, fileName)
-        def file = attachedFile
-        try{
-            file.transferTo(fileDest)
-        }
-        catch(Exception e){
-            fileName = fileName + String.valueOf(random.nextInt(100));
-            fileDest = new File(localFolderPath, fileName)
-            file = attachedFile
-            file.transferTo(fileDest)
-        }
+        log.info "SAVING ATTACHED FILE: " + fileName
 
+
+        File fileDest = new File(localFolderPath, fileName)
+        fileDest.mkdirs();
+        def file = attachedFile
+        file.transferTo(fileDest)
     }
 
     def saveBinaryFileToLocalPath(binaryFile, localPath, fileName){
@@ -71,7 +65,6 @@ class FileTransferHelper {
 //        def webrootDir = getClass().getProtectionDomain().getCodeSource().getLocation().getFile().replace(getClass().getSimpleName() + ".class", "").substring(1);
 //        log.info "WEBROOT DIR = " + webrootDir
         def fileName;
-        log.info "INTELLEDOX QUOTE ID = " + quoteID
         boolean done = false;
 //        Sql aimsql = new Sql(dataSource_aim)
 
@@ -112,7 +105,7 @@ class FileTransferHelper {
             if (success) {
                 log.info("Successfully created directory: " + dirToCreate);
             } else {
-                log.info("Failed to create directory. See server's reply.");
+                log.info("Did not create directory.");
             }
 
             String firstRemoteFile

@@ -22,6 +22,10 @@ public  java.lang.Object getDataSource_aim() { return null;}
 public  void setDataSource_aim(java.lang.Object value) { }
 public  portal.DAO.AIMSQL getAimDAO() { return (portal.DAO.AIMSQL)null;}
 public  void setAimDAO(portal.DAO.AIMSQL value) { }
+public  java.lang.Object getTimeZone() { return null;}
+public  void setTimeZone(java.lang.Object value) { }
+public  java.lang.Object getDateFormat() { return null;}
+public  void setDateFormat(java.lang.Object value) { }
 public  java.lang.Object index() { return null;}
 public  java.lang.Object register() { return null;}
 public  java.lang.Object registerUser() { return null;}

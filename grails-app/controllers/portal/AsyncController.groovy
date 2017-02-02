@@ -1,5 +1,6 @@
 package portal
 
+import grails.util.Environment
 import groovy.xml.*
 import wslite.soap.*
 import wslite.http.auth.*
@@ -243,7 +244,7 @@ class AsyncController {
         else render "Error!" // appropriate error handling
         }
 
-    def ajaxDownloadCert = {
+    def downloadCert = {
         log.info("DOWNLOADING CERT")
         log.info params
 
@@ -251,6 +252,7 @@ class AsyncController {
         def timestamp = now.format(dateFormat, timeZone)
         params['date']= timestamp;
         params['producer']= session.user.firstName + " " + session.user.lastName;
+        params['quoteID'] = params.quoteID;
         /*
 		<date>n</date>
 		<producer>n</producer>
@@ -344,17 +346,24 @@ class AsyncController {
 		<certificateHolder>Cert Holder</certificateHolder>
          */
 
-        byte[] renderStringBytesArray = intelledoxHelper.getCertificateBytes(params);
-//        File testFile = new File();
-//        String s = new String(bytes);
-        log.info(renderStringBytesArray)
-        if (renderStringBytesArray)
-        {
+
+        //GENERATE CERT AND SAVE IT TO LOCAL AND AIM SERVER
+        def pathToCert = intelledoxHelper.createCertPDF(params, dataSource_aim);
+
+        def certFile = new File(pathToCert)
+
             try{
-                log.info "building response"
-                response.setContentType("application/octet-stream") // or or image/JPEG or text/xml or whatever type the file is
-                response.setHeader("Content-disposition", "attachment;filename=\"${params.f}\"")
-                response.outputStream << renderStringBytesArray
+
+
+                if (certFile.exists()) {
+                    log.info("building response" + certFile.exists())
+                    response.setContentType("application/octet-stream") // or or image/JPEG or text/xml or whatever type the file is
+                    response.setHeader("Content-disposition", "attachment;filename=\"${certFile.name}\"")
+                    response.outputStream << certFile.bytes
+                }
+                else{
+
+                }
             }
             catch(Exception e){
                 StringWriter sw = new StringWriter();
@@ -363,160 +372,241 @@ class AsyncController {
                 log.info("Error Details - " + exceptionAsString)
             }
 
-        }
-        else render "Error!" // appropriate error handling
     }
 
 
-//    def ajaxDownloadAttachment(){
-//        log.info("DOWNLOADING ATTACHMENT")
-//        log.info(params);
-//
-//
-//        FileTransferHelper fileHelper = new FileTransferHelper();
-//
-//        def renderStringBinaryFile = fileHelper.getAIMAttachment();
-//
-//        if (renderStringBinaryFile)
-//        {
-//            response.setContentType("application/octet-stream") // or or image/JPEG or text/xml or whatever type the file is
-//            response.setHeader("Content-disposition", "attachment;filename=\"${"File.pdf"}\"")
-//            response.outputStream << renderStringBinaryFile.bytes
-//            log.info "DONE WITH RESPONSE" + renderStringBinaryFile.bytes
-//        }
-//    }
 
-    
+
 
     def ajaxAttach() {
         log.info("CHECKING AJAX ATTACH BUTTON")
         log.info(params);
-        def bioFile;
-        def lossesFile;
-        def pyroFile;
-        def stuntsFile;
-        def animalPDF;
-        def dronePDF;
-        def doodFile;
-        def treatmentFile;
-        def budgetFile;
-
         FileTransferHelper fileHelper = new FileTransferHelper();
         Sql aimsql = new Sql(dataSource_aim)
-        params.quoteIDs.split(",").each{
-            def quoteID = it
-            def localFolderPath = servletContext.getRealPath("/attachments/${it}/") //app directory
-            def fileName;
+        FTPClient ftpClient = new FTPClient();
 
-            boolean done = false;
+        def temporaryFilesFolderPath = servletContext.getRealPath("/attachments/temp/")
+        def attachedFile
+
+        try{
+            log.info("STORING ALL ATTACHMENTS IN " + temporaryFilesFolderPath)
+            def bioFileRealName
+            def tempBioFileName
+            if (params.bioFile != "undefined") {
+                bioFileRealName = params.bioFile.getFileItem().name
+                tempBioFileName = params.quoteIDs.replaceAll(",","") + "_bio_" + System.currentTimeMillis();
+                attachedFile = params.bioFile;
+                fileHelper.saveAttachedFileToLocalPath(attachedFile, temporaryFilesFolderPath, tempBioFileName)
+            }
+
+            def lossesFileRealName
+            def tempLossesFileName
+            if (params.lossesFile != "undefined") {
+                lossesFileRealName = params.lossesFile.getFileItem().name
+                tempLossesFileName = params.quoteIDs.replaceAll(",","") + "_losses_" + System.currentTimeMillis();
+                attachedFile = params.lossesFile;
+                fileHelper.saveAttachedFileToLocalPath(attachedFile, temporaryFilesFolderPath, tempLossesFileName)
+            }
+
+            def pyroFileRealName
+            def tempPyroFileName
+            if (params.pyroFile != "undefined") {
+                pyroFileRealName = params.pyroFile.getFileItem().name
+                tempPyroFileName = params.quoteIDs.replaceAll(",","") + "_pyro_" + System.currentTimeMillis();
+                attachedFile = params.pyroFile;
+                fileHelper.saveAttachedFileToLocalPath(attachedFile, temporaryFilesFolderPath, tempPyroFileName)
+            }
+
+            def stuntsFileRealName
+            def tempStuntsFileName
+            if (params.stuntsFile != "undefined") {
+                stuntsFileRealName = params.stuntsFile.getFileItem().name
+                tempStuntsFileName = params.quoteIDs.replaceAll(",","") + "_stunts_" + System.currentTimeMillis();
+                attachedFile = params.stuntsFile;
+                fileHelper.saveAttachedFileToLocalPath(attachedFile, temporaryFilesFolderPath, tempStuntsFileName)
+            }
+
+//            def animalFileRealName
+//            def tempAnimalFileName
+//            if (params.animalFile != "undefined") {
+//                animalFileRealName = params.animalFile.getFileItem().name
+//                tempAnimalFileName = params.quoteIDs.replaceAll(",","") + "_animal_" + System.currentTimeMillis();
+//                attachedFile = params.animalFile;
+//                fileHelper.saveAttachedFileToLocalPath(attachedFile, temporaryFilesFolderPath, tempAnimalFileName)
+//            }
+
+//            def droneFileRealName
+//            def tempDroneFileName
+//            if (params.droneFile != "undefined") {
+//                droneFileRealName = params.droneFile.getFileItem().name
+//                tempDroneFileName = params.quoteIDs.replaceAll(",","") + "_drone_" + System.currentTimeMillis();
+//                attachedFile = params.droneFile;
+//                fileHelper.saveAttachedFileToLocalPath(attachedFile, temporaryFilesFolderPath, tempDroneFileName)
+//            }
+
+            def doodFileRealName
+            def tempDoodFileName
+            if (params.doodFile != "undefined") {
+                doodFileRealName = params.doodFile.getFileItem().name
+                tempDoodFileName = params.quoteIDs.replaceAll(",","") + "_dood_" + System.currentTimeMillis();
+                attachedFile = params.doodFile;
+                fileHelper.saveAttachedFileToLocalPath(attachedFile, temporaryFilesFolderPath, tempDoodFileName)
+            }
+
+            def treatmentFileRealName
+            def tempTreatmentFileName
+            if (params.treatmentFile != "undefined") {
+                treatmentFileRealName = params.treatmentFile.getFileItem().name
+                tempTreatmentFileName = params.quoteIDs.replaceAll(",","") + "_treatment_" + System.currentTimeMillis();
+                attachedFile = params.treatmentFile;
+                fileHelper.saveAttachedFileToLocalPath(attachedFile, temporaryFilesFolderPath, tempTreatmentFileName)
+            }
+
+            def budgetFileRealName
+            def tempBudgetFileName
+            if (params.budgetFile != "undefined") {
+                budgetFileRealName = params.budgetFile.getFileItem().name
+                tempBudgetFileName = params.quoteIDs + "_budget_" + System.currentTimeMillis();
+                attachedFile = params.budgetFile;
+                fileHelper.saveAttachedFileToLocalPath(attachedFile, temporaryFilesFolderPath, tempBudgetFileName)
+            }
 
 
-            log.info(localFolderPath)
             String server = "74.100.162.203";
             int port = 21;
             String user = "web_ftp";
             String pass = "Get@4Files";
 
-            FTPClient ftpClient = new FTPClient();
-            try {
+            def srcStream
+            def cpStream
+            def dstStream
+            def keepFileHereStream
 
-                ftpClient.connect(server, port);
-                ftpClient.login(user, pass);
-                ftpClient.enterLocalPassiveMode();
+            ftpClient.connect(server, port);
+            ftpClient.login(user, pass);
+            ftpClient.enterLocalPassiveMode();
 
-                ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+            def fileName;
+            params.quoteIDs.split(",").each {
+                def quoteID = it
+                def localFolderPath = servletContext.getRealPath("/attachments/${it}/") //app directory
+                boolean done = false;
+
+                log.info("STORING ALL ATTACHMENTS IN AIM FOR = " + it)
+                log.info(localFolderPath)
+                File fileDest = new File(localFolderPath)
+                fileDest.mkdirs();
 
 
                 if (params.bioFile != "undefined") {
+                    fileName = "bio-" + bioFileRealName
+                    log.info("COPYING FILE TO ATTACHMENTS LOCAL: " + fileName)
 
-                    fileName = "bio-" + params.bioFile.getFileItem().name
-                    log.info params.bioFile.getFileItem().name
-                    def attachedFile = params.bioFile
-                    fileHelper.saveAttachedFileToLocalPath(attachedFile, localFolderPath, fileName)
-                    log.info fileName
+                    srcStream = new File(temporaryFilesFolderPath, tempBioFileName).newDataInputStream()
+                    dstStream = new File(localFolderPath, fileName).newDataOutputStream()
+
+                    dstStream << srcStream
+
+                    srcStream.close()
+                    dstStream.close()
+
                     fileHelper.ftpFileToAIM(fileName, localFolderPath, quoteID, dataSource_aim)
-
                 }
 
                 if (params.lossesFile != "undefined") {
-                    fileName = "losses-" + params.lossesFile.getFileItem().name
-                    log.info params.lossesFile.getFileItem().name
-                    def attachedFile = params.lossesFile
-                    fileHelper.saveAttachedFileToLocalPath(attachedFile, localFolderPath, fileName)
-                    log.info fileName
+                    fileName = "losses-" + lossesFileRealName
+                    log.info("COPYING FILE TO ATTACHMENTS LOCAL: " + fileName)
+                    srcStream = new File(temporaryFilesFolderPath, tempLossesFileName).newDataInputStream()
+                    dstStream = new File(localFolderPath, fileName).newDataOutputStream()
+                    dstStream << srcStream
+                    srcStream.close()
+                    dstStream.close()
+
                     fileHelper.ftpFileToAIM(fileName, localFolderPath, quoteID, dataSource_aim)
                 }
 
                 if (params.pyroFile != "undefined") {
-                    fileName = "pyro-" + params.pyroFile.getFileItem().name
-                    def attachedFile = params.pyroFile
-                    fileHelper.saveAttachedFileToLocalPath(attachedFile, localFolderPath, fileName)
-                    log.info fileName
+                    fileName = "pyro-" + pyroFileRealName
+                    log.info("COPYING FILE TO ATTACHMENTS LOCAL: " + fileName)
+                    srcStream = new File(temporaryFilesFolderPath, tempPyroFileName).newDataInputStream()
+                    dstStream = new File(localFolderPath, fileName).newDataOutputStream()
+                    dstStream << srcStream
+                    srcStream.close()
+                    dstStream.close()
+
                     fileHelper.ftpFileToAIM(fileName, localFolderPath, quoteID, dataSource_aim)
 
                 }
 
                 if (params.stuntsFile != "undefined") {
-                    fileName = "stunts-" + params.stuntsFile.getFileItem().name
-                    log.info params.stuntsFile.getFileItem().name
-                    def attachedFile = params.stuntsFile
-                    fileHelper.saveAttachedFileToLocalPath(attachedFile, localFolderPath, fileName)
-                    log.info fileName
-                    fileHelper.ftpFileToAIM(fileName, localFolderPath, quoteID, dataSource_aim)
+                    fileName = "stunts-" + stuntsFileRealName
+                    log.info("COPYING FILE TO ATTACHMENTS LOCAL: " + fileName)
+                    srcStream = new File(temporaryFilesFolderPath, tempStuntsFileName).newDataInputStream()
+                    dstStream = new File(localFolderPath, fileName).newDataOutputStream()
+                    dstStream << srcStream
+                    srcStream.close()
+                    dstStream.close()
 
+                    fileHelper.ftpFileToAIM(fileName, localFolderPath, quoteID, dataSource_aim)
                 }
 
                 if (params.doodFile != "undefined") {
-                    fileName = "dood-" + params.doodFile.getFileItem().name
-                    log.info params.doodFile.getFileItem().name
-                    def attachedFile = params.doodFile
-                    fileHelper.saveAttachedFileToLocalPath(attachedFile, localFolderPath, fileName)
-                    log.info fileName
-                    fileHelper.ftpFileToAIM(fileName, localFolderPath, quoteID, dataSource_aim)
+                    fileName = "dood-" + doodFileRealName
+                    log.info("COPYING FILE TO ATTACHMENTS LOCAL: " + fileName)
+                    srcStream = new File(temporaryFilesFolderPath, tempDoodFileName).newDataInputStream()
+                    dstStream = new File(localFolderPath, fileName).newDataOutputStream()
+                    dstStream << srcStream
+                    srcStream.close()
+                    dstStream.close()
 
+                    fileHelper.ftpFileToAIM(fileName, localFolderPath, quoteID, dataSource_aim)
                 }
 
                 if (params.treatmentFile != "undefined") {
-                    fileName = "treatment-" + params.treatmentFile.getFileItem().name
-                    log.info params.treatmentFile.getFileItem().name
-                    def attachedFile = params.treatmentFile
-                    fileHelper.saveAttachedFileToLocalPath(attachedFile, localFolderPath, fileName)
-                    log.info fileName
-                    fileHelper.ftpFileToAIM(fileName, localFolderPath, quoteID, dataSource_aim)
+                    fileName = "treatment-" + treatmentFileRealName
+                    log.info("COPYING FILE TO ATTACHMENTS LOCAL: " + fileName)
+                    srcStream = new File(temporaryFilesFolderPath, tempTreatmentFileName).newDataInputStream()
+                    dstStream = new File(localFolderPath, fileName).newDataOutputStream()
+                    dstStream << srcStream
+                    srcStream.close()
+                    dstStream.close()
 
+                    fileHelper.ftpFileToAIM(fileName, localFolderPath, quoteID, dataSource_aim)
                 }
 
                 if (params.budgetFile != "undefined") {
-//            fileName= "budget"+System.nanoTime()
-                    fileName = "budget-" + params.budgetFile.getFileItem().name
-                    log.info params.budgetFile.getFileItem().name
-                    def attachedFile = params.budgetFile
-                    fileHelper.saveAttachedFileToLocalPath(attachedFile, localFolderPath, fileName)
-                    log.info fileName
-                    fileHelper.ftpFileToAIM(fileName, localFolderPath, quoteID, dataSource_aim)
+                    fileName = "budget-" + budgetFileRealName
+                    log.info("COPYING FILE TO ATTACHMENTS LOCAL: " + fileName)
+                    srcStream = new File(temporaryFilesFolderPath, tempBudgetFileName).newDataInputStream()
+                    dstStream = new File(localFolderPath, fileName).newDataOutputStream()
+                    dstStream << srcStream
+                    srcStream.close()
+                    dstStream.close()
 
+                    fileHelper.ftpFileToAIM(fileName, localFolderPath, quoteID, dataSource_aim)
                 }
                 if (done) {
                     log.info("The first file is uploaded successfully.");
                 }
-
-            } catch (IOException e) {
-                StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                String exceptionAsString = sw.toString();
-                log.info("Error Details - " + exceptionAsString)
-            } finally {
-                try {
-                    if (ftpClient.isConnected()) {
-                        ftpClient.logout();
-                        ftpClient.disconnect();
-                    }
-                } catch (IOException ex) {
-                    log.info ex
-                    ex.printStackTrace();
+            }
+        } catch (IOException e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+        } finally {
+            try {
+                if (ftpClient.isConnected()) {
+                    ftpClient.logout();
+                    ftpClient.disconnect();
                 }
+            } catch (IOException ex) {
+                log.info ex
+                ex.printStackTrace();
             }
         }
+
 
 
 
