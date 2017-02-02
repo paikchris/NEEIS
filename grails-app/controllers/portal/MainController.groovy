@@ -343,6 +343,15 @@ class MainController {
         def submissions;
         log.info(session.user.email)
         log.info(session.user.userRole)
+
+        def timeZone = TimeZone.getTimeZone('PST')
+
+        def now = new Date()
+        def dateFormat = 'yyyy-MM-dd HH:mm:ss.SSS'
+
+        def timestamp = now.format(dateFormat, timeZone)
+
+
         if(session.user.userRole == "Broker"){
             log.info("Broker")
             submissions = Submissions.findAllBySubmittedBy(session.user.email,[sort: "submitDate",order: "desc"])
@@ -377,7 +386,7 @@ class MainController {
         }
 
 
-        [user: session.user, submissions: submissions, additionalInsuredList: additionalInsuredList]
+        [user: session.user, submissions: submissions, additionalInsuredList: additionalInsuredList, timestamp:timestamp]
 
 
     }

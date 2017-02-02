@@ -23,6 +23,9 @@ class AsyncController {
     AIMSQL aimDAO = new AIMSQL();
     Intelledox intelledoxHelper = new Intelledox();
 
+    def timeZone = TimeZone.getTimeZone('PST')
+    def dateFormat = 'yyyy-MM-dd HH:mm:ss.SSS'
+
     def getProductsForCoverage() {
         //GETTING LIST OF PRODUCTS AVAILABLE FOR EACH COVERAGE AVAILABLE FOR SUBMISSION RISK TYPE
 
@@ -245,7 +248,7 @@ class AsyncController {
         log.info params
 
         def now = new Date()
-        def timestamp = now.toTimestamp()
+        def timestamp = now.format(dateFormat, timeZone)
         params['date']= timestamp;
         params['producer']= session.user.firstName + " " + session.user.lastName;
         /*
@@ -1768,8 +1771,10 @@ class AsyncController {
             log.info "QuoteID: " + quoteIDCoverages
 //0620584;EPKG,0620585;CPK
 
+
+
             def now = new Date()
-            def timestamp = now.toTimestamp()
+            def timestamp = now.format(dateFormat, timeZone)
 
             log.info jsonParams.getAt("namedInsured")
 
@@ -2065,7 +2070,7 @@ class AsyncController {
         log.info params
 
         def now = new Date()
-        def timestamp = now.toTimestamp()
+        def timestamp = now.format(dateFormat, timeZone)
         log.info timestamp
         NeeisMessages m;
         try {
@@ -2169,7 +2174,7 @@ class AsyncController {
         log.info "SAVE DRAFT SUBMISSION"
         log.info params
 
-        def timestamp = now.toTimestamp()
+        def timestamp = now.format(dateFormat, timeZone)
         log.info timestamp
 
         SavedSubmissions m;

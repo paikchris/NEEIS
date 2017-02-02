@@ -13,12 +13,22 @@ import portal.DAO.AIMSQL;
 import grails.util.Environment
 
 class FileTransferHelper {
+    Random random = new Random();
 
     def saveAttachedFileToLocalPath(attachedFile, localFolderPath, fileName){
         log.info "SAVING ATTACHED FILE"
         File fileDest = new File(localFolderPath, fileName)
         def file = attachedFile
-        file.transferTo(fileDest)
+        try{
+            file.transferTo(fileDest)
+        }
+        catch(Exception e){
+            fileName = fileName + String.valueOf(random.nextInt(100));
+            fileDest = new File(localFolderPath, fileName)
+            file = attachedFile
+            file.transferTo(fileDest)
+        }
+
     }
 
     def saveBinaryFileToLocalPath(binaryFile, localPath, fileName){

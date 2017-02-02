@@ -176,7 +176,7 @@ class AIMSQL {
 
 
         def now = new Date()
-        def timestamp = now.toTimestamp()
+        def timestamp = now.format(dateFormat, timeZone)
         log.info testjson.getAt("stateMailing")
 
 //        SELECT     Name, City, IDCode, NameKeyPK
@@ -971,7 +971,7 @@ class AIMSQL {
 //        @ImageID=NULL,@TypeID='R',@QuoteVersion='A',@ToNameKey=0,@DocTemplateID=NULL,@AttachmentIcon=0,@SourceDateTime='1899-12-30 00:00:00:000'
         Sql aimsql = new Sql(dataSource_aim)
         def now = new Date()
-        def timestamp = now.toTimestamp()
+        def timestamp = now.format(dateFormat, timeZone)
         aimsql.call("{call dbo.AddTransaction( '${quoteID}', 'web', '${description}', '${timestamp.format('yyyy-MM-dd HH:mm:ss.SSS')}', '${statusCode}', NULL, '${typeID}'," +
                 " '${quoteVersion}', 0, NULL, 0, '1899-12-30 00:00:00:000')}") { num ->
             log.info "ADD TRANSACTION ID $num"
@@ -985,7 +985,7 @@ class AIMSQL {
 
         Sql aimsql = new Sql(dataSource_aim)
         def now = new Date()
-        def timestamp = now.toTimestamp()
+        def timestamp = now.format(dateFormat, timeZone)
 
         return insuredID
     }
@@ -1001,7 +1001,7 @@ class AIMSQL {
     def logFileUpload(localFileName, localFolderPath, quoteID, dataSource_aim){
         Sql aimsql = new Sql(dataSource_aim)
         def now = new Date()
-        def timestamp = now.toTimestamp()
+        def timestamp = now.format(dateFormat, timeZone)
         def oleAttachKey = "";
         def referenceKey_FK = "";
         aimsql.call("{call dbo.GetKeyField(${Sql.INTEGER}, 'oleAttachKey')}") { num ->
@@ -1068,7 +1068,7 @@ class AIMSQL {
 
         Sql aimsql = new Sql(dataSource_aim)
         def now = new Date()
-        def timestamp = now.toTimestamp()
+        def timestamp = now.format(dateFormat, timeZone)
         def oleAttachKey = "";
         def referenceKey_FK = "";
 
