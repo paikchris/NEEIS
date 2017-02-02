@@ -95,17 +95,16 @@ class FileTransferHelper {
             ftpClient.enterLocalPassiveMode();
 
             ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+
+            String remoteFilePath
             if (Environment.current == Environment.DEVELOPMENT) {
-                log.info("DEVELOPMENT")
-            } else
-            if (Environment.current == Environment.TEST) {
-                // insert Test environment specific code here
-            } else
-            if (Environment.current == Environment.PRODUCTION) {
-                log.info("PRODUCTION")
+                remoteFilePath = "/AIMAPP/ATTACHTEST/${quoteID}/";
+            }
+            else if (Environment.current == Environment.PRODUCTION) {
+                remoteFilePath = "/AIMAPP/ATTACH/${quoteID}/";
             }
 
-            String remoteFilePath = "/AIMAPP/ATTACHTEST/${quoteID}/";
+
             // Creates a directory
             String dirToCreate = remoteFilePath;
             boolean success = ftpClient.makeDirectory(dirToCreate);
@@ -116,8 +115,14 @@ class FileTransferHelper {
                 log.info("Failed to create directory. See server's reply.");
             }
 
+            String firstRemoteFile
+            if (Environment.current == Environment.DEVELOPMENT) {
+                firstRemoteFile = "/AIMAPP/ATTACHTEST/${quoteID}/" + decodedFileName;
+            }
+            else if (Environment.current == Environment.PRODUCTION) {
+                firstRemoteFile = "/AIMAPP/ATTACH/${quoteID}/" + decodedFileName;
+            }
 
-            String firstRemoteFile = "/AIMAPP/ATTACHTEST/${quoteID}/" + decodedFileName;
             InputStream inputStream = new FileInputStream(firstLocalFile);
 
             log.info("Start uploading first file " + firstRemoteFile);
@@ -174,7 +179,14 @@ class FileTransferHelper {
 
             // APPROACH #2: using InputStream retrieveFileStream(String)
             String decodedFileName = URLDecoder.decode(fileName, "UTF-8");
-            String remoteFile2 = "/AIMAPP/ATTACHTEST/${quoteID}/${fileName.replaceAll("\\s", "\\ ")}";
+
+            String remoteFile2
+            if (Environment.current == Environment.DEVELOPMENT) {
+                remoteFile2 = "/AIMAPP/ATTACHTEST/${quoteID}/${fileName.replaceAll("\\s", "\\ ")}";
+            }
+            else if (Environment.current == Environment.PRODUCTION) {
+                remoteFile2 = "/AIMAPP/ATTACH/${quoteID}/${fileName.replaceAll("\\s", "\\ ")}";
+            }
             log.info remoteFile2
             InputStream inputStream = ftpClient.retrieveFileStream(remoteFile2);
 

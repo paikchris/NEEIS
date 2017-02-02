@@ -1,5 +1,6 @@
 package portal.DAO
 
+import grails.util.Environment
 import groovy.json.JsonSlurper
 import groovy.sql.Sql
 import portal.DAO.Intelledox;
@@ -7,6 +8,9 @@ import portal.DAO.Intelledox;
 class AIMSQL {
     Intelledox asyncController = new Intelledox();
 
+    def timeZone = TimeZone.getTimeZone('PST')
+    def dateFormat = 'yyyy-MM-dd HH:mm:ss.SSS'
+    
     def stateAbbrevToNameMAP = [
             AL: "Alabama",
             AK: "Alaska",
@@ -223,7 +227,7 @@ class AIMSQL {
                    WorkPhone: 'NULL',
                    AcctExecID: "'${accountExec}'",
                    AcuityKey: 'NULL',
-                   DateAdded: "'${timestamp.format("MM/dd/yyyy hh:mm:ss a")}'",
+                   DateAdded: "'${timestamp}'",
                    VehicleCount: 'NULL',
                    BusinessStructureID: "'${businessStructureID[testjson.getAt("businessStructure")]}'",
                    NCCI: "'${testjson.getAt("NCCI")}'",
@@ -682,7 +686,7 @@ class AIMSQL {
                               Non_Premium: "'${webQuoteFee}'",
                               NonTax_Premium: "'${webQuoteFeeNoTax}'",
                               FlagFeeCalc:"'N'",
-                              Quoted:"'${timestamp.format('yyyyMMdd HH:mm:ss.SSS')}'",
+                              Quoted:"'${timestamp}'",
                               Limits:"'${limitsString}'",
                               Subject:"'${productMap['productSubject'].replaceAll("'","''")}'",
                               Endorsement: "'${productMap['productEndorse'].replaceAll("'","''")}'",
@@ -813,9 +817,9 @@ class AIMSQL {
                             ProducerID:"'TVD'",
                             NamedInsured:"'${testjson.getAt("namedInsured")replaceAll("'","''")}'",
                             UserID:"'web'",
-                            Received: "'${timestamp.format("yyyyMMdd HH:mm:ss.SSS")}'",
-                            Acknowledged: "'${timestamp.format("yyyyMMdd HH:mm:ss.SSS")}'",
-                            Quoted: "'${timestamp.format("yyyyMMdd HH:mm:ss.SSS")}'",
+                            Received: "'${timestamp}'",
+                            Acknowledged: "'${timestamp}'",
+                            Quoted: "'${timestamp}'",
                             TeamID:"'01'",
                             DivisionID:"'00'",
                             StatusID:"'QO'",
@@ -842,7 +846,7 @@ class AIMSQL {
                             LossHistory:"''",
                             LargeLossHistory:"''",
                             Exposures:"''",
-                            AIM_TransDate:"'${timestamp.format("yyyyMMdd HH:mm:ss.SSS")}'",
+                            AIM_TransDate:"'${timestamp}'",
                             AccountKey_FK:"'${insuredID}'",
                             SubmitTypeID:"'NEW'",
                             FlagRPG:"'N'",
@@ -856,8 +860,8 @@ class AIMSQL {
                             MailState:"''",
                             MailZip:"''",
                             Attention: "'${user.firstName} ${user.lastName}'",
-                            Quoted:"'${timestamp.format("yyyyMMdd HH:mm:ss.SSS")}'",
-                            Effective:"'${timestamp.format("yyyyMMdd HH:mm:ss.SSS")}'"
+                            Quoted:"'${timestamp}'",
+                            Effective:"'${timestamp}'"
             ]
             aimsql.execute "INSERT INTO dbo.Quote (QuoteID ,ProducerID ,NamedInsured ,UserID ,Received , Acknowledged, Quoted, TeamID ,DivisionID ,StatusID ,CreatedID ,\n" +
                     "                Renewal ,OpenItem ,VersionCounter ,InsuredID ,Description ,Address1 ,Address2 ,City ,State ,Zip ,AcctExec ,\n" +
@@ -891,7 +895,7 @@ class AIMSQL {
 //            }
 //
 //            def unitsAtRisk = [Description: "'EPKGTEST'",
-//                            DateAdded: "'${timestamp.format("yyyyMMdd HH:mm:ss.SSS")}'",
+//                            DateAdded: "'${timestamp}'",
 //                            RiskDetailKey_PK: "'${riskDetailKey}'",//NEW ONE
 //                            ActiveFlag: "'Y'",
 //                            InsuredKey_FK: "${map.InsuredKey_PK}", //Insured.InsuredKey_PK
@@ -919,7 +923,7 @@ class AIMSQL {
 //        exec dbo.AddTransaction  @ReferenceID='0620017',@UserID='web',@Description='New business submission recvd',
 //        @Date='2016-10-08 11:40:26:747',@StatusID='NBS',@ImageID=NULL,@TypeID=NULL,@QuoteVersion='A',@ToNameKey=0,
 //        @DocTemplateID=NULL,@AttachmentIcon=0,@SourceDateTime='1899-12-30 00:00:00:000'
-            aimsql.call("{call dbo.AddTransaction( '${quoteID}', 'web', 'New business submission recvd', '${timestamp.format('yyyy-MM-dd HH:mm:ss.SSS')}', 'NBS', NULL, NULL, 'A', " +
+            aimsql.call("{call dbo.AddTransaction( '${quoteID}', 'web', 'New business submission recvd', '${timestamp}', 'NBS', NULL, NULL, 'A', " +
                     "0, NULL, 0, '1899-12-30 00:00:00:000')}") { num ->
                 log.info "ADD TRANSACTION ID $num"
             }
@@ -927,7 +931,7 @@ class AIMSQL {
 
 //        exec dbo.AddTransaction  @ReferenceID='0620022',@UserID='web',@Description='Quote version A',@Date='2016-10-11 08:03:02:477',@StatusID='QPF',
 //        @ImageID=NULL,@TypeID='R',@QuoteVersion='A',@ToNameKey=0,@DocTemplateID=NULL,@AttachmentIcon=0,@SourceDateTime='1899-12-30 00:00:00:000'
-            aimsql.call("{call dbo.AddTransaction( '${quoteID}', 'web', 'Quote version A', '${timestamp.format('yyyy-MM-dd HH:mm:ss.SSS')}', 'QPF', NULL, 'R', 'A', " +
+            aimsql.call("{call dbo.AddTransaction( '${quoteID}', 'web', 'Quote version A', '${timestamp}', 'QPF', NULL, 'R', 'A', " +
                     "0, NULL, 0, '1899-12-30 00:00:00:000')}") { num ->
                 log.info "ADD TRANSACTION ID $num"
             }
@@ -936,7 +940,7 @@ class AIMSQL {
 //        exec dbo.spAddSuspense  @SuspenseID=@p1 output,@ReferenceID='0620022',@AlternateID='0620022',@ReasonID='SQR',@UserID='shauna',@SuspendedByID='web',
 //        @TypeID='F',@TeamID='01',@DateEntered='2016-10-11 00:00:00:000',@SuspenseDate='2016-10-17 00:00:00:000',@Comments=NULL
             aimsql.call("{call dbo.spAddSuspense( ${Sql.INTEGER}, '${quoteID}', '${quoteID}', 'SQR', 'shauna', 'web', 'F', '01', " +
-                    "'${timestamp.format('yyyy-MM-dd HH:mm:ss.SSS')}', '${timestamp.format('yyyy-MM-dd HH:mm:ss.SSS')}', NULL) }") { num ->
+                    "'${timestamp}', '${timestamp}', NULL) }") { num ->
                 log.info "ADD TRANSACTION ID $num"
             }
 
@@ -972,7 +976,7 @@ class AIMSQL {
         Sql aimsql = new Sql(dataSource_aim)
         def now = new Date()
         def timestamp = now.format(dateFormat, timeZone)
-        aimsql.call("{call dbo.AddTransaction( '${quoteID}', 'web', '${description}', '${timestamp.format('yyyy-MM-dd HH:mm:ss.SSS')}', '${statusCode}', NULL, '${typeID}'," +
+        aimsql.call("{call dbo.AddTransaction( '${quoteID}', 'web', '${description}', '${timestamp}', '${statusCode}', NULL, '${typeID}'," +
                 " '${quoteVersion}', 0, NULL, 0, '1899-12-30 00:00:00:000')}") { num ->
             log.info "ADD TRANSACTION ID $num"
         }
@@ -1018,20 +1022,27 @@ class AIMSQL {
         }
 
         /////////SAVE INSURED
+        String folder
+        if (Environment.current == Environment.DEVELOPMENT) {
+            folder = "ATTACHTEST";
+        }
+        else if (Environment.current == Environment.PRODUCTION) {
+            folder = "ATTACH";
+        }
         def map = [oleAttachKey_PK: "${oleAttachKey}",
                    ownerKey_FK: "'${referenceKey_FK}'",
                    fileName: "'${localFileName}'",
-                   dirPath: "'Z:\\ATTACH\\${quoteID}'",
+                   dirPath: "'Z:\\${folder}\\${quoteID}'",
                    description: "''",
                    fileTypeID: "'LOG'",
                    addedByID: "'web'",
-                   dateAdded: "'${timestamp.format('yyyyMMdd HH:mm:ss.SSS')}'",
+                   dateAdded: "'${timestamp}'",
                    modifiedByID: "NULL",
                    dateModified: "NULL",
                    allowChangeFlag: "'0'",
-                   OriginalFileNamePath: "'Z:\\ATTACH\\${quoteID}'",
+                   OriginalFileNamePath: "'Z:\\${folder}\\${quoteID}'",
                    EMailReferenceKey_FK: "NULL",
-                   UNCPath: "'\\aimsql\\aimapp\\ATTACH\\${quoteID}'",
+                   UNCPath: "'\\aimsql\\aimapp\\${folder}\\${quoteID}'",
                    FileSize: "NULL",
                    DateTimeStamp: "NULL",
                    Folder: "NULL",

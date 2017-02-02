@@ -9,6 +9,9 @@ class MainController {
     def dataSource_aim
     AIMSQL aimDAO = new AIMSQL();
 
+    def timeZone = TimeZone.getTimeZone('PST')
+    def dateFormat = 'yyyy-MM-dd HH:mm:ss.SSS'
+
     def checkUser() {
         println "CHECK USER"
         println params
@@ -20,6 +23,12 @@ class MainController {
     }
 
     def index() {
+
+
+        def todaysDateFormat = 'EEEE MMMM d, yyyy'
+        def now = new Date()
+        def todaysDate = now.format(todaysDateFormat, timeZone)
+
         //MESSAGES
         def groupedMessages = getGroupedMessages();
         def countUnread = 0;
@@ -87,7 +96,9 @@ class MainController {
             }
         }
 
-        [user: session.user, messageChains:groupedMessages, messagesUnreadCount: countUnread, submissions: submissions, submissionsQuoted: submissionsQuoted, submissionsUnderReview: submissionsUnderReview]
+        [user: session.user, messageChains:groupedMessages, messagesUnreadCount: countUnread,
+         submissions: submissions, submissionsQuoted: submissionsQuoted, submissionsUnderReview: submissionsUnderReview,
+        todaysDate: todaysDate]
     }
 
 

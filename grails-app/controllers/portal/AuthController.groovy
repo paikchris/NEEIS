@@ -9,6 +9,8 @@ class AuthController {
 
     def dataSource_aim
     AIMSQL aimDAO = new AIMSQL();
+    def timeZone = TimeZone.getTimeZone('PST')
+    def dateFormat = 'yyyy-MM-dd HH:mm:ss.SSS'
 
     def index() {
     }
@@ -70,6 +72,9 @@ class AuthController {
             session.user = u
             log.info(u)
 
+            def now = new Date()
+            def timestamp = now.format(dateFormat, timeZone)
+            
             Sql aimsql = new Sql(dataSource_aim)
 
             def userReferenceID = 0;
@@ -95,8 +100,8 @@ class AuthController {
                     "   NULL, NULL, NULL, NULL, NULL, NULL, \n" +
                     "   '', NULL, ${params.agencyPIN}, NULL, NULL, NULL, 'Y', \n" +
                     "   NULL, NULL, NULL, NULL, \n" +
-                    "   NULL, NULL, NULL, '${params.firstName}', 'jason', '${timestamp.format("yyyyMMdd hh:mm:ss")} 20161216 14:09:37.180', \n" +
-                    "   '${timestamp.format("yyyyMMdd hh:mm:ss")}', NULL, NULL, NULL, NULL, \n" +
+                    "   NULL, NULL, NULL, '${params.firstName}', 'jason', '${timestamp} 20161216 14:09:37.180', \n" +
+                    "   '${timestamp}', NULL, NULL, NULL, NULL, \n" +
                     "   NULL, NULL, NULL, 'N', \n" +
                     "   NULL, NULL)"
             //AIMSQL SEARCH RESULTS

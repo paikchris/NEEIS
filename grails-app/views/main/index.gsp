@@ -9,7 +9,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-xs-12">
-                    <h3 style=" color: rgba(0, 0, 0, 0.57);">Wednesday December 12, 2016</h3>
+                    <h3 style=" color: rgba(0, 0, 0, 0.57);">${todaysDate}</h3>
                     <g:if test="${user.userRole == "Broker"}">
                         <span>Broker View</span>
                     </g:if>

@@ -386,6 +386,8 @@ class AsyncController {
 //        }
 //    }
 
+    
+
     def ajaxAttach() {
         log.info("CHECKING AJAX ATTACH BUTTON")
         log.info(params);

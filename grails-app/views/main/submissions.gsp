@@ -27,7 +27,6 @@
         <g:elseif test="${user.userRole == "Underwriter"}">
             <span>Underwriter View</span>
         </g:elseif>
-        <span>${timestamp}</span>
         <div id="userRole" style="display:none">${user.userRole}</div>
         <div id="additionalInsuredListHidden" style="display:none">${additionalInsuredList}</div>
     </div>

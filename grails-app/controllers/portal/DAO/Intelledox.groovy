@@ -36,26 +36,50 @@ class Intelledox {
                     <int:Data><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <application>
 \t<basicInfo>
-\t\t<name>${jsonSerial.getAt("nameOfProductionCompany")}</name>
-\t\t<date>${jsonSerial.getAt("dateAdded").substring(1, jsonSerial.getAt("dateAdded").length()-1).split(" ")[0]}</date>
-\t\t<phone>${jsonSerial.getAt("phoneNumber")}</phone>
-\t\t<address>${jsonSerial.getAt("streetNameMailing")}</address>
-\t\t<addressState>${jsonSerial.getAt("cityMailing")}, ${jsonSerial.getAt("stateMailing")} ${jsonSerial.getAt("zipCodeMailing")}</addressState>
-\t\t<agent>${jsonSerial.getAt("brokerFirstName")} ${jsonSerial.getAt("brokerLastName")}</agent>
-\t\t<agentEmail>${jsonSerial.getAt("brokerEmail")}</agentEmail>
-\t\t<agentPhone>${jsonSerial.getAt("brokerPhoneNumber")}</agentPhone>
-\t\t<submission>${jsonSerial.getAt("quoteID").substring(1, jsonSerial.getAt("quoteID").length()-1)} </submission>
-\t\t<dateStart>${jsonSerial.getAt("proposedEffectiveDate")} - ${jsonSerial.getAt("proposedExpirationDate")} </dateStart>
-\t\t<annualOrShort>${jsonSerial.getAt("proposedTermLength")}</annualOrShort>
-\t\t<insuranceCompany>${jsonSerial.getAt("insuranceCompany")}</insuranceCompany>
-\t\t<primaryName>${jsonSerial.getAt("namedInsured")}</primaryName>
-\t\t<primaryPhone>${jsonSerial.getAt("phoneNumber")}</primaryPhone>
-\t\t<primaryFax>${jsonSerial.getAt("phoneNumber")}</primaryFax>
-\t\t<primaryEmail>${jsonSerial.getAt("namedInsuredEmail")}</primaryEmail>
-\t\t<physicalAddress>${jsonSerial.getAt("streetNameMailing")}, ${jsonSerial.getAt("cityMailing")}, ${jsonSerial.getAt("stateMailing")}, ${jsonSerial.getAt("zipCodeMailing")} </physicalAddress>
-\t\t<website> ${jsonSerial.getAt("website")}</website>
-\t\t<total> Total: </total>
-\t\t<totalCost>${jsonSerial.getAt("premiumAllLOBTotal")}</totalCost>
+\t\t<name> John Kim </name>
+\t\t<date> 11-6-2016 </date>
+\t\t<phone> (703)350-3365 </phone>
+\t\t<address> 1111 New Empire </address>
+\t\t<addressCity>Herndon</addressCity>
+\t\t<addressState> VA </addressState>
+\t\t<addressZip>20171</addressZip>
+\t\t<agent> Andee </agent>
+\t\t<agentLicenseNumber>111</agentLicenseNumber>
+\t\t<agentEmail> johnkimsinbox@gmail.com </agentEmail>
+\t\t<agentPhone>(703)350-3364 </agentPhone>
+\t\t<submission> 001 </submission>
+\t\t<dateStart> 11-08-2016 - 11-08-2017 </dateStart>
+\t\t<annualOrShort> Annual </annualOrShort>
+\t\t<insuranceCompany> INFOWARS </insuranceCompany>
+\t\t<insuranceLicenseNumber>222</insuranceLicenseNumber>
+\t\t<primaryName> Andee </primaryName>
+\t\t<primaryPhone> (123)456-7890 </primaryPhone>
+\t\t<primaryFax> (123)456-7891 </primaryFax>
+\t\t<primaryEmail> AndeeAbad@test.com </primaryEmail>
+\t\t<physicalAddress> 1112 New Empire Redondo Beach CA</physicalAddress>
+\t\t<website> www.Neesis.com</website>
+\t\t<total>Total:</total>
+\t\t<totalCost>\$</totalCost>
+\t\t<underwriter>Jason Debolt</underwriter>
+\t\t<underwriterPhone>7037778888</underwriterPhone>
+\t\t<underwriterFax>7037778888</underwriterFax>
+\t\t<underwriterEmail>test@test.com</underwriterEmail>
+\t\t<riskDescription>laundromat</riskDescription>
+\t\t<insuranceCoverage>EPK CPK</insuranceCoverage>
+\t\t<locationOfRiskAddress>12222</locationOfRiskAddress>
+\t\t<locationOfRiskCity>CA</locationOfRiskCity>
+\t\t<locationOfRiskZip>90277</locationOfRiskZip>
+\t\t<cbGDY>cb</cbGDY>
+\t\t<cbGDN>cb</cbGDN>
+\t\t<cbCAARPY>cb</cbCAARPY>
+\t\t<cbCAARPN>cb</cbCAARPN>
+\t\t<cbCAARPIneligibleY>cb</cbCAARPIneligibleY>
+\t\t<cbCAARPIneligibleN>cb</cbCAARPIneligibleN>
+\t\t<cbHealthY>cb</cbHealthY>
+\t\t<cbHealthN>cb</cbHealthN>
+\t\t<RiskPurchasingGroupName></RiskPurchasingGroupName>
+\t\t<RiskPurchasingGroupAddress></RiskPurchasingGroupAddress>
+\t\t<nameOtherAgent></nameOtherAgent>
 \t</basicInfo>
 \t
 \t""";
