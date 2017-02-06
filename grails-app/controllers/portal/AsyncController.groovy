@@ -2343,8 +2343,15 @@ class AsyncController {
 
     def saveSubmissionToAIM() {
         log.info "SAVING SUBMISSION TO AIMSQL"
+//        log.info params
+
+//        log.info JsonOutput.prettyPrint(params.uwQuestionsMap)
+        def uwQuestionsMap = new JsonSlurper().parseText(params.uwQuestionsMap)
+
+        log.info uwQuestionsMap
+//        log.info JsonOutput.prettyPrint(uwQuestionsMap)
+//        log.info params.uwQuestionsMap["Name Of Production Company"]
         log.info JsonOutput.prettyPrint(params.jsonSerial)
-        log.info params.jsonSerial.getClass();
         def jsonParams = new JsonSlurper().parseText(params.jsonSerial)
         def quoteID ="";
 
@@ -2360,7 +2367,7 @@ class AsyncController {
 
         //SAVE INSURED
         try {
-            def quoteIDCoverages = aimDAO.saveNewSubmission(params.jsonSerial, dataSource_aim, session.user, accountExec)
+            def quoteIDCoverages = aimDAO.saveNewSubmission(params.jsonSerial, dataSource_aim, session.user, accountExec, uwQuestionsMap)
             log.info "QuoteID: " + quoteIDCoverages
 //0620584;EPKG,0620585;CPK
             def submitGroupID = ""

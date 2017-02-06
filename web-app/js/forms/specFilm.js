@@ -14,6 +14,8 @@ var pipChoiceCastEssential = "";
 var riskHasCast = false;
 var riskHasWC = false;
 
+var uwQuestionsMap = {};
+
 $(document).ready(function () {
 
     var riskChosen = $("li.active").children("a.riskOptionLink").html().trim();
@@ -1967,6 +1969,9 @@ function buildReview() {
                     "</div>" +
                     "</div>";
                 reviewString = reviewString + "<br>";
+
+                //STORE IN UW QUESTIONS
+                uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
             }
             else if ($(this).is(':checkbox') && $(this).attr("data-reviewName")) {
                 // the input field is not a select
@@ -2004,14 +2009,17 @@ function buildReview() {
                     reviewString = reviewString + "</div>";
                     reviewString = reviewString + "<br>";
                     checkboxesReviewed = checkboxesReviewed + $(this).attr("data-reviewName") + ";";
+
+
+                    //STORE IN UW QUESTIONS
+                    uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
                 }
                 else {
 
                 }
+
             }
             else if ($(this).is(':radio') && $(this).attr("data-reviewName")) {
-
-
                 var answer = "";
                 if ($("input:radio[name='" + $(this).attr('name') + "']:checked").val().length > 0) {
                     answer = $("input:radio[name='" + $(this).attr('name') + "']:checked").val();
@@ -2029,10 +2037,11 @@ function buildReview() {
                     "</div>" +
                     "</div>";
                 reviewString = reviewString + "<br>";
+
+                //STORE IN UW QUESTIONS
+                uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
             }
             else if ($(this).attr("id") === "numberOfCastMembers") {
-
-
                 var answer = "";
                 $("#castMemberDetailContainer").find('.row').each(function(){
                     if ($(this).css("display") != "none") {
@@ -2057,6 +2066,9 @@ function buildReview() {
                     "</div>" +
                     "</div>";
                 reviewString = reviewString + "<br>";
+
+                //STORE IN UW QUESTIONS
+                uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
             }
             else {
                 var answer = "";
@@ -2076,6 +2088,9 @@ function buildReview() {
                     "</div>" +
                     "</div>";
                 reviewString = reviewString + "<br>";
+
+                //STORE IN UW QUESTIONS
+                uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
             }
 
 

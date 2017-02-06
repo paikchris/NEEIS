@@ -1116,6 +1116,7 @@ $(document).ready(function () {
 
                     var newSubmissionConfirmParam = "";
                     autoSaveFunction();
+                    console.log("UNDERWRITER QUESTIONS: " + uwQuestionsMap);
 
                     $.ajax({
                         method: "POST",
@@ -1126,6 +1127,7 @@ $(document).ready(function () {
                             namedInsured: $('#namedInsured').val(),
                             coverageCodes: coverageCodes,
                             questionAnswerMap: JSON.stringify(autoSaveMap),
+                            uwQuestionsMap: JSON.stringify(uwQuestionsMap),
                             jsonSerial: JSON.stringify(data)
                         }
                     })
@@ -1450,7 +1452,7 @@ function loadSaveFunction(loadMap){
         Object.keys(loadMap).forEach(function(key) {
 
             value = loadMap[key];
-            console.log("COOKIE VALUE = " + key + "-" + value);
+            //console.log("COOKIE VALUE = " + key + "-" + value);
             var domObject = $('#' + key);
             if ($(domObject).css("display") != "none") {
                 $(domObject).css('display', '');
@@ -1906,7 +1908,7 @@ function clearProductChoices(){
 }
 
 function formatMoney(value){
-    console.log("value=" + value);
+    //console.log("value=" + value);
     if(isNaN(parseFloat(value))){
         if(value.substring(0,1) ==="\$"){
             value = value.replace("$","");

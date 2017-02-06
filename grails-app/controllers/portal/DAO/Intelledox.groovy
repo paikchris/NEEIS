@@ -14,7 +14,7 @@ import portal.Utils.FileTransferHelper;
 class Intelledox {
 
 
-    def createIndicationPDF(jsonSerial, dataSource_aim){
+    def createIndicationPDF(jsonSerial, uwQuestionsMap, dataSource_aim){
         log.info "INTELLEDOX"
         log.info "JSON ==== " + jsonSerial
 
@@ -312,19 +312,19 @@ soapXML = soapXML + """
 \t\t</principal>
 \t</keyPersonnel>
 \t<notesAddTable>
-\t\t<notesAddHeader>Header</notesAddHeader>
-\t\t<notesAddRow>
-\t\t\t<notes>
-\t\t\t\tNotes
+\t\t<notesAddHeader>Underwriting Info</notesAddHeader>
+\t\t<notesAddRow>"""
+
+        uwQuestionsMap.each { question, answer ->
+//            println "${animal} has the sound ${animalSound}"
+            soapXML = soapXML + """
+\t\t\t<notes notesQuestion="${XmlUtil.escapeXml(question)}">
+\t\t\t\t<notesAnswer>${XmlUtil.escapeXml(answer)}</notesAnswer>
 \t\t\t</notes>
-\t\t</notesAddRow>
-\t</notesAddTable>
-\t<notesAddTable>
-\t\t<notesAddHeader>Header</notesAddHeader>
-\t\t<notesAddRow>
-\t\t\t<notes>
-\t\t\t\tNotes
-\t\t\t</notes>
+
+            """
+        };
+        soapXML = soapXML + """
 \t\t</notesAddRow>
 \t</notesAddTable>
 </application>]]></int:Data>

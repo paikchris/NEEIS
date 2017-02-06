@@ -89,7 +89,7 @@ class AIMSQL {
 
     }
 
-    def saveNewSubmission(policyFormJSON, dataSource_aim, user, underwriter){
+    def saveNewSubmission(policyFormJSON, dataSource_aim, user, underwriter, uwQuestionsMap){
         log.info "AIMDAO SAVE"
         log.info user.email
         def testjson = new JsonSlurper().parseText(policyFormJSON)
@@ -973,7 +973,7 @@ class AIMSQL {
         testjson['allQuoteIDs'] = allQuoteIDs;
         log.info("BEFORE SENDING TO INTELLEDOX = "+  testjson['allQuoteIDs'])
 
-        asyncController.createIndicationPDF(testjson, dataSource_aim)
+        asyncController.createIndicationPDF(testjson, uwQuestionsMap,dataSource_aim)
 
         return allQuoteIDs
     }
