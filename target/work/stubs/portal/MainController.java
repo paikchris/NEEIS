@@ -29,8 +29,6 @@ public  java.lang.Object getDateFormat() { return null;}
 public  void setDateFormat(java.lang.Object value) { }
 public  java.lang.Object getDownloadPDF() { return null;}
 public  void setDownloadPDF(java.lang.Object value) { }
-public  java.lang.Object getDownloadCert() { return null;}
-public  void setDownloadCert(java.lang.Object value) { }
 public  java.lang.Object checkUser() { return null;}
 public  java.lang.Object index() { return null;}
 public  java.lang.Object newSubmission() { return null;}

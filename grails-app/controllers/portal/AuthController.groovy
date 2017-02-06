@@ -74,7 +74,7 @@ class AuthController {
 
             def now = new Date()
             def timestamp = now.format(dateFormat, timeZone)
-            
+
             Sql aimsql = new Sql(dataSource_aim)
 
             def userReferenceID = 0;

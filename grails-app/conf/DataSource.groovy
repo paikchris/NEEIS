@@ -38,6 +38,17 @@ environments {
             driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
             username = "web"
             password = "jakePoos521"
+            properties {
+                maxActive = -1
+                minEvictableIdleTimeMillis=1000 * 60 * 30
+                timeBetweenEvictionRunsMillis=1000 * 60 * 30
+                numTestsPerEvictionRun=3
+                testOnBorrow=true
+                testWhileIdle=true
+                testOnReturn=true
+                validationQuery="SELECT 1"
+                jdbcInterceptors="ConnectionState;StatementCache(max=200)"
+            }
         }
     }
     test {
@@ -62,13 +73,24 @@ environments {
             }
 
         }
-
+œ
         dataSource_aim{
             dbCreate = "update"
-            url = "jdbc:sqlserver://74.100.162.203:1433;databaseName=CIS"
+            url = "jdbc:sqlserver://74.100.162.203:1433;databaseName=Training"
             driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
             username = "web"
             password = "jakePoos521"
+            properties {
+                maxActive = -1
+                minEvictableIdleTimeMillis=1000 * 60 * 30
+                timeBetweenEvictionRunsMillis=1000 * 60 * 30
+                numTestsPerEvictionRun=3
+                testOnBorrow=true
+                testWhileIdle=true
+                testOnReturn=false
+                validationQuery="SELECT 1"
+                jdbcInterceptors="ConnectionState;StatementCache(max=200)"
+            }
         }
     }
 }

@@ -1101,6 +1101,13 @@ $(document).ready(function () {
                 //});
 
 
+                /////////////////////////////////john edit
+
+
+
+                ///////////////////////////////
+
+
                 if(validSubmission){
                     $('#progressBarHeader').html("Please wait, your submission is being processed.")
                     $('.progress-bar').attr('aria-valuenow', "75").animate({
@@ -1899,6 +1906,7 @@ function clearProductChoices(){
 }
 
 function formatMoney(value){
+    console.log("value=" + value);
     if(isNaN(parseFloat(value))){
         if(value.substring(0,1) ==="\$"){
             value = value.replace("$","");

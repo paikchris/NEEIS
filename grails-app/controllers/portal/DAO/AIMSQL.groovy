@@ -288,7 +288,10 @@ class AIMSQL {
                 "$map.UserDefinedDate1, $map.UserDefinedValue1, $map.CountryID, $map.ParentInsuredName)"
 
         def referenceID = 0;
+        def submitGroupID;
+        def productIndex = 0;
         testjson.getAt("productID").split(";").each{
+            productIndex = productIndex + 1;
             log.info it
             aimsql.call("{call dbo.GetKeyField(${Sql.INTEGER}, 'ReferenceID')}") { num ->
                 log.info "ReferenceID $num"
@@ -297,9 +300,13 @@ class AIMSQL {
 
 
 
+
             aimsql.call("{call dbo.GetSubmitNumber(${Sql.VARCHAR})}") { num ->
                 log.info "Quote ID $num"
                 quoteID = num
+            }
+            if(productIndex == 1){
+                submitGroupID = quoteID
             }
 
             def productMap = [:]
@@ -350,7 +357,7 @@ class AIMSQL {
                 }
             }
             log.info "Test ID === " + productID
-
+//
             aimsql.eachRow("SELECT Limits, Deduct, Subject, Endorse, LobDistrib, ActiveFlag, CompanyID, GrossComm, AgentComm, Rate " +
                     "FROM Product " +
                     "WHERE (ProductID = '" + productID + "') ") {
@@ -837,7 +844,7 @@ class AIMSQL {
                             AcctExec:"'${accountExec}'",
                             CsrID:"'web'",
                             ReferenceID: "'${referenceID}'",
-                            SubmitGrpID:"'${quoteID}'",
+                            SubmitGrpID:"'${submitGroupID}'",
                             TaxState:"'${taxState}'",
                             CoverageID:"'${coverageID}'",
                             SuspenseFlag:"'N'",
@@ -848,6 +855,7 @@ class AIMSQL {
                             Exposures:"''",
                             AIM_TransDate:"'${timestamp}'",
                             AccountKey_FK:"'${insuredID}'",
+                            CompanyID:"'${productMap['productCompanyID'].replaceAll("'","''")}'",
                             SubmitTypeID:"'NEW'",
                             FlagRPG:"'N'",
                             CountryID:"''",
@@ -866,12 +874,12 @@ class AIMSQL {
             aimsql.execute "INSERT INTO dbo.Quote (QuoteID ,ProducerID ,NamedInsured ,UserID ,Received , Acknowledged, Quoted, TeamID ,DivisionID ,StatusID ,CreatedID ,\n" +
                     "                Renewal ,OpenItem ,VersionCounter ,InsuredID ,Description ,Address1 ,Address2 ,City ,State ,Zip ,AcctExec ,\n" +
                     "                CsrID ,ReferenceID ,SubmitGrpID ,TaxState ,CoverageID ,SuspenseFlag ,ClaimsFlag ,ActivePolicyFlag ,LossHistory ,\n" +
-                    "                LargeLossHistory ,Exposures ,AIM_TransDate ,AccountKey_FK ,SubmitTypeID ,FlagRPG ,CountryID ,FlagTaxExempt ,\n" +
+                    "                LargeLossHistory ,Exposures ,AIM_TransDate ,AccountKey_FK ,CompanyID ,SubmitTypeID ,FlagRPG ,CountryID ,FlagTaxExempt ,\n" +
                     "                FlagNonResidentAgt ,DBAName ,MailAddress1 ,MailAddress2 ,MailCity ,MailState ,MailZip, Attention ) values " +
                     "($quotemap.QuoteID ,$quotemap.ProducerID ,$quotemap.NamedInsured ,$quotemap.UserID ,$quotemap.Received ,$quotemap.Acknowledged ,$quotemap.Quoted,$quotemap.TeamID ,$quotemap.DivisionID ,$quotemap.StatusID ,$quotemap.CreatedID ," +
                     "$quotemap.Renewal ,$quotemap.OpenItem ,$quotemap.VersionCounter ,$quotemap.InsuredID ,$quotemap.Description ,$quotemap.Address1 ,$quotemap.Address2 ,$quotemap.City ,$quotemap.State ,$quotemap.Zip ,$quotemap.AcctExec ," +
                     "$quotemap.CsrID ,$quotemap.ReferenceID ,$quotemap.SubmitGrpID ,$quotemap.TaxState ,$quotemap.CoverageID ,$quotemap.SuspenseFlag ,$quotemap.ClaimsFlag ,$quotemap.ActivePolicyFlag ,$quotemap.LossHistory ," +
-                    "$quotemap.LargeLossHistory ,$quotemap.Exposures ,$quotemap.AIM_TransDate ,$quotemap.AccountKey_FK ,$quotemap.SubmitTypeID ,$quotemap.FlagRPG ,$quotemap.CountryID ,$quotemap.FlagTaxExempt ," +
+                    "$quotemap.LargeLossHistory ,$quotemap.Exposures ,$quotemap.AIM_TransDate ,$quotemap.AccountKey_FK ,$quotemap.CompanyID ,$quotemap.SubmitTypeID ,$quotemap.FlagRPG ,$quotemap.CountryID ,$quotemap.FlagTaxExempt ," +
                     "$quotemap.FlagNonResidentAgt ,$quotemap.DBAName ,$quotemap.MailAddress1 ,$quotemap.MailAddress2 ,$quotemap.MailCity ,$quotemap.MailState ,$quotemap.MailZip, $quotemap.Attention )"
 
 //            declare @p1 int
@@ -1074,7 +1082,7 @@ class AIMSQL {
     }
 
     def getAttachmentsList(quoteID, dataSource_aim){
-        log.info("FTP FILE TO AIM")
+        log.info("GET ATTACHMENTS LIST")
 
 
         Sql aimsql = new Sql(dataSource_aim)

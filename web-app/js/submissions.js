@@ -79,8 +79,8 @@ $(document).ready(function () {
             if(userRole === "Broker" ){
                 //alert(statusCode);
                 htmlString = htmlString + "<tr class='submissionQuickOptions' style='background: rgba(132, 204, 210, 0.21);'>" +
-                        "<td class='QOaimQuoteID'>" + aimQuoteID +  "</td>" +
-                        "<td class='QOstatusCode'>" + statusCode +  "</td>" +
+                        "<td class='QOaimQuoteID' style='display:none'>" + aimQuoteID +  "</td>" +
+                        "<td class='QOstatusCode' style='display:none'>" + statusCode +  "</td>" +
                     "<td colspan='8'>" +
                     "<div class='col-xs-6'>" +
 
@@ -278,22 +278,80 @@ $(document).ready(function () {
     });
     $(document).on('click', '#createCertButton', function () {
         var certQuoteID = $('#certificateQuoteID').html();
-        window.location='/portal/main/downloadCert?quoteID='+certQuoteID;
+        var certRemarks = encodeURI($('#operationTextArea').val());
+        var encodedCertRemarks = $('<div/>').text(certRemarks).html();
 
-        //$.ajax({
-        //    method: "POST",
-        //    url: "/portal/Async/downloadCert",
-        //    data: {submissionID: "test",
-        //        quoteID: certQuoteID
-        //    }
-        //})
-        //    .done(function (msg) {
-        //        //alert(msg);
-        //        //$('#some_id').click(function() {
-        //        //
-        //        //});
-        //        //
-        //    });
+        var certHolder = encodeURI($('#AITextArea').val());
+        var encodedCertHolder = encodeURI($('<div/>').text(certHolder).html());
+
+        console.log(certHolder);
+        $('.progress-bar').attr('aria-valuenow', "0")
+        $('#progressBarHeader_cert').html("Downloading");
+        $('#progressBarModal_cert').modal('show');
+        window.location='/portal/async/downloadCert?quoteID='+certQuoteID +"&r=" + certRemarks + "&h=" + certHolder ;
+        //$('#progressBarHeader').css('z-index', 3000);
+
+
+        $('.progress-bar').attr('aria-valuenow', "75").animate({
+            width: "100%"
+        }, 2000, function() {
+            $('#progressBarModal_cert').modal('hide');
+            $('#progressBarModal_cert').on('hidden.bs.modal', function (e) {
+                if($('#certsModal').is(':visible')){
+                    console.log('finished animating');
+                    $("body").addClass("modal-open");
+                }
+            });
+        });
+
+
+
+//alert();
+//        $.ajax({
+//            method: "POST",
+//            url: "/portal/Async/downloadCert?quoteID=" +certQuoteID,
+//            data: {submissionID: "test"
+//                //quoteID: certQuoteID
+//            }
+//        })
+//            .done(function (msg) {
+//                console.log(msg);
+//                var htmlString =
+//                    "<a href='/portal/async/ajaxDownloadAttachment?q=0622997&amp;f=testCert.pdf'>" +
+//                        "<button class='btn btn-primary col-xs-2' style='margin-right:20px; margin-left:15px;'>" +
+//                            "Download" +
+//                        "</button>" +
+//                    "</a>"
+//                //var byte = base64ToArrayBuffer(msg);
+//                var byte = msg;
+//                var name = "name.pdf";
+//
+//                var blob = new Blob([byte]);
+//                var link = document.createElement('a');
+//                link.href = window.URL.createObjectURL(blob);
+//                var timeNow = new Date();
+//                var month = timeNow.getMonth() + 1;
+//                var fileName = name + ".pdf";
+//                link.download = fileName;
+//                link.click();
+//                //$('#some_id').click(function() {
+//                //
+//                //});
+//                //
+//            });
+    });
+
+    function saveByteArray(reportName, byte) {
+
+    };
+
+    $(document).on('change', '#userDefined', function () {
+        if ($(this).is(":checked")) {
+
+        }
+        else{
+
+        }
     });
 
     $(document).on('change', '#additionalInsuredList', function () {
@@ -434,4 +492,15 @@ function changeSubmissionStatus(submissionID, statusCode){
         .done(function (msg) {
             //alert(msg);
         });
+}
+
+function base64ToArrayBuffer(base64) {
+    var binaryString = window.atob(base64);
+    var binaryLen = binaryString.length;
+    var bytes = new Uint8Array(binaryLen);
+    for (var i = 0; i < binaryLen; i++) {
+        var ascii = binaryString.charCodeAt(i);
+        bytes[i] = ascii;
+    }
+    return bytes;
 }

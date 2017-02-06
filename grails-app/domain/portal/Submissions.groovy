@@ -11,6 +11,7 @@ class Submissions {
     String underwriter
     String seenByUW
     String questionAnswerMap
+    String submitGroupID
 
 
 
@@ -22,5 +23,6 @@ class Submissions {
         seenByUW(nullable: true)
         questionAnswerMap(nullable: true)
         questionAnswerMap(maxSize: 6000)
+        submitGroupID(nullable: true)
     }
 }

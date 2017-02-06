@@ -1615,7 +1615,7 @@ function ratePremiums(thisObj){
                                 "</div>" +
                                 "<div class='col-xs-2 limitColumn'>";
                         }
-                        if(key === "INC:Non-Owned Auto Physical Damage"){
+                        else if(key === "INC:Non-Owned Auto Physical Damage"){
                             limitDeductibleString = limitDeductibleString + "<span>" + key.split(":")[1] + "</span>" +
                                 "</div>" +
                                 "<div class='col-xs-2 limitColumn' style='line-height: 1.3'>";

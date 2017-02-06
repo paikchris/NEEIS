@@ -30,6 +30,8 @@ public  java.lang.String getUserRole() { return (java.lang.String)null;}
 public  void setUserRole(java.lang.String value) { }
 public  java.lang.String getPhoneNumber() { return (java.lang.String)null;}
 public  void setPhoneNumber(java.lang.String value) { }
+public  java.lang.String getDefaultUnderwriter() { return (java.lang.String)null;}
+public  void setDefaultUnderwriter(java.lang.String value) { }
 public static  java.lang.Object getConstraints() { return null;}
 public static  void setConstraints(java.lang.Object value) { }
 public  java.lang.String toString() { return (java.lang.String)null;}

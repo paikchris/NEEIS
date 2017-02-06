@@ -309,7 +309,7 @@
 				%{--<g:link controller="Async" action="ajaxDownloadAttachment" >--}%
 					%{--<button>Test</button>--}%
 				%{--</g:link>--}%
-				<button type="button" class="btn btn-primary">Done</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" aria-label="Close">Done</button>
 			</div>
 		</div><!-- /.modal-content -->
 	</div><!-- /.modal-dialog -->

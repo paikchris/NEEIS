@@ -351,7 +351,7 @@ class MainController {
         log.info ("MY SUBMISSION")
         log.info (params)
         Sql aimsql = new Sql(dataSource_aim)
-        def submissions;
+        def submissions = [];
         log.info(session.user.email)
         log.info(session.user.userRole)
 
@@ -372,7 +372,32 @@ class MainController {
             }
         }
         else if(session.user.userRole == "Underwriter"){
-            submissions = Submissions.findAllByUnderwriterOrSubmittedBy(session.user.email,session.user.email,[sort: "submitDate",order: "desc"])
+//            submissions = Submissions.findAllByUnderwriterOrSubmittedBy(session.user.email,session.user.email,[sort: "submitDate",order: "desc"])
+//            submissions = Submissions.findAll([sort: "submitDate",order: "desc"])
+//            String aimQuoteID
+//            String submittedBy
+//            String namedInsured
+//            String submitDate
+//            String coverages
+//            String statusCode
+//            String underwriter
+//            String seenByUW
+//            String questionAnswerMap
+//            String submitGroupID
+
+            def submissionObj=[:];
+            aimsql.eachRow( "SELECT Top 100 * FROM Quote ORDER BY Received DESC") {
+                submissionObj = [aimQuoteID: it.QuoteID,
+                                     submittedBy: it.Attention,
+                                     namedInsured: it.NamedInsured,
+                                     submitDate: it.Received,
+                                     coverages: it.CoverageID,
+                                     statusCode: it.StatusID,
+                                     underwriter: it.AcctExec,
+                                     seenByUW: "N",
+                                     submitGroupID: it.SubmitGrpID ]
+                submissions.add(submissionObj)
+            }
             log.info(submissions)
             submissions.each{
 
@@ -759,18 +784,22 @@ class MainController {
             else render "Error!" // appropriate error handling
         }
 
-    def downloadCert = {
-//        def sub = Submissions.get(params.id)
-        def webrootDir = servletContext.getRealPath("/attachments/")
-        def file = new File(webrootDir, "testcert.pdf")
-        if (file.exists())
-        {
-            response.setContentType("application/octet-stream") // or or image/JPEG or text/xml or whatever type the file is
-            response.setHeader("Content-disposition", "attachment;filename=\"${file.name}\"")
-            response.outputStream << file.bytes
-        }
-        else render "Error!" // appropriate error handling
-    }
+//    def downloadCert = {
+//        log.info "DOWNLOAD CERT"
+//        log.info params
+//        log.info params
+//
+////        def sub = Submissions.get(params.id)
+//        def webrootDir = servletContext.getRealPath("/attachments/")
+//        def file = new File(webrootDir, "testcert.pdf")
+//        if (file.exists())
+//        {
+//            response.setContentType("application/octet-stream") // or or image/JPEG or text/xml or whatever type the file is
+//            response.setHeader("Content-disposition", "attachment;filename=\"${file.name}\"")
+//            response.outputStream << file.bytes
+//        }
+//        else render "Error!" // appropriate error handling
+//    }
 
     def getGroupedMessages(){
         def messages;

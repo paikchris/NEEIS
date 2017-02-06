@@ -8,6 +8,7 @@ import wslite.soap.*
 import wslite.http.auth.*
 import org.apache.commons.net.ftp.FTPClient
 import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.io.FilenameUtils;
 import sun.misc.BASE64Decoder;
 import portal.DAO.AIMSQL;
 import grails.util.Environment
@@ -89,17 +90,19 @@ class FileTransferHelper {
 
             ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 
-            String remoteFilePath
+            String remoteFolderPath
+            String remoteFileFullPath
             if (Environment.current == Environment.DEVELOPMENT) {
-                remoteFilePath = "/AIMAPP/ATTACHTEST/${quoteID}/";
+                remoteFolderPath = "/AIMAPP/ATTACHTEST/${quoteID}/";
+
             }
             else if (Environment.current == Environment.PRODUCTION) {
-                remoteFilePath = "/AIMAPP/ATTACH/${quoteID}/";
+                remoteFolderPath = "/AIMAPP/ATTACH/${quoteID}/";
             }
-
+            remoteFileFullPath = remoteFolderPath + decodedFileName;
 
             // Creates a directory
-            String dirToCreate = remoteFilePath;
+            String dirToCreate = remoteFolderPath;
             boolean success = ftpClient.makeDirectory(dirToCreate);
 //            showServerReply(ftpClient);
             if (success) {
@@ -108,18 +111,74 @@ class FileTransferHelper {
                 log.info("Did not create directory.");
             }
 
-            String firstRemoteFile
-            if (Environment.current == Environment.DEVELOPMENT) {
-                firstRemoteFile = "/AIMAPP/ATTACHTEST/${quoteID}/" + decodedFileName;
+//          CHECK IF FILE EXISTS
+            boolean fileExists = true;
+            def fileCounter = 0;
+            def returnCode
+            while(fileExists) {
+                log.info("TRYING FILE PATH: " + remoteFileFullPath)
+                String tempString = remoteFolderPath
+                def filesInFolder = ftpClient.listNames(remoteFolderPath).toList();
+                log.info remoteFileFullPath
+                log.info filesInFolder
+                log.info filesInFolder.contains(remoteFileFullPath)
+                if(filesInFolder.contains(remoteFileFullPath)){
+                    fileExists = true;
+                    def baseName = FilenameUtils.getBaseName(decodedFileName)
+                    def extension = FilenameUtils.getExtension(decodedFileName)
+                    def fileNameSplit = baseName.split("-");
+                    log.info("SPLIT: " + fileNameSplit)
+                    def incrementString = fileNameSplit[fileNameSplit.length-1];
+                    log.info("Increment: " + incrementString)
+                    def incrementNumber
+                    if(incrementString.isInteger()){
+                        incrementNumber = (incrementString as int) + 1
+                        fileNameSplit[fileNameSplit.length-1] = incrementNumber
+                        decodedFileName = fileNameSplit.join("-") + "." + extension;
+
+                    }
+                    else{
+                        incrementNumber = 1
+                        decodedFileName = baseName + "-" + incrementNumber + "." + extension;
+                    }
+
+
+                    fileExists = true;
+                    remoteFileFullPath = remoteFolderPath + decodedFileName;
+                    log.info ("NEW FILE PATH: " + remoteFileFullPath)
+                }
+                else{
+                    fileExists = false;
+
+                }
+
+
+
+//                InputStream inputStreamFileExists = ftpClient.retrieveFileStream(remoteFileFullPath);
+//                returnCode = ftpClient.getReplyCode();
+//                log.info ("RETURN CODE = " + returnCode)
+//                if (inputStreamFileExists == null || returnCode == 550) {
+//                    fileExists = false;
+//                    ftpClient.completePendingCommand();
+////                    if(returnCode == 550){
+////                        inputStreamFileExists.close();
+////                    }
+////
+//                }
+//                else{
+//                    fileCounter++;
+//
+//                    inputStreamFileExists.close();
+//                }
+
             }
-            else if (Environment.current == Environment.PRODUCTION) {
-                firstRemoteFile = "/AIMAPP/ATTACH/${quoteID}/" + decodedFileName;
-            }
+
+
 
             InputStream inputStream = new FileInputStream(firstLocalFile);
 
-            log.info("Start uploading first file " + firstRemoteFile);
-            done = ftpClient.storeFile(firstRemoteFile, inputStream);
+            log.info("Start uploading first file " + remoteFileFullPath);
+            done = ftpClient.storeFile(remoteFileFullPath, inputStream);
             inputStream.close();
 
 
@@ -128,10 +187,11 @@ class FileTransferHelper {
             }
 
 
-        } catch (Exception ex) {
-            log.info("Error: " + ex.getMessage());
-            ex.printStackTrace();
-            throw new IllegalStateException(ex.getMessage());
+        } catch (Exception e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
 
         } finally {
                 if (ftpClient.isConnected()) {
@@ -144,9 +204,11 @@ class FileTransferHelper {
 
         }
 
-        log.info "Upload Completed"
+        log.info "Upload Completed: " + decodedFileName
 
         aimHelper.logFileUpload(decodedFileName, localFolderPath, quoteID, dataSource_aim);
+        log.info "Activity Logged: " + decodedFileName
+        return decodedFileName
     }
 
     def getAIMAttachment(quoteID, fileName){

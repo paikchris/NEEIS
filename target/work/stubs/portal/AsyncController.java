@@ -30,10 +30,12 @@ public  java.lang.Object getTimeZone() { return null;}
 public  void setTimeZone(java.lang.Object value) { }
 public  java.lang.Object getDateFormat() { return null;}
 public  void setDateFormat(java.lang.Object value) { }
+public  java.lang.Object getDateSimple() { return null;}
+public  void setDateSimple(java.lang.Object value) { }
 public  java.lang.Object getAjaxDownloadAttachment() { return null;}
 public  void setAjaxDownloadAttachment(java.lang.Object value) { }
-public  java.lang.Object getAjaxDownloadCert() { return null;}
-public  void setAjaxDownloadCert(java.lang.Object value) { }
+public  java.lang.Object getDownloadCert() { return null;}
+public  void setDownloadCert(java.lang.Object value) { }
 public  java.lang.Object getProductsForCoverage() { return null;}
 public  java.lang.Object getLimitsDeductibles() { return null;}
 public  java.lang.Object getAvailableCoveragesForRiskType() { return null;}
@@ -50,6 +52,5 @@ public  java.lang.Object getQuestionsForRiskType() { return null;}
 public  java.lang.Object sendMessage() { return null;}
 public  java.lang.Object markMessagesRead() { return null;}
 public  java.lang.Object changeSubmissionStatus() { return null;}
-public  java.lang.Object getCert() { return null;}
 public  java.lang.Object saveSubmissionDraft() { return null;}
 }

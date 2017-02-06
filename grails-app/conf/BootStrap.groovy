@@ -1,7 +1,23 @@
+import org.codehaus.groovy.grails.commons.ApplicationAttributes
 class BootStrap {
+//        def grailsApplication
 
     def init = { servletContext ->
-        new portal.QuestionCategory(
+//
+//            def ctx=servletContext.getAttribute(
+//                    ApplicationAttributes.APPLICATION_CONTEXT)
+//            def dataSource = ctx.dataSource
+//            dataSource.setMinEvictableIdleTimeMillis(1000 * 60 * 30)
+//            dataSource.setTimeBetweenEvictionRunsMillis(1000 * 60 * 30)
+//            dataSource.setNumTestsPerEvictionRun(3)
+//
+//            dataSource.setTestOnBorrow(true)
+//            dataSource.setTestWhileIdle(false)
+//            dataSource.setTestOnReturn(false)
+//            dataSource.setValidationQuery("SELECT 1")
+//            dataSource.properties.each { log.info it }
+
+            new portal.QuestionCategory(
                 categoryName: "Insured Info",
                 weight: 1
                 ).save();

@@ -107,9 +107,10 @@
                                     <td class="coveragesTD">${s.coverages}</td>
                                     <td  class="submittedByTD">${s.submittedBy}</td>
                                     <td  class="submitDateTD">${s.submitDate}</td>
-                                    <td class="submissionStatusTD"><g:if test="${s.statusCode == "NBR"}">
+                                    <td class="submissionStatusTD">
+                                        <g:if test="${s.statusCode == "NBR"}">
                                         New Submission Received
-                                    </g:if>
+                                        </g:if>
                                         <g:elseif test="${s.statusCode == "QO"}">
                                             Quoted
                                         </g:elseif>
@@ -124,16 +125,22 @@
                                         </g:elseif>
                                         <g:elseif test="${s.statusCode == "BIF"}">
                                             Bound
-                                        </g:elseif></td>
-
-
-                                    <td class="underwriterTD"><g:if test="${user.userRole == "Broker"}">
-                                        ${s.underwriter}
-                                    </g:if>
-                                    <g:elseif test="${user.userRole == "Underwriter"}">
-                                        ${s.underwriter}
-                                    </g:elseif>
+                                        </g:elseif>
+                                        <g:else>
+                                            ${s.statusCode}
+                                        </g:else>
                                     </td>
+
+
+                                    <td class="underwriterTD">
+                                        <g:if test="${user.userRole == "Broker"}">
+                                            ${s.underwriter}
+                                        </g:if>
+                                        <g:elseif test="${user.userRole == "Underwriter"}">
+                                            ${s.underwriter}
+                                        </g:elseif>
+                                    </td>
+
                                     <td><a class="attachmentsLink">Attachments</a></td>
 
                                     %{--HIDDEN TDS--}%
@@ -166,8 +173,6 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-xs-12">
-
-
                         <div class="panel panel-primary">
                             <div class="panel-heading">
                                 <h3 class="panel-title" style="font-size: 20px;">Additional Insureds List</h3>
@@ -282,8 +287,7 @@
                                             </div>
                                         </div>
                                         <div class="form-group col-xs-12">
-                                            <textarea class="form-control" rows="5" id="AITextArea">The certificate holder is named as an Additional Insured but solely as respects to claims arising out of negligence of the Named Insured and is Loss Payee for rented property as their interests may appear.
-                                            </textarea>
+                                            <textarea class="form-control" rows="5" id="AITextArea"></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -322,8 +326,24 @@
             </div>
             <div class="modal-footer">
 
-                <button type="button" class="btn btn-primary">Done</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" aria-label="Close">Done</button>
                 <button class="btn btn-primary" id="createCertButton" type="button" value="Upload" >Create Certificate</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" tabindex="-1" role="dialog" id="progressBarModal_cert" style="pointer-events: none;">
+    <div class="modal-dialog" role="document" style="margin-top:200px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="progressBarHeader_cert">Please wait, your submission is being processed.</h4>
+            </div>
+            <div class="modal-body">
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+                        <span class="sr-only">60% Complete</span>
+                    </div>
+                </div>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->

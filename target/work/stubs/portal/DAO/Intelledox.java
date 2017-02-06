@@ -21,5 +21,5 @@ public  java.lang.Object getProperty(java.lang.String property) { return null;}
 public  void setProperty(java.lang.String property, java.lang.Object value) { }
 public  java.lang.Object createIndicationPDF(java.lang.Object jsonSerial, java.lang.Object dataSource_aim) { return null;}
 public  java.lang.Object createCertificatePDF() { return null;}
-public  java.lang.Object getCertificateBytes(java.lang.Object params) { return null;}
+public  java.lang.Object createCertPDF(java.lang.Object params, java.lang.Object dataSource_aim) { return null;}
 }
