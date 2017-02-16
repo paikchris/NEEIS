@@ -3,6 +3,7 @@
 	<head>
         <meta name="layout" content="main">
         <link rel="stylesheet" href="${resource(dir: 'css', file: 'dashboard.css')}" type="text/css">
+        <script src="${resource(dir: 'js', file: 'dashboard.js')}"></script>
 	</head>
 	<body>
     <div id="thisUserIs" style="display:none">${user.email}</div>
@@ -249,8 +250,7 @@
 
 
         </div>
-
-            <script src="${resource(dir: 'js', file: 'dashboard.js')}"></script>
+        </div>
 	</body>
 
 </html>

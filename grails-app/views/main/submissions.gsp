@@ -9,6 +9,10 @@
             margin-left: 10px;
             margin-right: 10px;
         }
+
+        .statusChangeButton:disabled{
+            cursor:default;
+        }
     </style>
 </head>
 
@@ -29,6 +33,7 @@
         </g:elseif>
         <div id="userRole" style="display:none">${user.userRole}</div>
         <div id="additionalInsuredListHidden" style="display:none">${additionalInsuredList}</div>
+        <div id="neeisUWListHidden" style="display:none">${neeisUWList}</div>
     </div>
     <div class="col-xs-4 ">
         %{--<g:link action="downloadPDF" style="" id="hiddenCertButton">--}%
@@ -160,8 +165,320 @@
                 </div>
     </div>
 
-<script src="${resource(dir: 'js', file: 'submissions.js')}"></script>
+<script src="${resource(dir: 'js', file: 'submissions.js?n=1')}"></script>
 <script src="${resource(dir: 'js', file: 'jquery.maskMoney.min.js')}"></script>
+<div class="modal fade" tabindex="-1" role="dialog" id="reviewModal">
+    <div class="modal-dialog" role="document" style="width: 75%;;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="reviewModalHeader">Reviewing </h4>
+                <div id="reviewQuoteID" style="display:none"></div>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <label>Type of Risk: <span id="riskTypeReviewLabel" style="font-weight: 400"></span></label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h3 class="panel-title" style="font-size: 14px;">Coverage Dates</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <div class="form-group"> <!-- Date input -->
+                                            <label class="control-label" style=" font-size:10px;">Proposed Effective Date</label>
+                                            <input class="form-control" type="text" placeholder = "Hidden Text Field To Adjust Focus off Date" name="hiddenField" style="display: none;"/>
+                                            <input class="form-control datepicker" id="proposedEffectiveDate" name="proposedEffectiveDate" placeholder="MM/DD/YYY" type="text" required/>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="form-group"> <!-- Date input -->
+                                            <label class="control-label" style=" font-size:10px;">Proposed Expiration Date</label>
+                                            <input class="form-control datepicker" id="proposedExpirationDate" name="proposedExpirationDate" placeholder="MM/DD/YYY" type="text" required/>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="form-group"> <!-- Date input -->
+                                            <label class="control-label" style=" font-size:10px;">Proposed Term Length</label>
+                                            <input class="form-control" id="proposedTermLength" name="proposedTermLength" type="text" style="color: black; background: white;"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="form-group"> <!-- Date input -->
+                                            <label class="control-label" style=" font-size:10px;">Total Budget</label>
+                                            <input class="form-control" id="totalBudgetConfirm" name="totalBudgetConfirm" type="text" required="required">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-12">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading" style="padding: 4px 10px;">
+                                <h3 class="panel-title" style="font-size: 14px;">Rates</h3>
+                            </div>
+                            <div class="panel-body" id="rateContainer">
+                                <div class="row" id="PIPCHOIRatesRow" style="display:none">
+                                    <div class="col-xs-12"><span style="font-size:20px; font-weight:500;">PIP Choice</span></div>
+                                    <div class="col-xs-2" style="margin-left:20px;">
+                                        <div class="form-group">
+                                            <label class="control-label" style=" font-size:10px; margin-bottom: 0px;">Misc Equip Rate</label>
+                                            <input class="form-control" id="PIPCHOI_miscRate" name="PIPCHOI_miscRate" type="text" >
+                                            <label class="control-label" style=" font-size:10px; margin-bottom: 0px;">Misc Equip MP</label>
+                                            <input class="form-control" id="PIPCHOI_miscMP" name="PIPCHOI_miscMP" type="text" >
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-2">
+                                        <div class="form-group">
+                                            <label class="control-label" style=" font-size:10px; margin-bottom: 0px;">Props, Set, Wardrobe Rate</label>
+                                            <input class="form-control" id="PIPCHOI_propsRate" name="PIPCHOI_propsRate" type="text" >
+                                            <label class="control-label" style=" font-size:10px; margin-bottom: 0px;">Props, Set, Wardrobe MP</label>
+                                            <input class="form-control" id="PIPCHOI_propsMP" name="PIPCHOI_propsMP" type="text" >
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-2">
+                                        <div class="form-group">
+                                            <label class="control-label" style=" font-size:10px; margin-bottom: 0px;">Third Party Prop Rate</label>
+                                            <input class="form-control" id="PIPCHOI_thirdRate" name="PIPCHOI_thirdRate" type="text" >
+                                            <label class="control-label" style=" font-size:10px; margin-bottom: 0px;">Third Party Prop MP</label>
+                                            <input class="form-control" id="PIPCHOI_thirdMP" name="PIPCHOI_thirdMP" type="text" >
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-2">
+                                        <div class="form-group">
+                                            <label class="control-label" style=" font-size:10px; margin-bottom: 0px;">Extra Expense Rate</label>
+                                            <input class="form-control" id="PIPCHOI_extraRate" name="PIPCHOI_extraRate" type="text" >
+                                            <label class="control-label" style=" font-size:10px; margin-bottom: 0px;">Extra Expense MP</label>
+                                            <input class="form-control" id="PIPCHOI_extraMP" name="PIPCHOI_extraMP" type="text" >
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-2">
+                                        <div class="form-group">
+                                            <label class="control-label" style=" font-size:10px; margin-bottom: 0px;">NOHA Rate</label>
+                                            <input class="form-control" id="PIPCHOI_NOHARate" name="PIPCHOI_NOHARate" type="text" >
+                                            <label class="control-label" style=" font-size:10px; margin-bottom: 0px;">NOHA MP</label>
+                                            <input class="form-control" id="PIPCHOI_NOHAMP" name="PIPCHOI_NOHAMP" type="text" >
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" id="PIP1RatesRow" style="display:none">
+                                    <div class="col-xs-12"><span style="font-size:20px; font-weight:500;">PIP 1</span></div>
+                                    <div class="col-xs-2" style="margin-left:20px;">
+                                        <div class="form-group">
+                                            <label class="control-label" style=" font-size:10px; margin-bottom: 0px;">PIP 1 Rate</label>
+                                            <input class="form-control" id="PIP1_Rate" name="PIP1_Rate" type="text" placeholder="Flat" disabled>
+                                            <label class="control-label" style=" font-size:10px; margin-bottom: 0px;">PIP 1 MP</label>
+                                            <input class="form-control" id="PIP1_MP" name="PIP1_MP" type="text" >
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" id="PIP2RatesRow" style="display:none">
+                                    <div class="col-xs-12"><span style="font-size:20px; font-weight:500;">PIP 2</span></div>
+                                    <div class="col-xs-2" style="margin-left:20px;">
+                                        <div class="form-group">
+                                            <label class="control-label" style=" font-size:10px; margin-bottom: 0px;">PIP 2 Rate</label>
+                                            <input class="form-control" id="PIP2_Rate" name="PIP2_Rate" type="text" placeholder="Flat"  disabled>
+                                            <label class="control-label" style=" font-size:10px; margin-bottom: 0px;">PIP 2 MP</label>
+                                            <input class="form-control" id="PIP2_MP" name="PIP2_MP" type="text" >
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-2">
+                                        <div class="form-group">
+                                            <label class="control-label" style=" font-size:10px; margin-bottom: 0px;">NOHA Rate</label>
+                                            <input class="form-control" id="PIP2_NOHARate" name="PIP2_NOHARate" type="text" placeholder="Flat"  disabled>
+                                            <label class="control-label" style=" font-size:10px; margin-bottom: 0px;">NOHA MP</label>
+                                            <input class="form-control" id="PIP2_NOHAMP" name="PIP2_NOHAMP" type="text" >
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" id="PIP3RatesRow" style="display:none">
+                                    <div class="col-xs-12"><span style="font-size:20px; font-weight:500;">PIP 3</span></div>
+                                    <div class="col-xs-2" style="margin-left:20px;">
+                                        <div class="form-group">
+                                            <label class="control-label" style=" font-size:10px; margin-bottom: 0px;">PIP 3 Rate</label>
+                                            <input class="form-control" id="PIP3_Rate" name="PIP3_Rate" type="text">
+                                            <label class="control-label" style=" font-size:10px; margin-bottom: 0px;">PIP 3 MP</label>
+                                            <input class="form-control" id="PIP3_MP" name="PIP3_MP" type="text" >
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" id="PIP4RatesRow" style="display:none">
+                                    <div class="col-xs-12"><span style="font-size:20px; font-weight:500;">PIP 4</span></div>
+                                    <div class="col-xs-2" style="margin-left:20px;">
+                                        <div class="form-group">
+                                            <label class="control-label" style=" font-size:10px; margin-bottom: 0px;">PIP 4 Rate</label>
+                                            <input class="form-control" id="PIP4_Rate" name="PIP4_Rate" type="text">
+                                            <label class="control-label" style=" font-size:10px; margin-bottom: 0px;">PIP 4 MP</label>
+                                            <input class="form-control" id="PIP4_MP" name="PIP4_MP" type="text" >
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" id="PIP5RatesRow" style="display:none">
+                                    <div class="col-xs-12"><span style="font-size:20px; font-weight:500;">PIP 5</span></div>
+                                    <div class="col-xs-2" style="margin-left:20px;">
+                                        <div class="form-group">
+                                            <label class="control-label" style=" font-size:10px; margin-bottom: 0px;">PIP 5 Rate</label>
+                                            <input class="form-control" id="PIP5_Rate" name="PIP5_Rate" type="text">
+                                            <label class="control-label" style=" font-size:10px; margin-bottom: 0px;">PIP 5 MP</label>
+                                            <input class="form-control" id="PIP5_MP" name="PIP5_MP" type="text" >
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-2">
+                                        <div class="form-group">
+                                            <label class="control-label" style=" font-size:10px; margin-bottom: 0px;">Civil Auth 100 Rate</label>
+                                            <input class="form-control" id="PIP5_civil100Rate" name="PIP5_civil100Rate" type="text" placeholder="Flat" disabled>
+                                            <label class="control-label" style=" font-size:10px; margin-bottom: 0px;">Civil Auth 100 MP</label>
+                                            <input class="form-control" id="PIP5_civil100MP" name="PIP5_civil100MP" type="text" >
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-2">
+                                        <div class="form-group">
+                                            <label class="control-label" style=" font-size:10px; margin-bottom: 0px;">Civil Auth 500 Rate</label>
+                                            <input class="form-control" id="PIP5_civil500Rate" name="PIP5_civil500Rate" type="text" placeholder="Flat" disabled>
+                                            <label class="control-label" style=" font-size:10px; margin-bottom: 0px;">Civil Auth 500 MP</label>
+                                            <input class="form-control" id="PIP5_civil500MP" name="PIP5_civil500MP" type="text" >
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row col-xs-12">
+                                    <button class="btn btn-primary pull-right"  type="button" value="Upload" id="runRatesButton">Run Rates</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-12" style="color:rgba(31, 31, 31, 0.35)">
+                        <div class="panel panel-default" id="coverageOptionsReview" style="">
+                            <div class="panel-heading">
+                                <h3 class="panel-title" style="font-size: 14px; color:rgba(31, 31, 31, 0.35)" id="coverageOptionsTitle">Coverage Options</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <label class="control-label">Please select the Coverages being requested:</label>
+                                    </div>
+                                </div>
+                                <div id="coverageCheckboxesDiv">
+                                </div>
+                                <br><br>
+                                <div class="row" id="premiumDistDivContainer">
+                                    <div class="col-xs-12">
+                                        <h5>Premium Distribution</h5>
+                                        <div class="row">
+                                            <div class="col-xs-4">
+                                                <u>Line Of Business</u>
+                                            </div>
+                                            <div class="col-xs-3">
+                                                <u>Premium</u>
+                                            </div>
+                                            <div class="col-xs-3">
+                                                <u>Agent %</u>
+                                            </div>
+                                        </div>
+                                        <div id="premDistributionInsert">
+                                            <div class="row">
+                                                <div class="col-xs-4">
+                                                    <span class="lineOfBusinessSpan">-</span>
+                                                </div>
+                                                <div class="col-xs-3">
+                                                    <span class="premiumSpan">-</span>
+                                                </div>
+                                                <div class="col-xs-3">
+                                                    <span class="agentPercentSpan">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="premTotalInsert">
+
+                                        </div>
+                                        <span id="premiumInsert"></span>
+                                    </div>
+                                </div>
+                                <div class='row TaxHeaderRow' style= 'font-weight: 500; margin-top:10px;'>
+                                    <div class='col-xs-4'>
+                                        <span class='lineOfBusinessSpan'> Taxes & Fees </span>
+                                    </div>
+                                    <div class='col-xs-3'>
+                                        <span class='totalPremiumSpan' ></span>
+                                    </div>
+                                    <div class='col-xs-3'>
+                                        <span class='agentPercentSpan'></span>
+                                    </div>
+                                </div>
+                                <div id="taxRows" style="">
+
+                                </div>
+                                <div class='row TotalPremiumRow' style= 'font-weight: 500'>
+                                    <div class='col-xs-4'>
+                                        <span class='lineOfBusinessSpan'> Total </span>
+                                    </div>
+                                    <div class='col-xs-3'>
+                                        <span class='totalPremiumSpan' id='premiumAllLOBTotal'></span>
+                                    </div>
+                                    <div class='col-xs-3'>
+                                        <span class='agentPercentSpan'></span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-9" id="disclaimerInsert" style="padding-top: 10px;padding-bottom:40px;font-size: 13px;color: red;">
+
+                                    </div>
+
+                                </div>
+                                <div class="row">
+
+                                    <div class="col-xs-12">
+                                        <h5>Terms</h5>
+                                        <span id="termsInsert" style="font-size: 12px; white-space: pre-line"></span>
+                                    </div>
+
+                                </div>
+                                <br>
+                                <div class="row">
+
+                                    <div class="col-xs-12">
+                                        <h5>Endorse</h5>
+                                        <span id="endorseInsert" style="font-size: 12px; white-space: pre-line"></span>
+                                    </div>
+
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="form-group col-xs-2">
+                                        <label class="control-label">Broker Fee</label>
+                                        <input class="form-control" id="brokerFeeInput"type="text" placeholder = "$" name="brokerFee" />
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12">
+                        <button class="btn btn-default prevBtn btn-lg pull-left" type="button" >Prev</button>
+                        <button class="btn btn-primary nextBtn btn-lg pull-right" type="button" id="nextButtonStep2">Next</button>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" aria-label="Close">Done</button>
+                <button class="btn btn-primary"  type="button" value="Upload" >Save</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 <div class="modal fade" tabindex="-1" role="dialog" id="certsModal">
     <div class="modal-dialog" role="document" style="width: 820px;">
         <div class="modal-content">
@@ -211,7 +528,7 @@
                                                    class=""
                                                    value="Rental House"
                                                    id="rentalHouse"
-                                                    style="margin-left:10px;"> Rental House
+                                                   style="margin-left:10px;"> Rental House
                                             <input type="radio" name="additionalInsuredFilter"
                                                    class=""
                                                    value="Private Facility"
@@ -246,7 +563,7 @@
                                 <div id="operations">
                                     <div class="row">
                                         <div class="form-group col-xs-12">
-                                             <textarea class="form-control" rows="5" id="operationTextArea">The certificate holder is named as an Additional Insured but solely as respects to claims arising out of negligence of the Named Insured and is Loss Payee for rented property as their interests may appear.
+                                            <textarea class="form-control" rows="5" id="operationTextArea">The certificate holder is named as an Additional Insured but solely as respects to claims arising out of negligence of the Named Insured and is Loss Payee for rented property as their interests may appear.
                                             </textarea>
                                         </div>
 
@@ -283,7 +600,8 @@
                                             <div class="form-group">
                                                 <p class="control-label"><input type="checkbox" class="evidenceOfInsuranceCheckbox showReview"
                                                                                 data-reviewName="Evidence Of Insurance" name="evidenceOfInsurance"
-                                                                                value="Evidence of Insurance"/> Evidence of Insurance</p>
+                                                                                value="Evidence of Insurance"
+                                                                                id="evidenceOfInsurance"/> Evidence of Insurance</p>
                                             </div>
                                         </div>
                                         <div class="form-group col-xs-12">
@@ -348,4 +666,5 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
 </body>

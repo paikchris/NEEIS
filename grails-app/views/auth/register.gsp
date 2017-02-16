@@ -49,12 +49,12 @@
                             </div>
                             <div class="form-group">
                                 <label>Agency ID<span style="color:red; font-size:12px;">*</span></label>
-                                <g:textField type="text" class="form-control" name="agencyID" placeholder="AgencyID" id="agencyID"/>
+                                <g:textField type="text" class="form-control required" name="agencyID" placeholder="AgencyID" id="agencyID"/>
                                 <span class="help-block"></span>
                             </div>
                             <div class="form-group">
                                 <label>Agency PIN<span style="color:red; font-size:12px;">*</span> </label>
-                                <g:passwordField type="password" class="form-control" name="agencyPIN" placeholder="PIN" id="agencyPIN"/>
+                                <g:passwordField type="password" class="form-control required" name="agencyPIN" placeholder="PIN" id="agencyPIN"/>
                                 <span class="help-block"></span>
                             </div>
                             <div class="form-group">

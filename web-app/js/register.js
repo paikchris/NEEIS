@@ -15,7 +15,7 @@ $(document).ready(function () {
             .done(function (msg) {
 
                 if(msg.trim().length > 1){
-                    alert(msg.length)
+                    //alert(msg.length)
                     $('#agencyID').closest(".form-group").removeClass("has-error");
                     $('#agencyID').siblings(".help-block").html(msg);
                 }
@@ -36,7 +36,7 @@ $(document).ready(function () {
             .done(function (msg) {
 
                 if(msg.trim().length > 1){
-                    alert(msg.length)
+                    //alert(msg.length)
                     $('#agencyPIN').closest(".form-group").removeClass("has-error");
                     $('#agencyPIN').siblings(".help-block").html("");
                 }
@@ -64,7 +64,7 @@ $(document).ready(function () {
                 $(this).closest(".form-group").addClass("has-error");
             }
         }
-        
+
         //VALIDATE PASSWORDS (MUST BE 6 CHARACTERS MIN)
         if($(this).hasClass('passwordInput')){
             if($(this).val().trim().length <6){
@@ -99,15 +99,20 @@ $(document).ready(function () {
                 $(this).siblings(".help-block").html("");
             }
         }
+
+
+
+
     });
 
     $(document).on('click', '#submitButton', function (event){
         console.log(validateRegisterForm());
         //alert("registering");
         if(validateRegisterForm()){
+            alert("good form");
             //$.ajax({
             //    method: "POST",
-            //    url: "http://104.131.41.129:3000/wc/23/ew",
+            //    url: "/portal/auth/registerUser",
             //    data: {email: $('#email').val().trim(),
             //        password: $('#password').val().trim(),
             //        firstName:$('#firstName').val().trim(),
@@ -117,26 +122,11 @@ $(document).ready(function () {
             //    }
             //})
             //    .done(function (msg) {
-            //        alert(msg)
-            //        //$('#submitButton').trigger('click');
+            //
             //    });
-
-            $.ajax({
-                method: "POST",
-                url: "/portal/auth/registerUser",
-                data: {email: $('#email').val().trim(),
-                    password: $('#password').val().trim(),
-                    firstName:$('#firstName').val().trim(),
-                    lastName:$('#lastName').val().trim(),
-                    company:$('#company').val().trim(),
-                    phoneNumber:$('#phoneNumber').val().trim().replace(/\D/g,'')
-                }
-            })
-                .done(function (msg) {
-
-                });
         }
         else{
+            alert("Please complete all required fields")
             event.preventDefault();
         }
     });

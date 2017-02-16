@@ -379,19 +379,17 @@
                         <div class="col-xs-12">
                             <div class="form-group">
                                 <label for="stuntCoordinator">Name of Stunt Coordinator</label>
-                            <input type="text" name="name" class=" showReview form-control" data-reviewName="Name of Stunt Coordinator" placeholder="Stunt Coordinator" id="stuntCoordinatorName"/>
+                            <input type="text" name="name" class=" showReview form-control stuntHidden" data-reviewName="Name of Stunt Coordinator"
+                                   placeholder="Stunt Coordinator" id="stuntCoordinatorName" style="display:none"/>
                                 </div>
                         </div>
                         <div class="col-xs-12">
                             <div class="form-group">
                                 <label for="signing">Are Participants Signing Waivers?</label>
-                                <input type="text" name="name" class="showReview form-control" data-reviewName="Are Participants Signing Waivers?" placeholder="Y/N" id="participantsSigningWaivers"/>
+                                <input type="text" name="name" class="showReview form-control stuntHidden" data-reviewName="Are Participants Signing Waivers?"
+                                       placeholder="Y/N" id="participantsSigningWaivers" style="display:none"/>
                             </div>
                         </div>
-
-
-
-
                     </div>
 
                     <p class="control-label"><input type="checkbox"
@@ -464,7 +462,7 @@
             <div class="col-xs-12">
                 %{--<div class="form-group">--}%
                     %{--<label for="cancelledDeclinedExplain"></label>--}%
-                    <input type="text" class=" showReview form-control" name="name" data-reviewName="Explain why it was cancelled or declined" placeholder="Please explain why it was cancelled or declined"
+                    <input type="text" class=" showReview form-control" name="name" style="display:none" data-reviewName="Explain why it was cancelled or declined" placeholder="Please explain why it was cancelled or declined"
                     id="insuredCancelledExplain"/>
                 %{--</div>--}%
             </div>
@@ -1028,7 +1026,7 @@
                 <div class="row col-xs-12">
                     <div class="col-xs-9">
                         <input type="text" class="form-control showReview" data-reviewName="Name of Officers to be Excluded under WC"
-                                     name="namesOfOfficersExcluded" placeholder="" id="officersExcluededUnderWC"/>
+                                     name="namesOfOfficersExcluded" placeholder="" id="officersExcludedUnderWC"/>
                     </div>
                 </div>
             </div>
@@ -1342,6 +1340,6 @@
 %{--<p><input type="checkbox" name="workersCompensation" /> Workers Compensation </p>--}%
 %{--<input type="text" class="form-control" name="fein" placeholde</p>--}%
 
-</div>
+%{--</div>--}%
 
-</div>
+%{--</div>--}%

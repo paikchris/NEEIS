@@ -21,7 +21,12 @@
 		  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 		  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 		<![endif]-->
+	<!--[if IE]>
 
+	<![endif]-->
+	%{--<script type="text/javascript">--}%
+		%{--window.location = "./../auth/iesupport";--}%
+	%{--</script>--}%
 	<script>
 		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 					(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -32,6 +37,44 @@
 		ga('send', 'pageview');
 
 	</script>
+
+
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="${resource(dir: 'js', file: 'jquery.maskedinput.js')}" ></script>
+	<script src="${resource(dir: 'js', file: 'moment.js')}" ></script>
+	<script src="${resource(dir: 'js', file: 'js.cookie.js')}" ></script>
+
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script src="${resource(dir: 'js', file: 'bootstrap.min.js')}" ></script>
+	<script src="${resource(dir: 'js', file: 'global.js')}" ></script>
+
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js" ></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css" />
+
+
+
+	<script >
+		$("#sidebar-wrapper").hover(function(e) {
+			e.preventDefault();
+			$("#wrapper").toggleClass("toggled");
+		});
+
+		$( "#myAccountButton" ).click(function() {
+			$('#myAccountModal').modal('show');
+		});
+		$( "#settingsButton" ).click(function() {
+			$('#settingsModal').modal('show');
+		});
+
+
+	</script>
+
+
+
+
+
 
 	<title><g:layoutTitle default="Grails"/></title>
 	%{--<asset:javascript src="application.js"/>--}%
@@ -148,37 +191,7 @@
 
 	<!-- Page Content -->
 	<div id="page-content-wrapper">
-		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-		<script src="${resource(dir: 'js', file: 'jquery.maskedinput.js')}"></script>
-	<script src="${resource(dir: 'js', file: 'moment.js')}"></script>
-	<script src="${resource(dir: 'js', file: 'js.cookie.js')}"></script>
 
-		<!-- Include all compiled plugins (below), or include individual files as needed -->
-		<script src="${resource(dir: 'js', file: 'bootstrap.min.js')}"></script>
-		<script src="${resource(dir: 'js', file: 'global.js')}"></script>
-
-
-		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
-
-
-
-		<script>
-			$("#sidebar-wrapper").hover(function(e) {
-				e.preventDefault();
-				$("#wrapper").toggleClass("toggled");
-			});
-
-			$( "#myAccountButton" ).click(function() {
-				$('#myAccountModal').modal('show');
-			});
-			$( "#settingsButton" ).click(function() {
-				$('#settingsModal').modal('show');
-			});
-
-
-		</script>
 		<g:layoutBody/>
 		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_6p9r1leoPGIFggBpprGfLVsLVxea5ZI&libraries=places&callback=initAutocomplete"
 				async defer></script>
@@ -221,7 +234,7 @@
 					<br>
 					<div class="row">
 						<div class="col-xs-4">
-							<button type="button" class="btn btn-default">Reset Password</button>
+							<button type="button" class="btn btn-default" id="openResetPasswordButton">Change Password</button>
 						</div>
 						<div class="col-xs-2">
 
@@ -235,10 +248,38 @@
 
 				</g:form>
 			</div>
-			%{--<div class="modal-footer">--}%
-			%{--<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>--}%
-			%{--<button type="submit" class="btn btn-primary">Save changes</button>--}%
-			%{--</div>--}%
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" tabindex="-1" role="dialog" id="resetPasswordModal">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">Change Password</h4>
+			</div>
+			<div class="modal-body" style="padding: 50px 100px; padding-top: 30px;">
+
+
+					<div class="form-group" style="margin-bottom:40px;">
+						<label for="password">Current Password<span style="color:red; font-size:12px;">*</span> </label>
+						<g:passwordField type="password" class="form-control requiredResetPassword passwordInput" name="password" placeholder="Current Password" id="currentPassword" />
+						<span class="help-block"></span>
+					</div>
+					<div class="form-group" style="margin-bottom:10px;">
+						<label for="password">New Password<span style="color:red; font-size:12px;">*</span> <span style="font-weight: 300">(Must be at least 6 characters)</span></label>
+						<g:passwordField type="password" class="form-control requiredResetPassword passwordInput" name="newpassword" placeholder="New Password" id="newPassword" />
+						<span class="help-block"></span>
+					</div>
+					<div class="form-group" style="margin-bottom:25px;">
+						<label for="verifyPassword">Verify Password<span style="color:red; font-size:12px;">*</span></label>
+						<g:passwordField type="password" class="form-control requiredResetPassword passwordInput passwordVerify" name="newpasswordConfirm" placeholder="Confirm New Password" id="confirmNewPassword" />
+						<span class="help-block"></span>
+					</div>
+
+					<button type="button" class="btn btn-primary btn-lg btn-block" id="resetPasswordButton">Change Password</button>
+			</div>
 		</div><!-- /.modal-content -->
 	</div><!-- /.modal-dialog -->
 </div><!-- /.modal -->

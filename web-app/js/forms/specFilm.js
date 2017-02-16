@@ -15,10 +15,16 @@ var riskHasCast = false;
 var riskHasWC = false;
 
 var uwQuestionsMap = {};
-
+var uwQuestionsOrder = [];
+var riskChosen;
 $(document).ready(function () {
 
-    var riskChosen = $("li.active").children("a.riskOptionLink").html().trim();
+    if($("li.active").length > 0){
+        riskChosen= getRiskTypeChosen();
+    }
+    else{
+        riskChosen = reviewRiskChosen; //FROM REVIEW SUBMISSION MODAL
+    }
 
     if(riskChosen === "Film Projects Without Cast (No Work Comp)"){
         riskHasCast = false;
@@ -56,11 +62,20 @@ $(document).ready(function () {
 
     if(riskHasCast){
         $('#questionListPriorFilmProjects').css('display','');
+        $('#listOfPriorFilms').css('display','');
         $('#questionTotalAbove').css('display','');
+        $('#totalAboveLine').css('display','');
+
         $('#questionTotalBelow').css('display','');
+        $('#totalBelowLine').css('display','');
+
         $('#questionTotalPost').css('display','');
+        $('#totalPostProductionCost').css('display','');
+
         $('#questionFilmingLocations').css('display','');
         $('#questionSourceFinancing').css('display','');
+        $('#sourceOfFinancing').css('display','');
+
         $('#questionCompletionBondRequired').css('display','');
         $('#questionsCast').css('display','');
         $('#numberOfCastMembers').css('display','');
@@ -70,11 +85,21 @@ $(document).ready(function () {
     }
     else{
         $('#questionListPriorFilmProjects').css('display','none');
+        $('#listOfPriorFilms').css('display','none');
+
         $('#questionTotalAbove').css('display','none');
+        $('#totalAboveLine').css('display','none');
+
         $('#questionTotalBelow').css('display','none');
+        $('#totalBelowLine').css('display','none');
+
         $('#questionTotalPost').css('display','none');
+        $('#totalPostProductionCost').css('display','none');
+
         $('#questionFilmingLocations').css('display','none');
         $('#questionSourceFinancing').css('display','none');
+        $('#sourceOfFinancing').css('display','none');
+
         $('#questionCompletionBondRequired').css('display','none');
         $('#questionsCast').css('display','none');
         $('#numberOfCastMembers').css('display','none');
@@ -86,14 +111,21 @@ $(document).ready(function () {
 
     if(riskHasWC){
         $('#questionListPriorFilmProjects').css('display','');
+        $('#listOfPriorFilms').css('display','');
+        $('#statesOfHire').css('display','');
+        $('#statesOfHireAndPayroll').css('display','');
         $('#questionFilmingLocations').css('display','');
         $('#questionSourceFinancing').css('display','');
+        $('#sourceOfFinancing').css('display','');
         $('#questionCompletionBondRequired').css('display','');
     }else{
         $('#workCompCoverageRequested').css('display','none');
         $('#statesOfHire').css('display','none');
+        $('#statesOfHireAndPayroll').css('display','none');
         $('#namesOfOfficers').css('display','none');
+        $('#namesOfficerTitleOwnership').css('display','none');
         $('#namesOfOfficersExcluded').css('display','none');
+        $('#officersExcludedUnderWC').css('display','none');
     }
 
     //CHECKBOXES THAT HIDE AND SHOW FIELDS
@@ -500,8 +532,12 @@ $(document.body).on('click', '.removeCastMember' ,function() {
 // add and remove filming location
     $(document.body).on('change', '#PIP1InputRadio, #PIP2InputRadio, #PIP3InputRadio, #PIP4InputRadio, #PIP5InputRadio, #PIPChoiceInputRadio' ,function(){
         //alert($('#PIP3InputRadio').is(':checked'));
-        var riskChosen = $("li.active").children("a.riskOptionLink").html().trim();
-        $("#EPKGoptions").css("display","");
+        if($("li.active").length > 0){
+            riskChosen= getRiskTypeChosen();
+        }
+        else{
+            riskChosen = reviewRiskChosen; //FROM REVIEW SUBMISSION MODAL
+        }        $("#EPKGoptions").css("display","");
 
 
         if(riskChosen === "Film Projects With Cast (No Work Comp)"){
@@ -579,7 +615,7 @@ $(document.body).on('click', '.removeCastMember' ,function() {
 
             }
             else{
-                $("#EPKGoptions").css("display","none");
+                $("#EPKGoptions").css("display","");
                 $("#EPKGNOHAOption").css("display","");
             }
 
@@ -998,24 +1034,50 @@ $(document.body).on('click', '.removeCastMember' ,function() {
         var maxLimit = 0;
         var termLength = parseInt($("#proposedTermLength").val().split(" ")[0]);
 
+        var extraRate = .0010
+        var extraMP = 100
+        var thirdRate = .0005
+        var thirdMP = 100
+        var propsRate = .005
+        var propsMP = 100
+        var miscRate = .005
+        var miscMP = 100
+        var castRate = 1.1
+        var castMP = 100
+
+        if($('#runRatesButton').length > 0){
+            extraRate = $('#PIPCHOI_extraRate').val()/100;
+            extraMP = $('#PIPCHOI_extraMP').val();
+            thirdRate = $('#PIPCHOI_thirdRate').val()/100;
+            thirdMP = $('#PIPCHOI_thirdMP').val();
+            propsRate = $('#PIPCHOI_propsRate').val()/100;
+            propsMP = $('#PIPCHOI_propsMP').val();
+            miscRate = $('#PIPCHOI_miscRate').val()/100;
+            miscMP = $('#PIPCHOI_miscMP').val();
+            castRate = $('#PIPCHOI_castRate').val()/100;
+            castMP = $('#PIPCHOI_castMP').val();
+            //alert();
+        }
+
+
         if(coverageLine.indexOf("Extra Expense") > -1){
-            rate = .0010;
-            minPremium = 100;
+            rate = extraRate;
+            minPremium = extraMP;
             maxLimit = 1000000;
         }
         else if(coverageLine.indexOf("Third Party Prop Damage Liab") > -1){
-            rate = .0005;
-            minPremium = 100;
+            rate = thirdRate;
+            minPremium = thirdMP;
             maxLimit = 1000000;
         }
         else if(coverageLine.indexOf("Props, Sets") > -1){
-            rate = .005;
-            minPremium = 100;
+            rate = propsRate;
+            minPremium = propsMP;
             maxLimit = 1000000;
         }
         else if(coverageLine.indexOf("Miscellaneous Rented Equipment") > -1){
-            rate = .005;
-            minPremium = 100;
+            rate = miscRate;
+            minPremium = miscMP;
             maxLimit = 1000000;
         }
         else if(coverageLine.indexOf("Cast Insurance") > -1){
@@ -1092,8 +1154,15 @@ $(document.body).on('click', '.removeCastMember' ,function() {
             elem.innerHTML = $(this).parent().siblings(".coverageColumn").children().first().html();
             var decoded = elem.value;
             if($(this).val().length == 0){
-                pipchoiceLimits = pipchoiceLimits + decoded + "&;&" + 0 + "&;;&";
-                $(this).val("0");
+                if($('#totalBudgetConfirm').val().length > 0){
+                    pipchoiceLimits = pipchoiceLimits + decoded + "&;&" + $('#totalBudgetConfirm').val() + "&;;&";
+                    $(this).val($('#totalBudgetConfirm').val());
+                }
+                else{
+                    pipchoiceLimits = pipchoiceLimits + decoded + "&;&" + 0 + "&;;&";
+                    $(this).val("0");
+                }
+
             }
             else{
                 pipchoiceLimits = pipchoiceLimits + decoded + "&;&" + $(this).val() + "&;;&";
@@ -1167,8 +1236,24 @@ function checkPhotographyDates(){
 
 function ratePremiums(thisObj){
   console.log("Rating Premiums");
+    var rateMap = {};
     var val = $(thisObj).val();
-    var riskChosen = $("li.active").children("a.riskOptionLink").html().trim();
+    if($("li.active").length > 0){
+        riskChosen= getRiskTypeChosen();
+    }
+    else if(thisObj === "runRatesButton"){
+        riskChosen = reviewRiskChosen; //FROM REVIEW SUBMISSION MODAL]
+            $('#rateContainer :input').each(function () {
+                    rateMap[""+$(this).attr('id')] = $(this).val();
+
+            });
+
+
+        //RE RUNNING RATES
+        //PIP1
+
+    }
+    //alert(rateMap.toString)
     var prodString = $(".productsSelect option[value='" + val + "']").text();
     var productsSelected = "";
     var additionalProducts = "";
@@ -1254,6 +1339,7 @@ function ratePremiums(thisObj){
         if($(this).val().length == 0){
             pipchoiceLimits = pipchoiceLimits + decoded + "&;&" + 0 + "&;;&";
             $(this).val("0");
+            //$(this).val($('#totalBudgetConfirm').val());
         }
         else{
             pipchoiceLimits = pipchoiceLimits + decoded + "&;&" + $(this).val() + "&;;&";
@@ -1314,7 +1400,8 @@ function ratePremiums(thisObj){
                 totalBudget: $("#totalBudgetConfirm").val().replace(/\$|,/g, ''),
                 proposedTermLength: $("#proposedTermLength").val(),
                 costOfHire: $('#costOfHireInput').val().replace(/\$|,/g, ''),
-                castEssentialNum: $('#castEssentialInput').val()
+                castEssentialNum: $('#castEssentialInput').val(),
+                rateMap: JSON.stringify(rateMap)
 
             }
         })
@@ -1323,6 +1410,124 @@ function ratePremiums(thisObj){
                 //alert( "Data Saved: " + msg );
                 responseJSON = JSON.parse(msg);
                 //alert(responseJSON.coverages.length);
+
+                if( $('#runRatesButton').length >0){ //IF IN REVIEW PANEL AND RERUNNING RATES
+                    var tempRateMap ={}
+                    ////PIP1 RATING
+                    //submissionRateMap["pip1_negativeFilmVideoRateMinPrem"] = pip1_negativeFilmVideoRateMinPrem
+                    //submissionRateMap["pip1_faultyStockCameraProcessingRateMinPrem"] = pip1_faultyStockCameraProcessingRateMinPrem
+                    //submissionRateMap["pip1_miscRentedEquipRateMinPrem"] = pip1_miscRentedEquipRateMinPrem
+                    //submissionRateMap["pip1_propsSetWardrobeRateMinPrem"] = pip1_propsSetWardrobeRateMinPrem
+                    //submissionRateMap["pip1_thirdPartyPropDamageRateMinPrem"] = pip1_thirdPartyPropDamageRateMinPrem
+                    //submissionRateMap["pip1_extraExpenseRateMinPrem"] = pip1_extraExpenseRateMinPrem
+                    //submissionRateMap["pip1_minPremium"] = pip1_minPremium
+                    for (var i = 0; i < responseJSON.coverages.length; i++) {
+
+
+                        if(responseJSON.coverages[i].coverageCode === "EPKG"){
+                            $('#PIPCHOIRatesRow').css('display', 'none');
+                            $('#PIP1RatesRow').css('display', 'none');
+                            $('#PIP2RatesRow').css('display', 'none');
+                            $('#PIP3RatesRow').css('display', 'none');
+                            $('#PIP4RatesRow').css('display', 'none');
+                            $('#PIP5RatesRow').css('display', 'none');
+                            tempRateMap = responseJSON.coverages[i].submissionRateMap;
+                            if(responseJSON.coverages[i].productCode === "PIP CHOI"){
+                                $('#PIPCHOIRatesRow').css('display', '')
+
+                            }
+                            else if(responseJSON.coverages[i].productCode === "PIP 1"){
+
+                                $('#PIP1RatesRow').css('display', '')
+                            }
+                            else if(responseJSON.coverages[i].productCode === "PIP 2"){
+
+                                $('#PIP2RatesRow').css('display', '')
+                            }
+                            else if(responseJSON.coverages[i].productCode === "PIP 3"){
+
+                                $('#PIP3RatesRow').css('display', '')
+                            }
+                            else if(responseJSON.coverages[i].productCode === "PIP 4"){
+
+                                $('#PIP4RatesRow').css('display', '')
+                            }
+                            else if(responseJSON.coverages[i].productCode === "PIP 4"){
+
+                                $('#PIP5RatesRow').css('display', '')
+                            }
+                            $('#PIPCHOI_miscRate').val(tempRateMap['pipChoice_miscRentedEquipRateMinPrem'][0]);
+                            $('#PIPCHOI_miscMP').val(tempRateMap['pipChoice_miscRentedEquipRateMinPrem'][1]);
+                            $('#PIPCHOI_propsRate').val(tempRateMap['pipChoice_propsSetWardrobeRateMinPrem'][0]);
+                            $('#PIPCHOI_propsMP').val(tempRateMap['pipChoice_propsSetWardrobeRateMinPrem'][1]);
+                            $('#PIPCHOI_thirdRate').val(tempRateMap['pipChoice_thirdPartyPropDamageRateMinPrem'][0]);
+                            $('#PIPCHOI_thirdMP').val(tempRateMap['pipChoice_thirdPartyPropDamageRateMinPrem'][1]);
+                            $('#PIPCHOI_extraRate').val(tempRateMap['pipChoice_extraExpenseRateMinPrem'][0]);
+                            $('#PIPCHOI_extraMP').val(tempRateMap['pipChoice_extraExpenseRateMinPrem'][1]);
+                            $('#PIPCHOI_NOHARate').val(tempRateMap['pipChoice_NOHARateMinPrem'][0]);
+                            $('#PIPCHOI_NOHAMP').val(tempRateMap['pipChoice_NOHARateMinPrem'][1]);
+
+                            $('#PIP1_Rate').val("flat");
+                            $('#PIP1_MP').val(tempRateMap['pip1_minPremium']);
+
+                            $('#PIP2_Rate').val("flat");
+                            $('#PIP2_MP').val(tempRateMap['pip2_PIP2premium']);
+                            $('#PIP2_NOHARate').val(tempRateMap['pip2_NOHARateMinPrem'][0]);
+                            $('#PIP2_NOHAMP').val(tempRateMap['pip2_NOHARateMinPrem'][1]);
+
+                            $('#PIP3_Rate').val(tempRateMap['pip3_negativeFilmVideoRateMinPrem'][0]);
+                            $('#PIP3_MP').val(tempRateMap['pip3_negativeFilmVideoRateMinPrem'][1]);
+
+                            $('#PIP4_Rate').val(tempRateMap['pip4_negativeFilmVideoRateMinPrem'][0]);
+                            $('#PIP4_MP').val(tempRateMap['pip4_negativeFilmVideoRateMinPrem'][1]);
+
+                            $('#PIP5_Rate').val(tempRateMap['pip5_negativeFilmVideoRateMinPrem'][0]);
+                            $('#PIP5_MP').val(tempRateMap['pip5_negativeFilmVideoRateMinPrem'][1]);
+
+
+
+
+
+
+
+
+
+
+
+
+                            
+                        }
+                    }
+
+
+
+                    //
+                    //
+                   
+                    //
+                    ////PIP2 RATING
+                    //submissionRateMap["pip2_PIP2premium"] = pip2_PIP2premium
+                    //submissionRateMap["pip2_negativeFilmVideoRateMinPrem"] = pip2_negativeFilmVideoRateMinPrem
+                    //submissionRateMap["pip2_faultyStockCameraProcessingRateMinPrem"] = pip2_faultyStockCameraProcessingRateMinPrem
+                    //submissionRateMap["pip2_miscRentedEquipRateMinPrem"] = pip2_miscRentedEquipRateMinPrem
+                    //submissionRateMap["pip2_propsSetWardrobeRateMinPrem"] = pip2_propsSetWardrobeRateMinPrem
+                    //submissionRateMap["pip2_thirdPartyPropDamageRateMinPrem"] = pip2_thirdPartyPropDamageRateMinPrem
+                    //submissionRateMap["pip2_extraExpenseRateMinPrem"] = pip2_extraExpenseRateMinPrem
+                    //submissionRateMap["pip2_officeContentsRateMinPrem"] = pip2_officeContentsRateMinPrem
+                    //submissionRateMap["pip2_NOHARateMinPrem"] = pip2_NOHARateMinPrem
+                    //
+                    ////PIP3 RATING
+                    //submissionRateMap["pip3_negativeFilmVideoRateMinPrem"] = pip3_negativeFilmVideoRateMinPrem
+                    //
+                    ////PIP4
+                    //submissionRateMap["pip4_negativeFilmVideoRateMinPrem"] = pip4_negativeFilmVideoRateMinPrem
+                    //
+                    ////PIP5
+                    //submissionRateMap["pip5_negativeFilmVideoRateMinPrem"] =pip5_negativeFilmVideoRateMinPrem
+                    //submissionRateMap["pip5_civilAuthority100Limit"] = pip5_civilAuthority100Limit
+                    //submissionRateMap["pip5_civilAuthority500Limit"] = pip5_civilAuthority500Limit
+                }
+
                 var limitDeductibleString = "";
                 var lobDistString = "";
                 var CPKincluded = false;
@@ -1648,7 +1853,10 @@ function ratePremiums(thisObj){
                             }
 
                         }
-
+                        else if(key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
+                            responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")){
+                            limitDeductibleString = limitDeductibleString + "<span>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span> <br><span></span>";
+                        }
                         else if(responseJSON.coverages[i].coverageCode === "NOAL" && CPKincluded){
                             limitDeductibleString = limitDeductibleString + "<span>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
                         }
@@ -1670,7 +1878,14 @@ function ratePremiums(thisObj){
 
                         limitDeductibleString = limitDeductibleString + "</div>";
 
-                        if(key === "Cast Essential"){
+
+                        if(key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
+                            responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")){
+                            limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 premiumColumn'>" +
+                                "<span class='" + responseJSON.coverages[i].productCode.replace(/ /g,'') + "PremiumLine' >" + formatMoney(premiumForCoverageLine) + "</span> <br><span></span>" +
+                                "</div>";
+                        }
+                        else if(key === "Cast Essential"){
                             limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 premiumColumn' style=''>" +
                                 "<span class='" + responseJSON.coverages[i].productCode.replace(/ /g,'') + "PremiumLine' >" + formatMoney(premiumForCoverageLine) + "</span>" +
                                 "</div>";
@@ -1829,7 +2044,7 @@ function ratePremiums(thisObj){
 
                 $('.PIPCHOILimitsInput').trigger("keyup");
                 $('.CPKNOHALimitsInput').maskMoney({prefix:'$', precision:"0"});
-                $('.CPKNOHALimitsInput').val($("#totalBudgetInput").val().split(".")[0]);
+                $('.CPKNOHALimitsInput').val($("#totalBudgetConfirm").val().split(".")[0]);
                 if(CGLNOALLimit.length > 0){
                     $(".HiredAutoPhysicalDamage").val(CGLNOALLimit);
                 }
@@ -1972,6 +2187,8 @@ function buildReview() {
 
                 //STORE IN UW QUESTIONS
                 uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
+                uwQuestionsOrder.push($(this).attr("data-reviewName"));
+
             }
             else if ($(this).is(':checkbox') && $(this).attr("data-reviewName")) {
                 // the input field is not a select
@@ -2013,6 +2230,7 @@ function buildReview() {
 
                     //STORE IN UW QUESTIONS
                     uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
+                    uwQuestionsOrder.push($(this).attr("data-reviewName"));
                 }
                 else {
 
@@ -2040,6 +2258,7 @@ function buildReview() {
 
                 //STORE IN UW QUESTIONS
                 uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
+                uwQuestionsOrder.push($(this).attr("data-reviewName"));
             }
             else if ($(this).attr("id") === "numberOfCastMembers") {
                 var answer = "";
@@ -2069,6 +2288,7 @@ function buildReview() {
 
                 //STORE IN UW QUESTIONS
                 uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
+                uwQuestionsOrder.push($(this).attr("data-reviewName"));
             }
             else {
                 var answer = "";
@@ -2091,9 +2311,10 @@ function buildReview() {
 
                 //STORE IN UW QUESTIONS
                 uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
+                uwQuestionsOrder.push($(this).attr("data-reviewName"));
             }
 
-
+            //console.log($(this).attr("data-reviewName"));
         }
 
 

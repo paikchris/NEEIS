@@ -27,6 +27,18 @@ class FormsController {
     }
 
 
+    def entertainerForm() {
+
+    }
+    def shellCorp() {
+
+    }
+    
+    def otherForm(){
+        log.info "DELIVER OTHER FORM"
+        log.info params
+    }
+
     def specialEventLiability(){
 
     }

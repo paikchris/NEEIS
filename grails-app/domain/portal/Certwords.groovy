@@ -15,14 +15,14 @@ class Certwords {
 
     static constraints = {
         submissionID(unique:true)
-        description(unique:true)
-        producerid(unique:true)
-        agent(unique:true)
-        additionalInsured(unique:true)
-        ops(unique:true)
-        certType(unique:true)
-        certFormat(unique:true)
-        useForms(unique:true)
-        aiType(unique:true)
+        description nullable:true
+        producerid nullable:true
+        agent nullable:true
+        additionalInsured nullable:true
+        ops nullable:true
+        certType nullable:true
+        certFormat nullable:true
+        useForms nullable:true
+        aiType nullable:true
     }
 }

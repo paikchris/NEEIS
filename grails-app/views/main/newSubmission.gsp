@@ -4,6 +4,8 @@
 	<head>
         <meta name="layout" content="main">
         <link rel="stylesheet" href="${resource(dir: 'css', file: 'newSubmission.css')}" type="text/css">
+        <script src="${resource(dir: 'js', file: "newSubmission.js?ts=" + new Date().getTime())}" async></script>
+        <script src="${resource(dir: 'js', file: 'jquery.maskMoney.min.js')}" async></script>
 	</head>
 	<body>
         <div id="riskMap" style="display: none;">
@@ -25,24 +27,28 @@
         </form>
             <div class="container">
                 <h1>New Policy</h1>
-                <br>
+                <h4 style="text-align: center; margin-bottom:4px;" id="riskCategoryHeader"></h4>
+                <h5 style="text-align: center; margin-top: 0px; margin-bottom:0px;" id="riskTypeHeader"></h5>
+                <div class="row" style="text-align: center;">
+                    <span class="label label-info" id="BORRequestNotification" style="display:none; ">BOR Requested</span>
+                </div>
                 <br>
                 <div class="stepwizard">
                     <div class="stepwizard-row setup-panel">
                         <div class="stepwizard-step">
-                            <a href="#step-1" type="button" class="btn btn-primary btn-circle">1</a>
+                            <a href="#step-1" type="button" class="btn btn-primary btn-circle" id="buttonCircleStep1">1</a>
                             <p>Select Risk</p>
                         </div>
                         <div class="stepwizard-step">
-                            <a href="#step-2" type="button" class="btn btn-default btn-circle" disabled="disabled">2</a>
+                            <a href="#step-2" type="button" class="btn btn-default btn-circle" id="buttonCircleStep2" disabled="disabled">2</a>
                             <p>Select Coverages</p>
                         </div>
                         <div class="stepwizard-step">
-                            <a href="#step-3" type="button" class="btn btn-default btn-circle" disabled="disabled">3</a>
+                            <a href="#step-3" type="button" class="btn btn-default btn-circle" id="buttonCircleStep3" disabled="disabled">3</a>
                             <p>Insured Info</p>
                         </div>
                         <div class="stepwizard-step">
-                            <a href="#step-4" type="button" class="btn btn-default btn-circle" id="reviewSubmitButton" disabled="disabled">4</a>
+                            <a href="#step-4" type="button" class="btn btn-default btn-circle" id="buttonCircleStep4" disabled="disabled">4</a>
                             <p>Submit</p>
                         </div>
                     </div>
@@ -73,6 +79,7 @@
                                 </div>
                             </div>
                             <div class="col-xs-12 drawerContainer" style="">
+
                                 <div class="drawer" style="">
                                     <div class="col-xs-12">
                                         <h4>Please select one:</h4>
@@ -101,7 +108,7 @@
                                 <div class="card card-unselected media">
                                     <div class="media-left">
                                         <a href="#">
-                                            <img class="media-object media-object media-img" src="https://static1.squarespace.com/static/57b0d9b7ff7c50648d9e242f/t/57b193bef5e231afcea04da0/1471255493109/?format=750w" alt="..." width="250px" height="150px">
+                                            <img class="media-object media-object media-img" src="https://static1.squarespace.com/static/57b0d9b7ff7c50648d9e242f/t/589350b4d1758e4be8debaa7/1486049464281/?format=300w" alt="..." width="250px" height="150px">
                                         </a>
                                     </div>
                                     <div class="media-body card-content2">
@@ -126,14 +133,14 @@
                                                     <div class="row" style="margin:0px">
                                                         <select class='riskTypeDropdown ' style="display:none; color:#337ab7; padding-left:20px;width: 100%;margin-top: 10px;
                                                         margin-bottom: 10px;font-size: 25px;">
-                                                            <option value="volvo" selected>Select One</option>
-                                                            <option value="volvo">Concerts</option>
-                                                            <option value="saab">Corporate Events</option>
-                                                            <option value="mercedes">Event Planner</option>
-                                                            <option value="audi">Special Events</option>
-                                                            <option value="volvo">Theatrical</option>
-                                                            <option value="saab">Trade Shows</option>
-                                                            <option value="mercedes">Wedding Planner</option>
+                                                            <option value="invalid" selected>Select One</option>
+                                                            <option value="Concerts">Concerts</option>
+                                                            <option value="Corporate Events">Corporate Events</option>
+                                                            <option value="Event Planner">Event Planner</option>
+                                                            <option value="Special Events">Special Events</option>
+                                                            <option value="Theatrical">Theatrical</option>
+                                                            <option value="Trade Shows">Trade Shows</option>
+                                                            <option value="Wedding Planner">Wedding Planner</option>
                                                         </select>
                                                     </div>
 
@@ -150,26 +157,26 @@
                                                     <div class="row" style="margin:0px">
                                                         <select class='riskTypeDropdown ' style="display:none; color:#337ab7; padding-left:20px;width: 100%;margin-top: 10px;
                                                         margin-bottom: 10px;font-size: 25px;">
-                                                            <option value="volvo" selected>Select One</option>
-                                                            <option value="volvo">Arts & Crafts Exhibit</option>
-                                                            <option value="saab">Charitable</option>
-                                                            <option value="mercedes">Corporate</option>
-                                                            <option value="audi">Dance Competition</option>
-                                                            <option value="volvo">Exhibitor</option>
-                                                            <option value="saab">Fashion Shows</option>
-                                                            <option value="mercedes">Festival</option>
-                                                            <option value="audi">Fund Raising</option>
-                                                            <option value="volvo">Ice Skating Shows</option>
-                                                            <option value="saab">Laser Light Shows</option>
-                                                            <option value="mercedes">Networking Meetings</option>
-                                                            <option value="audi">Party</option>
-                                                            <option value="volvo">Radio & Fundraising</option>
-                                                            <option value="saab">Rally</option>
-                                                            <option value="audi">Regligious Trade Show</option>
-                                                            <option value="volvo">Sponsorship Only</option>
-                                                            <option value="saab">Sporting</option>
-                                                            <option value="mercedes">Trades & Exhibits</option>
-                                                            <option value="audi">Wedding Planner</option>
+                                                            <option value="invalid" selected>Select One</option>
+                                                            <option value="Arts & Crafts Exhibit">Arts & Crafts Exhibit</option>
+                                                            <option value="Charitable">Charitable</option>
+                                                            <option value="Corporate">Corporate</option>
+                                                            <option value="Dance Competition">Dance Competition</option>
+                                                            <option value="Exhibitor">Exhibitor</option>
+                                                            <option value="Fashion Shows">Fashion Shows</option>
+                                                            <option value="Festival">Festival</option>
+                                                            <option value="Fund Raising">Fund Raising</option>
+                                                            <option value="Ice Skating Shows">Ice Skating Shows</option>
+                                                            <option value="Laser Light Shows">Laser Light Shows</option>
+                                                            <option value="Networking Meetings">Networking Meetings</option>
+                                                            <option value="Party">Party</option>
+                                                            <option value="Radio & Fundraising">Radio & Fundraising</option>
+                                                            <option value="Rally">Rally</option>
+                                                            <option value="Regligious Trade Show">Regligious Trade Show</option>
+                                                            <option value="Sponsorship Only">Sponsorship Only</option>
+                                                            <option value="Sporting">Sporting</option>
+                                                            <option value="Trades & Exhibits">Trades & Exhibits</option>
+                                                            <option value="Wedding Planner">Wedding Planner</option>
                                                         </select>
                                                     </div>
 
@@ -197,7 +204,7 @@
                                 <div class="card card-unselected media">
                                     <div class="media-left">
                                         <a href="#">
-                                            <img class="media-object media-object media-img" src="https://static1.squarespace.com/static/57b0d9b7ff7c50648d9e242f/t/57b19796f7e0ab6f35b421fe/1471256486892/?format=750w" alt="..." width="250px" height="150px">
+                                            <img class="media-object media-object media-img" src="https://static1.squarespace.com/static/57b0d9b7ff7c50648d9e242f/t/58494339b3db2b0b61702256/1481100557148/?format=300w" alt="..." width="250px" height="150px">
                                         </a>
                                     </div>
                                     <div class="media-body card-content2">
@@ -234,21 +241,21 @@
                                                     <div class="row" style="margin:0px">
                                                     <select class='riskTypeDropdown ' style="display:none; color:#337ab7; padding-left:20px;width: 100%;margin-top: 10px;
                                                     margin-bottom: 10px;font-size: 25px;">
-                                                        <option value="volvo" selected>Select One</option>
-                                                        <option value="volvo">Alternative Rock</option>
-                                                        <option value="saab">Baby Band</option>
-                                                        <option value="mercedes">Blues</option>
-                                                        <option value="audi">Christian Music</option>
-                                                        <option value="volvo">Classical</option>
-                                                        <option value="saab">Country</option>
-                                                        <option value="mercedes">DJ/Techno</option>
-                                                        <option value="audi">Folk</option>
-                                                        <option value="volvo">Hip-Hop</option>
-                                                        <option value="saab">Jazz</option>
-                                                        <option value="mercedes">Metal/Hard Rock</option>
-                                                        <option value="audi">Pop</option>
-                                                        <option value="volvo">Rhythm & Blues</option>
-                                                        <option value="saab">Rock</option>
+                                                        <option value="invalid" selected>Select One</option>
+                                                        <option value="Alternative Rock">Alternative Rock</option>
+                                                        <option value="Baby Band">Baby Band</option>
+                                                        <option value="Blues">Blues</option>
+                                                        <option value="Christian Music">Christian Music</option>
+                                                        <option value="Classical">Classical</option>
+                                                        <option value="Country">Country</option>
+                                                        <option value="DJ/Techno">DJ/Techno</option>
+                                                        <option value="Folk">Folk</option>
+                                                        <option value="Hip-Hop">Hip-Hop</option>
+                                                        <option value="Jazz">Jazz</option>
+                                                        <option value="Metal/Hard Rock">Metal/Hard Rock</option>
+                                                        <option value="Pop">Pop</option>
+                                                        <option value="Rhythm & Blues">Rhythm & Blues</option>
+                                                        <option value="Rock">Rock</option>
                                                     </select>
                                                     </div>
 
@@ -264,12 +271,12 @@
                                                     <div class="row" style="margin:0px">
                                                     <select class='riskTypeDropdown' style="display:none; color:#337ab7; padding-left:20px;width: 100%;margin-top: 10px;
                                                     margin-bottom: 10px;font-size: 25px;">
-                                                        <option value="volvo" selected>Select One</option>
-                                                        <option value="volvo">Broadway</option>
-                                                        <option value="saab">Dance Company</option>
-                                                        <option value="mercedes">Opera</option>
-                                                        <option value="audi">Orchestra</option>
-                                                        <option value="audi">Play</option>
+                                                        <option value="invalid" selected>Select One</option>
+                                                        <option value="Broadway">Broadway</option>
+                                                        <option value="Dance Company">Dance Company</option>
+                                                        <option value="Opera">Opera</option>
+                                                        <option value="Orchestra">Orchestra</option>
+                                                        <option value="Play">Play</option>
                                                     </select>
                                                         </div>
                                                 </a>
@@ -313,27 +320,27 @@
                                                     <div class="row" style="margin:0px">
                                                         <select class='riskTypeDropdown' style="display:none; color:#337ab7; padding-left:20px;width: 100%;margin-top: 10px;
                                                         margin-bottom: 10px;font-size: 25px;">
-                                                            <option value="volvo" selected>Select One</option>
-                                                            <option value="volvo">Accounting/Bookkeeping</option>
-                                                            <option value="saab">Advertising Agency</option>
-                                                            <option value="mercedes">Animation Company</option>
-                                                            <option value="audi">Association</option>
-                                                            <option value="audi">Attorney</option>
-                                                            <option value="volvo">Business Manager</option>
-                                                            <option value="saab">Consultants</option>
-                                                            <option value="mercedes">Film Devt Distributor</option>
-                                                            <option value="audi">Location Finders</option>
-                                                            <option value="audi">Merchandising/Product Placement</option>
-                                                            <option value="volvo">Music Publisher/Record Label Co.</option>
-                                                            <option value="saab">Non Profit Organization</option>
-                                                            <option value="mercedes">Payroll Service Co.</option>
-                                                            <option value="audi">Premises Only</option>
-                                                            <option value="audi">Production Office</option>
-                                                            <option value="volvo">Radio/TV Broadcasting</option>
-                                                            <option value="saab">Sales Service & Consulting</option>
-                                                            <option value="mercedes">Security & Crowd Mgt</option>
-                                                            <option value="audi">Talent Agency</option>
-                                                            <option value="audi">Web Design & Devt</option>
+                                                            <option value="invalid" selected>Select One</option>
+                                                            <option value="Accounting/Bookkeeping">Accounting/Bookkeeping</option>
+                                                            <option value="Advertising Agency">Advertising Agency</option>
+                                                            <option value="Animation Company">Animation Company</option>
+                                                            <option value="Association">Association</option>
+                                                            <option value="Attorney">Attorney</option>
+                                                            <option value="Business Manager">Business Manager</option>
+                                                            <option value="Consultants">Consultants</option>
+                                                            <option value="Film Devt Distributor">Film Devt Distributor</option>
+                                                            <option value="Location Finders">Location Finders</option>
+                                                            <option value="Merchandising/Product Placement">Merchandising/Product Placement</option>
+                                                            <option value="Music Publisher/Record Label Co.">Music Publisher/Record Label Co.</option>
+                                                            <option value="Non Profit Organization">Non Profit Organization</option>
+                                                            <option value="Payroll Service Co.">Payroll Service Co.</option>
+                                                            <option value="Premises Only">Premises Only</option>
+                                                            <option value="Production Office">Production Office</option>
+                                                            <option value="Radio/TV Broadcasting">Radio/TV Broadcasting</option>
+                                                            <option value="Sales Service & Consulting">Sales Service & Consulting</option>
+                                                            <option value="Security & Crowd Mgt">Security & Crowd Mgt</option>
+                                                            <option value="Talent Agency">Talent Agency</option>
+                                                            <option value="Web Design & Devt">Web Design & Devt</option>
                                                         </select>
                                                     </div>
                                                 </a>
@@ -376,33 +383,33 @@
                                                     <div class="row" style="margin:0px">
                                                         <select class='riskTypeDropdown' style="display:none; color:#337ab7; padding-left:20px;width: 100%;margin-top: 10px;
                                                         margin-bottom: 10px;font-size: 25px;">
-                                                            <option value="volvo" selected>Select One</option>
-                                                            <option value="volvo">Actor</option>
-                                                            <option value="saab">Band Manager</option>
-                                                            <option value="mercedes">Business/Tour Manager</option>
-                                                            <option value="audi">Cameraman</option>
-                                                            <option value="audi">Choreographer</option>
-                                                            <option value="volvo">Cinematographer</option>
-                                                            <option value="saab">Comedian</option>
-                                                            <option value="mercedes">Creative Consultant</option>
-                                                            <option value="audi">Voice Over Artist</option>
-                                                            <option value="audi">Director</option>
-                                                            <option value="volvo">Magician</option>
-                                                            <option value="saab">Dance</option>
-                                                            <option value="mercedes">Make-up Artist</option>
-                                                            <option value="audi">Music Composer</option>
-                                                            <option value="audi">Music Entertainer</option>
-                                                            <option value="volvo">Music Producer</option>
-                                                            <option value="saab">News Correspondent</option>
-                                                            <option value="mercedes">Office</option>
-                                                            <option value="audi">Personal Manager</option>
-                                                            <option value="audi">Photographer</option>
-                                                            <option value="volvo">Producer</option>
-                                                            <option value="saab">Record Label/Producer</option>
-                                                            <option value="mercedes">Screen Writer</option>
-                                                            <option value="audi">Song Writer</option>
-                                                            <option value="audi">Stage & Lighting Designer</option>
-                                                            <option value="volvo">Talk Show Personality</option>
+                                                            <option value="invalid" selected>Select One</option>
+                                                            <option value="Actor">Actor</option>
+                                                            <option value="Band Manager">Band Manager</option>
+                                                            <option value="Business/Tour Manager">Business/Tour Manager</option>
+                                                            <option value="Cameraman">Cameraman</option>
+                                                            <option value="Choreographer">Choreographer</option>
+                                                            <option value="Cinematographer">Cinematographer</option>
+                                                            <option value="Comedian">Comedian</option>
+                                                            <option value="Creative Consultant">Creative Consultant</option>
+                                                            <option value="Voice Over Artist">Voice Over Artist</option>
+                                                            <option value="Director">Director</option>
+                                                            <option value="Magician">Magician</option>
+                                                            <option value="Dance">Dance</option>
+                                                            <option value="Make-up Artist">Make-up Artist</option>
+                                                            <option value="Music Composer">Music Composer</option>
+                                                            <option value="Music Entertainer">Music Entertainer</option>
+                                                            <option value="Music Producer">Music Producer</option>
+                                                            <option value="News Correspondent">News Correspondent</option>
+                                                            <option value="Office">Office</option>
+                                                            <option value="Personal Manager">Personal Manager</option>
+                                                            <option value="Photographer">Photographer</option>
+                                                            <option value="Producer">Producer</option>
+                                                            <option value="Record Label/Producer">Record Label/Producer</option>
+                                                            <option value="Screen Writer">Screen Writer</option>
+                                                            <option value="Song Writer">Song Writer</option>
+                                                            <option value="Stage & Lighting Designer">Stage & Lighting Designer</option>
+                                                            <option value="Talk Show Personality">Talk Show Personality</option>
                                                         </select>
                                                     </div>
                                                 </a>
@@ -489,12 +496,12 @@
                                                     <div class="row" style="margin:0px">
                                                         <select class='riskTypeDropdown ' style="display:none; color:#337ab7; padding-left:20px;width: 100%;margin-top: 10px;
                                                         margin-bottom: 10px;font-size: 25px;">
-                                                            <option value="volvo" selected>Select One</option>
-                                                            <option value="volvo">Theater (99 Seats or Less)</option>
-                                                            <option value="volvo">Theater (100-500 Seats)</option>
-                                                            <option value="volvo">Theater (501-1,500 Seats)</option>
-                                                            <option value="volvo">Theater (1,501-5,000 Seats)</option>
-                                                            <option value="volvo">Theater (Over 5,000 Seats)</option>
+                                                            <option value="invalid" selected>Select One</option>
+                                                            <option value="Theater (99 Seats or Less)">Theater (99 Seats or Less)</option>
+                                                            <option value="Theater (100-500 Seats)">Theater (100-500 Seats)</option>
+                                                            <option value="Theater (501-1,500 Seats)">Theater (501-1,500 Seats)</option>
+                                                            <option value="Theater (1,501-5,000 Seats)">Theater (1,501-5,000 Seats)</option>
+                                                            <option value="Theater (Over 5,000 Seats)">Theater (Over 5,000 Seats)</option>
 
                                                         </select>
                                                     </div>
@@ -541,10 +548,10 @@
                                                     <div class="row" style="margin:0px">
                                                         <select class='riskTypeDropdown ' style="display:none; color:#337ab7; padding-left:20px;width: 100%;margin-top: 10px;
                                                         margin-bottom: 10px;font-size: 25px;">
-                                                            <option value="volvo" selected>Select One</option>
-                                                            <option value="volvo">Concessionaires, Food Only</option>
-                                                            <option value="volvo">Concessionaires, Food And Merchandise</option>
-                                                            <option value="volvo">Concessionaires with Liquor</option>
+                                                            <option value="invalid" selected>Select One</option>
+                                                            <option value="Concessionaires, Food Only">Concessionaires, Food Only</option>
+                                                            <option value="Concessionaires, Food And Merchandise">Concessionaires, Food And Merchandise</option>
+                                                            <option value="Concessionaires with Liquor">Concessionaires with Liquor</option>
 
 
                                                         </select>
@@ -563,10 +570,10 @@
                                                     <div class="row" style="margin:0px">
                                                         <select class='riskTypeDropdown ' style="display:none; color:#337ab7; padding-left:20px;width: 100%;margin-top: 10px;
                                                         margin-bottom: 10px;font-size: 25px;">
-                                                            <option value="volvo" selected>Select One</option>
-                                                            <option value="volvo">Audio-Visual</option>
-                                                            <option value="saab">Costumes & Props</option>
-                                                            <option value="mercedes">Staging</option>
+                                                            <option value="invalid" selected>Select One</option>
+                                                            <option value="Audio-Visual">Audio-Visual</option>
+                                                            <option value="Costumes & Props">Costumes & Props</option>
+                                                            <option value="Staging">Staging</option>
                                                         </select>
                                                     </div>
 
@@ -624,10 +631,10 @@
                                                     <div class="row" style="margin:0px">
                                                         <select class='riskTypeDropdown ' style="display:none; color:#337ab7; padding-left:20px;width: 100%;margin-top: 10px;
                                                         margin-bottom: 10px;font-size: 25px;">
-                                                            <option value="volvo" selected>Select One</option>
-                                                            <option value="volvo">Books or Magazines</option>
-                                                            <option value="saab">Music</option>
-                                                            <option value="mercedes">News</option>
+                                                            <option value="invalid" selected>Select One</option>
+                                                            <option value="Books or Magazines">Books or Magazines</option>
+                                                            <option value="Music">Music</option>
+                                                            <option value="News">News</option>
                                                         </select>
                                                     </div>
 
@@ -662,11 +669,11 @@
                                                     <div class="row" style="margin:0px">
                                                         <select class='riskTypeDropdown ' style="display:none; color:#337ab7; padding-left:20px;width: 100%;margin-top: 10px;
                                                         margin-bottom: 10px;font-size: 25px;">
-                                                            <option value="volvo" selected>Select One</option>
-                                                            <option value="volvo">Equipment Rental Only, No Installation</option>
-                                                            <option value="volvo">Equipment Rental, With Installation</option>
-                                                            <option value="volvo">Automobile Rental, No Operators</option>
-                                                            <option value="volvo">Automobile Rental, With Operators</option>
+                                                            <option value="invalid" selected>Select One</option>
+                                                            <option value="Equipment Rental Only, No Installation">Equipment Rental Only, No Installation</option>
+                                                            <option value="Equipment Rental, With Installation">Equipment Rental, With Installation</option>
+                                                            <option value="Automobile Rental, No Operators">Automobile Rental, No Operators</option>
+                                                            <option value="Automobile Rental, With Operators">Automobile Rental, With Operators</option>
                                                         </select>
                                                     </div>
 
@@ -804,9 +811,13 @@
                                                 </div>
                                             </div>
                                             <div class="col-xs-3">
-                                                <div class="form-group"> <!-- Date input -->
+                                                <div class="form-group" id="totalBudgetConfirmGroup"> <!-- Date input -->
                                                     <label class="control-label">Total Budget</label>
                                                     <input class="form-control" id="totalBudgetConfirm" name="totalBudgetConfirm" type="text" required="required">
+                                                </div>
+                                                <div class="form-group" id="premiumExpectedInputGroup" style="display:none">
+                                                    <label class="control-label">Target Premium</label>
+                                                    <input class="form-control" id="premiumExpectedInput" name="premiumExpectedInput" type="text" required="" >
                                                 </div>
                                             </div>
                                         </div>
@@ -819,16 +830,16 @@
                                     <div class="panel-heading">
                                         <h3 class="panel-title" style="font-size: 20px; color:rgba(31, 31, 31, 0.35)" id="coverageOptionsTitle">Coverage Options</h3>
                                     </div>
-                                    <div class="panel-body">
+                                    <div class="panel-body" id="coverageInfoPanel">
                                         <div class="row">
                                             <div class="col-xs-12">
-                                                <label class="control-label">Please select the Coverages being requested:</label>
+                                                <label class="control-label"style="font-size:10px">Please select the Coverages being requested:</label>
                                             </div>
                                         </div>
                                         <div id="coverageCheckboxesDiv">
                                         </div>
                                         <br><br>
-                                        <div class="row">
+                                        <div class="row" id="premiumDistDivContainer">
                                             <div class="col-xs-12">
                                                 <h5>Premium Distribution</h5>
                                                 <div class="row">
@@ -950,10 +961,10 @@
                                                 <label for="namedInsured">Name of Insured <span style="color:red;">*</span></label>
                                                 %{--<g:textField type="text" style="text-transform: capitalize;" class="form-control" id="namedInsured" name="namedInsured" placeholder="Name" required="required"/>--}%
                                                 <g:textField type="text" style="text-transform: capitalize;" class="form-control" id="namedInsured" name="namedInsured"
-                                                             placeholder="Name" data-toggle="tooltip" title="" required="required" />
-                                                <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" style="top: 29px; display: none" ></span>
-                                                <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" style="top: 29px; display: none" ></span>
-
+                                                             placeholder="Name" title="" required="required" />
+                                                <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" style="top: 29px; right: 15px; display: none" ></span>
+                                                <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" style="top: 29px; right: 15px; display: none" ></span>
+                                                <span class="glyphicon glyphicon-list-alt form-control-feedback" aria-hidden="true" style="top: 29px; right: 15px; color: #5bc0de; display: none" ></span>
                                             </div>
                                             <div class="form-group col-xs-12">
                                                 <label for="phoneNumber">Phone Number <span style="color:red;">*</span></label>
@@ -1428,7 +1439,135 @@
 
 
 
-    <script src="${resource(dir: 'js', file: 'newSubmission.js')}"></script>
-    <script src="${resource(dir: 'js', file: 'jquery.maskMoney.min.js')}"></script>
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="checkNamedInsuredModal">
+        <div class="modal-dialog" role="document" style="width: 820px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    %{--<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>--}%
+                    <h4 class="modal-title">Resolve Named Insured Conflict</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <form class="form-horizontal col-xs-12">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Named Insured</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="resolveNamedInsured" placeholder="" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Mailing Address
+                                    %{--<span style="color:red;">*</span> --}%
+                                </label>
+                                <div class="col-sm-10">
+                                    <input class="form-control col-xs-12" type="text" placeholder="Street address" name="" id="resolveStreet" onFocus="geolocate()"
+                                           style="margin-bottom: 6px;margin-top: 10px;" readonly/>
+                                    <input class="form-control col-xs-12" type="text" placeholder = "City" name="" id="resolveCity" style="margin-bottom: 6px;" required="required" readonly/>
+                                    <div class="col-xs-6" style="padding-left:0px;">
+                                        <input class="form-control" type="text" placeholder = "Zip Code" name="" id="resolveZip" style="margin-bottom: 6px;" required="required" readonly/>
+                                    </div>
+                                    <div class="col-xs-6" style="padding-left:0px; padding-right:0px;">
+                                        <select class="form-control" name=""   id="resolveState" style="margin-bottom: 6px;" required="required" readonly>
+                                            <option value="invalid" selected="selected">State</option>
+                                            <option value="AL">Alabama</option>
+                                            <option value="AK">Alaska</option>
+                                            <option value="AZ">Arizona</option>
+                                            <option value="AR">Arkansas</option>
+                                            <option value="CA">California</option>
+                                            <option value="CO">Colorado</option>
+                                            <option value="CT">Connecticut</option>
+                                            <option value="DE">Delaware</option>
+                                            <option value="DC">District Of Columbia</option>
+                                            <option value="FL">Florida</option>
+                                            <option value="GA">Georgia</option>
+                                            <option value="GU">Guam</option>
+                                            <option value="HI">Hawaii</option>
+                                            <option value="ID">Idaho</option>
+                                            <option value="IL">Illinois</option>
+                                            <option value="IN">Indiana</option>
+                                            <option value="IA">Iowa</option>
+                                            <option value="KS">Kansas</option>
+                                            <option value="KY">Kentucky</option>
+                                            <option value="LA">Louisiana</option>
+                                            <option value="ME">Maine</option>
+                                            <option value="MD">Maryland</option>
+                                            <option value="MA">Massachusetts</option>
+                                            <option value="MI">Michigan</option>
+                                            <option value="MN">Minnesota</option>
+                                            <option value="MS">Mississippi</option>
+                                            <option value="MO">Missouri</option>
+                                            <option value="MT">Montana</option>
+                                            <option value="NE">Nebraska</option>
+                                            <option value="NV">Nevada</option>
+                                            <option value="NH">New Hampshire</option>
+                                            <option value="NJ">New Jersey</option>
+                                            <option value="NM">New Mexico</option>
+                                            <option value="NY">New York</option>
+                                            <option value="NC">North Carolina</option>
+                                            <option value="ND">North Dakota</option>
+                                            <option value="OH">Ohio</option>
+                                            <option value="OK">Oklahoma</option>
+                                            <option value="OR">Oregon</option>
+                                            <option value="PA">Pennsylvania</option>
+                                            <option value="PR">Puerto Rico</option>
+                                            <option value="RI">Rhode Island</option>
+                                            <option value="SC">South Carolina</option>
+                                            <option value="SD">South Dakota</option>
+                                            <option value="TN">Tennessee</option>
+                                            <option value="TX">Texas</option>
+                                            <option value="UT">Utah</option>
+                                            <option value="VT">Vermont</option>
+                                            <option value="VI">Virgin Islands</option>
+                                            <option value="VA">Virginia</option>
+                                            <option value="WA">Washington</option>
+                                            <option value="WV">West Virginia</option>
+                                            <option value="WI">Wisconsin</option>
+                                            <option value="WY">Wyoming</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <div id="conflictExistsDiv" >
+                            <div class="col-xs-2">
+
+                            </div>
+                            <div class="col-xs-10">
+                                <mark class="control-label">Your submission seems to match another recently submitted.</mark>
+                            </div>
+                            <div class="col-xs-2">
+
+                            </div>
+                            <div class="col-xs-10" style=" margin-top: 16px;">
+                                <label class="col-xs-8 control-label" style="margin-bottom: 0px;">Named Insured</label>
+                                <label class="col-xs-4 control-label" style="margin-bottom: 0px;">Status</label>
+                            </div>
+                            <div class="col-xs-2">
+
+                            </div>
+                            <div class="col-xs-10" id="matchingSubmissionsContainer" style="margin-bottom:32px;">
+                                <span class="col-xs-8" style="color:red">Sample Named Insured LLC</span>
+                                <span class="col-xs-4" style="color:red">Broker of Record Needed</span>
+                            </div>
+                            <div class="col-xs-2">
+
+                            </div>
+                            <div class="col-xs-10">
+                                %{--<small class="control-label">This conflict will have to be investigated and cleared. If you select to continue, your submission will be created but placed on hold until the conflict is resolved.</small>--}%
+                                <small class="control-label">To continue please resolve conflict. If conflict cannot be resolved, you may choose to request a Broker of Record document confirming representation</small>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-info" id="resolveConflictBOR" type="button"  >Request BOR</button>
+                    <button class="btn btn-primary" id="resolveConflictContinue" type="button" style="display:none" >Continue</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
             </body>
         </html>

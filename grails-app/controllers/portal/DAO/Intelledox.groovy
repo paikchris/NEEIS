@@ -14,7 +14,7 @@ import portal.Utils.FileTransferHelper;
 class Intelledox {
 
 
-    def createIndicationPDF(jsonSerial, uwQuestionsMap, dataSource_aim){
+    def createIndicationPDF(jsonSerial, uwQuestionsMap, uwQuestionsOrder, dataSource_aim){
         log.info "INTELLEDOX"
         log.info "JSON ==== " + jsonSerial
 
@@ -62,8 +62,9 @@ class Intelledox {
 \t\t<annualOrShort>${jsonSerial.getAt("proposedTermLength")}</annualOrShort>
 \t\t<insuranceCompany>${jsonSerial.getAt("insuranceCompany")}</insuranceCompany>
 \t\t<primaryName>${jsonSerial.getAt("namedInsured")}</primaryName>
-\t\t<primaryPhone>${jsonSerial.getAt("phoneNumber")}</primaryPhone>
-\t\t<primaryFax>${jsonSerial.getAt("phoneNumber")}</primaryFax>
+\t\t<primaryPhone>${jsonSerial.getAt("phoneNumber")}</primaryPhone>""";
+//\t\t<primaryFax>${jsonSerial.getAt("phoneNumber")}</primaryFax>
+soapXML = soapXML + """"
 \t\t<primaryEmail>${jsonSerial.getAt("namedInsuredEmail")}</primaryEmail>
 \t\t<physicalAddress>${jsonSerial.getAt("streetNameMailing")}, ${jsonSerial.getAt("cityMailing")}, ${
             jsonSerial.getAt("stateMailing")
@@ -248,10 +249,9 @@ soapXML = soapXML + """
 
 \t<budgetInformation>
 \t\t<budget> ${jsonSerial.getAt("totalBudgetConfirm")} </budget>
-\t\t<numberProduction> 1 </numberProduction>
-\t\t<maxBudget> N/A </maxBudget>
-\t\t<workOthers> N/A </workOthers>
-\t\t<sourceFinance> ${jsonSerial.getAt("sourceOfFinancing")} </sourceFinance>
+\t\t<maxBudget> To Follow </maxBudget>
+\t\t<workOthers> ${uwQuestionsMap.getAt("Do you do post production or special effects for others?")} </workOthers>
+\t\t<sourceFinance> To Follow </sourceFinance>
 \t\t<mediaType> N/A </mediaType>
 \t\t<frequencyDevelopment> N/A </frequencyDevelopment>
 \t</budgetInformation>
@@ -269,7 +269,7 @@ soapXML = soapXML + """
 \t\t</productions>
 
 \t\t<risks>
-\t\t\t<risk riskDeclared="Declared Risks">
+\t\t\t<risk riskDeclared="Declared Additional Hazards">
 \t\t\t\t<declaredRisks>
 \t\t\t\t\t<declaredRisk>
 \t\t\t\t\t\t<name> ${jsonSerial.getAt("productionInvolves")}</name>
@@ -315,15 +315,24 @@ soapXML = soapXML + """
 \t\t<notesAddHeader>Underwriting Info</notesAddHeader>
 \t\t<notesAddRow>"""
 
+        uwQuestionsOrder.each{
+
+            soapXML = soapXML + """
+\t\t\t<notes notesQuestion="${XmlUtil.escapeXml("${it}")}">
+\t\t\t\t<notesAnswer>${XmlUtil.escapeXml(uwQuestionsMap["${it}"])}</notesAnswer>
+\t\t\t</notes>
+            """
+        }
+        /*
         uwQuestionsMap.each { question, answer ->
 //            println "${animal} has the sound ${animalSound}"
             soapXML = soapXML + """
 \t\t\t<notes notesQuestion="${XmlUtil.escapeXml(question)}">
 \t\t\t\t<notesAnswer>${XmlUtil.escapeXml(answer)}</notesAnswer>
 \t\t\t</notes>
-
             """
         };
+        */
         soapXML = soapXML + """
 \t\t</notesAddRow>
 \t</notesAddTable>
@@ -559,6 +568,7 @@ soapXML = soapXML + """
 \t\t<NAIC>${params.NAIC}</NAIC>
 \t\t<certificateNumber>${params.certificateNumber}</certificateNumber>
 \t\t<revisionNumber>${params.revisionNumber}</revisionNumber>
+\t\t<submissionID>SubmissionID</submissionID>
 
 \t\t<insrltrGen>${params.insrltrGen}</insrltrGen>
 \t\t<cbGenCommercialGeneralLiability>${params.cbGenCommercialGeneralLiability}</cbGenCommercialGeneralLiability>
@@ -637,16 +647,94 @@ soapXML = soapXML + """
 \t\t<additionalRemarks>${params.additionalRemarks}</additionalRemarks>
 \t\t<certificateHolder>${params.certificateHolder}</certificateHolder>
 \t\t
-\t</certificate>
+\t\t<nameOfOrganization>${params.certificateHolder}</nameOfOrganization>
+\t\t<nameOfOrganizationInformation>${params.additionalRemarks}</nameOfOrganizationInformation>
+\t</certificate>"""
+
+
+
+
+        ////CPK GENERAL LIABILITY TABLE
+        if(params.getAt("cpkLOB").length() > 1) {
+            soapXML = soapXML + """
+\t<GeneralTable>
+\t\t<GeneralROW>""";
+            params.getAt("cpkLOB").split(";&&;").each {
+                if (it.length() > 0) {
+                    soapXML = soapXML + """
+\t\t\t<General packageGeneral="${it.split(";&;")[0]}">
+\t\t\t\t<limitGeneral> ${it.split(";&;")[1]} </limitGeneral>
+\t\t\t\t<deductibleGeneral> ${it.split(";&;").size() >=3 ? it.split(";&;")[2] : ""} </deductibleGeneral>
+\t\t\t</General>"""
+                }
+            }
+            soapXML = soapXML + """
+\t\t</GeneralROW>
+\t</GeneralTable>"""
+        }
+
+        ////CGL GENERAL LIABILITY TABLE
+        if(params.getAt("cglLOB").length() > 1) {
+            soapXML = soapXML + """
+\t<GeneralTable>
+\t\t<GeneralROW>""";
+            params.getAt("cglLOB").split(";&&;").each {
+                if (it.length() > 0) {
+                    soapXML = soapXML + """
+\t\t\t<General packageGeneral="${it.split(";&;")[0]}">
+\t\t\t\t<limitGeneral> ${it.split(";&;")[1]} </limitGeneral>
+\t\t\t\t<deductibleGeneral> ${it.split(";&;").size() >=3 ? it.split(";&;")[2] : ""} </deductibleGeneral>
+\t\t\t</General>"""
+                }
+            }
+            soapXML = soapXML + """
+\t\t</GeneralROW>
+\t</GeneralTable>"""
+        }
+
+
+        ////EPKG TABLE
+        if(params.getAt("epkgLOB").length() > 1) {
+            soapXML = soapXML + """
+\t<EPKTable>
+\t\t<EPKROW>""";
+            params.getAt("epkgLOB").split(";&&;").each {
+                if (it.length() > 0) {
+                    soapXML = soapXML + """
+\t\t\t<EPK packageEPK="${it.split(";&;")[0]}">
+\t\t\t\t<limitEPK> ${it.split(";&;")[1]} </limitEPK>
+\t\t\t\t<deductibleEPK> ${it.split(";&;").size() >=3 ? it.split(";&;")[2] : ""} </deductibleEPK>
+\t\t\t</EPK>"""
+                }
+            }
+            soapXML = soapXML + """
+\t\t</EPKROW>
+\t</EPKTable>"""
+        }
+
+
+//\t<AutoTable>
+//\t\t<AutoROW>
+//\t\t\t<Auto packageAuto="Employee Benefits Liability">
+//\t\t\t\t<limitAuto> \$1,000 </limitAuto>
+//\t\t\t\t<deductibleAuto> \$500 </deductibleAuto>
+//\t\t\t</Auto>
+//\t\t\t<Auto packageAuto="Employee Benefits Liability2">
+//\t\t\t\t<limitAuto> \$1,000 </limitAuto>
+//\t\t\t\t<deductibleAuto> \$500 </deductibleAuto>
+//\t\t\t</Auto>
+//\t\t</AutoROW>
+//\t</AutoTable>
+        soapXML = soapXML + """
 </application>]]></int:Data>
-                </int:ProvidedData>
-            </int:providedData>
-            <int:options>
-                <int:ReturnDocuments>true</int:ReturnDocuments>
-                <int:RunProviders>false</int:RunProviders>
-                <int:LogGeneration>false</int:LogGeneration>
-            </int:options>
-        </int:GenerateWithData>
+\t\t\t\t</int:ProvidedData>
+\t\t\t</int:providedData>
+\t\t\t<int:options>
+\t\t\t\t<int:ReturnDocuments>true</int:ReturnDocuments>
+\t\t\t\t<int:RunProviders>false</int:RunProviders>
+\t\t\t\t<int:LogGeneration>false</int:LogGeneration>
+\t\t\t</int:options>
+\t\t</int:GenerateWithData>
     </x:Body>
 </x:Envelope>"""
 

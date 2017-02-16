@@ -22,6 +22,18 @@ class MainController {
 
     }
 
+    def SpecRunner(){
+        [user: session.user]
+    }
+
+    def resetp(){
+        log.info("PASSWORD RESET PAGE")
+        log.info(params)
+
+        [user: session.user]
+    }
+
+
     def index() {
 
 
@@ -100,6 +112,7 @@ class MainController {
          submissions: submissions, submissionsQuoted: submissionsQuoted, submissionsUnderReview: submissionsUnderReview,
         todaysDate: todaysDate]
     }
+
 
 
 
@@ -207,7 +220,7 @@ class MainController {
         Sql aimsql = new Sql(dataSource_aim)
         def countP = 0;
         def countM =0;
-
+        def matchingSubmissions = "";
         aimsql.eachRow( "SELECT * FROM dvSearchInsured_v2 WITH (NOLOCK) WHERE (NamedInsured LIKE '%" + params.checkName + "%')" +
                 " AND (Zip = '" + params.zipCodeMailing + "')") {
             log.info "HELLOO"
@@ -218,24 +231,24 @@ class MainController {
             double ratio = ((double) lfd) / (Math.max(s1.length(), s2.length()));
 
             log.info params.checkName + " - " + "$it.NamedInsured" + " " + ratio;
-            if(ratio <0.1){
+            matchingSubmissions = matchingSubmissions + it.NamedInsured + "&,&"
+            if(ratio <0.05){
                 countM++
             }
-
         }
-        aimsql.eachRow( "SELECT * FROM dvSearchInsured_v2 WITH (NOLOCK) WHERE (NamedInsured LIKE '%" + params.checkName + "%')" +
-                " AND (Zip = '" + params.zipCodePhysical + "')") {
-            //LEVENSHTEIN ALGORITHM TO DETERMINE HOW ALIKE TWO STRINGS ARE
-            int lfd = Utils.levenshteinDistance(params.checkName, it.NamedInsured)
-            String s1 = params.checkName;
-            String s2 = it.NamedInsured;
-            double ratio = ((double) lfd) / (Math.max(s1.length(), s2.length()));
-
-            log.info params.checkName + " - " + "$it.NamedInsured" + " " + ratio;
-            if(ratio <0.1){
-                countP++
-            }
-        }
+//        aimsql.eachRow( "SELECT * FROM dvSearchInsured_v2 WITH (NOLOCK) WHERE (NamedInsured LIKE '%" + params.checkName + "%')" +
+//                " AND (Zip = '" + params.zipCodePhysical + "')") {
+//            //LEVENSHTEIN ALGORITHM TO DETERMINE HOW ALIKE TWO STRINGS ARE
+//            int lfd = Utils.levenshteinDistance(params.checkName, it.NamedInsured)
+//            String s1 = params.checkName;
+//            String s2 = it.NamedInsured;
+//            double ratio = ((double) lfd) / (Math.max(s1.length(), s2.length()));
+//
+//            log.info params.checkName + " - " + "$it.NamedInsured" + " " + ratio;
+//            if(ratio <0.1){
+//                countP++
+//            }
+//        }
 
 
         def renderString = "";
@@ -246,7 +259,8 @@ class MainController {
         else{
             renderString = countP
         }
-
+        renderString = renderString + "&;&" + matchingSubmissions
+        log.info "Render: " + renderString
         render renderString
 
     }
@@ -411,6 +425,8 @@ class MainController {
             }
         }
 
+
+        //GET CERT INFO
         def additionalInsuredList;
         try{
             log.info session.user.company
@@ -421,11 +437,22 @@ class MainController {
             log.info e
         }
 
+        //GET NEEIS UNDERWRITER LIST
+        def neeisUWList;
+        try{
+            neeisUWList = User.findAllByUserRole("Underwriter",[sort: "firstName",order: "desc"]);
+            log.info neeisUWList
+        }
+        catch (Exception e){
+            log.info e
+        }
 
-        [user: session.user, submissions: submissions, additionalInsuredList: additionalInsuredList, timestamp:timestamp]
 
 
+        [user: session.user, submissions: submissions, additionalInsuredList: additionalInsuredList, timestamp:timestamp, neeisUWList:neeisUWList]
     }
+
+
 
     def getCertWords(){
         log.info ("GETTING CERT WORDS")
@@ -842,5 +869,7 @@ class MainController {
 
         return groupedMessages;
     }
+
+
 
 }

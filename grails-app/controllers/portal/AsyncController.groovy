@@ -179,7 +179,6 @@ class AsyncController {
         render renderString
     }
 
-
     def getLimitsDeductibles() {
         log.info("GETTING LIMITS AND DEDUCTIBLES FOR PRODUCT")
         log.info(params);
@@ -331,6 +330,7 @@ class AsyncController {
 //                    "WHERE QuoteID='" + params.quoteID + "'") {
 //                log.info "Quote Record =========== " + it
 //                record['Limits'] = it.Limits
+//                record['Deductible'] =  it.Deductible
 //            }
 
 
@@ -599,6 +599,9 @@ class AsyncController {
             def tempSubmission;
             def tempQuoteID;
             log.info(relatedSubmissions)
+            params['cpkLOB'] =""
+            params['cglLOB'] = ""
+            params['epkgLOB'] = ""
             relatedSubmissions.each{
                 tempQuoteID = it.aimQuoteID
                 log.info tempQuoteID
@@ -608,6 +611,7 @@ class AsyncController {
                         "WHERE QuoteID='" + tempQuoteID + "'") {
                     log.info "Limits Record =========== " + it.Limits
                     record['Limits'] = it.Limits
+                    record['Deductible'] = it.Deductible
                 }
                 aimsql.eachRow( "SELECT TOP (1) *  " +
                         "FROM dbo.Quote " +
@@ -636,7 +640,7 @@ class AsyncController {
                 }
 //                def date = Date.parse("yyyy-MM-dd HH:mm:ss.SSS", dateStr)
 //                def timestamp = (Date.parse("yyyy-MM-dd HH:mm:ss.SSS", dateStr)).format(dateSimple, timeZone)
-
+                log.info "STARTING LOB FOR ==== " + it.coverages
                 if(it.coverages == "EPKG"){
                     params['insrltrOther']= "A"
                     params['riskType']= "Entertainment Package"
@@ -646,6 +650,48 @@ class AsyncController {
                     params['otherStart']= record['Effective']
                     params['otherEnd']= record['Expiration']
                     params['otherLimit']= "" //Needs to allow text
+
+
+                    //BUILD LOB
+                    def limitMap = [:]
+                    def deductMap = [:]
+                    def limitAmount
+                    def limitDesc
+                    record['Limits'].split("\\r?\\n").each {
+                        log.info it
+                        limitAmount = it.split('\t')[0];
+                        limitDesc = it.split('\t')[1];
+                        limitDesc = limitDesc.minus("EPKG:")
+                        limitMap["${limitDesc}"] = limitAmount;
+                    }
+                    def deductAmount
+                    def deductDesc
+                    record['Deductible'].split("\\r?\\n").each {
+                        log.info it
+                        deductAmount = it.split('\t')[0];
+                        deductDesc = it.split('\t')[1];
+                        deductDesc = deductDesc.minus("EPKG:")
+                        deductMap["${deductDesc}"] = deductAmount;
+                    }
+
+                    def epkgLOB ="";
+                    limitMap.each{ k, v ->
+                        def tempDeduct = deductMap["${k}"]
+                        epkgLOB = epkgLOB + "${k} ;&;${v} ;&;${tempDeduct} ;&&;"
+                    }
+//                    deductMap.each{ k, v ->
+//                        if(limitMap.containsKey("${k}")){
+//
+//                        }
+//                        else{
+//                            epkgLOB = epkgLOB + "${k} ;&; ;&;${tempDeduct} ;&&;"
+//                        }
+//                    }
+
+                    params['epkgLOB'] = epkgLOB
+
+
+
                 }
                 else if ( it.coverages == "CGL" || it.coverages =="CPK"){
                     params['insrltrGen']= "A"
@@ -702,11 +748,13 @@ class AsyncController {
                     NumberFormat format = NumberFormat.getCurrencyInstance();
                     Number number;
                     def limitTag = "";
+
                     log.info (record['Limits'])
                     record['Limits'].split("\\r?\\n").each{
                         log.info it
                         limitAmount = it.split('\t')[0];
                         limitDesc = it.split('\t')[1];
+
 //                        log.info(limitDesc + "  -  " + limitAmount)
                         if(StringUtils.containsIgnoreCase(limitDesc, "Each Occurrence")){
                             limitTag = "genEachLimit"
@@ -733,6 +781,53 @@ class AsyncController {
                         }
 
                     }
+
+
+                    //BUILD LOB
+                    def limitMap = [:]
+                    def deductMap = [:]
+
+                    record['Limits'].split("\\r?\\n").each {
+                        log.info it
+                        limitAmount = it.split('\t')[0];
+                        limitDesc = it.split('\t')[1];
+                        limitDesc = limitDesc.minus("CPK:")
+                        limitDesc = limitDesc.minus("CGL:")
+                        limitMap["${limitDesc}"] = limitAmount;
+                    }
+                    def deductAmount
+                    def deductDesc
+                    record['Deductible'].split("\\r?\\n").each {
+                        log.info it
+                        deductAmount = it.split('\t')[0];
+                        deductDesc = it.split('\t')[1];
+                        deductDesc = deductDesc.minus("CPK:")
+                        deductDesc = deductDesc.minus("CGL:")
+                        deductMap["${deductDesc}"] = deductAmount;
+                    }
+
+                    def cglLOB ="";
+                    def tempDeduct;
+                    limitMap.each{ k, v ->
+                        tempDeduct = deductMap["${k}"]
+                        cglLOB = cglLOB + "${k} ;&;${v} ;&;${tempDeduct} ;&&;"
+                    }
+//                    limitMap.each{
+//                        key, value -> log.info "|${key}|";
+//                    }
+//                    deductMap.each{ k, v ->
+//                        log.info "|" + k + "|"
+//                        log.info limitMap.containsKey("${k}")
+//                        if(limitMap.containsKey("${k}")){
+//
+//                        }
+//                        else{
+//                            tempDeduct = deductMap["${k}"]
+//                            cglLOB = cglLOB + "${k} ;&; ;&;${tempDeduct} ;&&;"
+//                        }
+//                    }
+
+                    params['cglLOB'] = cglLOB
 
                 }
 
@@ -860,12 +955,6 @@ class AsyncController {
         }
 
     }
-
-
-
-
-
-
 
     def ajaxAttach() {
         log.info("CHECKING AJAX ATTACH BUTTON")
@@ -1107,7 +1196,169 @@ class AsyncController {
     def ratePremiums() {
         log.info("RATING PREMIUMS")
         log.info(params);
+
+        log.info JsonOutput.prettyPrint(params.rateMap)
+        def rateMap = new JsonSlurper().parseText(params.rateMap)
+
+
         Sql aimsql = new Sql(dataSource_aim)
+
+        //PIP CHOICE RATING
+        def pipChoice_miscRentedEquipRateMinPrem = [0.5, 100];
+        def pipChoice_propsSetWardrobeRateMinPrem = [0.5, 100];
+        def pipChoice_thirdPartyPropDamageRateMinPrem = [0.05, 100];
+        def pipChoice_extraExpenseRateMinPrem = [0.1, 100];
+        def pipChoice_rate = pipChoice_miscRentedEquipRateMinPrem[0];
+        def pipChoice_minPremium = pipChoice_miscRentedEquipRateMinPrem[1];
+        def pipChoice_NOHARateMinPrem = ["flat", 750];
+
+        //PIP1 RATING
+        def pip1_negativeFilmVideoRateMinPrem = ["flat", "incl"];
+        def pip1_faultyStockCameraProcessingRateMinPrem = ["flat", "incl"];
+        def pip1_miscRentedEquipRateMinPrem = ["flat", "incl"];
+        def pip1_propsSetWardrobeRateMinPrem = ["flat", "incl"];
+        def pip1_thirdPartyPropDamageRateMinPrem = ["flat", "incl"];
+        def pip1_extraExpenseRateMinPrem = ["flat", "incl"];
+        def pip1_minPremium = 500;
+
+        //PIP2 RATING
+        def pip2_PIP2premium = 1000;
+        def pip2_negativeFilmVideoRateMinPrem = ["flat", "incl"];
+        def pip2_faultyStockCameraProcessingRateMinPrem = ["flat", "incl"];
+        def pip2_miscRentedEquipRateMinPrem = ["flat", "incl"];
+        def pip2_propsSetWardrobeRateMinPrem = ["flat", "incl"];
+        def pip2_thirdPartyPropDamageRateMinPrem = ["flat", "incl"];
+        def pip2_extraExpenseRateMinPrem = ["flat", "incl"];
+        def pip2_officeContentsRateMinPrem = ["flat", "incl"];
+        def pip2_NOHARateMinPrem = ["flat", 500];
+
+        //PIP3 RATING
+        def pip3_negativeFilmVideoRateMinPrem = [0.6, 1500];
+
+        //PIP4
+        def pip4_negativeFilmVideoRateMinPrem = [0.6, 2000];
+
+        //PIP5
+        def pip5_negativeFilmVideoRateMinPrem = [0.6, 2500];
+        def pip5_civilAuthority100Limit = ["flat", 250];
+        def pip5_civilAuthority500Limit = ["flat", 500];
+
+        if(rateMap.size()> 1){
+            for (String k : rateMap.keySet()) {
+                if(rateMap[k] == ""){
+                    rateMap[k] = "0"
+                }
+
+            }
+            log.info "ADJUSTING RATES"
+//            //PIP CHOICE RATING
+//            "PIPCHOI_miscRate": "",
+//            "PIPCHOI_miscMP": "",
+//            "PIPCHOI_propsRate": "",
+//            "PIPCHOI_propsMP": "",
+//            "PIPCHOI_thirdRate": "",
+//            "PIPCHOI_thirdMP": "",
+//            "PIPCHOI_extraRate": "",
+//            "PIPCHOI_extraMP": "",
+//            "PIPCHOI_NOHARate": "",
+//            "PIPCHOI_NOHAMP": "",
+//            "PIP1_Rate": "",
+//            "PIP1_MP": "",
+//            "PIP2_Rate": "",
+//            "PIP2_MP": "",
+//            "PIP2_NOHARate": "",
+//            "PIP2_NOHAMP": "",
+//            "PIP3_Rate": "",
+//            "PIP3_MP": "",
+//            "PIP4_Rate": "",
+//            "PIP4_MP": "",
+//            "PIP5_Rate": "",
+//            "PIP5_MP": "",
+//            "PIP5_civil100Rate": "",
+//            "PIP5_civil100MP": "",
+//            "PIP5_civil500Rate": "",
+//            "PIP5_civil500MP": "",
+//            "runRatesButton": "Upload"
+
+             pipChoice_miscRentedEquipRateMinPrem = [ rateMap['PIPCHOI_miscRate'].toDouble(), rateMap['PIPCHOI_miscMP'].toInteger()];
+             pipChoice_propsSetWardrobeRateMinPrem = [ rateMap['PIPCHOI_propsRate'].toDouble(), rateMap['PIPCHOI_propsMP'].toInteger()];
+             pipChoice_thirdPartyPropDamageRateMinPrem = [ rateMap['PIPCHOI_thirdRate'].toDouble(), rateMap['PIPCHOI_thirdMP'].toInteger()];
+             pipChoice_extraExpenseRateMinPrem = [ rateMap['PIPCHOI_extraRate'].toDouble(), rateMap['PIPCHOI_extraMP'].toInteger()];
+             pipChoice_rate = pipChoice_miscRentedEquipRateMinPrem[0];
+             pipChoice_minPremium = pipChoice_miscRentedEquipRateMinPrem[1];
+             pipChoice_NOHARateMinPrem = [ 'flat', rateMap['PIPCHOI_NOHAMP'].toInteger()];
+
+            //PIP1 RATING
+             pip1_negativeFilmVideoRateMinPrem = ["flat", "incl"];
+             pip1_faultyStockCameraProcessingRateMinPrem = ["flat", "incl"];
+             pip1_miscRentedEquipRateMinPrem = ["flat", "incl"];
+             pip1_propsSetWardrobeRateMinPrem = ["flat", "incl"];
+             pip1_thirdPartyPropDamageRateMinPrem = ["flat", "incl"];
+             pip1_extraExpenseRateMinPrem = ["flat", "incl"];
+             pip1_minPremium = rateMap['PIP1_MP'].toInteger();
+
+            //PIP2 RATING
+             pip2_PIP2premium = rateMap['PIP2_MP'];
+             pip2_negativeFilmVideoRateMinPrem = ["flat", "incl"];
+             pip2_faultyStockCameraProcessingRateMinPrem = ["flat", "incl"];
+             pip2_miscRentedEquipRateMinPrem = ["flat", "incl"];
+             pip2_propsSetWardrobeRateMinPrem = ["flat", "incl"];
+             pip2_thirdPartyPropDamageRateMinPrem = ["flat", "incl"];
+             pip2_extraExpenseRateMinPrem = ["flat", "incl"];
+             pip2_officeContentsRateMinPrem = ["flat", "incl"];
+             pip2_NOHARateMinPrem = [ 'flat', rateMap['PIP2_NOHAMP'].toInteger()];
+
+            //PIP3 RATING
+             pip3_negativeFilmVideoRateMinPrem = [ rateMap['PIP3_Rate'].toDouble(), rateMap['PIP3_MP'].toInteger()];
+
+            //PIP4
+             pip4_negativeFilmVideoRateMinPrem = [ rateMap['PIP4_Rate'].toDouble(), rateMap['PIP4_MP'].toInteger()];
+
+            //PIP5
+             pip5_negativeFilmVideoRateMinPrem = [ rateMap['PIP5_Rate'].toDouble(), rateMap['PIP5_MP'].toInteger()];
+             pip5_civilAuthority100Limit = ["flat", rateMap['PIP5_civil100MP'].toInteger()];
+             pip5_civilAuthority500Limit = ["flat", rateMap['PIP5_civil500MP'].toInteger()];
+        }
+
+        def submissionRateMap = [:]
+        submissionRateMap["pipChoice_miscRentedEquipRateMinPrem"] = pipChoice_miscRentedEquipRateMinPrem
+        submissionRateMap["pipChoice_propsSetWardrobeRateMinPrem"] = pipChoice_propsSetWardrobeRateMinPrem
+        submissionRateMap["pipChoice_thirdPartyPropDamageRateMinPrem"] = pipChoice_thirdPartyPropDamageRateMinPrem
+        submissionRateMap["pipChoice_extraExpenseRateMinPrem"] = pipChoice_extraExpenseRateMinPrem
+        submissionRateMap["pipChoice_rate"] = pipChoice_rate
+        submissionRateMap["pipChoice_minPremium"] = pipChoice_minPremium
+        submissionRateMap["pipChoice_NOHARateMinPrem"] = pipChoice_NOHARateMinPrem
+
+        //PIP1 RATING
+        submissionRateMap["pip1_negativeFilmVideoRateMinPrem"] = pip1_negativeFilmVideoRateMinPrem
+        submissionRateMap["pip1_faultyStockCameraProcessingRateMinPrem"] = pip1_faultyStockCameraProcessingRateMinPrem
+        submissionRateMap["pip1_miscRentedEquipRateMinPrem"] = pip1_miscRentedEquipRateMinPrem
+        submissionRateMap["pip1_propsSetWardrobeRateMinPrem"] = pip1_propsSetWardrobeRateMinPrem
+        submissionRateMap["pip1_thirdPartyPropDamageRateMinPrem"] = pip1_thirdPartyPropDamageRateMinPrem
+        submissionRateMap["pip1_extraExpenseRateMinPrem"] = pip1_extraExpenseRateMinPrem
+        submissionRateMap["pip1_minPremium"] = pip1_minPremium
+
+        //PIP2 RATING
+        submissionRateMap["pip2_PIP2premium"] = pip2_PIP2premium
+        submissionRateMap["pip2_negativeFilmVideoRateMinPrem"] = pip2_negativeFilmVideoRateMinPrem
+        submissionRateMap["pip2_faultyStockCameraProcessingRateMinPrem"] = pip2_faultyStockCameraProcessingRateMinPrem
+        submissionRateMap["pip2_miscRentedEquipRateMinPrem"] = pip2_miscRentedEquipRateMinPrem
+        submissionRateMap["pip2_propsSetWardrobeRateMinPrem"] = pip2_propsSetWardrobeRateMinPrem
+        submissionRateMap["pip2_thirdPartyPropDamageRateMinPrem"] = pip2_thirdPartyPropDamageRateMinPrem
+        submissionRateMap["pip2_extraExpenseRateMinPrem"] = pip2_extraExpenseRateMinPrem
+        submissionRateMap["pip2_officeContentsRateMinPrem"] = pip2_officeContentsRateMinPrem
+        submissionRateMap["pip2_NOHARateMinPrem"] = pip2_NOHARateMinPrem
+
+        //PIP3 RATING
+        submissionRateMap["pip3_negativeFilmVideoRateMinPrem"] = pip3_negativeFilmVideoRateMinPrem
+
+        //PIP4
+        submissionRateMap["pip4_negativeFilmVideoRateMinPrem"] = pip4_negativeFilmVideoRateMinPrem
+
+        //PIP5
+        submissionRateMap["pip5_negativeFilmVideoRateMinPrem"] =pip5_negativeFilmVideoRateMinPrem
+        submissionRateMap["pip5_civilAuthority100Limit"] = pip5_civilAuthority100Limit
+        submissionRateMap["pip5_civilAuthority500Limit"] = pip5_civilAuthority500Limit
 
         NumberFormat moneyFormat = NumberFormat.getCurrencyInstance();
 
@@ -1189,12 +1440,22 @@ class AsyncController {
 
                     if (coverageID == "EPKG") {
                         if (productID == "PIP CHOI") {
+
+                            /*
+                            def pipChoice_miscRentedEquipRateMinPrem = [0.5, 100];
+                            def pipChoice_propsSetWardrobeRateMinPrem = [0.5, 100];
+                            def pipChoice_thirdPartyPropDamageRateMinPrem = [0.05, 100];
+                            def pipChoice_extraExpenseRateMinPrem = [0.1, 100];
+                            def tempLimit = 0;
+                            def pipChoice_rate = pipChoice_miscRentedEquipRateMinPrem[0];
+                            def pipChoice_minPremium = pipChoice_miscRentedEquipRateMinPrem[1];
+                             */
                             def premium = 0.0
                             def deductAmount = 0;
-                            def miscRentedEquipRateMinPrem = [0.5, 100];
-                            def propsSetWardrobeRateMinPrem = [0.5, 100];
-                            def thirdPartyPropDamageRateMinPrem = [0.05, 100];
-                            def extraExpenseRateMinPrem = [0.1, 100];
+                            def miscRentedEquipRateMinPrem = pipChoice_miscRentedEquipRateMinPrem;
+                            def propsSetWardrobeRateMinPrem = pipChoice_propsSetWardrobeRateMinPrem;
+                            def thirdPartyPropDamageRateMinPrem = pipChoice_thirdPartyPropDamageRateMinPrem;
+                            def extraExpenseRateMinPrem = pipChoice_extraExpenseRateMinPrem;
                             def tempLimit = 0;
                             def rate = miscRentedEquipRateMinPrem[0];
                             def minPremium = miscRentedEquipRateMinPrem[1];
@@ -1342,7 +1603,7 @@ class AsyncController {
 //                            }
 
                             if (params.productsSelected.contains("NOHA")) {
-                                def NOHARateMinPrem = ["flat", 750];
+                                def NOHARateMinPrem = pipChoice_NOHARateMinPrem;
 
                                 premiumsMap["Hired Auto Physical Damage"] = NOHARateMinPrem;
                                 tempDeductiblesMap["Hired Auto Physical Damage"] = "10% of Loss (\$1,500 Min / \$10,000)";
@@ -1358,15 +1619,16 @@ class AsyncController {
 
                         }
                         else if (productID == "PIP 1") {
-                            def negativeFilmVideoRateMinPrem = ["flat", "incl"];
-                            def faultyStockCameraProcessingRateMinPrem = ["flat", "incl"];
-                            def miscRentedEquipRateMinPrem = ["flat", "incl"];
-                            def propsSetWardrobeRateMinPrem = ["flat", "incl"];
-                            def thirdPartyPropDamageRateMinPrem = ["flat", "incl"];
-                            def extraExpenseRateMinPrem = ["flat", "incl"];
+
+                            def negativeFilmVideoRateMinPrem = pip1_negativeFilmVideoRateMinPrem;
+                            def faultyStockCameraProcessingRateMinPrem = pip1_faultyStockCameraProcessingRateMinPrem;
+                            def miscRentedEquipRateMinPrem = pip1_miscRentedEquipRateMinPrem;
+                            def propsSetWardrobeRateMinPrem = pip1_propsSetWardrobeRateMinPrem;
+                            def thirdPartyPropDamageRateMinPrem = pip1_thirdPartyPropDamageRateMinPrem;
+                            def extraExpenseRateMinPrem = pip1_extraExpenseRateMinPrem;
 
                             //PIP 1 Premium is a flat rate of 500
-                            def premium = 500;
+                            def premium = pip1_minPremium;
                             productTotalPremium = premium;
 
                             premiumsMap["Negative Film & Videotape"] = negativeFilmVideoRateMinPrem;
@@ -1428,14 +1690,17 @@ class AsyncController {
 //
                         }
                         else if (productID == "PIP 2") {
-                            def PIP2premium = 1000;
-                            def negativeFilmVideoRateMinPrem = ["flat", "incl"];
-                            def faultyStockCameraProcessingRateMinPrem = ["flat", "incl"];
-                            def miscRentedEquipRateMinPrem = ["flat", "incl"];
-                            def propsSetWardrobeRateMinPrem = ["flat", "incl"];
-                            def thirdPartyPropDamageRateMinPrem = ["flat", "incl"];
-                            def extraExpenseRateMinPrem = ["flat", "incl"];
-                            def officeContentsRateMinPrem = ["flat", "incl"];
+
+
+
+                            def PIP2premium = pip2_PIP2premium;
+                            def negativeFilmVideoRateMinPrem = pip2_negativeFilmVideoRateMinPrem;
+                            def faultyStockCameraProcessingRateMinPrem = pip2_faultyStockCameraProcessingRateMinPrem;
+                            def miscRentedEquipRateMinPrem = pip2_miscRentedEquipRateMinPrem;
+                            def propsSetWardrobeRateMinPrem = pip2_propsSetWardrobeRateMinPrem;
+                            def thirdPartyPropDamageRateMinPrem = pip2_thirdPartyPropDamageRateMinPrem;
+                            def extraExpenseRateMinPrem = pip2_extraExpenseRateMinPrem;
+                            def officeContentsRateMinPrem = pip2_officeContentsRateMinPrem;
 
                             //PIP 2 Premium is a flat rate of 1000
                             def premium = PIP2premium;
@@ -1485,7 +1750,7 @@ class AsyncController {
 
 
                             if (params.productsSelected.contains("NOHA")) {
-                                def NOHARateMinPrem = ["flat", 500];
+                                def NOHARateMinPrem = pip2_NOHARateMinPrem;
 
                                 premiumsMap["Hired Auto Physical Damage"] = NOHARateMinPrem;
                                 deductsMap["Hired Auto Physical Damage"] = "10% of Loss (\$1,500 Min / \$10,000)";
@@ -1514,7 +1779,7 @@ class AsyncController {
                         }
                         else if (productID == "PIP 3") {
                             def premium = 0.0;
-                            def negativeFilmVideoRateMinPrem = [0.6, 1500];
+                            def negativeFilmVideoRateMinPrem = pip3_negativeFilmVideoRateMinPrem;
                             def faultyStockCameraProcessingRateMinPrem = ["flat", "incl"];
                             def miscRentedEquipRateMinPrem = ["flat", "incl"];
                             def propsSetWardrobeRateMinPrem = ["flat", "incl"];
@@ -1595,7 +1860,7 @@ class AsyncController {
                         }
                         else if (productID == "PIP 4") {
                             def premium = 0.0
-                            def negativeFilmVideoRateMinPrem = [0.6, 2000];
+                            def negativeFilmVideoRateMinPrem = pip4_negativeFilmVideoRateMinPrem;
                             def faultyStockCameraProcessingRateMinPrem = ["flat", "incl"];
                             def miscRentedEquipRateMinPrem = ["flat", "incl"];
                             def propsSetWardrobeRateMinPrem = ["flat", "incl"];
@@ -1740,7 +2005,7 @@ class AsyncController {
                                 rateInfo = rateInfo + "EPKG\tflat\t\$150\tAnimal Mortality Under Cast Insurance (Reptiles (Non-Venomous))\t\n";
                             }
                             if (params.additionalProducts.contains("EPKGSmallOtherAdditionalCoverage")) {
-                                premiumsMap["Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))"] = ["flat", 250];
+                                premiumsMap["Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))"] = ["flat", 200];
                                 deductsMap["Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))"] = "\$1500";
                                 limitsMap["Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))"] = "\$25000";
                                 productTotalPremium = productTotalPremium + 200;
@@ -1881,7 +2146,11 @@ class AsyncController {
 
                                 if (params.additionalProducts.contains("EPKGCASTEssentialAdditionalCoverage")) {
                                     def castPremium = (params.totalBudget.toDouble() *  1.1) / 100
-                                    def castEssentialNum = params.castEssentialNum.toInteger();
+                                    def castEssentialNum =0;
+                                    if(params.castEssentialNum.isInteger()){
+                                        castEssentialNum = params.castEssentialNum.toInteger();
+                                    }
+
                                     def costPerEssential = 3500;
                                     def totalCastEssentialCost = costPerEssential*castEssentialNum
                                     tempPremiumsMap["Cast Essential"] = ["flat", totalCastEssentialCost];
@@ -1926,8 +2195,7 @@ class AsyncController {
                             }
                         }
                     } else if (coverageID == "CGL" || coverageID == "CPK") {
-
-                        def rate = 0.0
+                        def rate = 0.0;
                         def premium = 0;
                         def minPremium = 0;
 
@@ -2164,7 +2432,7 @@ class AsyncController {
 
                             }
                             if (params.additionalProducts.contains("AGGAdditionalCoverage")) {
-                                if(params.riskType == "Film Projects With Cast (No Work Comp)"){
+                                if(params.riskType == "Film Projects With Cast (No Work Comp) test"){
                                     tempPremiumsMap["Increased Agg Limit"] = ["flat", ""];
                                     tempDeductsMap["Increased Agg Limit"] = "";
                                     tempLimitsMap["Increased Agg Limit"] = ""
@@ -2173,11 +2441,19 @@ class AsyncController {
 
                                 }
                                 else{
-                                    tempPremiumsMap["Increased Agg Limit"] = ["flat", 250];
                                     tempDeductsMap["Increased Agg Limit"] = "";
                                     tempLimitsMap["Increased Agg Limit"] = ""
-                                    productTotalPremium = productTotalPremium + 250
-                                    rateInfo = rateInfo + "${coverageID}\tflat\t\$250\tIncreased Agg Limit\t\n";
+                                    if(termLength <= 90){
+                                        tempPremiumsMap["Increased Agg Limit"] = ["flat", 0];
+                                        productTotalPremium = productTotalPremium + 0
+                                        rateInfo = rateInfo + "${coverageID}\tflat\t\0\tIncreased Agg Limit\t\n";
+                                    }
+                                    else{
+                                        tempPremiumsMap["Increased Agg Limit"] = ["flat", 250];
+                                        productTotalPremium = productTotalPremium + 250
+                                        rateInfo = rateInfo + "${coverageID}\tflat\t\$250\tIncreased Agg Limit\t\n";
+                                    }
+
                                 }
 
                             }
@@ -2281,6 +2557,7 @@ class AsyncController {
                     def deductsMapJson = JsonOutput.toJson(deductsMap)
                     def premiumsMapJson = JsonOutput.toJson(premiumsMap)
                     def lobDistMapJson = JsonOutput.toJson(lobDistMap)
+                    def submissionRateMapJson = JsonOutput.toJson(submissionRateMap)
 
                     def beginTerms ="";
                     //EDITING TERMS
@@ -2309,7 +2586,8 @@ class AsyncController {
                             terms: subjectString,
                             endorse: endorseString,
                             beginTerms: beginTerms,
-                            rateInfo: rateInfo
+                            rateInfo: rateInfo,
+                            submissionRateMap: new JsonSlurper().parseText(submissionRateMapJson)
                     )
                     arrayOfCoverageDetails.add(new JsonSlurper().parseText(coverageJson))
                 }
@@ -2343,9 +2621,14 @@ class AsyncController {
 
     def saveSubmissionToAIM() {
         log.info "SAVING SUBMISSION TO AIMSQL"
-//        log.info params
+        log.info params
 
-//        log.info JsonOutput.prettyPrint(params.uwQuestionsMap)
+        log.info "UNDERWRITER QUESTIONS ORDER"
+        log.info params.uwQuestionsOrder
+        log.info "UNDERWRITER QUESTIONS"
+        log.info params.uwQuestionsMap
+
+        def uwQuestionsOrder = params.uwQuestionsOrder.split("&;&");
         def uwQuestionsMap = new JsonSlurper().parseText(params.uwQuestionsMap)
 
         log.info uwQuestionsMap
@@ -2367,7 +2650,7 @@ class AsyncController {
 
         //SAVE INSURED
         try {
-            def quoteIDCoverages = aimDAO.saveNewSubmission(params.jsonSerial, dataSource_aim, session.user, accountExec, uwQuestionsMap)
+            def quoteIDCoverages = aimDAO.saveNewSubmission(params.jsonSerial, dataSource_aim, session.user, accountExec, uwQuestionsMap, uwQuestionsOrder)
             log.info "QuoteID: " + quoteIDCoverages
 //0620584;EPKG,0620585;CPK
             def submitGroupID = ""
@@ -2659,6 +2942,7 @@ class AsyncController {
 
 //        def questionCategories = questions.unique{it.category}.category;
         def questionCategories = QuestionCategory.findAll();
+        questionCategories.removeIf { it.categoryName == "Coverages" } //COVERAGE QUESTIONS WILL BE DEALT WITH SEPARATELY
         questionCategories = questionCategories.sort{it.weight}
 //        questionCategories = questionCategories.reverse()
         resultsString = resultsString + "&;;&" + questionCategories.categoryName;
@@ -2729,6 +3013,31 @@ class AsyncController {
         render "good;" + params.messageChainRead
     }
 
+    def assignSubmissionToUW(){
+        log.info "ASSIGN SUBMISSION TO UW"
+        log.info params
+        Sql aimsql = new Sql(dataSource_aim)
+
+        def underwriter = User.findWhere(email:params.assignUW);
+        def underwriterName = underwriter.firstName + " " + underwriter.lastName
+        def underwriterUsername = params.assignUW.split("@")[0];
+
+        def updatedRecords = Submissions.executeUpdate("update Submissions set underwriter = ? where aimQuoteID = ?", [params.assignUW, params.aimQuoteID])
+
+//        aimsql.execute "UPDATE dbo.Version\n" +
+//                "SET StatusID = '" + params.statusCode +  "'\n" +
+//                "WHERE QuoteID = " + params.aimQuoteID + "; ";
+
+        aimsql.execute "UPDATE dbo.Quote\n" +
+                "SET AcctExec = '" + underwriterUsername +  "'\n" +
+                "WHERE QuoteID = " + params.aimQuoteID + "; ";
+
+
+//        aimDAO.updateSubmissionActivity(params.aimQuoteID, description, params.statusCode, typeID, quoteVersion, dataSource_aim)
+
+        render "good"
+    }
+
     def changeSubmissionStatus(){
         log.info "CHANGE SUBMISSION STATUS"
         log.info params
@@ -2764,6 +3073,25 @@ class AsyncController {
         aimDAO.updateSubmissionActivity(params.aimQuoteID, description, params.statusCode, typeID, quoteVersion, dataSource_aim)
 
         render "good"
+    }
+
+    def getQuestionAnswers(){
+        log.info "GETTING SUBMISSION QUESTION ANSWERS"
+        log.info params
+
+        def submissionInfo = Submissions.findAllByAimQuoteID(params.quoteID)
+        log.info "FOUND: " + submissionInfo
+        if(submissionInfo.size() ==0){
+            log.info "NOT WEB"
+            render "NOTWEB"
+        }
+        else{
+
+            log.info submissionInfo[0]
+            render submissionInfo[0].questionAnswerMap;
+        }
+
+
 
     }
 

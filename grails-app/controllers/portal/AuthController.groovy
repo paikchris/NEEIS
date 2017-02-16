@@ -14,6 +14,9 @@ class AuthController {
 
     def index() {
     }
+    def iesupport(){
+
+    }
     def register() {
         log.info("REGISTER PAGE");
         log.info params;
@@ -155,6 +158,55 @@ class AuthController {
             return true;
         }
     }
+
+    def resetPassword(){
+        log.info("PASSWORD RESET ACTION1")
+        log.info(params)
+
+        log.info("session user: " + session.user.password)
+
+        def renderString = ""
+
+        if(params.currentPass == session.user.password){
+            try{
+                def userRecord = User.findWhere(email:session.user.email, password:params.currentPass);
+                log.info (userRecord.email)
+                log.info (userRecord.password)
+                userRecord.password = params.newPass;
+                userRecord.save(flush: true, failOnError: true)
+                log.info (userRecord.password)
+
+                session.user = null;
+//                redirect(url: "/")
+
+                def user = User.findWhere(email:userRecord.email, password:userRecord.password)
+                session.user = user
+
+                renderString = "good"
+
+
+            }
+            catch (Exception e) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                String exceptionAsString = sw.toString();
+                log.info("Error Details - " + exceptionAsString)
+                log.info("error")
+                renderString = (exceptionAsString)
+            }
+
+        }
+        else{
+            log.info("wrong password")
+            renderString = "wrong password"
+
+        }
+        log.info "render final error"
+        render renderString
+
+    }
+
+
 
     def login(){
         log.info("LOGGING IN")

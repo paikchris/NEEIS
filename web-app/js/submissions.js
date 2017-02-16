@@ -2,9 +2,12 @@
  * Created by paikchris on 8/23/16.
  */
 
+var reviewRiskChosen = "";
+var ratesMapToSave;
 
 $(document).ready(function () {
     var userRole = $('#userRole').html().trim();
+    var neeisUWList = $('#neeisUWListHidden').html().trim().slice(1, -1).split(",");
     //alert(userRole);
     $("#submissionSearch").on('input', function() {
         $(this).val();
@@ -75,41 +78,46 @@ $(document).ready(function () {
             var statusCode = $(this).find('.statusCode').html().trim();
             var aimQuoteID = $(this).find('.aimQuoteIDTD').html().trim();
             var underwriter = $(this).find('.underwriterTD').html().trim();
-
+            //alert(statusCode);
             if(userRole === "Broker" ){
-                //alert(statusCode);
+
                 htmlString = htmlString + "<tr class='submissionQuickOptions' style='background: rgba(132, 204, 210, 0.21);'>" +
                         "<td class='QOaimQuoteID' style='display:none'>" + aimQuoteID +  "</td>" +
                         "<td class='QOstatusCode' style='display:none'>" + statusCode +  "</td>" +
+                    "<td class='QOUWAssigned' style='display:none'>" + underwriter +  "</td>" +
                     "<td colspan='8'>" +
-                    "<div class='col-xs-6'>" +
-
-                    "</div>" +
-                    "<div class='col-xs-6'>" +
+                    "<div class='col-xs-12' style='text-align:center'>" +
                     "<button type='button' class='btn btn-sm btn-default submissionOptionButton messageButton'> Message Underwriter " +
                     "<span class='underWriterToMessage' style='display: none;'>" + underwriter
                     "</span>" +
                     "</button>";
 
                 if(statusCode === "QO"){
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' > Request Approval </button>";
+                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WRA' " +
+                        "data-nextButtonText='Approval Requested'> Request Approval </button>";
                 }
                 else if(statusCode === "WRA"){
-                    //htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' > Request Approval </button>";
+                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' disabled> Approval Requested </button>";
                 }
                 else if(statusCode === "WB3"){
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' > Request Bind </button>";
+                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='BRQ'" +
+                        "data-nextButtonText='Bind Request Sent'> Request Bind </button>";
                 }
                 else if(statusCode === "BRQ"){
-                    //htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' > Request Approval </button>";
+                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' disabled> Bind Request Sent </button>";
                 }
                 else if(statusCode === "BIF"){
+                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton'  disabled> Bound</button>";
 
                 }
                 else if(statusCode === "NBR"){
 
                 }
-                htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton generateCert' > Certificates </button>";
+                if(statusCode === "BIF"){
+                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton generateCert' > Certificates </button>";
+                }
+
+                htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton reviewButton' > Review </button>";
 
                 htmlString = htmlString + "</div>" +
                     "</td>" +
@@ -119,36 +127,68 @@ $(document).ready(function () {
                 htmlString = htmlString + "<tr class='submissionQuickOptions' style='background: rgba(132, 204, 210, 0.21);'>" +
                     "<td class='QOaimQuoteID' style='display:none'>" + aimQuoteID +  "</td>" +
                     "<td class='QOstatusCode' style='display:none'>" + statusCode +  "</td>" +
+                    "<td class='QOUWAssigned' style='display:none'>" + underwriter +  "</td>" +
                     "<td colspan='8'>" +
-                    "<div class='col-xs-6'>" +
-
-                    "</div>" +
-                    "<div class='col-xs-6'>" +
+                    "<div class='col-xs-12' style='text-align:center'>" +
                     "<button type='button' class='btn btn-sm btn-default submissionOptionButton messageButton'> Message Broker " +
                     "<span class='underWriterToMessage' style='display: none;'>" + underwriter
                 "</span>" +
                 "</button>";
 
                 if(statusCode === "QO"){
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' > Request Approval </button>";
+                    //htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' > Request Approval </button>";
+                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WB3' " +
+                        "data-nextButtonText='Approved'> Approve </button>";
+                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WB5' " +
+                        "data-nextButtonText='Declined'> Decline </button>";
                 }
                 else if(statusCode === "WRA"){
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' > Approve </button>";
+                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WB3' " +
+                        "data-nextButtonText='Approved'> Approve </button>";
+                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WB5' " +
+                        "data-nextButtonText='Declined'> Decline </button>";
                 }
                 else if(statusCode === "WB3"){
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' > Request Bind </button>";
+                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='BIF' " +
+                        "data-nextButtonText='Bound'> Bind </button>";
+                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WB5' " +
+                        "data-nextButtonText='Declined'> Decline </button>";
                 }
                 else if(statusCode === "BRQ"){
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' > Bind</button>";
+                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='BIF'" +
+                        "data-nextButtonText=Bound'> Bind</button>";
+                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WB5' " +
+                        "data-nextButtonText='Declined'> Decline </button>";
                 }
                 else if(statusCode === "BIF"){
+                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton'  disabled> Bound</button>";
 
                 }
                 else if(statusCode === "NBR"){
 
                 }
-                htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton generateCert' > Certificates </button>";
+                if(statusCode === "BIF"){
+                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton generateCert' > Certificates </button>";
+                }
+                htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton reviewButton' > Review </button>";
+                htmlString = htmlString +
+                    "<div class='btn-group'>" +
+                        "<button type='button' class='btn btn-sm btn-default dropdown-toggle submissionOptionButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
+                            "Switch UW   <span class='caret'></span>" +
+                            "<span class='sr-only'>Switch UW</span>" +
+                        "</button>" +
+                        "<ul class='dropdown-menu'>";
 
+                for(var i=0; i<neeisUWList.length;i++){
+                    htmlString = htmlString + "<li><a href='#' class='switchUWOption'>" +
+                        neeisUWList[i] +
+                        "</a></li>";
+                }
+                htmlString = htmlString +
+                        "</ul>" +
+                    "</div>";
+                    
+                    
                 htmlString = htmlString + "</div>" +
                     "</td>" +
                     "</tr>";
@@ -156,10 +196,7 @@ $(document).ready(function () {
             else{
                 htmlString = htmlString + "<tr class='submissionQuickOptions' style='background: rgba(132, 204, 210, 0.21);'>" +
                     "<td colspan='8'>" +
-                    "<div class='col-xs-6'>" +
-
-                    "</div>" +
-                    "<div class='col-xs-6'>" +
+                    "<div class='col-xs-12' style='text-align:center'>" +
                     "<button type='button' class='btn btn-sm btn-default'> Contact Insured </button>" +
                     "<button type='button' class='btn btn-sm btn-default'> Change Status To </button>" +
                     "<button type='button' class='btn btn-sm btn-default'>Bind</button>" +
@@ -177,30 +214,77 @@ $(document).ready(function () {
     });
 
 
+    $(document).on('click', '.switchUWOption', function () {
+        var currentStatus = $(this).closest('.submissionQuickOptions').find('.QOstatusCode').html().trim();
+        var thisQuoteID = $(this).closest('.submissionQuickOptions').find('.QOaimQuoteID').html().trim();
+        var thisUnderwriter = $(this).closest('.submissionQuickOptions').find('.QOUWAssigned').html().trim();
+        var assignUnderwriter = $(this).html().trim();
+
+        $.ajax({
+            method: "POST",
+            url: "/portal/Async/assignSubmissionToUW",
+            data: {currentUW: thisUnderwriter,
+                assignUW: assignUnderwriter,
+                aimQuoteID: thisQuoteID
+            }
+        })
+            .done(function (msg) {
+                //alert(msg);
+                //$('#some_id').click(function() {
+                //
+                //});
+                window.location='/portal/main/submissions';
+            });
+    });
+
     $(document).on('click', '.statusChangeButton', function () {
         var currentStatus = $(this).closest('.submissionQuickOptions').find('.QOstatusCode').html().trim();
         var changeStatusTo = "";
         var thisQuoteID = $(this).closest('.submissionQuickOptions').find('.QOaimQuoteID').html().trim();
+        var newButtonText = $(this).attr('data-nextButtonText');
+
         if(currentStatus === "QO"){
-            changeStatusTo = "WRA"
-            $(this).html("Awaiting Approval")
+            if(userRole ==="Broker"){
+                changeStatusTo = "WRA"
+                //newButtonText = "Approval Requested"
+            }
+            else{
+                changeStatusTo = "WB3"
+                //newButtonText = "Approved"
+
+            }
+
         }
         else if(currentStatus === "WRA"){
-            changeStatusTo = "WB3"
-            $(this).html("Approved")
+            if(userRole ==="Broker"){
+                changeStatusTo = "WRA"
+                //newButtonText = "Approval Requested"
+            }
+            else{
+                changeStatusTo = "WB3"
+                //newButtonText = "Approved"
+
+            }
+
         }
         else if(currentStatus === "WB3"){
-            changeStatusTo = "BRQ"
-            $(this).html("Awaiting Bind Approval")
+            if(userRole ==="Broker"){
+                changeStatusTo = "BRQ"
+                //newButtonText = "Awaiting Bind Approval"
+            }
+            else{
+                changeStatusTo = "WB3"
+                //newButtonText = "Approved"
+
+            }
         }
         else if(currentStatus === "BRQ"){
             changeStatusTo = "BIF"
-            $(this).html("Bound")
+            //newButtonText = "Bound"
+
         }
-        else if(currentStatus === "BIF"){
-            changeStatusTo = "WRA"
-            $(this).html("Awaiting Approval")
-        }
+
+        var buttonObject = $(this);
 
         $.ajax({
             method: "POST",
@@ -214,6 +298,8 @@ $(document).ready(function () {
                 //$('#some_id').click(function() {
                 //
                 //});
+
+                $(buttonObject).html(newButtonText)
                 window.location='/portal/main/submissions';
             });
     });
@@ -267,78 +353,121 @@ $(document).ready(function () {
             });
     });
 
+
+    $(document).on('click', '.reviewButton', function () {
+        //window.location='/portal/main/certs';
+        //get quote id
+
+        var thisQuoteID = $(this).closest('.submissionQuickOptions').find('.QOaimQuoteID').html().trim();
+
+        $('#reviewQuoteID').html(thisQuoteID);
+
+
+        $.ajax({
+            method: "POST",
+            url: "/portal/Async/getQuestionAnswers",
+            data: {quoteID: thisQuoteID
+            }
+        })
+            .done(function (msg) {
+                //alert(msg)
+                if(msg === "NOTWEB"){
+                    $('#alertMessageContent').html("Only Web Submissions are reviewable through the portal currently");
+                    $('#alertMessageModal').modal('show');
+                }
+                else{
+                    //msg = msg.replace(/'/g, '"')
+                    var questionJSON = JSON.parse(msg);
+                    //alert(questionJSON['riskChosen']);
+                    reviewRiskChosen = questionJSON['riskChosen'];
+                    $("#reviewModalHeader").html("Reviewing: " + questionJSON['namedInsured']);
+                    $("#riskTypeReviewLabel").html(questionJSON['riskChosen'] );
+                    if(reviewRiskChosen.indexOf("Film Projects") > -1){
+                        $("#coverageCheckboxesDiv").load("./../forms/specFilm #coverageCheckboxesDiv", function () {
+                            var head = document.getElementsByTagName('head')[0];
+                            var script = document.createElement('script');
+                            script.type = 'text/javascript';
+                            script.src = '/portal/js/forms/specFilm.js'+"?ts=" + new Date().getTime();
+                            head.appendChild(script);
+                            loadSaveFunction(questionJSON);
+                            $('#reviewModal').modal('show');
+                        });
+                    }
+                }
+            });
+    });
+
+    $(document).on('click', '#runRatesButton', function () {
+
+       ratePremiums("runRatesButton");
+    });
+
+    //{"riskChosen":"Film Projects Without Cast (No Work Comp)",
+    // "proposedEffectiveDate":"02/09/2017","proposedExpirationDate":"02/09/2018",
+    // "proposedTermLength":"365 Days",
+    // "totalBudgetConfirm":"$23,233",
+    // "EPKGcoverage":true,
+    // "PIP3InputRadio":true,
+    // "castEssentialInput":"",
+    // "costOfHireInput":"$",
+    // "brokerFeeInput":"",
+    // "namedInsured":"Slkdf",
+    // "phoneNumber":"(234) 234-2344",
+
+    // "namedInsuredEmail":"sldkf@sldkjf.com","website":"","googleAutoAddress":"","cityMailing":"Richmond",
+    // "zipCodeMailing":"23220","stateMailing":"VA","nameOfProductionCompany":"Slkdf","titleOfProduction":"",
+    // "isReshootNo":true,"nameOfPrincipal":"","numberOfYearsOfExperience":"","listOfPriorLosses":"","
+    // productionType_Documentary":true,"productionInvolvesNoneAbove":true,
+    // "postProductionForOthersNo_RadioButton":true,
+    // "filmDistributionNo_RadioButton":true,"insuranceCancelledNo_RadioButton":true,"insuredCancelledExplain":"",
+    // "equipmentOwnedRentedNo_RadioButton":true,"foreignGLNo_RadioButton":true,"errorOmissionsLiabilityNo_RadioButton":true,"totalBudgetInput":"$23,233",
+    // "principalPhotographyDateStart":"02/09/2017","principalPhotographyDateEnd":"02/09/2018","producer":"","director":"","completionBondRequiredNo_RadioButton":true,
+    // "filmingLocation":"","filmLocationStartDate":"","filmLocationEndDate":"","story":"","castMembersFilmAfterThisNo":true,"projectsOutsideUS":"",
+    // "totalNumEmployees":"","annualPayroll":"","umbrellaLimitRequested":"","primaryWorkCompCoverageNo_RadioButton":true,"undefined":"","state":"invalid",
+    // "interestSelect":"corporation","businessStructureSelect":"soleProprietorship","FEINSSN":"","SIC":"","NCCI":"","firstName":"Andee","lastName":"Abad",
+    // "company":"NEEIS","email":"andee@neeis.com","recipientSelect":"invalid","messageSubject":""}
+
     $(document).on('click', '.generateCert', function () {
         //window.location='/portal/main/certs';
-
         //get quote id
-        $('#certificateQuoteID').html($(this).closest('.submissionQuickOptions').find('.QOaimQuoteID').html().trim());
+        var thisQuoteID = $(this).closest('.submissionQuickOptions').find('.QOaimQuoteID').html().trim();
+        $('#certificateQuoteID').html(thisQuoteID);
+
         $('#certsModal').modal('show');
 
 
     });
     $(document).on('click', '#createCertButton', function () {
-        var certQuoteID = $('#certificateQuoteID').html();
-        var certRemarks = encodeURI($('#operationTextArea').val());
-        var encodedCertRemarks = $('<div/>').text(certRemarks).html();
+        //var currentStatus = $(this).closest('.submissionQuickOptions').find('.QOstatusCode').html().trim();
 
-        var certHolder = encodeURI($('#AITextArea').val());
-        var encodedCertHolder = encodeURI($('<div/>').text(certHolder).html());
+            var certQuoteID = $('#certificateQuoteID').html();
+            var certRemarks = encodeURI($('#operationTextArea').val());
+            var encodedCertRemarks = $('<div/>').text(certRemarks).html();
 
-        console.log(certHolder);
-        $('.progress-bar').attr('aria-valuenow', "0")
-        $('#progressBarHeader_cert').html("Downloading");
-        $('#progressBarModal_cert').modal('show');
-        window.location='/portal/async/downloadCert?quoteID='+certQuoteID +"&r=" + certRemarks + "&h=" + certHolder ;
-        //$('#progressBarHeader').css('z-index', 3000);
+            var certHolder = encodeURI($('#AITextArea').val());
+            var encodedCertHolder = encodeURI($('<div/>').text(certHolder).html());
+
+            console.log(certHolder);
+            $('.progress-bar').attr('aria-valuenow', "0")
+            $('#progressBarHeader_cert').html("Downloading");
+            $('#progressBarModal_cert').modal('show');
+            window.location='/portal/async/downloadCert?quoteID='+certQuoteID +"&r=" + certRemarks + "&h=" + certHolder ;
+            //$('#progressBarHeader').css('z-index', 3000);
 
 
-        $('.progress-bar').attr('aria-valuenow', "75").animate({
-            width: "100%"
-        }, 2000, function() {
-            $('#progressBarModal_cert').modal('hide');
-            $('#progressBarModal_cert').on('hidden.bs.modal', function (e) {
-                if($('#certsModal').is(':visible')){
-                    console.log('finished animating');
-                    $("body").addClass("modal-open");
-                }
+            $('.progress-bar').attr('aria-valuenow', "75").animate({
+                width: "100%"
+            }, 2000, function() {
+                $('#progressBarModal_cert').modal('hide');
+                $('#progressBarModal_cert').on('hidden.bs.modal', function (e) {
+                    if($('#certsModal').is(':visible')){
+                        console.log('finished animating');
+                        $("body").addClass("modal-open");
+                    }
+                });
             });
-        });
 
 
-
-//alert();
-//        $.ajax({
-//            method: "POST",
-//            url: "/portal/Async/downloadCert?quoteID=" +certQuoteID,
-//            data: {submissionID: "test"
-//                //quoteID: certQuoteID
-//            }
-//        })
-//            .done(function (msg) {
-//                console.log(msg);
-//                var htmlString =
-//                    "<a href='/portal/async/ajaxDownloadAttachment?q=0622997&amp;f=testCert.pdf'>" +
-//                        "<button class='btn btn-primary col-xs-2' style='margin-right:20px; margin-left:15px;'>" +
-//                            "Download" +
-//                        "</button>" +
-//                    "</a>"
-//                //var byte = base64ToArrayBuffer(msg);
-//                var byte = msg;
-//                var name = "name.pdf";
-//
-//                var blob = new Blob([byte]);
-//                var link = document.createElement('a');
-//                link.href = window.URL.createObjectURL(blob);
-//                var timeNow = new Date();
-//                var month = timeNow.getMonth() + 1;
-//                var fileName = name + ".pdf";
-//                link.download = fileName;
-//                link.click();
-//                //$('#some_id').click(function() {
-//                //
-//                //});
-//                //
-//            });
     });
 
     function saveByteArray(reportName, byte) {
@@ -369,6 +498,7 @@ $(document).ready(function () {
                     var AIText = msg.split("&;&")[1];
                     $('#operationTextArea').val(opsText);
                     $('#AITextArea').val(AIText);
+                    $('#userDefined').prop("checked", true)
                     //alert(msg);
                     //$('#some_id').click(function() {
                     //
@@ -378,7 +508,237 @@ $(document).ready(function () {
         }
     });
 
+    $(document).on('change', '#stdLossPayee', function () {
+        if($('#stdLossPayee').is(':checked')){
+            $('#operationTextArea').val("The certificate holder is named as an Additional Insured but solely as respects to claims arising out of negligence of the Named Insured and is Loss Payee for rented property as their interests may appear.");
+        }
+    });
+    $(document).on('change', '#evidenceOfInsurance', function () {
+        if($('#evidenceOfInsurance').is(':checked')){
+            $('#AITextArea').val("Evidence of Insurance");
+        }
+    });
 
+
+
+////////////////////// START REVIEW MODAL FUNCTIONS/////////////////////
+    //DATE PICKER SETUP
+    var date_input=$('.datepicker'); //our date input has the name "date"
+    var container=$('#page-content-wrapper');
+    var options={
+        format: 'mm/dd/yyyy',
+        container: container,
+        todayHighlight: true,
+        orientation: "auto top",
+        autoclose: true,
+    };
+    date_input.datepicker(options);
+
+    $('#proposedEffectiveDate, #proposedExpirationDate').change(function(e){
+        //alert($('#proposedEffectiveDate').val() + " " + $('#proposedExpirationDate').val());
+        var termLength;
+        var datesAreValid = false;
+
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+        var mdyEffective = $('#proposedEffectiveDate').val().split('/');
+        var mdyEffectiveDateObject = new Date(mdyEffective[2], mdyEffective[0]-1, mdyEffective[1]);
+
+
+        if($(this).attr('id') === "proposedEffectiveDate"){
+            if (mdyEffectiveDateObject.getTime() < today.getTime()) {
+                //console.log(e);
+                //alert("]Effective Date must be a present or future date");
+                $('#alertMessageContent').html("Effective Date must be a present or future date");
+                $('#alertMessageModal').modal('show');
+                $(this).val(today.getMonth()+1 + "/" + today.getDate() + "/" + today.getFullYear());
+                datesAreValid = false;
+            }
+            else if(reviewRiskChosen === "Film Projects With Cast (No Work Comp)"){
+                var termLengthTemp;
+                var datesAreValidTemp = true;
+                var todayTemp = new Date();
+                todayTemp.setHours(0, 0, 0, 0);
+                var mdyEffectiveTemp = $('#proposedEffectiveDate').val().split('/');
+                var mdyEffectiveDateObjectTemp = new Date(mdyEffectiveTemp[2], mdyEffectiveTemp[0]-1, mdyEffectiveTemp[1]);
+                var dayTemp = mdyEffectiveDateObjectTemp.getDate();
+                if (dayTemp < 10) { dayTemp = '0' + dayTemp; }
+                var monthIndexTemp = mdyEffectiveDateObjectTemp.getMonth() + 1;
+                if (monthIndexTemp < 10) { monthIndexTemp = '0' + monthIndexTemp; }
+                var yearTemp = mdyEffectiveDateObject.getFullYear();
+                yearTemp = mdyEffectiveDateObjectTemp.getFullYear() + 1;
+                $("#proposedExpirationDate").val( (monthIndexTemp) + "/" + dayTemp + "/" + yearTemp);
+                $('#proposedTermLength').val(365 + " Days");
+            }
+            else if(reviewRiskChosen.indexOf("Film Projects") > -1) {
+                //console.log("DO NOTHING")
+            }
+            else{
+                var termLengthTemp;
+                var datesAreValidTemp = true;
+                var todayTemp = new Date();
+                todayTemp.setHours(0, 0, 0, 0);
+                var mdyEffectiveTemp = $('#proposedEffectiveDate').val().split('/');
+                var mdyEffectiveDateObjectTemp = new Date(mdyEffectiveTemp[2], mdyEffectiveTemp[0]-1, mdyEffectiveTemp[1]);
+                var dayTemp = mdyEffectiveDateObjectTemp.getDate();
+                if (dayTemp < 10) { dayTemp = '0' + dayTemp; }
+                var monthIndexTemp = mdyEffectiveDateObjectTemp.getMonth() + 1;
+                if (monthIndexTemp < 10) { monthIndexTemp = '0' + monthIndexTemp; }
+                var yearTemp = mdyEffectiveDateObject.getFullYear();
+                yearTemp = mdyEffectiveDateObjectTemp.getFullYear() + 1;
+                $("#proposedExpirationDate").val( (monthIndexTemp) + "/" + dayTemp + "/" + yearTemp);
+                $('#proposedTermLength').val(365 + " Days");
+            }
+
+        }
+
+
+        if($('#proposedEffectiveDate').val().length > 0 && $('#proposedExpirationDate').val().length > 0){
+            var mdyEffective = $('#proposedEffectiveDate').val().split('/');var mdyEffectiveDateObject = new Date(mdyEffective[2], mdyEffective[0]-1, mdyEffective[1]);
+            var mdyExpiration = $('#proposedExpirationDate').val().split('/');
+            var mdyExpirationDateObject = new Date(mdyExpiration[2], mdyExpiration[0]-1, mdyExpiration[1]);
+            if((mdyEffective[2].length == 4 && mdyExpiration[2].length == 4)){//ENSURE THE YEAR IS 4 DIGITS LONG
+
+
+
+                var days = Math.round((mdyExpirationDateObject-mdyEffectiveDateObject)/(1000*60*60*24));
+                //alert(days);
+                if(days == 1){
+                    $('#proposedTermLength').val(days + " Day")
+                    datesAreValid = true;
+                }
+                else if (days >1){
+                    $('#proposedTermLength').val(days + " Days")
+                    datesAreValid = true;
+                }
+                else if(days <1){
+                    $('#alertMessageContent').html("Expiration Date must be after the Effective Date");
+                    $('#alertMessageModal').modal('show');
+                    $(this).val("");
+                    $('#proposedTermLength').val("");
+                    datesAreValid = false;
+                }
+                if(days > 365){
+                    $('#alertMessageContent').html("Policy Term cannot exceed 1 year");
+                    $('#alertMessageModal').modal('show');
+                    $('#proposedExpirationDate').val("");
+                    $('#proposedTermLength').val("");
+                    datesAreValid = false;
+                }
+
+            }
+            else{
+                $(this).val("");
+                $('#proposedTermLength').val("");
+                datesAreValid = false;
+            }
+
+        }
+        else{
+            $('#proposedTermLength').val("");
+            datesAreValid = false;
+        }
+
+        if(datesAreValid && $('#totalBudgetConfirm').val().trim().length >0){
+            //alert($('#totalBudgetConfirm').val());
+            $('#coverageOptionsReview').addClass("panel-primary");
+            $('#coverageOptionsReview').removeClass("panel-default");
+            $('#coverageOptionsReview').parent().css("color", "#1f1f1f");
+            $('#coverageOptionsTitle').css("color", "#fff");
+            if ($("li.active").length > 0) {
+                getProductsForRisk();
+            }
+
+            $('#principalPhotographyDateStart').val($('#proposedEffectiveDate').val());
+            $('#principalPhotographyDateEnd').val($('#proposedExpirationDate').val());
+        }
+        else{
+            $('#coverageOptionsReview').addClass("panel-default");
+            $('#coverageOptionsReview').removeClass("panel-primary");
+            $('#coverageOptionsReview').parent().css("color", "rgba(31, 31, 31, 0.35)");
+            $('#coverageOptionsTitle').css("color", "rgba(31, 31, 31, 0.35)");
+            $('#EPKGcoverage').prop("checked", false);
+            $('#EPKGcoverage').trigger('change');
+            $('#CPKCGLcoverage').prop("checked", false);
+            $('#CPKCGLcoverage').trigger('change');
+
+            clearProductChoices();
+
+        }
+        $('#CPKInputRadio').trigger("change");
+    });
+
+    $("#proposedTermLength").click(function(){
+        //var input = document.getElementById("test");
+        var string = $(this).val()
+        var count = 0;
+        for(var i=0; i< $(this).val().length ;i++){
+            if(isNaN(string.charAt(i))){
+                //console.log(string.charAt(i));
+                count =i;
+                break;
+            }
+        }
+        this.setSelectionRange(0, count-1); // Highlights "Cup"
+        this.focus();
+    });
+
+    $("#proposedTermLength").change(function(){
+        var length = $(this).val().split(" ")[0];
+        if(isNaN(length)){
+            $(this).val($(this).val().replace(/\D/g,'') + " Days");
+            if($(this).val().split(" ")[0].length ==0){
+                var mdyEffective = $('#proposedEffectiveDate').val().split('/');
+                var mdyEffectiveDateObject = new Date(mdyEffective[2], mdyEffective[0]-1, mdyEffective[1]);
+                var newDate = new Date(mdyEffectiveDateObject.setTime( mdyEffectiveDateObject.getTime() + 1 * 86400000 ));
+
+
+                var day = newDate.getDate();
+
+                var monthIndex = newDate.getMonth() + 1;
+
+                if (day < 10) { day = '0' + day; }
+                if (monthIndex < 10) { monthIndex = '0' + monthIndex; }
+                var year = newDate.getFullYear();
+
+
+                $(this).val("1 Days");
+            }
+            $("#proposedExpirationDate").val( (monthIndex) + "/" + day + "/" + year);
+            $("#proposedExpirationDate").trigger('change');
+        }
+        else{
+            //console.log(length);
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+            var mdyEffective = $('#proposedEffectiveDate').val().split('/');
+            var mdyEffectiveDateObject = new Date(mdyEffective[2], mdyEffective[0]-1, mdyEffective[1]);
+            var newDate = new Date(mdyEffectiveDateObject.setTime( mdyEffectiveDateObject.getTime() + length * 86400000 ));
+
+
+            var day = newDate.getDate();
+
+            var monthIndex = newDate.getMonth() + 1;
+
+            if (day < 10) { day = '0' + day; }
+            if (monthIndex < 10) { monthIndex = '0' + monthIndex; }
+            var year = newDate.getFullYear();
+
+            $("#proposedExpirationDate").val( (monthIndex) + "/" + day + "/" + year);
+            $(this).val(length + " Days");
+
+            if($(this).val().split(" ")[0].length ==0){
+                $(this).val("1 Days");
+
+                newDate = new Date(mdyEffectiveDateObject.setTime( mdyEffectiveDateObject.getTime() + 1 * 86400000 ));
+                $("#proposedExpirationDate").val( (monthIndex) + "/" + day + "/" + year);
+
+            }
+            $("#proposedExpirationDate").trigger('change');
+        }
+    });
+
+////////////////////// START REVIEW MODAL FUNCTIONS/////////////////////
 });
 
 $(document).on('click', '.attachmentsLink', function () {
@@ -461,6 +821,9 @@ $(document).on('click', '.attachmentsLink', function () {
         });
 
 
+
+
+
 });
 
 $(document).on('click', '.downloadFileButton', function () {
@@ -480,6 +843,9 @@ $(document).on('click', '.downloadFileButton', function () {
     //    });
 
 });
+
+
+
 
 function changeSubmissionStatus(submissionID, statusCode){
     $.ajax({
@@ -503,4 +869,414 @@ function base64ToArrayBuffer(base64) {
         bytes[i] = ascii;
     }
     return bytes;
+}
+function clearProductChoices(){
+
+    $('.EPKGDiv').css("display", "");
+    $('.CPKDiv').css("display", "");
+    $("#EPKGNOHAOption").css("display","");
+    $('#PIPChoiceInput').css("display", "none");
+    $('#pipChoiceSelections').css("display", "none");
+    $('#PIP1Input').css("display", "none");
+    $('#PIP2Input').css("display", "none");
+    $('#PIP3Input').css("display", "none");
+    $('#PIP4Input').css("display", "none");
+    $('#PIP5Input').css("display", "none");
+    $('.PIP5Options').css("display", "none");
+    $('#DICEOptions').css("display", "none");
+    $('#SPECIFICOptions').css("display", "none");
+}
+function loadSaveFunction(loadMap){
+    var value;
+
+    $('a').each(function (){
+        if( $(this).html() ===  loadMap['riskChosen']){
+
+            //alert("click " + $(this).html())
+            var domObject = $(this);
+            //console.log($(domObject).html())
+            $(domObject).trigger('click');
+        }
+    });
+
+    if(loadMap['proposedEffectiveDate'].length > 0){
+        $('#proposedEffectiveDate').val(loadMap['proposedEffectiveDate']);
+        $("#proposedEffectiveDate").trigger("change");
+    }
+    if(loadMap['proposedExpirationDate'].length > 0){
+        $('#proposedExpirationDate').val(loadMap['proposedExpirationDate']);
+        $("#proposedExpirationDate").trigger("change");
+    }
+    if(loadMap['proposedTermLength'].length > 0){
+        $('#proposedTermLength').val(loadMap['proposedTermLength']);
+        //$("#proposedTermLength").trigger("change");
+    }
+    if(loadMap['totalBudgetConfirm'].length > 0){
+        $('#totalBudgetConfirm').val(loadMap['totalBudgetConfirm']);
+        $("#totalBudgetConfirm").trigger("change");
+
+    }
+
+    getProductsForRisk();
+    setTimeout(function() {
+
+        //console.log("wait")
+        Object.keys(loadMap).forEach(function(key) {
+
+            value = loadMap[key];
+            //console.log("COOKIE VALUE = " + key + "-" + value);
+            var domObject = $('#' + key);
+            if ($(domObject).css("display") != "none") {
+                $(domObject).css('display', '');
+            }
+
+            if ($(domObject).is("select")) {
+                $(domObject).val(value);
+                //console.log("SELECT TYPE = " + domObject);
+                $(domObject).trigger("change");
+            }
+            else if ($(domObject).is(':checkbox')) {
+                //console.log("CHECKBOX TYPE = " + domObject);
+                if(value === true) {
+                    $(domObject).prop("checked", true);
+
+                }
+                else {
+                    $(domObject).prop("checked", false);
+                }
+                $(domObject).trigger("change");
+
+            }
+            else if ($(domObject).is(':radio')) {
+                //console.log("RADIO TYPE = " + domObject);
+                if(value === true) {
+                    $(domObject).prop("checked", true);
+                }
+                else {
+                    //$(domObject).prop("checked", false);
+                }
+                $(domObject).trigger("change");
+
+            }
+            else{
+                //console.log("ELSE TYPE = " + domObject);
+                $(domObject).val(value);
+                $(domObject).trigger("change");
+
+            }
+
+        });
+
+        if(loadMap['proposedEffectiveDate'].length == 0){
+            $('#proposedEffectiveDate').val("");
+            //$("#proposedEffectiveDate").trigger("change");
+        }
+        if(loadMap['proposedExpirationDate'].length == 0){
+            $('#proposedExpirationDate').val("");
+            //$("#proposedExpirationDate").trigger("change");
+        }
+
+    },2000);
+
+}
+
+function getProductsForRisk(){
+    riskChosen = reviewRiskChosen
+
+    if(riskChosen.indexOf("Film Projects") > -1){
+        $.ajax({
+            method: "POST",
+            url: "/portal/Async/getProductsForCoverage",
+            data: {riskType: riskChosen,
+                totalGrossBudget: $("#totalBudgetConfirm").val().replace(/\$|,/g, ''),
+                proposedTermLength: $("#proposedTermLength").val()
+            }
+        })
+            .done(function (msg) {
+                //alert(msg);
+
+                clearProductChoices();
+                var coverageAndProductsArray = msg.split("&nextCoverage&");
+                //alert(coverageAndProductsArray);
+                var htmlString = "";
+                for (var i = 0; i < coverageAndProductsArray.length; i++) {
+                    //alert(coverageAndProductsArray[i]);
+                    if (coverageAndProductsArray[i].length > 0) {
+                        var coverageDetails = coverageAndProductsArray[i].split("&;&")[0];
+                        var coverageID = coverageDetails.split("&,&")[0];
+                        var coverageName = coverageDetails.split("&,&")[1];
+                        //console.log(coverageID + "-" + coverageName + "-" + coverageDetails);
+
+                        var productsArray = coverageAndProductsArray[i].split("&;&")[1];
+                        //console.log("PROD ARRAY: " + productsArray);
+
+                        if(coverageID === "EPKG" &&
+                            (riskChosen === "Film Projects Without Cast (No Work Comp)" ||
+                            riskChosen === "Film Projects With Cast (No Work Comp)" ||
+                            riskChosen === "Specific Film Projects Test")){
+
+                            ///////////////////////////// Film Projects With Cast (No Work Comp)
+                            if(riskChosen === "Film Projects With Cast (No Work Comp)"){
+                                $('#EPKGProductsDiv').css("display", "none");
+                                $('#EPKGoptions').css("margin-top", "-20px");
+                            }
+                            else{
+                                $('#EPKGProductsDiv').css("display", "");
+                                $('#EPKGoptions').css("margin-top", "0px");
+                            }
+                            /////////////////////////////
+
+                            if(productsArray.indexOf("PIP CHOI") > -1){
+                                $('#PIPChoiceInput').css("display", "");
+
+                                if($('#EPKGcoverage').is(':checked')){
+                                    $('#PIPChoiceInputRadio').prop("checked", true);
+                                    $('#pipChoiceSelections').css("display", "");
+                                    $('.PIPCHOIOption').prop("checked", true);
+                                }
+                            }
+                            else{
+                                $('#PIPChoiceInputRadio').prop("checked", false);
+
+
+                            }
+
+                            if(productsArray.indexOf("PIP 1") > -1){
+                                $('#PIP1Input').css("display", "");
+                            }
+                            else{
+                                $('#PIP1InputRadio').prop("checked", false);
+                            }
+
+                            if(productsArray.indexOf("PIP 2") > -1){
+                                $('#PIP2Input').css("display", "");
+                            }
+                            else{
+                                $('#PIP2InputRadio').prop("checked", false);
+                            }
+
+                            if(productsArray.indexOf("PIP 3") > -1){
+                                $('#PIP3Input').css("display", "");
+                            }
+                            else{
+                                $('#PIP3InputRadio').prop("checked", false);
+                            }
+
+                            if(productsArray.indexOf("PIP 4") > -1){
+                                $('#PIP4Input').css("display", "");
+                            }
+                            else{
+                                $('#PIP4InputRadio').prop("checked", false);
+                            }
+
+                            if(productsArray.indexOf("PIP 5") > -1){
+                                //alert("PIP5 HERE")
+                                $('#PIP5Input').css("display", "");
+                                //$('.PIP5Options').css("display", "");
+                                if($('#EPKGcoverage').is(':checked')){
+                                    $('#PIP5InputRadio').prop("checked", true);
+                                    $(".PIP5Options").css('display', "");
+                                    $('.PIPCHOIOption').prop("checked", false);
+                                }
+                            }
+                            else{
+                                $('#PIP5InputRadio').prop("checked", false);
+                                $('#EPKGCIVIL100AdditionalCoverage').prop("checked", false);
+                                $('#EPKGCIVIL500AdditionalCoverage').prop("checked", false);
+                                $('.additionalCoverageCheckboxPIP5').prop("checked", false);
+                            }
+
+                            if ($("input[name='EPKGRadio']:checked").length >0){
+                                if($('#EPKGNOHAAdditionalCoverage').is(':checked')){
+                                    $('#EPKGNOHAAdditionalCoverage').prop("checked", true);
+                                }
+                            }
+                            else{
+                                $('#EPKGNOHAAdditionalCoverage').prop("checked", false);
+                            }
+
+                            if($('#EPKGcoverage').is(':checked')){
+                                $('#EPKGoptions').css("display", "");
+
+                                if(riskChosen === "Film Projects With Cast (No Work Comp)"){
+                                    $("#EPKGNOHAOption").css("display","none");
+                                }
+                                else{
+                                    $("#EPKGNOHAOption").css("display","");
+                                }
+                            }
+                            //
+                        }
+                        else if(coverageID === "DICE" &&
+                            (riskChosen === "Film Projects Without Cast (No Work Comp)" ||
+                            riskChosen === "Film Projects With Cast (No Work Comp)" ||
+                            riskChosen === "Specific Film Projects Test")){
+                            $('.EPKGDiv').css("display", "none");
+                            $('.CPKDiv').css("display", "none");
+                            $('#DICEOptions').css("display", "");
+                            $("#EPKGoptions").css("display","none");
+                        }
+                        else if(coverageID === "SPECIFICFILMPROD" &&
+                            (riskChosen === "Film Projects Without Cast (No Work Comp)" ||
+                            riskChosen === "Film Projects With Cast (No Work Comp)" ||
+                            riskChosen === "Specific Film Projects Test")){
+                            $('#SPECIFICOptions').css("display", "");
+                        }
+
+                    }
+                }
+
+                //console.log("CALL FROM GETPRODUCTS FOR RISK")
+                ratePremiums($('#totalBudgetConfirm'));
+
+            });
+        $('#limitsDeductPremiumInsert').html("");
+        $('#premDistributionInsert').html("");
+        $("#termsInsert").html("");
+        $("#endorseInsert").html("");
+        $('#loadingModal').hide();
+        $('#coverageOptionsReview').css("display", "");
+    }
+    else{
+        $('#loadingModal').hide();
+    }
+
+}
+
+function formatMoney(value){
+    //console.log("value=" + value);
+    if(isNaN(parseFloat(value))){
+        if(value.substring(0,1) ==="\$"){
+            value = value.replace("$","");
+            value = ("$"+value+"").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+            return value +"";
+        }
+        else{
+            return value +"";
+        }
+    }
+    else{
+        if((""+value).indexOf("%") > -1){
+            return value +"";
+        }
+        else{
+            var floatValue = parseFloat(value);
+            floatValue = Math.ceil(floatValue)
+            return ("$"+floatValue+"").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+    }
+}
+
+function formatTaxAndFee(value){
+    if(isNaN(parseFloat(value))){
+        if(value.substring(0,1) ==="\$"){
+            value = value.replace("$","");
+            value = ("$"+value+"").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+            return value +"";
+        }
+        else{
+            return value +"";
+        }
+    }
+    else{
+        if((""+value).indexOf("%") > -1){
+            return value +"";
+        }
+        else{
+            var floatValue = parseFloat(value);
+            floatValue = floatValue.toFixed(2);
+            return ("$"+floatValue+"").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+    }
+}
+
+function getTaxInfo(){
+    var date = new Date();
+    var day = date.getDate();
+    var monthIndex = date.getMonth();
+    var year = date.getFullYear();
+    var taxState = "CA"
+    if ($('#stateMailing').val() === "invalid"){
+        taxState = "CA"
+    }
+    else{
+        taxState = $('#stateMailing').val();
+    }
+    //console.log("TAX State = " + taxState)
+    $.ajax({
+        method: "POST",
+        url: "/portal/Async/getTaxInfo",
+        data: {riskType: "",
+            state: taxState,
+            date: monthIndex+1 + "/" + day + "/" + year
+        }
+    })
+        .done(function (msg) {
+            //alert(msg);
+
+            var totalPremium = 0.0;
+            $('.premiumSpan').each(function () {
+
+                if($.isNumeric($(this).html())){
+                    totalPremium = totalPremium + parseFloat($(this).html());
+                }
+                else if($(this).html().substring(0,1) ==="\$"){
+                    var v = $(this).html();
+                    v= v.replace("$","");
+                    v= v.replace(/,/g , "");
+                    //console.log("PREMIUM LINE ===== " + v);
+                    //v = ("$"+v+"").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                    totalPremium = totalPremium + parseFloat(v);
+                }
+            });
+
+            var taxResponseArray = msg.split("&;;&");
+            var htmlString = "";
+            taxResponseArray.forEach(function (item, index) {
+                if(item.split("&,&").length > 1){
+                    htmlString = htmlString + "<div class='row " + item.split("&,&")[0] +  "TaxRow' style= ''" + ">" +
+                        "<div class='col-xs-4'>" +
+                        "<span class='taxDescriptionSpan'>" + item.split("&,&")[1] + "(" + item.split("&,&")[2] + ")</span>" +
+                        "</div>" +
+                        "<div class='col-xs-3'>" +
+                        "<span class='taxSpan'>" + formatTaxAndFee(totalPremium * parseFloat(item.split("&,&")[2])) + "</span>" +
+                        "</div>" +
+                        "<div class='col-xs-3'>" +
+                        "<span class=''>"  + "" + "</span>" +
+                        "</div>" +
+                        "</div>";
+                }
+
+            });
+
+            var policyFeeTotal = 0;
+            if($('#EPKGcoverage').is(':checked')){
+                policyFeeTotal = policyFeeTotal + 15;
+            }
+            if($('#CPKCGLcoverage').is(':checked')){
+                policyFeeTotal = policyFeeTotal + 15;
+            }
+
+            htmlString = htmlString + "<div class='row " + "PolicyFee" +  "TaxRow' style= ''" + ">" +
+                "<div class='col-xs-4'>" +
+                "<span class='taxDescriptionSpan'>Policy Fee</span>" +
+                "</div>" +
+                "<div class='col-xs-3'>" +
+                "<span class='taxSpan'>$" + policyFeeTotal + ".00</span>" +
+                "</div>" +
+                "<div class='col-xs-3'>" +
+                "<span class=''>"  + "" + "</span>" +
+                "</div>" +
+                "</div>";
+            //
+            //alert(htmlString);
+            //console.log("TAXING === ")
+            $("#taxRows").html(htmlString);
+            totalUpPremiumAndTax();
+
+
+
+
+
+        });
 }

@@ -13,14 +13,25 @@ var options={
 date_input.datepicker(options);
 
 $(document).ready(function () {
-
+/////////////////////////////////////START NECESSARY UPDATE!!!/////////////////////////////////////////////////////////////
+//    alert('LOADED OTHER FORM')
     $("#questionsContainer").html("");
     var riskChosen = $("li.active").children("a.riskOptionLink").html().trim();
     var questionCategory = $("li.active").closest(".drawerContainer").find(".questionCategory").html().trim();
 
     getQuestions(riskChosen, questionCategory);
 
+    //JUST IN CASE USER GOES BACK TO STEP 1 TO CLICK ANOTHER RISK TYPE. MUST LOAD NEW QUESTIONS ON CLICK
+    $(document.body).on('click', "#nextButtonStep1" ,function(){
+        console.log('otherform click')
+        getQuestions(riskChosen, questionCategory);
+    });
 
+    //DEFAULT ALL RISK TYPES TO 365 DAY POLICIES.
+
+
+
+/////////////////////////////////////END NECESSARY UPDATE!!!/////////////////////////////////////////////////////////////
 
 
     // Cast Member Insurance
@@ -226,7 +237,7 @@ function ratePremiums(thisObj){
             pipChoiceNOHA = $(this).val();
         }
     });
-    console.log(pipChoiceMisc);
+    //console.log(pipChoiceMisc);
     $('.CPKNOHALimitsInput').each(function( index ) {
         elem.innerHTML = $(this).parent().siblings(".coverageColumn").children().first().html();
         var decoded = elem.value;
@@ -997,6 +1008,7 @@ function getQuestions(riskChosen, questionCategory){
             //alert(msg)
             var questionArray = msg.split("&;;&")[0].split("&;&");
             var questionCategories = msg.split("&;;&")[1].slice(1, -1).split(",");
+
             buildQuestionForm(questionArray, questionCategories)
         });
 }
@@ -1005,15 +1017,52 @@ function buildQuestionForm(questionArray, questionCategories){
     //alert(questionArray);
     //alert(questionCategories);
     var htmlString = "";
+    ///////////////////////////Build Coverage Questions on 2nd page
+    var columns = 2;
+    var questionsForThisCategory = "";
+    for(var j=0; j<questionArray.length;j++){
+        if(questionArray[j].split("&,&")[0].trim() === "Coverages"){
+            questionsForThisCategory = questionsForThisCategory + questionArray[j] + "&;&";
+            console.log(questionArray[j]);
+        }
+    }
 
-    //Build Panels and Questions
+    htmlString = htmlString +
+        "<div class='panel-heading'>" +
+            "<h3 class='panel-title' style='font-size: 20px; color:rgba(31, 31, 31, 0.35)' id='coverageOptionsTitle'>Coverage Options</h3>" +
+        "</div>" +
+            "<div class='panel-body' id='" + questionCategories[i] + "_panelBody'>" +
+                "<div class='row'>" +
+                    "<div class='col-xs-12'>" +
+                        "<label class='control-label'>Please select the Coverages being requested:</label>" +
+                    "</div>" +
+                "</div>" +
+                buildQuestionPanelBody(questionsForThisCategory, columns) +
+            "</div>";
+
+    $('#coverageOptionsReview').html(htmlString);
+    console.log("Coverage Questions: " + htmlString);
+
+
+
+
+
+
+
+
+
+
+
+
+    ///////////////////////////Build Panels and Questions on 3rd step
+    htmlString = "";
     for(var i=0;i<questionCategories.length;i++){
         //alert(questionArray[i]);
         //alert(questionCategories[i]);
-        var columns = 2;
+        columns = 2;
 
         //GET ALL QUESTIONS FOR THIS CATEGORY
-        var questionsForThisCategory = "";
+        questionsForThisCategory = "";
         for(var j=0; j<questionArray.length;j++){
             if(questionArray[j].split("&,&")[0].trim() === questionCategories[i].trim()){
                 questionsForThisCategory = questionsForThisCategory + questionArray[j] + "&;&";
@@ -1040,8 +1089,15 @@ function buildQuestionForm(questionArray, questionCategories){
 
     $("#questionsContainer").html(htmlString);
 
+
+    //initialize date pickers
     var date_input=$('.datepicker');
     date_input.datepicker(options);
+
+    //initialize money fields
+    var moneyNoDecimalInputs=$('.moneyMaskNoDecimal');
+    moneyNoDecimalInputs.maskMoney({prefix:'$', precision:"0"});
+    //$('.moneyMaskDecimal').maskMoney({prefix:'$', precision:"0"});
 
 }
 
@@ -1186,6 +1242,7 @@ function buildQuestion(questionParameters){
             "type='" + htmlInputType + "' " +
             "data-reviewName='" + htmlDataReviewName + "' " +
             "placeholder = '" + htmlPlaceholder + "' " +
+            "style = '" + htmlStyle + "' " +
             "name='" + htmlInputName + "' />" +
             "</div>";
     }
@@ -1198,6 +1255,7 @@ function buildQuestion(questionParameters){
             "type='" + htmlInputType + "' " +
             "data-reviewName='" + htmlDataReviewName + "' " +
             "placeholder = '" + htmlPlaceholder + "' " +
+            "style = '" + htmlStyle + "' " +
             "name='" + htmlInputName + "' />" +
             "</div>";
     }
@@ -1236,7 +1294,7 @@ function buildQuestion(questionParameters){
             "<div class='form-group col-xs-12" + (required=="Y" ? "checkboxGroupRequired" : "") +  "'>" +
             "<label class='title control-label' style='margin-top:0px'>" +
             (required=="Y" ? "<span style='color:red;'>*</span> " : "") + questionText + "</label>" +
-                "<select class='form-control ' name='" + htmlInputName + "'  data-reviewName='" + htmlDataReviewName + "' id='" + htmlID + "'" +
+                "<select class='form-control ' name='" + htmlInputName + "'  data-reviewName='" + htmlDataReviewName + "' id='" + htmlID + "'" + " style='" + htmlStyle + "' " +
                 (required=="Y" ? "required='required' >" : "") +
                 "<option value='invalid' selected='selected'>State</option>" +
                 "<option value='AL'>Alabama</option>" +
