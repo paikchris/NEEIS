@@ -569,7 +569,7 @@ soapXML = soapXML + """
 \t\t<NAIC>${params.NAIC}</NAIC>
 \t\t<certificateNumber>${params.certificateNumber}</certificateNumber>
 \t\t<revisionNumber>${params.revisionNumber}</revisionNumber>
-\t\t<submissionID>SubmissionID</submissionID>
+\t\t<submissionID>${params.otherPolicyNumber + "\n" + params.generalPolicyNumber + "\n" + params.autoPolicyNumber}</submissionID>
 
 \t\t<insrltrGen>${params.insrltrGen}</insrltrGen>
 \t\t<cbGenCommercialGeneralLiability>${params.cbGenCommercialGeneralLiability}</cbGenCommercialGeneralLiability>

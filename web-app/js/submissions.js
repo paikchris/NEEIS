@@ -133,7 +133,7 @@ $(document).ready(function () {
                 else if(statusCode === "NBR"){
 
                 }
-                if(statusCode === "BND"){
+                if(statusCode === "BND" || statusCode == "BIF"){
                     htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton generateCert' > Certificates </button>";
                 }
 
@@ -227,7 +227,7 @@ $(document).ready(function () {
                 else if(statusCode === "NBR"){
 
                 }
-                if(statusCode === "BND"){
+                if(statusCode === "BND" || statusCode=="BIF"){
                     htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton generateCert' > Certificates </button>";
                 }
                 htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton reviewButton' > " +

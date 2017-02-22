@@ -68,72 +68,67 @@
             </div>
     <g:each status="i" var="c" in="${riskCategory}">
         <div class="row" id="${c.riskCategoryCode}">
-        <div class="col-xs-12">
-            <div class="card card-unselected media">
-                <div class="media-left">
-                    <a href="#">
-                        <img class="media-object media-img" src="${c.imgFilePath}" alt="..." width="250px" height="150px">
-                    </a>
+            <div class="col-xs-12">
+                <div class="card card-unselected media">
+                    <div class="media-left">
+                        <a href="#">
+                            <img class="media-object media-img" src="${c.imgFilePath}" alt="..." width="250px" height="150px">
+                        </a>
+                    </div>
+                    <div class="media-body card-content2">
+                        <h4 class="media-heading">${c.riskCategoryName}</h4>
+                        ${c.description}
+                    </div>
                 </div>
-                <div class="media-body card-content2">
-                    <h4 class="media-heading">${c.riskCategoryName}</h4>
-                    ${c.description}
+            </div>
+            <div class="col-xs-12 drawerContainer" style="">
+
+                <div class="drawer" style="">
+                    <div class="col-xs-12">
+                        <h4>Please select one:</h4>
+                    </div>
+
+                    <g:each status="j" var="r" in="${riskTypes}">%{--Loop through all risktype--}%
+                        <g:if test="${r.riskTypeCategory == c.riskCategoryCode}">
+                            <g:if test="${r.subCategoryFlag == "Y"}">%{--Dropdown for risk--}%
+                                <div class="col-xs-4">
+                                    <ul class="nav nav-pills nav-stacked">
+                                        <li role="presentation" class="inactive">
+                                            <a href="" class="riskOptionLink riskOptionDropDown">
+                                                <div class="row" style="margin:0px">r.riskTypeName</div>
+                                                <div class="row" style="margin:0px">
+                                                    <select class='riskTypeDropdown ' style="display:none; color:#337ab7; padding-left:20px;width: 100%;margin-top: 10px;
+                                                    margin-bottom: 10px;font-size: 25px;">
+                                                        <option value="invalid" selected>Select One</option>
+                                                        <g:each status="k" var="rs" in="${riskTypes.findAll(it.parentSubCategory == r.riskTypeName)}"> %{--Find all risks in subCategory--}%
+                                                            <option value="Concerts">${rs.riskTypeName}</option>
+                                                        </g:each>
+                                                    </select>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </g:if>
+                            <g:elseif test="${r.subCategoryFlag == "N" && r.parentSubCategory.trim() == "" }">
+                                <div class="col-xs-4">
+                                    <ul class="nav nav-pills nav-stacked">
+                                        <li role="presentation" class="inactive">
+                                            <a href="" class="riskOptionLink">Comedian
+                                            </a>
+
+                                        </li>
+                                    </ul>
+                                </div>
+                            </g:elseif>
+                        </g:if>
+                    </g:each>
                 </div>
+
+            </div>
             </div>
         </div>
-        <div class="col-xs-12 drawerContainer" style="">
-
-            <div class="drawer" style="">
-                <div class="col-xs-12">
-                    <h4>Please select one:</h4>
-                </div>
-
-        <g:each status="i" var="r" in="${riskTypes}">%{--Loop through all risktype--}%
-            <g:if test="${r.riskTypeCategory == c.riskCategoryCode}">
-                <g:if test="${r.subCategoryFlag == "Y"}">%{--Dropdown for risk--}%
-                    <div class="col-xs-4">
-                        <ul class="nav nav-pills nav-stacked">
-                            <li role="presentation" class="inactive">
-                                <a href="" class="riskOptionLink riskOptionDropDown">
-                                    <div class="row" style="margin:0px">r.riskTypeName</div>
-                                    <div class="row" style="margin:0px">
-                                        <select class='riskTypeDropdown ' style="display:none; color:#337ab7; padding-left:20px;width: 100%;margin-top: 10px;
-                                        margin-bottom: 10px;font-size: 25px;">
-                                            <option value="invalid" selected>Select One</option>
-                                            <g:each status="i" var="rs" in="${riskTypes.findAll(it.parentSubCategory == r.riskTypeName)}"> %{--Find all risks in subCategory--}%
-                                                <option value="Concerts">${rs.riskTypeName}</option>
-                                            </g:each>
-                                        </select>
-                                    </div>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </g:each>
-                </g:if>
-                <g:elseif test="${r.subCategoryFlag == "N" && r.parentSubCategory.trim() == "" }">
-                    <div class="col-xs-4">
-                        <ul class="nav nav-pills nav-stacked">
-                            <li role="presentation" class="inactive">
-                                <a href="" class="riskOptionLink">Comedian
-                                </a>
-
-                            </li>
-                        </ul>
-                    </div>
-                </g:elseif>
-            </g:if>
-
-
-
-
-            </div>
-
-            </div>
-
-        </div>
-    </div>
-        </g:each>
+    </g:each>
 
 
 

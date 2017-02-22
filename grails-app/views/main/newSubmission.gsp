@@ -5,7 +5,7 @@
     <meta name="layout" content="main">
     <link rel="stylesheet" href="${resource(dir: 'css', file: 'newSubmission.css')}" type="text/css">
     <script src="${resource(dir: 'js', file: "newSubmission.js?ts=" + new Date().getTime())}" async></script>
-    <script src="${resource(dir: 'js', file: 'jquery.maskMoney.min.js')}" async></script> 
+    <script src="${resource(dir: 'js', file: 'jquery.maskMoney.min.js')}" async></script>
 </head>
 <body>
 <div id="riskMap" style="display: none;">
