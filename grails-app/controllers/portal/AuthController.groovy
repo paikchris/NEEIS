@@ -54,6 +54,7 @@ class AuthController {
 
         def userRole = "Broker";
         def error = false;
+        def defaultUW = ""
         User u;
         try{
             u = new portal.User(userRole:userRole, email:params.email, password:params.password,
@@ -103,7 +104,7 @@ class AuthController {
                     "   NULL, NULL, NULL, NULL, NULL, NULL, \n" +
                     "   '', NULL, ${params.agencyPIN}, NULL, NULL, NULL, 'Y', \n" +
                     "   NULL, NULL, NULL, NULL, \n" +
-                    "   NULL, NULL, NULL, '${params.firstName}', 'jason', '${timestamp} 20161216 14:09:37.180', \n" +
+                    "   NULL, NULL, NULL, '${params.firstName}', 'jason', '${timestamp}', \n" +
                     "   '${timestamp}', NULL, NULL, NULL, NULL, \n" +
                     "   NULL, NULL, NULL, 'N', \n" +
                     "   NULL, NULL)"
@@ -126,10 +127,10 @@ class AuthController {
 //                submissions.add(row)
 //            }
 
-            def http = new HTTPBuilder( 'http://104.131.41.129:3000/wc/23/ew' )
-            def postBody = [email: params.email, k: params.password] // will be url-encoded
+            def http = new HTTPBuilder( 'http://104.131.41.129:3000/register' )
+            def postBody = [email: params.email, pw: params.password, producerID: params.company, nameKeyPK: userReferenceID] // will be url-encoded
 
-            http.post( path: '/wc/23/ew', body: postBody,
+            http.post( path: '/register', body: postBody,
                     requestContentType: URLENC ) { resp ->
 
                 log.info "POST Success: ${resp.statusLine}"
@@ -240,5 +241,19 @@ class AuthController {
 
     def insertUserIntoAIMPhoneBook(){
 
+    }
+
+    def createSessionForLegacyNeeis(){
+        def http = new HTTPBuilder( 'http://104.131.41.129:3000/redirect' )
+        def postBody = [email: "test15@test.com", password: "newpassword"] // will be url-encoded
+
+        http.post( path: '/redirect', body: postBody,
+                requestContentType: URLENC ) { resp ->
+
+            log.info "POST Success: ${resp.statusLine}"
+//                assert resp.statusLine.statusCode == 201
+        }
+
+        render "good"
     }
 }

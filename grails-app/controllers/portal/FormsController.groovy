@@ -26,6 +26,9 @@ class FormsController {
 
     }
 
+    def specFilmNew() {
+
+    }
 
     def entertainerForm() {
 

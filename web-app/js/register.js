@@ -109,21 +109,21 @@ $(document).ready(function () {
         console.log(validateRegisterForm());
         //alert("registering");
         if(validateRegisterForm()){
-            alert("good form");
-            //$.ajax({
-            //    method: "POST",
-            //    url: "/portal/auth/registerUser",
-            //    data: {email: $('#email').val().trim(),
-            //        password: $('#password').val().trim(),
-            //        firstName:$('#firstName').val().trim(),
-            //        lastName:$('#lastName').val().trim(),
-            //        company:$('#company').val().trim(),
-            //        phoneNumber:$('#phoneNumber').val().trim().replace(/\D/g,'')
-            //    }
-            //})
-            //    .done(function (msg) {
-            //
-            //    });
+            //alert("good form");
+            $.ajax({
+                method: "POST",
+                url: "/portal/auth/registerUser",
+                data: {email: $('#email').val().trim(),
+                    password: $('#password').val().trim(),
+                    firstName:$('#firstName').val().trim(),
+                    lastName:$('#lastName').val().trim(),
+                    company:$('#agencyID').val().trim(),
+                    phoneNumber:$('#phoneNumber').val().trim().replace(/\D/g,'')
+                }
+            })
+                .done(function (msg) {
+                    alert("registered");
+                });
         }
         else{
             alert("Please complete all required fields")

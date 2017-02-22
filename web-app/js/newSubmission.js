@@ -227,6 +227,8 @@ $(document).ready(function () {
     });
     $('#proposedEffectiveDate, #proposedExpirationDate').change(function(e){
             //alert($('#proposedEffectiveDate').val() + " " + $('#proposedExpirationDate').val());
+        var riskChosen= getRiskTypeChosen();
+        var riskCategory = getRiskCategoryChosen();
         var termLength;
         var datesAreValid = false;
 
@@ -237,8 +239,7 @@ $(document).ready(function () {
 
 
         if($(this).attr('id') === "proposedEffectiveDate"){
-            var riskChosen= getRiskTypeChosen();
-            var riskCategory = getRiskCategoryChosen();
+
             if (mdyEffectiveDateObject.getTime() < today.getTime()) {
                //console.log(e);
                 //alert("]Effective Date must be a present or future date");
@@ -1050,8 +1051,6 @@ $(document).ready(function () {
             $('#premiumExpectedInput').maskMoney({prefix:'$', precision:"0"});
 
             if (e.target.id == "nextButtonStep1" ) {
-
-
                 currentStep = 1;
                 BORrequested= false;
                 $('#BORRequestNotification').css('display', "none");
@@ -1061,7 +1060,10 @@ $(document).ready(function () {
                         testingMode = true;
                     }
                     else if (riskChosen === "Film Projects Without Cast (With Work Comp)" || riskChosen === "Film Projects With Cast (With Work Comp)") {
-                        window.location.href = "http://www.neeis.com/d/users/sign_in";
+                        //window.location.href = "http://www.neeis.com/d/users/sign_in";
+                        logIntoLegacyNeeis();
+                        $('#loadingModal').hide();;
+                        return false;
                     }
                     else if (riskChosen.indexOf("Film Projects") > -1) {
                         $('#totalBudgetConfirmGroup').css('display', '');
@@ -1289,10 +1291,14 @@ $(document).ready(function () {
                 coverageCodes = coverageCodes.replace(/,\s*$/, "");
 
                 var riskChosen= getRiskTypeChosen();
+                var riskCategory = getRiskCategoryChosen();
                 var $form = $('.form-control');
                 var data = getFormData($form);
                 //data.append("premiumAllLOBTotal", $('#premiumAllLOBTotal').html());
                 data["premiumAllLOBTotal"] = $('#premiumAllLOBTotal').html();
+                data["riskTypeChosen"] = riskChosen;
+                data["riskCategoryChosen"] = riskCategory;
+                data['filmingLocation'] =  $('#filmingLocation').html(); 
                 var productID = "";
                 var epkgLOB = "";
                 var cpkLOB = "";
@@ -2230,6 +2236,7 @@ function testingModeFill(){
 }
 
 function getProductsForRisk(){
+
     var riskChosen = getRiskTypeChosen();
 
     if(riskChosen.indexOf("Film Projects") > -1){
@@ -2391,6 +2398,7 @@ function getProductsForRisk(){
     }
 
 }
+
 
 function clearProductChoices(){
 
@@ -2624,4 +2632,10 @@ function getRiskCategoryChosen(){
 
     var category = $("li.active").closest('.drawerContainer').closest('.row').find('.media-heading').html();
     return category;
+}
+
+function logIntoLegacyNeeis(){
+    $('#producerIDhidden').html().trim();
+    window.location.href = "http://104.131.41.129:3000/redirect?email=test15@test.com&password=newpassword&producerID=TVD";
+
 }

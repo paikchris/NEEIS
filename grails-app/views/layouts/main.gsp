@@ -10,7 +10,7 @@
 
 	<!-- Bootstrap -->
 	<link rel="stylesheet" href="${resource(dir: 'css', file: 'bootstrap.min.css')}" type="text/css">
-
+	<link rel="stylesheet" href="${resource(dir: 'font-awesome-4.7.0', file: '/css/font-awesome.min.css')}" type="text/css">
 	%{--CUSTOM STYLESHEET--}%
 	<link rel="stylesheet" href="${resource(dir: 'css', file: 'neeisTheme.css')}" type="text/css">
 	%{--<link rel="stylesheet" href="${resource(dir: 'css', file: 'squarespaceTheme.css')}" type="text/css">--}%
@@ -135,7 +135,9 @@
 					</a>
 					<ul class="dropdown-menu">
 						<li><a href="#" id="myAccountButton">My Account</a></li>
-						%{--<li><a href="#" id="settingsButton">Settings</a></li>--}%
+						<g:if test="${user.admin == "true"}">
+							<li><a href="./../admin/data" id="data">Data Management</a></li>
+						</g:if>
 						%{--<li><a href="#">Something else here</a></li>--}%
 						%{--<li role="separator" class="divider"></li>--}%
 						%{--<li><a href="#">Separated link</a></li>--}%

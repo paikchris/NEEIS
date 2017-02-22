@@ -11,6 +11,8 @@ class ProductLOB {
     String minPremium
     String productID
     String optionalFlag
+    Integer displayOrder
+    String includedFlag
 
 
     static constraints = {
@@ -23,5 +25,6 @@ class ProductLOB {
         productID nullable:true
         minPremium nullable:true
         optionalFlag nullable:true
+        displayOrder nullable:true
     }
 }

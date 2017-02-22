@@ -71,7 +71,6 @@ class AsyncController {
                                         "WHERE (ProductID = 'PIP 2') AND (ActiveFlag = 'Y')") {
                                     renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
                                 }
-
                                 if (params.totalGrossBudget.toFloat() <= 100000) {
                                     aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
                                             "FROM lkpProduct " +
@@ -337,7 +336,7 @@ class AsyncController {
 
 
 
-//        WHERE     (QuoteID IN ('0622031', '0622032', '0622033', '0622034')) AND (CoverageID IN ('CPK', 'CGL')) AND (StatusID IN ('BND', 'BIF', 'PIF'))
+//        WHERE     (QuoteID IN ('0622031', '0622032', '0622033', '0622034')) AND (CoverageID IN ('CPK', 'CGL')) AND (StatusID IN ('BND', 'BND', 'PIF'))
             aimsql.eachRow( "SELECT TOP (1) *  " +
                     "FROM dbo.Quote " +
                     "WHERE QuoteID='" + params.quoteID +
@@ -1193,6 +1192,193 @@ class AsyncController {
         render "Upload Completed"
     }
 
+    def newRatePremiums(){
+        log.info("RATING PREMIUMS (NEW METHOD)")
+        log.info(params);
+        Sql aimsql = new Sql(dataSource_aim)
+
+        def totalBudget = params.totalBudget.toDouble()
+        def optionalProducts = new JsonSlurper().parseText(params.optionalProducts)
+
+        def jsonResponse = "";
+        def arrayOfCoverageDetails = [];
+
+        def pipChoiceLimitsArray = params.pipChoiceLimits.split("&;;&");
+        def pipChoiceLimitsMap = [:]
+        def termLength = params.proposedTermLength.split(" ")[0].toInteger();
+
+        //Filter Products selected to format (PIP CHOI, BARCPGK )
+        def productsToRate = [];
+        (params.productsSelected.split(",") as List).each{
+            productsToRate.add(it.split(":")[1])
+        }
+        log.info productsToRate
+
+
+
+
+
+        //SELECT PRODUCTS FROM DB
+        def products = Products.where {
+                productID in productsToRate
+
+        }.list()
+
+
+        //RATE EACH PRODUCT
+        products.each{ product ->
+            log.info ("RATING: " + product.productID)
+            def mainRate;
+            float productTotalPremium =0;
+
+            def limitsMap =[:]
+            def customLimitsMap = [:]
+            def deductsMap = [:]
+            def premiumsMap = [:]
+            def terms = product.terms
+            def forms = product.forms
+            def rateInfo
+
+            //LOOP THROUGH ALL LOBS (LIMITS/DEDUCTIBLES/LOB PREMIUMS)
+            def productLOBS = ProductLOB.findAllByProductID(product.productID, [sort: "displayOrder",order: "asc"])
+            log.info productLOBS
+            productLOBS.each{ productLOB ->
+                def lobMinPremium = productLOB.minPremium;
+
+                //IF THIS LOB IS OPTIONAL, CHECK IF LOB WAS SELECTED
+                if(productLOB.optionalFlag == "Y"){
+                    def productLOBName = productLOB.lobCode;
+//                    log.info("LOB: " + optionalProducts[productLOBName])
+                    if(productLOBName.split("_")[1] == "NOHA"){
+                        productLOBName = productLOBName.split("_")[1];
+                    }
+                    else{
+                        productLOBName = productLOB.lobCode
+                    }
+                    log.info(productLOBName)
+                    log.info("LOB: " + optionalProducts[productLOBName])
+                    if(optionalProducts[productLOBName] != "true"){ // if optional and params does not include option
+                        return
+                    }
+
+                }
+
+                //LIMIT CALCULATIONS
+                def customData = new JsonSlurper().parseText(params.customData)
+                if(productLOB.lobLimit == "custom"){ //if limits are customizable by the user
+                    def nameOfCustomLimitInputInView = "${(productLOB.lobName).replaceAll("[^a-zA-Z]+","").replaceAll("\\s","")}LimitInput";
+
+                    limitsMap[productLOB.lobName] = productLOB.lobLimit
+                    customLimitsMap[productLOB.lobName] = customData.getAt(nameOfCustomLimitInputInView)
+                }
+                else{//if limits are not customizable
+                    limitsMap[productLOB.lobName] = productLOB.lobLimit
+                }
+
+                //DEDUCTIBLE CALCULATIONS
+                deductsMap[productLOB.lobName] = productLOB.lobDeductible
+
+
+                //LOB PREMIUMS
+                if(productLOB.includedFlag == "Y"){ //Included no premium
+                    premiumsMap[productLOB.lobName] = "incl"
+                }
+                else if (productLOB.flatPremium != null){ //Flat Premium
+                    premiumsMap[productLOB.lobName] = productLOB.flatPremium
+                }
+                else if (productLOB.rateValue != null){ //Premium based on rate
+                    //Determine if rate is based on limit or budget
+
+                    if(productLOB.lobLimit == "custom"){ //RATE BASED ON CUSTOM LIMIT
+                        NumberFormat format = NumberFormat.getCurrencyInstance();
+
+                        def customLimitAmount = customLimitsMap[productLOB.lobName].replaceAll("[\$,]", "");;
+                        premiumsMap[productLOB.lobName] = (productLOB.rateValue.toDouble() * customLimitAmount.toDouble()) / 100
+                        productTotalPremium = productTotalPremium + premiumsMap[productLOB.lobName]
+                    }
+                    else{
+                        premiumsMap[productLOB.lobName] = (productLOB.rateValue.toDouble() * totalBudget) / 100
+                    }
+
+                    //IF LOB has a minimum premium, CHECK IF LOB PREMIUM MEETS MINIMUM PREMIUM
+                    if(lobMinPremium != null){
+                        if(premiumsMap[productLOB.lobName] < Double.parseDouble(lobMinPremium)){
+                            premiumsMap[productLOB.lobName] = lobMinPremium
+                        }
+                    }
+                }
+            }
+
+
+            //PRODUCT RATING
+            if(product.flatPremium != null){ //if product premium is flat rate
+                productTotalPremium = product.flatPremium
+            }
+            else if(product.rateBasis == "budget"){ //if product premium is based on budget
+                productTotalPremium = (product.rate.toDouble() * totalBudget) /100
+            }
+            else if(product.rateBasis == "limit"){ //if product premium is based on limit
+                //SHOULD ALREADY BE CALCULATED IN LOB LOOP
+            }
+
+            //CHECK IF PRODUCT MEETS MINIMUM PREMIUM
+            if(productTotalPremium < product.minPremium){
+                productTotalPremium = product.minPremium
+            }
+
+
+            rateInfo = "EPKG\tRate\tPremium\tCoverage\tMin Prem\n";
+            rateInfo = rateInfo + "EPKG\tflat\t\$500\t\t\n";
+            rateInfo = rateInfo + "EPKG\tflat\tincl\tNegative Film & Videotape\t\n";
+            rateInfo = rateInfo + "EPKG\tflat\tincl\tFaulty Stock & Camera Processing\t\n";
+            rateInfo = rateInfo + "EPKG\tflat\tincl\tMiscellaneous Rented Equipment\t\n";;
+            rateInfo = rateInfo + "EPKG\tflat\tincl\tProps, Sets & Wardrobe\t\n";
+            rateInfo = rateInfo + "EPKG\tflat\tincl\tThird Party Prop Damage Liab\t\n";
+            rateInfo = rateInfo + "EPKG\tflat\tincl\tExtra Expense\t\n";
+
+
+            if(product.flatPremium != null){
+                log.info "FLAT RATE"
+            }
+            else{
+                log.info "NOT A FLAT RATE"
+            }
+
+            def limitsMapJson = JsonOutput.toJson(limitsMap)
+            def customLimitsMapJson = JsonOutput.toJson(customLimitsMap)
+            def deductsMapJson = JsonOutput.toJson(deductsMap)
+            def premiumsMapJson = JsonOutput.toJson(premiumsMap)
+
+
+            def coverageJson = JsonOutput.toJson(
+                    coverageCode: product.coverage,
+                    coverageLongName: product.coverageLongName,
+                    productCode: product.productID,
+                    productTotalPremium: productTotalPremium,
+                    limits: new JsonSlurper().parseText(limitsMapJson),
+                    customLimits: new JsonSlurper().parseText(customLimitsMapJson),
+                    deductibles: new JsonSlurper().parseText(deductsMapJson),
+                    premiums: new JsonSlurper().parseText(premiumsMapJson),
+                    terms: terms,
+                    forms: forms,
+                    rateInfo: rateInfo,
+                    agentPct: product.agentPct,
+                    grossPct: product.grossPct
+            )
+            arrayOfCoverageDetails.add(new JsonSlurper().parseText(coverageJson))
+        }
+
+
+
+        jsonResponse = JsonOutput.toJson(
+                coverages: arrayOfCoverageDetails
+        )
+        log.info JsonOutput.prettyPrint(jsonResponse)
+
+        render JsonOutput.prettyPrint(jsonResponse)
+//        render "good"
+    }
+
     def ratePremiums() {
         log.info("RATING PREMIUMS")
         log.info(params);
@@ -1251,34 +1437,6 @@ class AsyncController {
 
             }
             log.info "ADJUSTING RATES"
-//            //PIP CHOICE RATING
-//            "PIPCHOI_miscRate": "",
-//            "PIPCHOI_miscMP": "",
-//            "PIPCHOI_propsRate": "",
-//            "PIPCHOI_propsMP": "",
-//            "PIPCHOI_thirdRate": "",
-//            "PIPCHOI_thirdMP": "",
-//            "PIPCHOI_extraRate": "",
-//            "PIPCHOI_extraMP": "",
-//            "PIPCHOI_NOHARate": "",
-//            "PIPCHOI_NOHAMP": "",
-//            "PIP1_Rate": "",
-//            "PIP1_MP": "",
-//            "PIP2_Rate": "",
-//            "PIP2_MP": "",
-//            "PIP2_NOHARate": "",
-//            "PIP2_NOHAMP": "",
-//            "PIP3_Rate": "",
-//            "PIP3_MP": "",
-//            "PIP4_Rate": "",
-//            "PIP4_MP": "",
-//            "PIP5_Rate": "",
-//            "PIP5_MP": "",
-//            "PIP5_civil100Rate": "",
-//            "PIP5_civil100MP": "",
-//            "PIP5_civil500Rate": "",
-//            "PIP5_civil500MP": "",
-//            "runRatesButton": "Upload"
 
              pipChoice_miscRentedEquipRateMinPrem = [ rateMap['PIPCHOI_miscRate'].toDouble(), rateMap['PIPCHOI_miscMP'].toInteger()];
              pipChoice_propsSetWardrobeRateMinPrem = [ rateMap['PIPCHOI_propsRate'].toDouble(), rateMap['PIPCHOI_propsMP'].toInteger()];
@@ -2673,7 +2831,8 @@ class AsyncController {
                 quoteID = quoteID + it.split(";")[0] + ","
 
                 s = new portal.Submissions(submittedBy: session.user.email, aimQuoteID: it.split(";")[0], namedInsured: jsonParams.getAt("namedInsured"), submitDate: timestamp,
-                        coverages: it.split(";")[1], statusCode: "QO", underwriter: accountExec+"@neeis.com", questionAnswerMap: params.questionAnswerMap, submitGroupID: submitGroupID)
+                        coverages: it.split(";")[1], statusCode: "QO", underwriter: accountExec+"@neeis.com", questionAnswerMap: params.questionAnswerMap,
+                        uwQuestionMap:uwQuestionsMap, uwQuestionsOrder:uwQuestionsOrder, submitGroupID: submitGroupID)
                 s.save(flush: true, failOnError: true)
             }
 
@@ -3065,8 +3224,8 @@ class AsyncController {
         else if(params.statusCode == "BRQ"){
             description = "Bind Request"
         }
-        else if(params.statusCode == "BIF"){
-            description = "Binder In Force"
+        else if(params.statusCode == "BND"){
+            description = "Bound"
         }
 
 
@@ -3078,17 +3237,99 @@ class AsyncController {
     def getQuestionAnswers(){
         log.info "GETTING SUBMISSION QUESTION ANSWERS"
         log.info params
+        Sql aimsql = new Sql(dataSource_aim)
 
         def submissionInfo = Submissions.findAllByAimQuoteID(params.quoteID)
-        log.info "FOUND: " + submissionInfo
+
+        def submissionInfoMap=[:]
+        if(submissionInfo.size() >0){
+            submissionInfoMap = new JsonSlurper().parseText(submissionInfo[0].questionAnswerMap)
+            submissionInfoMap['webSubmission'] = "true"
+            submissionInfoMap['uwQuestionsMap'] = submissionInfo[0].uwQuestionMap;
+            submissionInfoMap['uwQuestionsOrder'] = submissionInfo[0].uwQuestionsOrder;
+        }
+
+        /*
+        QuoteID, VersionBound, ProducerID, NamedInsured, TypeID, UserID, Attention, Received, Acknowledged, Quoted, TeamID, DivisionID, StatusID, CreatedID, Renewal,
+        OldPolicyID, OldVersion, OldExpiration, OpenItem, Notes, PolicyID, VersionCounter, InsuredID, Description, FileLocation, Address1, Address2, City, State, Zip, Bound,
+        Submitted, SubmitType, NoteAttached, AcctExec, InsuredInterest, RiskInformation, EC, BndPremium, BndFee, CompanyID, ProductID, Effective, Expiration, Setup,
+        PolicyMailOut, BinderRev, PriorCarrier, TargetPremium, CsrID, PolicyVer, OldQuoteID, PolicyGrpID, PendingSuspenseID, ReferenceID, MapToID, SubmitGrpID,
+        AcctAsst, TaxState, SicID, CoverageID, OldPremium, AddressID, OldEffective, TaxBasis, QuoteRequiredBy, RequiredLimits, RequiredDeduct, Retroactive,
+        PrevCancelFlag, PrevNonRenew, PriorPremium, PriorLimits, UWCheckList, FileSetup, ContactID, SuspenseFlag, PriorDeductible, CategoryID, StructureID,
+        RenewalStatusID, ClaimsFlag, ActivePolicyFlag, Assets, PublicEntity, VentureID, IncorporatedState, ReInsuranceFlag, TaxedPaidBy, LayeredCoverage, Employees,
+        Stock_52wk, NetIncome, LossHistory, PriorLimitsNew, LargeLossHistory, DateOfApp, Stock_High, Stock_Low, Stock_Current, MarketCap, Exposures, AIM_TransDate,
+        LostBusinessFlag, YearEst, LostBusiness_Carrier, LostBusiness_Premium, AccountKey_FK, FlagRewrite, flagWIP, RenewalQuoteID, QuoteDueDate, QuoteStatus,
+        BinderExpires, TIV, InvoicedPremium, InvoicedFee, InvoicedCommRev, SplitAccount, FileCloseReason, FileCloseReasonID, SourceOfLeadID, ServiceUWID,
+        SubmitTypeID, SubProducerID, AgtAccountNumber, BndMarketID, RefQuoteID, FlagHeldFile, HeldFileMessage, TermPremium, ProcessBatchKey_FK, PolicyInception,
+        ClassID, ScheduleIRM, ClaimExpRM, DateAppRecvd, DateLossRunRecvd, CoverageEffective, CoverageExpired, SLA, Class, IRFileNum, IRDrawer, FlagOverRideBy,
+        RackleyQuoteID, FlagCourtesyFiling, FlagRPG, CurrencyType, CurrencySymbol, FileNo, UserDefinedStr1, UserDefinedStr2, UserDefinedStr3, UserDefinedStr4,
+        UserDefinedDate1, UserDefinedValue1, ReservedContractID, CountryID, RatingKey_FK, eAttached, NewField, TotalCoinsuranceLimit, TotalCoinsurancePremium,
+        CurrencyExchRate, Invoiced, OtherLead, LeadCarrierID, RenewTypeID, IsoCode, CedingPolicyID, CedingPolicyDate, ConversionStatusID, FlagTaxExempt, Units,
+        SubUnits, LicenseAgtKey_FK, ContractPlanKey_FK, AltStatusID, FlagNonResidentAgt, CedingPolicyEndDate, TargetPremPercent, AgentContactKey_FK, LAGACoverage,
+        LAGALimoRateKey_FK, FirewallTeamID, CurrencyExchRate_Old, MarketCapValue, ExternalNoteFile, PriorRate, DBAName, MailAddress1, MailAddress2, MailCity,
+        MailState, MailZip, RatingID_FK, HereOn, TaxMunicipality
+        */
+        def row;
+        aimsql.eachRow("SELECT * " +
+                "FROM Quote " +
+                "WHERE (QuoteID = '" + params.quoteID + "') ") {
+            submissionInfoMap['aimQuoteID'] = it.QuoteID
+            submissionInfoMap['namedInsured'] = it.NamedInsured
+            submissionInfoMap['coverages'] = it.CoverageID
+            submissionInfoMap['statusCode'] = it.StatusID
+            submissionInfoMap['submittedBy'] = it.Attention
+            submissionInfoMap['underwriter'] = it.AcctExec
+            it.toRowResult().each { key, val ->
+                if(val){
+                    submissionInfoMap["Quote-" + key] = val;
+                }
+            }
+        }
+        aimsql.eachRow("SELECT * " +
+                "FROM Version " +
+                "WHERE (QuoteID = '" + params.quoteID + "') ") {
+            it.toRowResult().each { key, val ->
+                if(val){
+                    submissionInfoMap["Version-" + key] = val;
+                }
+            }
+        }
+        aimsql.eachRow("SELECT * " +
+                "FROM Insured " +
+                "WHERE (InsuredID = '" + submissionInfoMap['Quote-InsuredID'] + "') ") {
+            it.toRowResult().each { key, val ->
+                if(val){
+                    submissionInfoMap["Insured-" + key] = val;
+                }
+            }
+        }
+        aimsql.eachRow("SELECT * " +
+                "FROM Status " +
+                "WHERE (StatusID = '" + submissionInfoMap['Quote-StatusID'] + "') ") {
+            it.toRowResult().each { key, val ->
+                if(val){
+                    submissionInfoMap["Status-" + key] = val;
+                }
+            }
+        }
+
+
         if(submissionInfo.size() ==0){
             log.info "NOT WEB"
-            render "NOTWEB"
+            submissionInfoMap['riskChosen'] = "AIM"
+
+            render JsonOutput.toJson(submissionInfoMap)
         }
         else{
+            submissionInfoMap['aimQuoteID'] = submissionInfo.aimQuoteID
+            submissionInfoMap['namedInsured'] = submissionInfo.namedInsured
+            submissionInfoMap['coverages'] = submissionInfo.coverages
+            submissionInfoMap['statusCode'] = submissionInfo.statusCode
+            submissionInfoMap['submittedBy'] = submissionInfo.submittedBy
+            submissionInfoMap['underwriter'] = submissionInfo.underwriter
 
-            log.info submissionInfo[0]
-            render submissionInfo[0].questionAnswerMap;
+            log.info submissionInfoMap
+            render JsonOutput.toJson(submissionInfoMap)
         }
 
 

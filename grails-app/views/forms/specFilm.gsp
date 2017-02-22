@@ -1,5 +1,4 @@
 <div id="insuredInfo">
-    <div class="col-xs-12">
         <div class="col-xs-6">
             <div class="form-group">
                 <label for="nameOfProduction">Name Of Production Company</label>
@@ -395,7 +394,7 @@
                     <p class="control-label"><input type="checkbox"
                                                     class="productionInvolvesCheckbox noneOfTheAbove showReview"
                                                     name="noneOfTheAbove showReview"
-                                                    data-reviewName="Special Hazards Declared" value="None of the Above"
+                                                    data-reviewName="Special Hazards Declared" value="None"
                                                     id="productionInvolvesNoneAbove" checked="checked"/> None of the Above</p>
                 </div>
 
@@ -924,6 +923,14 @@
                 </div>
             </div>
         </div>
+
+        <div class="col-xs-12">
+            <div class="form-group">
+                <label for="numberOfFilms">Number of Productions Per Year </label>
+                <input type="text" class="form-control" name="numberProductions" placeholder="#" id="numberProductions"/>
+            </div>
+        </div>
+
         <div class="col-xs-12">
             <div class="form-group">
                 <label for="projectsOutsideUS">Projects Outside the US (%) </label>

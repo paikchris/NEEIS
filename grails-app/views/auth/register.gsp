@@ -22,7 +22,7 @@
                         <div class="alert alert-danger" role="alert">${registerError}</div>
                     </g:if>
                         <div class="alert alert-danger" role="alert" style="display:none"></div>
-                        <g:form controller="auth" action="registerUser">
+                        %{--<g:form controller="auth" action="registerUser">--}%
                             <div class="form-group">
                                 <label for="email">Email address<span style="color:red; font-size:12px;">*</span></label>
                                 <g:textField type="email" class="form-control required emailInput" name="email" placeholder="Email" id="email"/>
@@ -66,7 +66,7 @@
 
 
                             <button type="submit" class="btn btn-primary btn-lg btn-block" id="submitButton">Register</button>
-                        </g:form>
+                        %{--</g:form>--}%
                     </div>
                 </div>
             </div>

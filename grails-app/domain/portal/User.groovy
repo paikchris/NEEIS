@@ -10,6 +10,7 @@ class User {
     String userRole
     String phoneNumber
     String defaultUnderwriter
+    String admin
 
 
     String toString(){
@@ -20,7 +21,9 @@ class User {
         email(email:true, unique:true)
         password(blank:true, password:true)
         userRole(role:true)
-        defaultUnderwriter(role:true)
+        defaultUnderwriter(nullable:true)
         company nullable:true
+        phoneNumber nullable:true
+        admin nullable:true
     }
 }

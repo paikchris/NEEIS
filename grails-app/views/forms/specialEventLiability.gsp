@@ -2,21 +2,21 @@
     <div class="col-xs-12">
         <div class="col-xs-6">
             <div class="form-group">
-                <label for="nameOfContactProducer">Name Of Producer</label>
+                <label for="nameOfContactProducer">Name Of Principal</label>
                 <input type="text" class="form-control showReview" name="nameOfProducer"
                        data-reviewName="Name Of Producer"
                        id="nameOfProducer" placeholder="Name of Producer"/>
             </div>
 
             <div class="form-group">
-                <label for="producerContactEmail">Producer Contact Email Address</label>
+                <label for="producerContactEmail">Principal Contact Email Address</label>
                 <input type="text" class="form-control showReview" name="producerEmail" id="producerEmail"
                        data-reviewName="Producer Email"
                        placeholder="Producer Email"/>
             </div>
 
             <div class="form-group">
-                <label for="producerContactPhone">Producer Contact Phone Number</label>
+                <label for="producerContactPhone">Principal Contact Phone Number</label>
                 <input type="text" class="form-control showReview" name="producerPhone" id="producerPhone"
                        data-reviewName="Producer Phone"
                        placeholder="Producer Email"/>
@@ -64,6 +64,8 @@
                        placeholder="Email"/>
             </div>
         </div>
+
+<div class="col-xs-6">
         <div class="form-group">
             <label for="stateWhereEntityEstablished">State Where Entity Established</label>
             <input type="text" class="form-control showReview" name="whereEstablished" id="whereEstablished"
@@ -71,7 +73,6 @@
                    placeholder=""/>
         </div>
 
-        <div class="col-xs-6">
 
             <div class="form-group">
                 <label for="dbaName">Doing Business as; Name</label>
@@ -140,107 +141,10 @@
                 </div>
             </div>
 
-            <p class="control-label"><input type="checkbox"
-                                            class="productionInvolvesCheckbox pyrotechnics showReview"
-                                            data-reviewName="Special Hazards Declared" name="pyrotechnics"
-                                            id="pyrotechnicsCheckbox"
-                                            value="Pyrotechnics (Explosions, fire) (Supplemental Application)"/> Pyrotechnics (Explosions, fire) (Supplemental Application)
-            </p>
-
-            <div class="row" id="pyrotechnicsAttachContainer" style="margin-bottom: 20px; display:none">
-                <div class="col-xs-3" style="margin-left:20px">
-                    <form enctype="multipart/form-data">
-                        <div class="fileUpload btn btn-primary">
-                            <span>Attach File</span>
-                            <input name="pyroFile" type="file" class="file" id="pyroFile" style="width:120px"/>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="col-xs-8">
-                    <small>Please attach details of involvement of any Cast Member</small>
-                </div>
-
-            </div>
-            <div class="row fileNameContainer" style="padding-top:6px; display:none">
-                <div class="col-xs-9" style="text-align:right; font-size:11px">
-                    <span class="fileNameSpan" id="pyroFileSpan">File Name</span>
-                </div>
-                <div class="col-xs-3">
-                    <button type="button" class="btn btn-default btn-xs attachClearButton">Clear</button>
-                </div>
-            </div>
-
-            <p class="control-label"><input type="checkbox"
-                                            class="productionInvolvesCheckbox stuntsOrHazardousActivites showReview"
-                                            data-reviewName="Special Hazards Declared"
-                                            name="stuntsOrHazardousActivities"
-                                            id="stuntsHazardousCheckbox"
-                                            value="Stunts or Hazardous Activities(Supplemental Application)"/> Stunts or Hazardous Activities (Supplemental Application)
-            </p>
-
-            <div class="row attachFileContainer" id="stuntsHazardousActivitiesAttachContainer"
-                 style="margin-bottom: 20px; display:none; margin-left:0px;">
-                <div class="row">
-                    <div class="col-xs-3" style="margin-left:20px">
-                        <form enctype="multipart/form-data">
-                            <div class="fileUpload btn btn-primary">
-                                <span>Attach File</span>
-                                <input name="stuntsFile" type="file" class="file" id="stuntsFile" style="width:120px"/>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div class="col-xs-8" style="padding-left:0px; line-height: 30px;">
-                        <small>Please attach details of involvement of any Cast Member</small>
-                    </div>
-                </div>
-                </div>
-
-            <div class="form-group">
-                <label for="describeBusinessOperations">Describe Primary Business Operations</label>
-                <input type="text" class="form-control showReview" name="businessOperations" id="businessOperations"
-                       data-reviewName="businessOperations"
-                       placeholder="Describe"/>
-            </div>
-
-            <div class="form-group">
-                <label for="describeOtherBusinessOperations">Describe Other Business Operations</label>
-                <input type="text" class="form-control showReview" name="otherBusinessOperations"
-                       id="otherBusinessOperations"
-                       data-reviewName="otherBusinessOperations"
-                       placeholder="Describe"/>
-            </div>
-
-            <div class="form-group col-xs-12">
-                <div class="row">
-                    <label for="whatServiceDoYouHireSubContractorsFor">What services, if any, do you hire Sub-Contractors for? (Attach contract copy)</label>
-                </div>
-
-                <div class="row">
-                    <div class="col-xs-9 row">
-                        <input type="text" class="form-control showReview" name="subContractorService"
-                               id="subContractorService"
-                               data-reviewName="subContractorService"
-                               placeholder="Describe"/>
-                    </div>
-
-                    <div class="col-xs-3">
-                        <form enctype="multipart/form-data">
-                            <div class="fileUpload btn btn-primary">
-                                <span>Attach File</span>
-                                <input name="budgetFile" type="file" class="file" id="budgetFile" style="width:120px"/>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
 
         </div>
     </div>
 </div>
-    </div>
 
 <div id="riskSpecificInfo">
 
@@ -248,7 +152,113 @@
         <div class="col-xs-6">
             <div class="row">
 
+                <div class="form-group">
+                    <label for="describeBusinessOperations">Describe Primary Business Operations</label>
+                    <input type="text" class="form-control showReview" name="businessOperations" id="businessOperations"
+                           data-reviewName="businessOperations"
+                           placeholder="Describe"/>
+                </div>
 
+                <div class="form-group">
+                    <label for="describeOtherBusinessOperations">Describe Other Business Operations</label>
+                    <input type="text" class="form-control showReview" name="otherBusinessOperations"
+                           id="otherBusinessOperations"
+                           data-reviewName="otherBusinessOperations"
+                           placeholder="Describe"/>
+                </div>
+
+                <div class="form-group col-xs-12">
+                    <div class="row">
+                        <label for="whatServiceDoYouHireSubContractorsFor">What services, if any, do you hire Sub-Contractors for? (Attach contract copy)</label>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-9 row">
+                            <input type="text" class="form-control showReview" name="subContractorService"
+                                   id="subContractorService"
+                                   data-reviewName="subContractorService"
+                                   placeholder="Describe"/>
+                        </div>
+
+                        <div class="col-xs-3">
+                            <form enctype="multipart/form-data">
+                                <div class="fileUpload btn btn-primary">
+                                    <span>Attach File</span>
+                                    <input name="budgetFile" type="file" class="file" id="budgetFile" style="width:120px"/>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+<div class="row">
+                <div class="form-group col-xs-12">
+                    <label class="control-label">What Type of Security will be at the Event</label>
+                    <select class="form-control securityTypeSelect showReview" name="securityType"  data-reviewName="securityType" id="securityType">
+                        <option value="invalid" selected="selected">Unarmed Crowd Control Security</option>
+                        <option value="armedSecurity" selected="selected">Armed Security</option>
+                        <option value="otherSecurity" selected="selected">Other</option>
+                    </select>
+                </div>
+
+</div>
+                <label for="describeBusinessOperations">Check additional Hazards if Applicable below:</label>
+                <p class="control-label"><input type="checkbox"
+                                                class="productionInvolvesCheckbox pyrotechnics showReview"
+                                                data-reviewName="Special Hazards Declared" name="pyrotechnics"
+                                                id="pyrotechnicsCheckbox"
+                                                value="Pyrotechnics (Explosions, fire) (Supplemental Application)"/> Pyrotechnics (Explosions, fire) (Supplemental Application)
+                </p>
+
+                <div class="row" id="pyrotechnicsAttachContainer" style="margin-bottom: 20px; display:none">
+                    <div class="col-xs-3" style="margin-left:20px">
+                        <form enctype="multipart/form-data">
+                            <div class="fileUpload btn btn-primary">
+                                <span>Attach File</span>
+                                <input name="pyroFile" type="file" class="file" id="pyroFile" style="width:120px"/>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="col-xs-8">
+                        <small>Please attach details of involvement of any Cast Member</small>
+                    </div>
+
+                </div>
+                <div class="row fileNameContainer" style="padding-top:6px; display:none">
+                    <div class="col-xs-9" style="text-align:right; font-size:11px">
+                        <span class="fileNameSpan" id="pyroFileSpan">File Name</span>
+                    </div>
+                    <div class="col-xs-3">
+                        <button type="button" class="btn btn-default btn-xs attachClearButton">Clear</button>
+                    </div>
+                </div>
+
+                <p class="control-label"><input type="checkbox"
+                                                class="productionInvolvesCheckbox stuntsOrHazardousActivites showReview"
+                                                data-reviewName="Special Hazards Declared"
+                                                name="stuntsOrHazardousActivities"
+                                                id="stuntsHazardousCheckbox"
+                                                value="Stunts or Hazardous Activities(Supplemental Application)"/> Stunts or Hazardous Activities (Supplemental Application)
+                </p>
+
+                <div class="row attachFileContainer" id="stuntsHazardousActivitiesAttachContainer"
+                     style="margin-bottom: 20px; display:none; margin-left:0px;">
+                    <div class="row">
+                        <div class="col-xs-3" style="margin-left:20px">
+                            <form enctype="multipart/form-data">
+                                <div class="fileUpload btn btn-primary">
+                                    <span>Attach File</span>
+                                    <input name="stuntsFile" type="file" class="file" id="stuntsFile" style="width:120px"/>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="col-xs-8" style="padding-left:0px; line-height: 30px;">
+                            <small>Please attach details of involvement of any Cast Member</small>
+                        </div>
+                    </div>
+                </div>
+<div class="row">
                 <div class="col-xs-12">
                     <div class="form-group">
                         <label>Are Participants Signing Waivers??</label><br>
@@ -286,7 +296,8 @@
                                checked="checked"> No
                     </div>
                 </div>
-
+                </div>
+<div class="row">
                 <div id="insuranceCancelledContainer" style="display:none">
                     <div class="col-xs-12">
                         %{--<div class="form-group">--}%
@@ -344,7 +355,7 @@
 
             </div>
         %{--</div>--}%
-
+                <div class="row">
         <div class="col-xs-12">
             <div class="form-group">
                 <label for="totalEmployees">Estimated Total Attendance</label>
@@ -375,6 +386,8 @@
                        checked="checked"> No
             </div>
         </div>
+</div>
+            </div>
 </div>
 
         <div class="col-xs-6">
@@ -440,6 +453,26 @@
                     <input type="text" id="numberSeats" class=" showReview form-control" name="numberSeats"
                            data-reviewName="What is the number of seats in the Theater/Venue"
                            placeholder="Number of Seats"/>
+                </div>
+            </div>
+
+            <div class="form-group col-xs-12">
+                <label class="control-label">Type of Seating</label>
+                <select class="form-control seatingTypeSelect showReview" name="seatingType"  data-reviewName="seatingType" id="seatingType">
+                    <option value="invalid" selected="selected">Permanent</option>
+                    <option value="pullDownSeat" selected="selected">Pull Down</option>
+                    <option value="portableChairSeat" selected="selected">Portable Chairs</option>
+                    <option value="stadiumSeat" selected="selected">Stadium</option>
+                    <option value="openAreaSeat" selected="selected">Open Area Seating</option>
+                </select>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label for="totalEventDays">What is the total event days?</label>
+                    <input type="text" id="numberEventDays" class=" showReview form-control" name="numberEventDays"
+                           data-reviewName="What is the total event days?"
+                           placeholder="#"/>
                 </div>
             </div>
 

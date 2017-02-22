@@ -1384,13 +1384,16 @@ function ratePremiums(thisObj){
         }
     });
     //console.log(pipchoiceLimits);
+    //alert(productsSelected)
 
     if(productsSelected.length > 0 && parseFloat($("#totalBudgetConfirm").val().replace(/\$|,/g, '')) > 0) {
             //console.log($('#costOfHireInput').val());
         //alert(pipchoiceLimits)
+
         $.ajax({
             method: "POST",
             url: "/portal/Async/ratePremiums",
+            //url: "/portal/Async/newRatePremiums",
             data: {
                 riskType: riskChosen,
                 productsSelected: productsSelected,
@@ -1422,8 +1425,6 @@ function ratePremiums(thisObj){
                     //submissionRateMap["pip1_extraExpenseRateMinPrem"] = pip1_extraExpenseRateMinPrem
                     //submissionRateMap["pip1_minPremium"] = pip1_minPremium
                     for (var i = 0; i < responseJSON.coverages.length; i++) {
-
-
                         if(responseJSON.coverages[i].coverageCode === "EPKG"){
                             $('#PIPCHOIRatesRow').css('display', 'none');
                             $('#PIP1RatesRow').css('display', 'none');

@@ -113,7 +113,64 @@ class MainController {
         todaysDate: todaysDate]
     }
 
+    def newSubmissionNew() {
+        String[] operationTypes = ["sldfj", "slifjsdlkjf"];
 
+        def riskCategory = RiskCategory.list();
+
+        def subCategory = RiskType.findAllWhere(subCategoryFlag: "Y")
+
+
+
+
+
+        def riskCategories = portal.RiskType.list().unique { it.riskTypeCategory }.riskTypeCategory; //Retrieves list of Risk Categories from Database
+        riskCategories.removeAll([null])
+        log.info("CATEGORIES========================")
+        log.info(riskCategories.toString())
+
+        def riskTypes = portal.RiskType.list();
+        riskTypes.removeAll([null])
+        log.info("TYPE========================")
+        log.info(riskTypes.get(1).riskTypeName)
+
+        def ancillaryRiskTypes = RiskType.findAllWhere(riskTypeCategory: "Ancillary Entertainment Risk");
+
+        log.info ancillaryRiskTypes
+        def venueRiskTypes = RiskType.findAllWhere(riskTypeCategory: "Venue");
+        def filmRiskTypes = RiskType.findAllWhere(riskTypeCategory: "Film Producer");
+        def entertainerRiskTypes = RiskType.findAllWhere(riskTypeCategory: "Entertainer");
+        def officeRiskTypes = RiskType.findAllWhere(riskTypeCategory: "Office");
+        def specialeventRiskTypes = RiskType.findAllWhere(riskTypeCategory: "Special Event");
+        def shellcorpRiskTypes = RiskType.findAllWhere(riskTypeCategory: "Shell Corporation");
+
+        def coverages = "";
+        Sql sql = new Sql(dataSource_aim)
+        sql.eachRow( 'select CoverageID, Description from Coverage' ) {
+//            log.info "$it.Zip -- ${it.City} --"
+            coverages = coverages + it.CoverageID + ":" + it.Description + ";"
+        }
+
+        def marketCompanyList = "";
+        sql.eachRow( "select CompanyID, Name, DefaultRiskCompanyID from Company where FlagMarket ='Y' order by Name") {
+//            log.info "$it.Zip -- ${it.City} --"
+            marketCompanyList = marketCompanyList + it.CompanyID + ";&#;" + it.Name + ";&#;" + it.DefaultRiskCompanyID + ";&;"
+        }
+
+        def riskCompanyList = "";
+        sql.eachRow( "select CompanyID, Name, DefaultRiskCompanyID from Company where FlagRisk ='Y' order by Name") {
+//            log.info "$it.Zip -- ${it.City} --"
+            riskCompanyList = riskCompanyList + it.CompanyID + "," + it.Name + "," + it.DefaultRiskCompanyID + ";"
+        }
+
+
+
+
+        [user: session.user, riskCategories:riskCategories, riskTypes:riskTypes, coverages:coverages, marketCompanyList: marketCompanyList
+         , riskCompanyList:riskCompanyList, ancillaryRiskTypes: ancillaryRiskTypes, venueRiskTypes:venueRiskTypes, filmRiskTypes:filmRiskTypes, entertainerRiskTypes:entertainerRiskTypes,
+         officeRiskTypes:officeRiskTypes, specialeventRiskTypes:specialeventRiskTypes, shellcorpRiskTypes:shellcorpRiskTypes,
+         riskCategory: riskCategory, subCategory: subCategory]
+    }
 
 
     def newSubmission() {
@@ -399,8 +456,19 @@ class MainController {
 //            String questionAnswerMap
 //            String submitGroupID
 
+            def webSubmissions = Submissions.findAllByAimQuoteIDIsNotNull([sort: "submitDate",order: "desc"])
+            log.info ("Web Submissions: " + webSubmissions.getClass())
+            def webQuotesString = ";";
+            webSubmissions.each{
+//                log.info ("s")
+                webQuotesString = webQuotesString + it.aimQuoteID + ";"
+            }
             def submissionObj=[:];
             aimsql.eachRow( "SELECT Top 100 * FROM Quote ORDER BY Received DESC") {
+                def web= "false"
+                if(webQuotesString.contains(it.QuoteID)){
+                    web = "true"
+                }
                 submissionObj = [aimQuoteID: it.QuoteID,
                                      submittedBy: it.Attention,
                                      namedInsured: it.NamedInsured,
@@ -409,13 +477,12 @@ class MainController {
                                      statusCode: it.StatusID,
                                      underwriter: it.AcctExec,
                                      seenByUW: "N",
-                                     submitGroupID: it.SubmitGrpID ]
+                                     submitGroupID: it.SubmitGrpID,
+                                     web: web
+                ]
                 submissions.add(submissionObj)
             }
             log.info(submissions)
-            submissions.each{
-
-            }
         }
         else if(session.user.userRole == "Admin"){
             submissions = Submissions.findAll([sort: "submitDate",order: "desc"])

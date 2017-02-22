@@ -69,7 +69,7 @@ $(document).ready(function () {
 
     ////////////////////////////////////////
     $(document).on('click', '.submissionRow', function () {
-
+        $('.submissionQuickOptions').remove();
         if($(this).next().hasClass("submissionQuickOptions")){
             $(this).next().remove();
         }
@@ -81,56 +81,81 @@ $(document).ready(function () {
             //alert(statusCode);
             if(userRole === "Broker" ){
 
-                htmlString = htmlString + "<tr class='submissionQuickOptions' style='background: rgba(132, 204, 210, 0.21);'>" +
+                htmlString = htmlString + "<tr class='submissionQuickOptions' style='background-color: rgba(90, 153, 183, 0.26)'>" +
                         "<td class='QOaimQuoteID' style='display:none'>" + aimQuoteID +  "</td>" +
                         "<td class='QOstatusCode' style='display:none'>" + statusCode +  "</td>" +
                     "<td class='QOUWAssigned' style='display:none'>" + underwriter +  "</td>" +
-                    "<td colspan='8'>" +
+                    "<td colspan='9'>" +
                     "<div class='col-xs-12' style='text-align:center'>" +
-                    "<button type='button' class='btn btn-sm btn-default submissionOptionButton messageButton'> Message Underwriter " +
+                    "<button type='button' class='btn btn-sm btn-default submissionOptionButton messageButton'> " +
+                        "<i class='fa fa-envelope-o' aria-hidden='true'></i>" +
+                    "<span>Message Underwriter </span>" +
                     "<span class='underWriterToMessage' style='display: none;'>" + underwriter
                     "</span>" +
                     "</button>";
 
                 if(statusCode === "QO"){
                     htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WRA' " +
-                        "data-nextButtonText='Approval Requested'> Request Approval </button>";
+                        "data-nextButtonText='Approval Requested'> " +
+                        "<i class='fa fa-flag' aria-hidden='true'></i>" +
+                        "<span>Request Approval </span>" +
+                        "</button>";
                 }
                 else if(statusCode === "WRA"){
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' disabled> Approval Requested </button>";
+                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' disabled> " +
+                        "<i class='fa fa-flag' aria-hidden='true'></i>" +
+                        "<span>Approval Requested </span>" +
+                        "</button>";
                 }
                 else if(statusCode === "WB3"){
                     htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='BRQ'" +
-                        "data-nextButtonText='Bind Request Sent'> Request Bind </button>";
+                        "data-nextButtonText='Bind Request Sent'> " +
+                        "<i class='fa fa-flag' aria-hidden='true'></i>" +
+                        "<span>Request Bind </span>" +
+                        "</button>";
                 }
                 else if(statusCode === "BRQ"){
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' disabled> Bind Request Sent </button>";
+                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' disabled> " +
+                        "<i class='fa fa-flag' aria-hidden='true'></i>" +
+                        "<span>Bind Request Sent </span>" +
+                        "</button>";
                 }
-                else if(statusCode === "BIF"){
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton'  disabled> Bound</button>";
+                else if(statusCode === "BND"){
+                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton'  disabled> " +
+                        "<i class='fa fa-flag' aria-hidden='true'></i>" +
+                        "<span>Bound</span>" +
+                        "</button>";
+
+                }
+                else if(statusCode === "WB5"){
 
                 }
                 else if(statusCode === "NBR"){
 
                 }
-                if(statusCode === "BIF"){
+                if(statusCode === "BND"){
                     htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton generateCert' > Certificates </button>";
                 }
 
-                htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton reviewButton' > Review </button>";
+                htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton reviewButton' > " +
+                    "<i class='fa fa-pencil-square-o' aria-hidden='true'></i>" +
+                    "Review " +
+                    "</button>";
 
                 htmlString = htmlString + "</div>" +
                     "</td>" +
                     "</tr>";
             }
             else if(userRole ==="Underwriter"){
-                htmlString = htmlString + "<tr class='submissionQuickOptions' style='background: rgba(132, 204, 210, 0.21);'>" +
+                htmlString = htmlString + "<tr class='submissionQuickOptions' style='background-color: rgba(90, 153, 183, 0.26)'>" +
                     "<td class='QOaimQuoteID' style='display:none'>" + aimQuoteID +  "</td>" +
                     "<td class='QOstatusCode' style='display:none'>" + statusCode +  "</td>" +
                     "<td class='QOUWAssigned' style='display:none'>" + underwriter +  "</td>" +
-                    "<td colspan='8'>" +
+                    "<td colspan='9'>" +
                     "<div class='col-xs-12' style='text-align:center'>" +
-                    "<button type='button' class='btn btn-sm btn-default submissionOptionButton messageButton'> Message Broker " +
+                    "<button type='button' class='btn btn-sm btn-default submissionOptionButton messageButton'> " +
+                    "<i class='fa fa-envelope-o' aria-hidden='true'></i>" +
+                    "<span>Message Broker </span>" +
                     "<span class='underWriterToMessage' style='display: none;'>" + underwriter
                 "</span>" +
                 "</button>";
@@ -138,44 +163,83 @@ $(document).ready(function () {
                 if(statusCode === "QO"){
                     //htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' > Request Approval </button>";
                     htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WB3' " +
-                        "data-nextButtonText='Approved'> Approve </button>";
+                        "data-nextButtonText='Approved'> " +
+                        "<i class='fa fa-flag' aria-hidden='true'></i>" +
+                        "<span>Approve </span>" +
+                        "</button>";
                     htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WB5' " +
-                        "data-nextButtonText='Declined'> Decline </button>";
+                        "data-nextButtonText='Declined'> " +
+                        "<i class='fa fa-ban' aria-hidden='true'></i>" +
+
+                        "Decline" +
+                        " </button>";
                 }
                 else if(statusCode === "WRA"){
                     htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WB3' " +
-                        "data-nextButtonText='Approved'> Approve </button>";
+                        "data-nextButtonText='Approved'> " +
+                        "<i class='fa fa-flag' aria-hidden='true'></i>" +
+                        "<span>Approve </span>" +
+                        "</button>";
                     htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WB5' " +
-                        "data-nextButtonText='Declined'> Decline </button>";
+                        "data-nextButtonText='Declined'> " +
+                        "<i class='fa fa-ban' aria-hidden='true'></i>" +
+                        "Decline " +
+                        "</button>";
                 }
                 else if(statusCode === "WB3"){
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='BIF' " +
-                        "data-nextButtonText='Bound'> Bind </button>";
+                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='BND' " +
+                        "data-nextButtonText='Bound'> " +
+                        "<i class='fa fa-flag' aria-hidden='true'></i>" +
+                        "<span>Bind </span>" +
+                        "</button>";
                     htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WB5' " +
-                        "data-nextButtonText='Declined'> Decline </button>";
+                        "data-nextButtonText='Declined'> " +
+                        "<i class='fa fa-ban' aria-hidden='true'></i>" +
+                        "Decline " +
+                        "</button>";
                 }
                 else if(statusCode === "BRQ"){
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='BIF'" +
-                        "data-nextButtonText=Bound'> Bind</button>";
+                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='BND'" +
+                        "data-nextButtonText=Bound'> " +
+                        "<i class='fa fa-flag' aria-hidden='true'></i>" +
+                        "<span>Bind </span>" +
+                        "</button>";
                     htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WB5' " +
-                        "data-nextButtonText='Declined'> Decline </button>";
+                        "data-nextButtonText='Declined'> " +
+                        "<i class='fa fa-ban' aria-hidden='true'></i>" +
+                        "Decline " +
+                        "</button>";
                 }
-                else if(statusCode === "BIF"){
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton'  disabled> Bound</button>";
+                else if(statusCode === "BND"){
+                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton'  disabled> " +
+                        "<i class='fa fa-flag' aria-hidden='true'></i>" +
+                        "<span>Bound</span>" +
+                        "</button>";
+
+                }
+                else if(statusCode === "WB5"){
+                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton'  disabled> " +
+                        "<i class='fa fa-flag' aria-hidden='true'></i>" +
+                        "<span>Declined</span>" +
+                        "</button>";
 
                 }
                 else if(statusCode === "NBR"){
 
                 }
-                if(statusCode === "BIF"){
+                if(statusCode === "BND"){
                     htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton generateCert' > Certificates </button>";
                 }
-                htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton reviewButton' > Review </button>";
+                htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton reviewButton' > " +
+                    "<i class='fa fa-pencil-square-o' aria-hidden='true'></i>" +
+                    "<span>Review </span>" +
+                    "</button>";
                 htmlString = htmlString +
-                    "<div class='btn-group'>" +
+                    "<div class='btn-group uwSwitchButtonGroup'>" +
                         "<button type='button' class='btn btn-sm btn-default dropdown-toggle submissionOptionButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
-                            "Switch UW   <span class='caret'></span>" +
-                            "<span class='sr-only'>Switch UW</span>" +
+                        "<i class='fa fa-user-circle-o' aria-hidden='true'></i>" +
+                    "<span class=''>Switch UW</span>" +
+                    " <span class='caret'></span>" +
                         "</button>" +
                         "<ul class='dropdown-menu'>";
 
@@ -194,8 +258,8 @@ $(document).ready(function () {
                     "</tr>";
             }
             else{
-                htmlString = htmlString + "<tr class='submissionQuickOptions' style='background: rgba(132, 204, 210, 0.21);'>" +
-                    "<td colspan='8'>" +
+                htmlString = htmlString + "<tr class='submissionQuickOptions' style='background-color: rgba(90, 153, 183, 0.26)'>" +
+                    "<td colspan='9'>" +
                     "<div class='col-xs-12' style='text-align:center'>" +
                     "<button type='button' class='btn btn-sm btn-default'> Contact Insured </button>" +
                     "<button type='button' class='btn btn-sm btn-default'> Change Status To </button>" +
@@ -243,6 +307,7 @@ $(document).ready(function () {
         var thisQuoteID = $(this).closest('.submissionQuickOptions').find('.QOaimQuoteID').html().trim();
         var newButtonText = $(this).attr('data-nextButtonText');
 
+        //alert(currentStatus)
         if(currentStatus === "QO"){
             if(userRole ==="Broker"){
                 changeStatusTo = "WRA"
@@ -273,15 +338,92 @@ $(document).ready(function () {
                 //newButtonText = "Awaiting Bind Approval"
             }
             else{
-                changeStatusTo = "WB3"
+                changeStatusTo = "BND"
                 //newButtonText = "Approved"
 
             }
         }
         else if(currentStatus === "BRQ"){
-            changeStatusTo = "BIF"
+            changeStatusTo = "BND"
             //newButtonText = "Bound"
 
+        }
+        //alert($(this).attr('data-nextbuttontext'))
+        if($(this).attr('data-nextbuttontext').trim() === "Declined"){
+            changeStatusTo = "WB5"
+        }
+        //alert(changeStatusTo)
+
+        var buttonObject = $(this);
+
+        $.ajax({
+            method: "POST",
+            url: "/portal/Async/changeSubmissionStatus",
+            data: {statusCode: changeStatusTo,
+                aimQuoteID: thisQuoteID
+            }
+        })
+            .done(function (msg) {
+                //alert(msg);
+                //$('#some_id').click(function() {
+                //
+                //});
+
+                $(buttonObject).html(newButtonText)
+                window.location='/portal/main/submissions';
+            });
+    });
+
+    $(document).on('click', '#reviewStatusChangeButton', function () {
+
+        var currentStatus = $(this).attr('data-currentstatuscode');
+        var changeStatusTo = "";
+        var thisQuoteID = $('#reviewQuoteID').html().trim()
+        var newButtonText = $(this).attr('data-nextbuttontext');
+        //alert(currentStatus);
+        if(currentStatus === "QO"){
+            if(userRole ==="Broker"){
+                changeStatusTo = "WRA"
+                //newButtonText = "Approval Requested"
+            }
+            else{
+                changeStatusTo = "WB3"
+                //newButtonText = "Approved"
+
+            }
+
+        }
+        else if(currentStatus === "WRA"){
+            if(userRole ==="Broker"){
+                changeStatusTo = "WRA"
+                //newButtonText = "Approval Requested"
+            }
+            else{
+                changeStatusTo = "WB3"
+                //newButtonText = "Approved"
+
+            }
+
+        }
+        else if(currentStatus === "WB3"){
+            if(userRole ==="Broker"){
+                changeStatusTo = "BRQ"
+                //newButtonText = "Awaiting Bind Approval"
+            }
+            else{
+                changeStatusTo = "BND"
+                //newButtonText = "Approved"
+
+            }
+        }
+        else if(currentStatus === "BRQ"){
+            changeStatusTo = "BND"
+            //newButtonText = "Bound"
+
+        }
+
+        if($(this).attr('data-nextbuttontext') == "Decline"){
+            changeStatusTo = "WB5"
         }
 
         var buttonObject = $(this);
@@ -307,6 +449,14 @@ $(document).ready(function () {
     $(document).on('click', '.messageButton', function () {
         $('#newMessageModal').modal('show');
         var recipientString = $(this).find('.underWriterToMessage').html().trim();
+
+        var htmlString = "<option value='" + recipientString + "'>" + recipientString + "</option>" ;
+
+        $('#recipientSelect').html(htmlString);
+    });
+    $(document).on('click', '.reviewMessageButton', function () {
+        $('#newMessageModal').modal('show');
+        var recipientString = $('#acctExecName').html().trim();
 
         var htmlString = "<option value='" + recipientString + "'>" + recipientString + "</option>" ;
 
@@ -372,16 +522,254 @@ $(document).ready(function () {
             .done(function (msg) {
                 //alert(msg)
                 if(msg === "NOTWEB"){
-                    $('#alertMessageContent').html("Only Web Submissions are reviewable through the portal currently");
-                    $('#alertMessageModal').modal('show');
+                    //$('#alertMessageContent').html("Only Web Submissions are reviewable through the portal currently");
+                    //$('#alertMessageModal').modal('show');
+                    //$("#reviewModalHeader").html("Reviewing: " + questionJSON['namedInsured']);
+                    alert(msg)
+                    $('#reviewModal').modal('show');
                 }
                 else{
                     //msg = msg.replace(/'/g, '"')
+                    //alert(msg)
                     var questionJSON = JSON.parse(msg);
                     //alert(questionJSON['riskChosen']);
                     reviewRiskChosen = questionJSON['riskChosen'];
-                    $("#reviewModalHeader").html("Reviewing: " + questionJSON['namedInsured']);
+                    $("#reviewModalHeader").html(questionJSON['namedInsured']);
+                    $("#reviewQuoteID").html(questionJSON['aimQuoteID']);
                     $("#riskTypeReviewLabel").html(questionJSON['riskChosen'] );
+                    $("#reviewBroker").html(questionJSON['submittedBy'] );
+
+                    var currentStatus = questionJSON['Quote-StatusID'];
+                    var currentButtonText = ""
+                    var nextStatus = "";
+                    var nextButtonText = "";
+                    var disabled = false
+                    if(userRole == "Broker"){
+                        if(currentStatus === "QO"){
+                            currentButtonText = "Request Approval"
+                            nextStatus = 'WRA'
+                            nextButtonText = 'Approval Requested'
+                        }
+                        else if(currentStatus === "WRA"){
+                            currentButtonText = "Approval Requested"
+                            disabled = true;
+                        }
+                        else if(currentStatus === "WB3"){
+                            currentButtonText = "Request Bind"
+                            nextStatus = 'BRQ'
+                            nextButtonText = 'Bind Request Sent'
+                        }
+                        else if(currentStatus === "BRQ"){
+                            currentButtonText = "Bind Request Sent"
+                            disabled = true
+                        }
+                        else if(currentStatus === "BND"){
+                            currentButtonText = "Bound"
+                            disabled = true
+                        }
+                        else if(currentStatus === "WB5"){
+                            currentButtonText = "Declined"
+                            nextStatus = ''
+                            nextButtonText = ''
+                            disabled = true
+                        }
+                    }
+                    else{
+                        if(currentStatus === "QO"){
+                            currentButtonText = "Approve"
+                            nextStatus = 'WB3'
+                            nextButtonText = 'Approved'
+                        }
+                        else if(currentStatus === "WRA"){
+                            currentButtonText = "Approve"
+                            nextStatus = 'WB3'
+                            nextButtonText = 'Approved'
+                        }
+                        else if(currentStatus === "WB3"){
+                            currentButtonText = "Approved"
+                            disabled = true;
+                        }
+                        else if(currentStatus === "BRQ"){
+                            currentButtonText = "Bind"
+                            nextStatus = 'BND'
+                            nextButtonText = 'Bound'
+                        }
+                        else if(currentStatus === "BND"){
+                            currentButtonText = "Bound"
+                            disabled = true;
+                        }
+                        else if(currentStatus === "WB5"){
+                            currentButtonText = "Declined"
+                            nextStatus = ''
+                            nextButtonText = ''
+                            disabled = true
+                        }
+                    }
+
+
+                    $("#reviewStatusChangeButton").attr('data-nextstatus', nextStatus)
+                    $("#reviewStatusChangeButton").attr('data-nextbuttonText', nextButtonText)
+                    $("#reviewStatusChangeButton").attr('data-currentstatuscode', currentStatus)
+                    $("#reviewStatusButtonSpan").html(currentButtonText);
+                    $("#reviewStatusChangeButton").prop("disabled",disabled);
+
+
+
+                    ////FILL IN ALL DAO FIELDS
+                    var value;
+                    $('.DAOspan').each(function(){
+                        value = questionJSON[$(this).attr('data-daoName')]
+                        $(this).html(value);
+                    });
+
+
+                    //FORMAT DATE TIME DAO'S
+                    var sqldateString;
+                    var date;
+                    var dateString;
+                    var options = { timeZone: 'UTC', timeZoneName: 'short' };
+                    $('.datetimeDAO').each(function(){
+                        if($(this).html().trim().length > 0){
+                            sqldateString = $(this).html();
+                            console.log(sqldateString);
+                            date = sqlToJsDate(sqldateString)
+                            dateString = date.toLocaleDateString() + " " + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', timeZoneName:'short'});
+                            $(this).html(dateString);
+                        }
+                    });
+                    $('.dateDAO').each(function(){
+                        if($(this).html().trim().length > 0){
+                            sqldateString = $(this).html();
+                            console.log(sqldateString);
+                            date = sqlToJsDate(sqldateString)
+                            dateString = date.toLocaleDateString();
+                            $(this).html(dateString);
+                        }
+
+                    });
+
+                    ////FORMAT LIMITS
+                    var limitRowsArray = questionJSON['Version-Limits'].split("\n");
+                    var deductRowsArray = questionJSON['Version-Deductible'].split("\n");
+                    var deductMap = {};
+                    for (var i=0; i < deductRowsArray.length; i++){
+                        var deductAmount = deductRowsArray[i].split("\t")[0];
+                        var deductName = deductRowsArray[i].split("\t")[1]
+                        deductMap[deductName] = deductAmount;
+                    }
+                    limitDeductString = "";
+                    for (var i=0; i < limitRowsArray.length; i++){
+                        var limitAmount = limitRowsArray[i].split("\t")[0];
+                        var limitName = limitRowsArray[i].split("\t")[1];
+                        var deductAmount = deductMap[limitName];
+
+                        if(limitAmount.length == 0){
+                            limitAmount = "&nbsp;"
+                        }
+                        //if(limitName.length == 0){
+                        //    limitName = "&nbsp;"
+                        //}
+                        if(deductAmount.length == 0){
+                            deductAmount = "&nbsp;"
+                        }
+
+                        if(limitName){
+                            limitDeductString = limitDeductString +
+                                    //"<div class='row'>" +
+                                "<div class='col-xs-3'>" +
+                                "<span>" + limitAmount + "</span>" +
+                                "</div>" +
+                                "<div class='col-xs-6' style='white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>" +
+                                "<span>" + limitName + "</span>" +
+                                "</div>" +
+                                "<div class='col-xs-3'>" +
+                                "<span>" + deductAmount + "</span>" +
+                                    //"</div>" +
+                                "</div>";
+                        }
+
+                    }
+                    $('#limitsDeductOverview').html(limitDeductString);
+
+                    ////FORMAT PREMIUM BREAKDOWN
+                    var coverageRowsArray = questionJSON['Version-LobDistribSched'].split("\n");
+                    var feesRowsArray = questionJSON['Version-FeeSchedule'].split("\n");
+                    var nameColWidth = 5;
+                    var premColWidth = 7;
+                    premiumBreakdownString = "";
+                    //COVERAGES FIRST
+                    for (var i=0; i < coverageRowsArray.length; i++){
+                        var premiumAmount = coverageRowsArray[i].split("\t")[1];
+                        var coverageName = coverageRowsArray[i].split("\t")[0];
+                        premiumBreakdownString = premiumBreakdownString +
+                                //"<div class='row'>" +
+                            "<div class='col-xs-" + nameColWidth +"'>" +
+                            "<span>" + coverageName + "</span>" +
+                            "</div>" +
+                            "<div class='col-xs-" + premColWidth +"'>" +
+                            "<span>" + premiumAmount + "</span>" +
+                            "</div>";
+                    }
+                    //FEES SECOND
+                    for (var i=0; i < feesRowsArray.length; i++){
+                        var feeAmount = feesRowsArray[i].split("\t")[1];
+                        var feeName = feesRowsArray[i].split("\t")[0];
+                        if(typeof feeName !== 'undefined' && typeof feeAmount !== 'undefined'){
+                            premiumBreakdownString = premiumBreakdownString +
+                                    //"<div class='row'>" +
+                                "<div class='col-xs-" + nameColWidth +"'>" +
+                                "<span>" + feeName + "</span>" +
+                                "</div>" +
+                                "<div class='col-xs-" + premColWidth +"'>" +
+                                "<span>" + feeAmount + "</span>" +
+                                "</div>";
+                        }
+
+                    }
+                    //TAXES THIRD
+                    for(var i=1; i<=4; i++){
+                        console.log("Tax" + i)
+                        var taxString = ("Version-Tax" + i)
+                        console.log((questionJSON[taxString]))
+                        if(parseFloat(questionJSON[taxString]) > 0){
+                            premiumBreakdownString = premiumBreakdownString +
+                                    //"<div class='row'>" +
+                                "<div class='col-xs-" + nameColWidth +"'>" +
+                                "<span>" + questionJSON[taxString+'Name'] + "</span>" +
+                                "</div>" +
+                                "<div class='col-xs-" + premColWidth +"'>" +
+                                "<span>" + questionJSON[taxString] + "</span>" +
+                                "</div>";
+                        }
+                    }
+                    $('#premiumBreakdownOverview').html(premiumBreakdownString);
+
+                    //UW Questions
+                    if(questionJSON['webSubmission'] === "true" && questionJSON['uwQuestionsOrder']){
+                        var uwQuestionsJSON = JSON.parse(questionJSON['uwQuestionsMap']);
+                        var uwQuestionsOrderArray = questionJSON['uwQuestionsOrder'].split("&;&");
+
+                        var uwHTMLString = "<dl class='dl-horizontal'>";
+
+                        for(var k in uwQuestionsOrderArray) {
+                            console.log(k, uwQuestionsOrderArray[k]);
+                            uwHTMLString = uwHTMLString +
+                                "<dt>" + key + "</dt>" +
+                                "<dd>" + uwQuestionsJSON[key] + "</dt>";
+                        }
+
+                        uwHTMLString = uwHTMLString + "<dd>";
+
+                        $('#uwQuestionsReview').html(uwHTMLString);
+                    }
+                    else{
+                        var uwHTMLString = "<span> New Feature for WEB submissions only. Updated Feb 19. Submissions before this date may not display UW questions correctly.</span>"
+                        $('#uwQuestionsReview').html(uwHTMLString);
+                    }
+
+
+
+
                     if(reviewRiskChosen.indexOf("Film Projects") > -1){
                         $("#coverageCheckboxesDiv").load("./../forms/specFilm #coverageCheckboxesDiv", function () {
                             var head = document.getElementsByTagName('head')[0];
@@ -392,6 +780,9 @@ $(document).ready(function () {
                             loadSaveFunction(questionJSON);
                             $('#reviewModal').modal('show');
                         });
+                    }
+                    else{
+                        $('#reviewModal').modal('show');
                     }
                 }
             });

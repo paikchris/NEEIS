@@ -51,9 +51,9 @@ class Intelledox {
 \t\t<date>${jsonSerial.getAt("dateAdded").substring(1, jsonSerial.getAt("dateAdded").length() - 1).split(" ")[0]}</date>
 \t\t<phone>${jsonSerial.getAt("phoneNumber")}</phone>
 \t\t<address>${jsonSerial.getAt("streetNameMailing")}</address>
-\t\t<addressState>${jsonSerial.getAt("cityMailing")}, ${jsonSerial.getAt("stateMailing")} ${
-            jsonSerial.getAt("zipCodeMailing")
-        }</addressState>
+\t\t<addressCity>${jsonSerial.getAt("cityMailing")}</addressCity>
+\t\t<addressState>${jsonSerial.getAt("stateMailing")}</addressState>
+\t\t<addressZip>${jsonSerial.getAt("zipCodeMailing")}</addressZip>
 \t\t<agent>${jsonSerial.getAt("brokerFirstName")} ${jsonSerial.getAt("brokerLastName")}</agent>
 \t\t<agentEmail>${jsonSerial.getAt("brokerEmail")}</agentEmail>
 \t\t<agentPhone>${jsonSerial.getAt("brokerPhoneNumber")}</agentPhone>
@@ -76,19 +76,19 @@ soapXML = soapXML + """"
 \t\t<underwriterPhone>3102653804</underwriterPhone>
 \t\t<underwriterFax>3102653805</underwriterFax>
 \t\t<underwriterEmail>jason@neeis.com</underwriterEmail>
-\t\t<riskDescription></riskDescription>
+\t\t<riskDescription>${jsonSerial.getAt("riskCategoryChosen")}, ${jsonSerial.getAt("riskTypeChosen")}</riskDescription>
 \t\t<insuranceCoverage>${coverages}</insuranceCoverage>
-\t\t<locationOfRiskAddress></locationOfRiskAddress>
+\t\t<locationOfRiskAddress>${jsonSerial.getAt("filmingLocation")}</locationOfRiskAddress>
 \t\t<locationOfRiskCity></locationOfRiskCity>
 \t\t<locationOfRiskZip></locationOfRiskZip>
-\t\t<cbGDY>cb</cbGDY>
-\t\t<cbGDN>cb</cbGDN>
-\t\t<cbCAARPY>cb</cbCAARPY>
-\t\t<cbCAARPN>cb</cbCAARPN>
-\t\t<cbCAARPIneligibleY>cb</cbCAARPIneligibleY>
-\t\t<cbCAARPIneligibleN>cb</cbCAARPIneligibleN>
-\t\t<cbHealthY>cb</cbHealthY>
-\t\t<cbHealthN>cb</cbHealthN>
+\t\t<cbGDY>X</cbGDY>
+\t\t<cbGDN>X</cbGDN>
+\t\t<cbCAARPY>X</cbCAARPY>
+\t\t<cbCAARPN>X</cbCAARPN>
+\t\t<cbCAARPIneligibleY>X</cbCAARPIneligibleY>
+\t\t<cbCAARPIneligibleN>X</cbCAARPIneligibleN>
+\t\t<cbHealthY>X</cbHealthY>
+\t\t<cbHealthN>X</cbHealthN>
 \t\t<RiskPurchasingGroupName></RiskPurchasingGroupName>
 \t\t<RiskPurchasingGroupAddress></RiskPurchasingGroupAddress>
 \t\t<nameOtherAgent></nameOtherAgent>
@@ -249,6 +249,7 @@ soapXML = soapXML + """
 
 \t<budgetInformation>
 \t\t<budget> ${jsonSerial.getAt("totalBudgetConfirm")} </budget>
+\t\t<numberProduction> ${jsonSerial.getAt("numberProductions")} </numberProduction>
 \t\t<maxBudget> To Follow </maxBudget>
 \t\t<workOthers> ${uwQuestionsMap.getAt("Do you do post production or special effects for others?")} </workOthers>
 \t\t<sourceFinance> To Follow </sourceFinance>
@@ -411,12 +412,12 @@ soapXML = soapXML + """
 \t\t<revisionNumber>n</revisionNumber>
 
 \t\t<insrltrGen>A</insrltrGen>
-\t\t<cbGenCommercialGeneralLiability>cb</cbGenCommercialGeneralLiability>
-\t\t<cbGenClaimsMade>cb</cbGenClaimsMade>
-\t\t<cbGenOccur>cb</cbGenOccur>
-\t\t<cbGenPolicy>cb</cbGenPolicy>
-\t\t<cbGenProject>cb</cbGenProject>
-\t\t<cbGenLoc>cb</cbGenLoc>
+\t\t<cbGenCommercialGeneralLiability>X</cbGenCommercialGeneralLiability>
+\t\t<cbGenClaimsMade>x</cbGenClaimsMade>
+\t\t<cbGenOccur>X</cbGenOccur>
+\t\t<cbGenPolicy>X</cbGenPolicy>
+\t\t<cbGenProject>X</cbGenProject>
+\t\t<cbGenLoc>X</cbGenLoc>
 \t\t<genAddl>Y</genAddl>
 \t\t<genSubr>Y</genSubr>
 \t\t<generalPolicyNumber>n</generalPolicyNumber>
@@ -430,12 +431,12 @@ soapXML = soapXML + """
 \t\t<genProductsLimit>1</genProductsLimit>
 
 \t\t<insrltrAuto>A</insrltrAuto>
-\t\t<cbAutoAny>cb</cbAutoAny>
-\t\t<cbAutoAllOwned>cb</cbAutoAllOwned>
-\t\t<cbAutoHiredAuto>cb</cbAutoHiredAuto>
-\t\t<cbAutoPhysicalDamages>cb</cbAutoPhysicalDamages>
-\t\t<cbAutoScheduledAuto>cb</cbAutoScheduledAuto>
-\t\t<cbAutoNonOwnedAuto>cb</cbAutoNonOwnedAuto>
+\t\t<cbAutoAny>X</cbAutoAny>
+\t\t<cbAutoAllOwned>X</cbAutoAllOwned>
+\t\t<cbAutoHiredAuto>X</cbAutoHiredAuto>
+\t\t<cbAutoPhysicalDamages>X</cbAutoPhysicalDamages>
+\t\t<cbAutoScheduledAuto>X</cbAutoScheduledAuto>
+\t\t<cbAutoNonOwnedAuto>X</cbAutoNonOwnedAuto>
 \t\t<autoAddl>Y</autoAddl>
 \t\t<autoSubr>Y</autoSubr>
 \t\t<autoPolicyNumber>n</autoPolicyNumber>
@@ -447,12 +448,12 @@ soapXML = soapXML + """
 \t\t<autoPropertyDamageLimit>1</autoPropertyDamageLimit>
 
 \t\t<insrltrUmbrella>A</insrltrUmbrella>
-\t\t<cbUmbrellaLiab>cb</cbUmbrellaLiab>
-\t\t<cbUmbrellaExcessLiab>cb</cbUmbrellaExcessLiab>
-\t\t<cbUmbrellaDeductible>cb</cbUmbrellaDeductible>
-\t\t<cbUmbrellaRetention>cb</cbUmbrellaRetention>
-\t\t<cbUmbrellaOccur>cb</cbUmbrellaOccur>
-\t\t<cbUmbrellaClaimsMade>cb</cbUmbrellaClaimsMade>
+\t\t<cbUmbrellaLiab>X</cbUmbrellaLiab>
+\t\t<cbUmbrellaExcessLiab>X</cbUmbrellaExcessLiab>
+\t\t<cbUmbrellaDeductible>X</cbUmbrellaDeductible>
+\t\t<cbUmbrellaRetention>X</cbUmbrellaRetention>
+\t\t<cbUmbrellaOccur>X</cbUmbrellaOccur>
+\t\t<cbUmbrellaClaimsMade>X</cbUmbrellaClaimsMade>
 \t\t<umbrellaRetentionLimit>1</umbrellaRetentionLimit>
 \t\t<umbrellaAddl>Y</umbrellaAddl>
 \t\t<umbrellaSubr>Y</umbrellaSubr>
@@ -463,14 +464,14 @@ soapXML = soapXML + """
 \t\t<umbrellaAggregateLimit>1</umbrellaAggregateLimit>
 
 \t\t<insrltrWorkersComp>A</insrltrWorkersComp>
-\t\t<cbWorkerCompMemberExcluded>cb</cbWorkerCompMemberExcluded>
+\t\t<cbWorkerCompMemberExcluded>X</cbWorkerCompMemberExcluded>
 \t\t<workersCompDescriptionNH>n</workersCompDescriptionNH>
 \t\t<workersCompSubr>Y</workersCompSubr>
 \t\t<workersCompPolicyNumber>n</workersCompPolicyNumber>
 \t\t<workersCompStart>n</workersCompStart>
 \t\t<workersCompEnd>n</workersCompEnd>
-\t\t<cbWorkersCompStatutoryLimits>cb</cbWorkersCompStatutoryLimits>
-\t\t<cbWorkersCompOther>cb</cbWorkersCompOther>
+\t\t<cbWorkersCompStatutoryLimits>X</cbWorkersCompStatutoryLimits>
+\t\t<cbWorkersCompOther>X</cbWorkersCompOther>
 \t\t<workersCompEachAccidentLimit>1</workersCompEachAccidentLimit>
 \t\t<workersCompDiseaseEmployeeLimit>1</workersCompDiseaseEmployeeLimit>
 \t\t<workersCompDiseasePolicyLimit>1</workersCompDiseasePolicyLimit>
@@ -767,4 +768,3 @@ soapXML = soapXML + """
         return folderPath + "/" + fileName;
     }
 }
-
