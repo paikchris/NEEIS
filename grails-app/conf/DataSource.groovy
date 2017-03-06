@@ -38,6 +38,7 @@ environments {
             driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
             username = "web"
             password = "jakePoos521"
+            logSql = true
             properties {
                 maxActive = -1
                 minEvictableIdleTimeMillis=1000 * 60 * 30
@@ -73,10 +74,10 @@ environments {
             }
 
         }
-œ
+
         dataSource_aim{
             dbCreate = "update"
-            url = "jdbc:sqlserver://74.100.162.203:1433;databaseName=Training"
+            url = "jdbc:sqlserver://74.100.162.203:1433;databaseName=CIS"
             driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
             username = "web"
             password = "jakePoos521"

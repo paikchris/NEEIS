@@ -810,52 +810,6 @@ $(document.body).on('click', '.removeCastMember' ,function() {
     date_input.datepicker(options);
 
 
-        //$('#nextButtonStep3').click(function(){
-        //    // var formData = new FormData($('form')[0]);
-        //
-        //    // var file = $('.file').get(0).files[0];
-        //    var bioFile = $('#bioFile').get(0).files[0];
-        //    var lossesFile = $('#lossesFile').get(0).files[0]
-        //    var pyroFile = $('#pyroFile').get(0).files[0];
-        //    var stuntsFile = $('#stuntsFile').get(0).files[0];
-        //    var doodFile = $('#doodFile').get(0).files[0];
-        //    var treatmentFile = $('#treatmentFile').get(0).files[0];
-        //    var budgetFile = $('#budgetFile').get(0).files[0];
-        //
-        //    if(bioFile || lossesFile || pyroFile || stuntsFile || doodFile || treatmentFile || budgetFile){
-        //        var formData = new FormData();
-        //        formData.append('bioFile', bioFile);
-        //        formData.append('lossesFile', lossesFile);
-        //        formData.append('pyroFile', pyroFile);
-        //        formData.append('stuntsFile', stuntsFile);
-        //        formData.append('doodFile', doodFile);
-        //        formData.append('treatmentFile', treatmentFile);
-        //        formData.append('budgetFile', budgetFile);
-        //
-        //
-        //        $.ajax({
-        //            url: '/portal/async/ajaxAttach',
-        //            //Ajax events
-        //            beforeSend: function (e) {
-        //                alert('Are you sure you want to upload document.');
-        //            },
-        //            success: function (e) {
-        //                alert('Upload completed');
-        //            },
-        //            error: function (e) {
-        //                alert('error ' + e.message);
-        //            },
-        //            // Form data
-        //            data: formData,
-        //            type: 'POST',
-        //            //Options to tell jQuery not to process data or worry about content-type.
-        //            cache: false,
-        //            contentType: false,
-        //            processData: false
-        //        });
-        //    }
-        //});
-
     $(':file').change(function(){
         var file = this.files[0];
 

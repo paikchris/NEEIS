@@ -152,11 +152,11 @@
             <div id="additionalInsured">
                 <div class="row">
                     <div class="col-xs-12">
-                        <div class="form-group">
-                            <p class="control-label"><input type="checkbox" class="evidenceOfInsuranceCheckbox showReview"
-                                                            data-reviewName="Evidence Of Insurance" name="evidenceOfInsurance"
-                                                            value="Evidence of Insurance"/> Evidence of Insurance</p>
-                        </div>
+                        %{--<div class="form-group">--}%
+                            %{--<p class="control-label"><input type="checkbox" class="evidenceOfInsuranceCheckbox showReview"--}%
+                                                            %{--data-reviewName="Evidence Of Insurance" name="evidenceOfInsurance"--}%
+                                                            %{--value="Evidence of Insurance"/> Evidence of Insurance</p>--}%
+                        %{--</div>--}%
                     </div>
                     <div class="form-group col-xs-12">
                         <g:textField type="text" class="form-control showReview" name="operation"

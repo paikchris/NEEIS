@@ -11,6 +11,7 @@ class User {
     String phoneNumber
     String defaultUnderwriter
     String admin
+    String aimContactID
 
 
     String toString(){
@@ -25,5 +26,6 @@ class User {
         company nullable:true
         phoneNumber nullable:true
         admin nullable:true
+        aimContactID nullable:true
     }
 }

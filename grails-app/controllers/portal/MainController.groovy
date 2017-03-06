@@ -35,8 +35,6 @@ class MainController {
 
 
     def index() {
-
-
         def todaysDateFormat = 'EEEE MMMM d, yyyy'
         def now = new Date()
         def todaysDate = now.format(todaysDateFormat, timeZone)
@@ -146,19 +144,19 @@ class MainController {
 
         def coverages = "";
         Sql sql = new Sql(dataSource_aim)
-        sql.eachRow( 'select CoverageID, Description from Coverage' ) {
+        sql.eachRow( 'select CoverageID, Description from Coverage with (NOLOCK)' ) {
 //            log.info "$it.Zip -- ${it.City} --"
             coverages = coverages + it.CoverageID + ":" + it.Description + ";"
         }
 
         def marketCompanyList = "";
-        sql.eachRow( "select CompanyID, Name, DefaultRiskCompanyID from Company where FlagMarket ='Y' order by Name") {
+        sql.eachRow( "select CompanyID, Name, DefaultRiskCompanyID from Company with (NOLOCK) where FlagMarket ='Y' order by Name") {
 //            log.info "$it.Zip -- ${it.City} --"
             marketCompanyList = marketCompanyList + it.CompanyID + ";&#;" + it.Name + ";&#;" + it.DefaultRiskCompanyID + ";&;"
         }
 
         def riskCompanyList = "";
-        sql.eachRow( "select CompanyID, Name, DefaultRiskCompanyID from Company where FlagRisk ='Y' order by Name") {
+        sql.eachRow( "select CompanyID, Name, DefaultRiskCompanyID from Company with (NOLOCK) where FlagRisk ='Y' order by Name") {
 //            log.info "$it.Zip -- ${it.City} --"
             riskCompanyList = riskCompanyList + it.CompanyID + "," + it.Name + "," + it.DefaultRiskCompanyID + ";"
         }
@@ -190,7 +188,7 @@ class MainController {
 
         log.info ancillaryRiskTypes
         def venueRiskTypes = RiskType.findAllWhere(riskTypeCategory: "Venue");
-        def filmRiskTypes = RiskType.findAllWhere(riskTypeCategory: "Film Producer");
+        def filmRiskTypes = RiskType.findAllWhere(riskTypeCategory: "FP");
         def entertainerRiskTypes = RiskType.findAllWhere(riskTypeCategory: "Entertainer");
         def officeRiskTypes = RiskType.findAllWhere(riskTypeCategory: "Office");
         def specialeventRiskTypes = RiskType.findAllWhere(riskTypeCategory: "Special Event");
@@ -198,19 +196,19 @@ class MainController {
 
         def coverages = "";
         Sql sql = new Sql(dataSource_aim)
-        sql.eachRow( 'select CoverageID, Description from Coverage' ) {
+        sql.eachRow( 'select CoverageID, Description from Coverage with (NOLOCK)' ) {
 //            log.info "$it.Zip -- ${it.City} --"
             coverages = coverages + it.CoverageID + ":" + it.Description + ";"
         }
 
         def marketCompanyList = "";
-        sql.eachRow( "select CompanyID, Name, DefaultRiskCompanyID from Company where FlagMarket ='Y' order by Name") {
+        sql.eachRow( "select CompanyID, Name, DefaultRiskCompanyID from Company with (NOLOCK) where FlagMarket ='Y' order by Name") {
 //            log.info "$it.Zip -- ${it.City} --"
             marketCompanyList = marketCompanyList + it.CompanyID + ";&#;" + it.Name + ";&#;" + it.DefaultRiskCompanyID + ";&;"
         }
 
         def riskCompanyList = "";
-        sql.eachRow( "select CompanyID, Name, DefaultRiskCompanyID from Company where FlagRisk ='Y' order by Name") {
+        sql.eachRow( "select CompanyID, Name, DefaultRiskCompanyID from Company with (NOLOCK) where FlagRisk ='Y' order by Name") {
 //            log.info "$it.Zip -- ${it.City} --"
             riskCompanyList = riskCompanyList + it.CompanyID + "," + it.Name + "," + it.DefaultRiskCompanyID + ";"
         }
@@ -229,10 +227,12 @@ class MainController {
         log.info (params)
 
         def groupedMessages = getGroupedMessages();
-
+        log.info groupedMessages;
         def initial
         if(!params.intial){
-            initial = (groupedMessages[0])[1].messageChainID
+            if(groupedMessages.size() > 0){
+                initial = (groupedMessages[0])[1].messageChainID
+            }
         }
         else{
             initial = params.initial
@@ -436,41 +436,34 @@ class MainController {
 
         if(session.user.userRole == "Broker"){
             log.info("Broker")
-            submissions = Submissions.findAllBySubmittedBy(session.user.email,[sort: "submitDate",order: "desc"])
-            log.info(submissions)
-            submissions.each{
-
+            def webSubmissions = Submissions.where{
+                aimQuoteID != null && submittedBy == session.user.email
             }
-        }
-        else if(session.user.userRole == "Underwriter"){
-//            submissions = Submissions.findAllByUnderwriterOrSubmittedBy(session.user.email,session.user.email,[sort: "submitDate",order: "desc"])
-//            submissions = Submissions.findAll([sort: "submitDate",order: "desc"])
-//            String aimQuoteID
-//            String submittedBy
-//            String namedInsured
-//            String submitDate
-//            String coverages
-//            String statusCode
-//            String underwriter
-//            String seenByUW
-//            String questionAnswerMap
-//            String submitGroupID
-
-            def webSubmissions = Submissions.findAllByAimQuoteIDIsNotNull([sort: "submitDate",order: "desc"])
             log.info ("Web Submissions: " + webSubmissions.getClass())
             def webQuotesString = ";";
             webSubmissions.each{
-//                log.info ("s")
                 webQuotesString = webQuotesString + it.aimQuoteID + ";"
             }
+
             def submissionObj=[:];
-            aimsql.eachRow( "SELECT Top 100 * FROM Quote ORDER BY Received DESC") {
-                def web= "false"
-                if(webQuotesString.contains(it.QuoteID)){
-                    web = "true"
-                }
-                submissionObj = [aimQuoteID: it.QuoteID,
+
+            if(params.search){
+                log.info ("Search: " + params.s)
+                //AIMSQL SEARCH RESULTS
+                aimsql.eachRow("SELECT     QuoteID, Attention, CreatedID, NamedInsured, CoverageID, Received, StatusID, AcctExec, SubmitGrpID, ContactID\n" +
+                        "FROM         Quote WITH (NOLOCK)\n" +
+                        "WHERE     (QuoteID LIKE '%${params.s}%') AND (ContactID = '${session.user.aimContactID}') OR\n" +
+                        "                      (NamedInsured LIKE '%${params.s}%') AND (ContactID = '${session.user.aimContactID}') OR\n" +
+                        "                      (CoverageID LIKE '%${params.s}%') AND (ContactID = '${session.user.aimContactID}')\n" +
+                        "ORDER BY Received DESC") {
+
+                    def web= "false"
+                    if(webQuotesString.contains(it.QuoteID)){
+                        web = "true"
+                    }
+                    submissionObj = [aimQuoteID: it.QuoteID,
                                      submittedBy: it.Attention,
+                                     brokerEmail: it.CreatedID,
                                      namedInsured: it.NamedInsured,
                                      submitDate: it.Received,
                                      coverages: it.CoverageID,
@@ -479,9 +472,106 @@ class MainController {
                                      seenByUW: "N",
                                      submitGroupID: it.SubmitGrpID,
                                      web: web
-                ]
-                submissions.add(submissionObj)
+                    ]
+                    submissions.add(submissionObj)
+                }
             }
+            else{
+                //AIMSQL SEARCH RESULTS
+                if(session.user.aimContactID == null){
+                    submissions = webSubmissions;
+                }
+                else{
+                    aimsql.eachRow("SELECT     QuoteID, Attention, CreatedID, NamedInsured, CoverageID, Received, StatusID, AcctExec, SubmitGrpID, ContactID\n" +
+                            "FROM         Quote WITH (NOLOCK)\n" +
+                            "WHERE     (ContactID = '${session.user.aimContactID}') \n" +
+                            "ORDER BY Received DESC") {
+
+                        def web= "false"
+                        if(webQuotesString.contains(it.QuoteID)){
+                            web = "true"
+                        }
+                        submissionObj = [aimQuoteID: it.QuoteID,
+                                         submittedBy: it.Attention,
+                                         brokerEmail: it.CreatedID,
+                                         namedInsured: it.NamedInsured,
+                                         submitDate: it.Received,
+                                         coverages: it.CoverageID,
+                                         statusCode: it.StatusID,
+                                         underwriter: it.AcctExec,
+                                         seenByUW: "N",
+                                         submitGroupID: it.SubmitGrpID,
+                                         web: web
+                        ]
+                        submissions.add(submissionObj)
+                    }
+                }
+
+            }
+
+        }
+        else if(session.user.userRole == "Underwriter"){
+            def webSubmissions = Submissions.where{
+                aimQuoteID != null
+            }
+            log.info ("Web Submissions: " + webSubmissions.getClass())
+            def webQuotesString = ";";
+            webSubmissions.each{
+                webQuotesString = webQuotesString + it.aimQuoteID + ";"
+            }
+            def submissionObj=[:];
+            if(params.search){
+                //AIMSQL SEARCH RESULTS
+                aimsql.eachRow("SELECT     QuoteID, Attention, CreatedID, NamedInsured, CoverageID, Received, StatusID, AcctExec, SubmitGrpID, ContactID\n" +
+                        "FROM         Quote WITH (NOLOCK)\n" +
+                        "WHERE     (QuoteID LIKE '%${params.s}%') OR\n" +
+                        "          (NamedInsured LIKE '%${params.s}%') OR\n" +
+                        "          (Attention LIKE '%${params.s}%') OR\n" +
+                        "          (AcctExec LIKE '%${params.s}%') OR\n" +
+                        "          (CoverageID LIKE '%${params.s}%')\n" +
+                        "ORDER BY Received DESC") {
+
+                    def web= "false"
+                    if(webQuotesString.contains(it.QuoteID)){
+                        web = "true"
+                    }
+                    submissionObj = [aimQuoteID: it.QuoteID,
+                                     submittedBy: it.Attention,
+                                     brokerEmail: it.CreatedID,
+                                     namedInsured: it.NamedInsured,
+                                     submitDate: it.Received,
+                                     coverages: it.CoverageID,
+                                     statusCode: it.StatusID,
+                                     underwriter: it.AcctExec,
+                                     seenByUW: "N",
+                                     submitGroupID: it.SubmitGrpID,
+                                     web: web
+                    ]
+                    submissions.add(submissionObj)
+                }
+            }
+            else{
+                aimsql.eachRow( "SELECT Top 100 * FROM Quote with (NOLOCK) ORDER BY Received DESC") {
+                    def web= "false"
+                    if(webQuotesString.contains(it.QuoteID)){
+                        web = "true"
+                    }
+                    submissionObj = [aimQuoteID: it.QuoteID,
+                                     submittedBy: it.Attention,
+                                     brokerEmail: it.CreatedID,
+                                     namedInsured: it.NamedInsured,
+                                     submitDate: it.Received,
+                                     coverages: it.CoverageID,
+                                     statusCode: it.StatusID,
+                                     underwriter: it.AcctExec,
+                                     seenByUW: "N",
+                                     submitGroupID: it.SubmitGrpID,
+                                     web: web
+                    ]
+                    submissions.add(submissionObj)
+                }
+            }
+
             log.info(submissions)
         }
         else if(session.user.userRole == "Admin"){
@@ -546,7 +636,7 @@ class MainController {
 
         def record =[:]
 
-        aimsql.eachRow( "SELECT * FROM dvVersionView WHERE QuoteID = '" + params.s + "' ORDER BY Version ASC") {
+        aimsql.eachRow( "SELECT * FROM dvVersionView with (NOLOCK) WHERE QuoteID = '" + params.s + "' ORDER BY Version ASC") {
             log.info it
 //            QuoteID:0620057, Version:A, VersionCompanyID:RM0057, ProductID:BARCPKGP, Premium:1234.0000, Non_Premium:[null], Misc_Premium:[null],
 //            NonTax_Premium:[null], QuoteExpires:[null], Financed:Y, Taxed:Y, MEP:, Rate:, GrossComm:0.0, AgentComm:0.0, Coinsure:, SubmitDate:[null],
@@ -580,7 +670,7 @@ class MainController {
             record['TerrorActStatus'] = it.TerrorActStatus
         }
 
-        aimsql.eachRow( "SELECT *  FROM dbo.Version WHERE QuoteID='" + record['QuoteID'] +
+        aimsql.eachRow( "SELECT *  FROM dbo.Version with (NOLOCK) WHERE QuoteID='" + record['QuoteID'] +
                 "' AND VerOriginal='" + record['VerOriginal'] + "' ORDER BY  QuoteID ASC , VerOriginal ASC") {
 
 //            [QuoteID:0620057, VerOriginal:A, Version:A, LobID:[null], LobSubID:[null], CompanyID:RM0057, ProductID:BARCPKGP, Premium:1234.0000, Non_Premium:[null],
@@ -662,7 +752,7 @@ class MainController {
 
         }
 
-        aimsql.eachRow( "SELECT *  FROM dbo.Quote WHERE QuoteID='" + record['QuoteID'] +
+        aimsql.eachRow( "SELECT *  FROM dbo.Quote with (NOLOCK) WHERE QuoteID='" + record['QuoteID'] +
                 "' ORDER BY  QuoteID ASC") {
 //            [QuoteID:0620057, VersionBound:[null], ProducerID:TVD, NamedInsured:, TypeID:[null], UserID:web, Attention:[null], Received:2016-10-16 01:05:57.44,
 //             Acknowledged:[null], Quoted:[null], TeamID:01, DivisionID:00, StatusID:QO, CreatedID:web, Renewal:N, OldPolicyID:[null], OldVersion:[null], OldExpiration:[null],
@@ -713,7 +803,7 @@ class MainController {
         }
 
 
-        aimsql.eachRow( "SELECT *  FROM dbo.Policy WHERE QuoteID='" + record['QuoteID'] +
+        aimsql.eachRow( "SELECT *  FROM dbo.Policy with (NOLOCK) WHERE QuoteID='" + record['QuoteID'] +
                 "' ORDER BY  QuoteID ASC") {
 //            [QuoteID:0609186, VersionBound:[null], ProducerID:TVD, NamedInsured:test, TypeID:[null], UserID:ckim, Attention:JonPaul Evans, Received:2013-11-11 13:34:00.0,
 //             Acknowledged:[null], Quoted:2013-11-11 13:35:00.0, TeamID:01, DivisionID:[null], StatusID:FCL, CreatedID:[null], Renewal:[null], OldPolicyID:[null],
@@ -754,7 +844,7 @@ class MainController {
             record['FlagSubjectToAudit'] = it.FlagSubjectToAudit
         }
 
-        aimsql.eachRow( "SELECT *  FROM dbo.Insured WHERE InsuredID='" + record['InsuredID'] +
+        aimsql.eachRow( "SELECT *  FROM dbo.Insured with (NOLOCK) WHERE InsuredID='" + record['InsuredID'] +
                 "' ORDER BY  InsuredID ASC") {
 //            [InsuredID:40964, NamedInsured:test, NameType:[null], DBAName:, Prefix:[null], First_Name:[null], Last_Name:[null], Middle_Name:[null],
 //             Suffix:[null], CombinedName:[null], Address1:123 test ave, Address2:, City:los angeles , State:CA, Zip:90027, AddressID:[null],
@@ -779,7 +869,7 @@ class MainController {
 
         }
 
-        aimsql.eachRow( "SELECT *  FROM dbo.Producer WHERE ProducerID='" + record['ProducerID'] +
+        aimsql.eachRow( "SELECT *  FROM dbo.Producer with (NOLOCK) WHERE ProducerID='" + record['ProducerID'] +
                 "' ORDER BY ProducerID ASC") {
             record['ProducerName'] = it.Name
         }
@@ -813,7 +903,7 @@ class MainController {
                 "ORDER BY DateTime DESC")
         log.info "NOTES  ============ " + notes
 
-        def invoice = aimsql.rows( "SELECT * FROM dvacAFDPayments " +
+        def invoice = aimsql.rows( "SELECT * FROM dvacAFDPayments with (NOLOCK) " +
                 "WHERE InvNo LIKE '" + record['InvoiceID'] + "' " +
                 "AND InvNo IS NOT NULL")
         log.info "Invoice Accounting  ============ " + invoice

@@ -57,35 +57,23 @@ class AuthController {
         def defaultUW = ""
         User u;
         try{
+            def userReferenceID = 0;
+            aimsql.call("{call dbo.GetKeyField(${Sql.INTEGER}, 'ReferenceID')}") { num ->
+                log.info "userReferenceID $num"
+                userReferenceID = num
+            }
+
             u = new portal.User(userRole:userRole, email:params.email, password:params.password,
-                    company:params.company, firstName: params.firstName, lastName: params.lastName, phoneNumber: params.phoneNumber)
+                    company:params.company, firstName: params.firstName, lastName: params.lastName, phoneNumber: params.phoneNumber, aimContactID:userReferenceID)
             u.save(flush: true, failOnError: true)
 
-
-        }
-        catch(Exception e){
-            error=true;
-            log.info(e)
-            if(User.findWhere(email:params.email) ){
-                log.info("User with that email already exists.")
-            }
-            redirect(controller:'auth', action:'register', params: [registerError: "User with that email already exists"])
-        }
-
-        if(error==false){
-            session.user = u
-            log.info(u)
 
             def now = new Date()
             def timestamp = now.format(dateFormat, timeZone)
 
             Sql aimsql = new Sql(dataSource_aim)
 
-            def userReferenceID = 0;
-            aimsql.call("{call dbo.GetKeyField(${Sql.INTEGER}, 'ReferenceID')}") { num ->
-                log.info "userReferenceID $num"
-                userReferenceID = num
-            }
+
 
             aimsql.execute "insert into taaNameMaster\n" +
                     "  (Name, NameTypeID, NameKeyPK, IDCode, TypeID, Address1, Address2, City, \n" +
@@ -108,24 +96,7 @@ class AuthController {
                     "   '${timestamp}', NULL, NULL, NULL, NULL, \n" +
                     "   NULL, NULL, NULL, 'N', \n" +
                     "   NULL, NULL)"
-            //AIMSQL SEARCH RESULTS
-//            aimsql.eachRow("SELECT QuoteID, NamedInsured, CoverageID, Received\n" +
-//                    "FROM Quote\n" +
-//                    "WHERE (QuoteID LIKE '%${params.searchString}%') OR\n" +
-//                    "(NamedInsured LIKE '%${params.searchString}%') OR\n" +
-//                    "(CoverageID LIKE '%${params.searchString}%') \n" +
-//                    "ORDER BY Received DESC") {
-//                def row = [:]
-//                row['aimQuoteID'] = it.QuoteID;
-//                row['namedInsured'] = it.NamedInsured;
-//                row['coverages'] = it.CoverageID;
-//                row['submittedBy'] = "AIM";
-//                row['statusCode'] = it.StatusID;
-//                row['underwriter'] = it.AcctExec;
-//                row['submitDate'] = it.Received;
-////            resultsString = resultsString + it.QuoteID + "&,&" + it.NamedInsured + "&,&" + it.CoverageID + "&,&" + " " + "&,&" + it.Received + "&;;&";
-//                submissions.add(row)
-//            }
+            aimsql.commit();
 
             def http = new HTTPBuilder( 'http://104.131.41.129:3000/register' )
             def postBody = [email: params.email, pw: params.password, producerID: params.company, nameKeyPK: userReferenceID] // will be url-encoded
@@ -136,20 +107,32 @@ class AuthController {
                 log.info "POST Success: ${resp.statusLine}"
 //                assert resp.statusLine.statusCode == 201
             }
+        }
+        catch(Exception e){
+            error=true;
+            log.info(e)
+            if(User.findWhere(email:params.email) ){
+                log.info("User with that email already exists.")
+            }
+            redirect(controller:'auth', action:'register', params: [registerError: "User with that email already exists"])
+        }
 
+        if(error==false){
+            session.user = u
+            log.info(u)
             redirect(controller:'main', action:'index')
         }
 
     }
 
     def check(){
-        print params
-        print "Checking Session"
-        print "Session = " + session.user
+        log.info params
+        log.info "Checking Session"
+        log.info "Session = " + session.user
 
         if(!session.user){
             //i.e. user not logged in
-
+                log.info("Not logged in")
                 redirect(controller:'auth', action:'login')
                 return false
 

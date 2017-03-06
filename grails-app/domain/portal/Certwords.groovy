@@ -14,7 +14,7 @@ class Certwords {
     String aiType
 
     static constraints = {
-        submissionID(unique:true)
+        submissionID(nullable:true)
         description nullable:true
         producerid nullable:true
         agent nullable:true

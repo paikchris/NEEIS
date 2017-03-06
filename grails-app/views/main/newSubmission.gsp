@@ -67,7 +67,7 @@
                         <div class="card card-unselected media">
                             <div class="media-left">
                                 <a href="#">
-                                    <img class="media-object media-img" src="https://www.editingcorp.com/wp-content/uploads/commercial-set.jpg" alt="..." width="250px" height="150px">
+                                    <img class="media-object media-img" src="${resource(dir: 'images', file: 'film.jpg')}" alt="..." width="250px" height="150px">
                                 </a>
                             </div>
                             <div class="media-body card-content2">
@@ -108,7 +108,7 @@
                         <div class="card card-unselected media">
                             <div class="media-left">
                                 <a href="#">
-                                    <img class="media-object media-object media-img" src="https://static1.squarespace.com/static/57b0d9b7ff7c50648d9e242f/t/589350b4d1758e4be8debaa7/1486049464281/?format=300w" alt="..." width="250px" height="150px">
+                                    <img class="media-object media-object media-img" src="${resource(dir: 'images', file: 'specialEvents.jpg')}" alt="..." width="250px" height="150px">
                                 </a>
                             </div>
                             <div class="media-body card-content2">
@@ -125,22 +125,117 @@
                                 <h4>Please select one:</h4>
                             </div>
 
+
                             <div class="col-xs-4">
                                 <ul class="nav nav-pills nav-stacked">
                                     <li role="presentation" class="inactive">
                                         <a href="" class="riskOptionLink riskOptionDropDown">
-                                            <div class="row" style="margin:0px">Promoter</div>
+                                            <div class="row" style="margin:0px">Special Event</div>
                                             <div class="row" style="margin:0px">
                                                 <select class='riskTypeDropdown ' style="display:none; color:#337ab7; padding-left:20px;width: 100%;margin-top: 10px;
                                                 margin-bottom: 10px;font-size: 25px;">
                                                     <option value="invalid" selected>Select One</option>
-                                                    <option value="Concerts">Concerts</option>
-                                                    <option value="Corporate Events">Corporate Events</option>
-                                                    <option value="Event Planner">Event Planner</option>
-                                                    <option value="Special Events">Special Events</option>
-                                                    <option value="Theatrical">Theatrical</option>
-                                                    <option value="Trade Shows">Trade Shows</option>
-                                                    <option value="Wedding Planner">Wedding Planner</option>
+                                                    <option value="Amateur Rodeo and Roping Events">Amateur Rodeo and Roping Events</option>
+                                                    <option value="Anniversary Parties">Anniversary Parties</option>
+                                                    <option value="Antique Shows">Antique Shows</option>
+                                                    <option value="Arts & Crafts Exhibit">Arts & Crafts Exhibit</option>
+                                                    <option value="Auto Shows-Auto Static Only Award Presentations">Auto Shows-Auto Static Only Award Presentations</option>
+                                                    <option value="Baby Shower">Baby Shower</option>
+                                                    <option value="Ballet or Other Classical Dance Shows Balloon Artist">Ballet or Other Classical Dance Shows Balloon Artist</option>
+                                                    <option value="Banquets Baptism">Banquets Baptism</option>
+                                                    <option value="Bar Mitzvahs / Bat Mitzvahs Bazaars">Bar Mitzvahs / Bat Mitzvahs Bazaars</option>
+                                                    <option value="Baseball - Amateur Basketball - Amateur">Baseball - Amateur Basketball - Amateur</option>
+                                                    <option value="Beauty Pageants Belly Dancer Birthday Parties">Beauty Pageants Belly Dancer Birthday Parties</option>
+                                                    <option value="Bicycling - No Racing / Off-road">Bicycling - No Racing / Off-road</option>
+                                                    <option value="Bingo Games">Bingo Games</option>
+                                                    <option value="Block Parties / Street Closures / Street Fairs - Under 5000 Spectators">Block Parties / Street Closures / Street Fairs - Under 5,000 Spectators</option>
+                                                    <option value="Boat Shows (Dry Dock only) Body Building Contests Book Signing">Boat Shows (Dry Dock only) Body Building Contests Book Signing</option>
+                                                    <option value="Bowling Tournaments">Bowling Tournaments</option>
+                                                    <option value="Boxing, Wrestling, Hockey and Football Games - Amateur">Boxing, Wrestling, Hockey and Football Games - Amateur</option>
+                                                    <option value="Bridal Showers">Bridal Showers</option>
+                                                    <option value="Business Meetings and Shows Business Parties">Business Meetings and Shows Business Parties</option>
+                                                    <option value="Camera Shows Card Shows">Camera Shows Card Shows</option>
+                                                    <option value="Card Games - Blackjack Card Games - Poker">Card Games - Blackjack Card Games - Poker</option>
+                                                    <option value="Caricature Sketching Carolers">Caricature Sketching Carolers</option>
+                                                    <option value="Carnivals - School Events with No Mechanical Rides">Carnivals - School Events with No Mechanical Rides</option>
+                                                    <option value="Cartoonist">Cartoonist</option>
+                                                    <option value="Casino and Lounge Shows Cheerleading Events / Competitions (no Pyramids)">Casino and Lounge Shows Cheerleading Events / Competitions (no Pyramids)</option>
+                                                    <option value="Casino Nights">Casino Nights</option>
+                                                    <option value="Chamber of Commerce Events">Chamber of Commerce Events</option>
+                                                    <option value="Charity Benefits, Dances, Auctions, or Sales Choirs - indoor">Charity Benefits, Dances, Auctions, or Sales Choirs - indoor</option>
+                                                    <option value="Chess Tournament Choirs - Outdoor Christmas Tree Lighting">Chess Tournament Choirs - Outdoor Christmas Tree Lighting</option>
+                                                    <option value="Church Services or Meetings Civic Club Meetings">Church Services or Meetings Civic Club Meetings</option>
+                                                    <option value="Classic Dance Shows Computer Shows Concerts - Celtic Music Concerts - Chamber Music">Classic Dance Shows Computer Shows Concerts - Celtic Music Concerts - Chamber Music</option>
+                                                    <option value="Clowns - No Motorized Vehicles">Clowns - No Motorized Vehicles</option>
+                                                    <option value="Concerts - 50's, 60's, 70's or 80's Music">Concerts - 50's, 60's, 70's or 80's Music</option>
+                                                    <option value="Concerts - Blues Music">Concerts - Blues Music</option>
+                                                    <option value="Concerts - Classical Music - Indoors Concerts - Holiday Music">Concerts - Classical Music - Indoors Concerts - Holiday Music</option>
+                                                    <option value="Concerts - Classical Music - Outdoors Concerts - Country Music">Concerts - Classical Music - Outdoors Concerts - Country Music</option>
+                                                    <option value="Concerts - Folk Music Concerts - Funk Music Concerts - Motown Concerts Soul Music">Concerts - Folk Music Concerts - Funk Music Concerts - Motown Concerts Soul Music</option>
+                                                    <option value="Concerts - Instrumental Consumer Shows Conventions - Indoors Craft Shows">Concerts - Instrumental Consumer Shows Conventions - Indoors Craft Shows</option>
+                                                    <option value="Comedians">Comedians</option>
+                                                    <option value="Comedy Shows">Comedy Shows</option>
+                                                    <option value="Company or Corporate Retreats Concerts - Pop Cover Bands Cornfield Mazes">Company or Corporate Retreats Concerts - Pop Cover Bands Cornfield Mazes</option>
+                                                    <option value="Country & Western Events - No Rodeos or Rides">Country & Western Events - No Rodeos or Rides</option>
+                                                    <option value="Country Festivals and Fairs - No Rides">Country Festivals and Fairs - No Rides</option>
+                                                    <option value="Dance Competitions Dance Recital Debutant Balls Debuts">Dance Competitions Dance Recital Debutant Balls Debuts</option>
+                                                    <option value="Dog, Cat, Bird & Other Domestic Animal Show / Event">Dog, Cat, Bird & Other Domestic Animal Show / Event</option>
+                                                    <option value="Drill Team Exhibitions Educational Exhibitions Electronics Conventions Face Painters">Drill Team Exhibitions Educational Exhibitions Electronics Conventions Face Painters</option>
+                                                    <option value="Easter Egg Hunt">Easter Egg Hunt</option>
+                                                    <option value="Fashion Shows">Fashion Shows</option>
+                                                    <option value="Festival and Cultural Events - Indoors Fishing Events">Festival and Cultural Events - Indoors Fishing Events</option>
+                                                    <option value="Festival and Cultural Events - Outdoors">Festival and Cultural Events - Outdoors</option>
+                                                    <option value="Film Screenings Film Showings">Film Screenings Film Showings</option>
+                                                    <option value="Flower and Garden Shows Fund Raising Dinner Funeral Service Graduations">Flower and Garden Shows Fund Raising Dinner Funeral Service Graduations</option>
+                                                    <option value="Golf Tournament - Daytime Grad Night">Golf Tournament - Daytime Grad Night</option>
+                                                    <option value="Gymnastic Competitions - Spectators Only Halloween - Costume Contests">Gymnastic Competitions - Spectators Only Halloween - Costume Contests</option>
+                                                    <option value="Harvest Festivals - No Farm Implements or Equipment">Harvest Festivals - No Farm Implements or Equipment</option>
+                                                    <option value="Holiday Events & Parties / Gift Exchanges Home Shows">Holiday Events & Parties / Gift Exchanges Home Shows</option>
+                                                    <option value="Ice Skating Shows Junior Athletic Games Karate Meets Lacrosse">Ice Skating Shows Junior Athletic Games Karate Meets Lacrosse</option>
+                                                    <option value="Impersonator - Celebrity or Holiday Character Impressionist">Impersonator - Celebrity or Holiday Character Impressionist</option>
+                                                    <option value="Jazz and Jam Concerts - Indoors Jewelry Maker">Jazz and Jam Concerts - Indoors Jewelry Maker</option>
+                                                    <option value="Jazz and Jam Concerts - Outdoors Job Fairs Outdoors">Jazz and Jam Concerts - Outdoors Job Fairs Outdoors</option>
+                                                    <option value="Job Fairs Indoor Ladies Club Events Lectures Luncheons Meetings - Indoors Mime">Job Fairs Indoor Ladies Club Events Lectures Luncheons Meetings - Indoors Mime</option>
+                                                    <option value="Jugglers (No Pyro) Magician Mariachi Band">Jugglers (No Pyro) Magician Mariachi Band</option>
+                                                    <option value="Laser Tag (Indoors) Livestock Shows Magic Shows">Laser Tag (Indoors) Livestock Shows Magic Shows</option>
+                                                    <option value="Marathons (Walking & Running) Marathons / Walkathons">Marathons (Walking & Running) Marathons / Walkathons</option>
+                                                    <option value="Math Tournament">Math Tournament</option>
+                                                    <option value="Meetings - Outdoors">Meetings - Outdoors</option>
+                                                    <option value="Menorah Lightning Picnics - No Pools or Lakes Reunions Outdoors">Menorah Lightning Picnics - No Pools or Lakes Reunions Outdoors</option>
+                                                    <option value="Mobile Home Shows Pageants">Mobile Home Shows Pageants</option>
+                                                    <option value="Mobile Homes / RV Shows - Professionally Managed">Mobile Homes / RV Shows - Professionally Managed</option>
+                                                    <option value="Movie Release Party">Movie Release Party</option>
+                                                    <option value="New Years Party (Private / by invite only)">New Years Party (Private / by invite only)</option>
+                                                    <option value="Old Timer Events">Old Timer Events</option>
+                                                    <option value="Parades - Under 5000 Spectators Play Readings">Parades - Under 5,000 Spectators Play Readings</option>
+                                                    <option value="Plays">Plays</option>
+                                                    <option value="Poetry Reading">Poetry Reading</option>
+                                                    <option value="Pool and / or Billiards Tournaments Proms">Pool and / or Billiards Tournaments Proms</option>
+                                                    <option value="Professional and Amateur Association Meetings Puppeteer">Professional and Amateur Association Meetings Puppeteer</option>
+                                                    <option value="Quinceanera">Quinceanera</option>
+                                                    <option value="Recitals">Recitals</option>
+                                                    <option value="Reunions Indoors">Reunions Indoors</option>
+                                                    <option value="Rugby Soccer">Rugby Soccer</option>
+                                                    <option value="RV Shows">RV Shows</option>
+                                                    <option value="School Band Competitions or Events Soap Box Derbies">School Band Competitions or Events Soap Box Derbies</option>
+                                                    <option value="Scouting Jamborees - No Overnight Camping Seances">Scouting Jamborees - No Overnight Camping Seances</option>
+                                                    <option value="Seminars">Seminars</option>
+                                                    <option value="Social Receptions - Indoors Speaking Engagements Store Openings">Social Receptions - Indoors Speaking Engagements Store Openings</option>
+                                                    <option value="Social Receptions - Outdoors Trade Shows - Outdoors Union Meetings">Social Receptions - Outdoors Trade Shows - Outdoors Union Meetings</option>
+                                                    <option value="Softball - Amateur">Softball - Amateur</option>
+                                                    <option value="Sporting Events - Indoors - Non-Professional">Sporting Events - Indoors - Non-Professional</option>
+                                                    <option value="Story Teller Symphony Concerts Teleconferences Telethons">Story Teller Symphony Concerts Teleconferences Telethons</option>
+                                                    <option value="Talent Show (no rap, hip hop, heavy metal shows)">Talent Show (no rap, hip hop, heavy metal shows)</option>
+                                                    <option value="Tap Dancing">Tap Dancing</option>
+                                                    <option value="Tennis Tournament">Tennis Tournament</option>
+                                                    <option value="Theatrical Stage Performances Volleyball - Amateur">Theatrical Stage Performances Volleyball - Amateur</option>
+                                                    <option value="Trade Shows - Indoors Vacation Shows Ventriloquist">Trade Shows - Indoors Vacation Shows Ventriloquist</option>
+                                                    <option value="Video Game Contests">Video Game Contests</option>
+                                                    <option value="Voter Registration">Voter Registration</option>
+                                                    <option value="Wagon / Hayrides Walking / Hiking Tour">Wagon / Hayrides Walking / Hiking Tour</option>
+                                                    <option value="Weddings and Wedding Receptions Yodeler">Weddings and Wedding Receptions Yodeler</option>
+                                                    <option value="Wine Tasting">Wine Tasting</option>
+                                                    
                                                 </select>
                                             </div>
 
@@ -153,30 +248,14 @@
                                 <ul class="nav nav-pills nav-stacked">
                                     <li role="presentation" class="inactive">
                                         <a href="" class="riskOptionLink riskOptionDropDown">
-                                            <div class="row" style="margin:0px">Special Event</div>
+                                            <div class="row" style="margin:0px">Vendor Concessionaire or Exhibitor</div>
                                             <div class="row" style="margin:0px">
                                                 <select class='riskTypeDropdown ' style="display:none; color:#337ab7; padding-left:20px;width: 100%;margin-top: 10px;
                                                 margin-bottom: 10px;font-size: 25px;">
                                                     <option value="invalid" selected>Select One</option>
-                                                    <option value="Arts & Crafts Exhibit">Arts & Crafts Exhibit</option>
-                                                    <option value="Charitable">Charitable</option>
-                                                    <option value="Corporate">Corporate</option>
-                                                    <option value="Dance Competition">Dance Competition</option>
                                                     <option value="Exhibitor">Exhibitor</option>
-                                                    <option value="Fashion Shows">Fashion Shows</option>
-                                                    <option value="Festival">Festival</option>
-                                                    <option value="Fund Raising">Fund Raising</option>
-                                                    <option value="Ice Skating Shows">Ice Skating Shows</option>
-                                                    <option value="Laser Light Shows">Laser Light Shows</option>
-                                                    <option value="Networking Meetings">Networking Meetings</option>
-                                                    <option value="Party">Party</option>
-                                                    <option value="Radio & Fundraising">Radio & Fundraising</option>
-                                                    <option value="Rally">Rally</option>
-                                                    <option value="Regligious Trade Show">Regligious Trade Show</option>
-                                                    <option value="Sponsorship Only">Sponsorship Only</option>
-                                                    <option value="Sporting">Sporting</option>
-                                                    <option value="Trades & Exhibits">Trades & Exhibits</option>
-                                                    <option value="Wedding Planner">Wedding Planner</option>
+                                                    <option value="Concessionaires Non Food Sales">Concessionaires (Non-Food Sales)</option>
+                                                    <option value="Concessionaires Food Sales">Concessionaires (Food Sales)</option>
                                                 </select>
                                             </div>
 
@@ -204,7 +283,7 @@
                         <div class="card card-unselected media">
                             <div class="media-left">
                                 <a href="#">
-                                    <img class="media-object media-object media-img" src="https://static1.squarespace.com/static/57b0d9b7ff7c50648d9e242f/t/58494339b3db2b0b61702256/1481100557148/?format=300w" alt="..." width="250px" height="150px">
+                                    <img class="media-object media-object media-img" src="${resource(dir: 'images', file: 'entertainer.jpg')}" alt="..." width="250px" height="150px">
                                 </a>
                             </div>
                             <div class="media-body card-content2">
@@ -294,7 +373,7 @@
                         <div class="card card-unselected media">
                             <div class="media-left">
                                 <a href="#">
-                                    <img class="media-object media-object media-img" src="http://included.co/wp-content/uploads/formidable/Business_people_in_office-1.jpg" alt="..." width="250px" height="150px">
+                                    <img class="media-object media-object media-img" src="${resource(dir: 'images', file: 'office.jpg')}" alt="..." width="250px" height="150px">
                                 </a>
                             </div>
                             <div class="media-body card-content2">
@@ -357,7 +436,7 @@
                         <div class="card card-unselected media">
                             <div class="media-left">
                                 <a href="#">
-                                    <img class="media-object media-object media-img" src="http://go2balkans.com/web2/wp-content/uploads/o-BUSINESS-MEETING-facebook1.jpg" alt="..." width="250px" height="150px">
+                                    <img class="media-object media-object media-img" src="${resource(dir: 'images', file: 'shellCorp.jpg')}" alt="..." width="250px" height="150px">
                                 </a>
                             </div>
                             <div class="media-body card-content2">
@@ -427,7 +506,7 @@
                         <div class="card card-unselected media">
                             <div class="media-left">
                                 <a href="#">
-                                    <img class="media-object media-object media-img" src="https://www.caesars.com/content/cet-global/caesars-com/horseshoe-hammond/_jcr_content/root_content/cetcarousel/cet-slide-3/image.stdimg.uwide.xl.cover.jpg/1378929859901.jpg" alt="..." width="250px" height="150px">
+                                    <img class="media-object media-object media-img" src="${resource(dir: 'images', file: 'venue.jpg')}" alt="..." width="250px" height="150px">
                                 </a>
                             </div>
                             <div class="media-body card-content2">
@@ -521,7 +600,7 @@
                         <div class="card card-unselected media">
                             <div class="media-left">
                                 <a href="#">
-                                    <img class="media-object media-object media-img" src="http://naabb.biz/ownerheaders/brokersites/broker2.jpg" alt="..." width="250px" height="150px">
+                                    <img class="media-object media-object media-img" src="${resource(dir: 'images', file: 'ancilliary.jpg')}" alt="..." width="250px" height="150px">
                                 </a>
                             </div>
                             <div class="media-body card-content2">
@@ -818,6 +897,24 @@
                                         <div class="form-group" id="premiumExpectedInputGroup" style="display:none">
                                             <label class="control-label">Target Premium</label>
                                             <input class="form-control" id="premiumExpectedInput" name="premiumExpectedInput" type="text" required="" >
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="form-group" id="howManyDaysIsTheEventGroup" style="display:none">
+                                            <label class="control-label">List the number of Event days</label>
+                                            <input class="form-control effectsTotalPremium" id="howManyDaysIsTheEvent" name="howManyDaysIsTheEvent" type="text" style="color: black; background: white;"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="form-group"id="estimatedTotalAttendanceGroup" style="display:none">
+                                            <label class="control-label">Estimated Total Attendance</label>
+                                            <input class="form-control effectsTotalPremium" id="estimatedTotalAttendance" name="estimatedTotalAttendance" type="text" style="color: black; background: white;"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-6">
+                                        <div class="form-group" id="largestNumberAttendeesGroup" style="display:none">
+                                            <label class="control-label">Largest Number of Attendees Any One Event Per Day</label>
+                                            <input class="form-control" id="largestNumberAttendees" name="largestNumberAttendees" type="text" style="color: black; background: white;"/>
                                         </div>
                                     </div>
                                 </div>
@@ -1192,7 +1289,7 @@
                                         <label class="control-label">Interest</label>
                                         <select class="form-control interestSelect showReview" name="interest"  data-reviewName="Interest" id="interestSelect">
                                             <option value="invalid" selected="selected">Owner</option>
-                                            <option value="corporation" selected="selected">Leasee</option>
+                                            <option value="corporation" selected="selected">Lessee</option>
                                         </select>
                                     </div>
                                 </div>

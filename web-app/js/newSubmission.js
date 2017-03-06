@@ -274,7 +274,7 @@ $(document).ready(function () {
                 todayTemp.setHours(0, 0, 0, 0);
                 var mdyEffectiveTemp = $('#proposedEffectiveDate').val().split('/');
                 var mdyEffectiveDateObjectTemp = new Date(mdyEffectiveTemp[2], mdyEffectiveTemp[0]-1, mdyEffectiveTemp[1]);
-                mdyEffectiveDateObjectTemp.setDate(mdyEffectiveDateObjectTemp.getDate()+7);
+                mdyEffectiveDateObjectTemp.setDate(mdyEffectiveDateObjectTemp.getDate()+5);
                 var dayTemp = mdyEffectiveDateObjectTemp.getDate();
                 if (dayTemp < 10) { dayTemp = '0' + dayTemp; }
                 var monthIndexTemp = mdyEffectiveDateObjectTemp.getMonth() + 1;
@@ -282,7 +282,7 @@ $(document).ready(function () {
                 var yearTemp = mdyEffectiveDateObject.getFullYear();
                 //yearTemp = mdyEffectiveDateObjectTemp.getFullYear() + 1;
                 $("#proposedExpirationDate").val( (monthIndexTemp) + "/" + dayTemp + "/" + yearTemp);
-                $('#proposedTermLength').val(7 + " Days");
+                $('#proposedTermLength').val(5 + " Days");
             }
             else{
                 var termLengthTemp;
@@ -1048,6 +1048,9 @@ $(document).ready(function () {
             //LOGIC FOR DISPLAYING WHICH COVERAGE FORM TO DISPLAY
             $('#totalBudgetConfirmGroup').css('display', 'none');
             $('#premiumExpectedInputGroup').css('display', 'none');
+            $('#howManyDaysIsTheEventGroup').css('display', 'none');
+            $('#estimatedTotalAttendanceGroup').css('display', 'none');
+            $('#largestNumberAttendeesGroup').css('display', 'none');
             $('#premiumExpectedInput').maskMoney({prefix:'$', precision:"0"});
 
             if (e.target.id == "nextButtonStep1" ) {
@@ -1098,6 +1101,9 @@ $(document).ready(function () {
                     }
                     else if(riskCategory === "Entertainer"){
                         $('#premiumExpectedInputGroup').css('display', '');
+                        $('#howManyDaysIsTheEventGroup').css('display', '');
+                        $('#estimatedTotalAttendanceGroup').css('display', '');
+                        $('#largestNumberAttendeesGroup').css('display', '');
 
                         $("#insuredInfoInsert").load("./../forms/entertainerForm #insuredInfo", function () {
                             finishedLoading1 = true;
@@ -1127,6 +1133,9 @@ $(document).ready(function () {
                     else if(riskCategory === "Special Events"){
                         //alert(riskCategory)
                         $('#premiumExpectedInputGroup').css('display', '');
+                        $('#howManyDaysIsTheEventGroup').css('display', '');
+                        $('#estimatedTotalAttendanceGroup').css('display', '');
+                        $('#largestNumberAttendeesGroup').css('display', '');
 
                         $("#insuredInfoInsert").load("./../forms/specialEventLiability #insuredInfo", function () {
                             finishedLoading1 = true;
@@ -1144,8 +1153,11 @@ $(document).ready(function () {
                             var head = document.getElementsByTagName('head')[0];
                             var script = document.createElement('script');
                             script.type = 'text/javascript';
-                            script.src = '/portal/js/forms/specFilm.js'+"?ts=" + new Date().getTime();;
-                            head.appendChild(script);
+                            script.src = '/portal/js/forms/specFilm.js'+"?ts=" + new Date().getTime();
+                            var script1 = document.createElement('script');
+                            script1.type = 'text/javascript';
+                            script1.src = '/portal/js/forms/specialEventLiability.js'+"?ts=" + new Date().getTime();
+                            head.appendChild(script1);
                             finishedLoading2 = true;
                             if(finishedLoading1 && finishedLoading2 && finishedLoading3){
                                 $('#loadingModal').hide();
@@ -1156,6 +1168,9 @@ $(document).ready(function () {
                     else if(riskCategory === "Shell Corporation"){
                         //alert(riskCategory)
                         $('#premiumExpectedInputGroup').css('display', '');
+                        $('#howManyDaysIsTheEventGroup').css('display', '');
+                        $('#estimatedTotalAttendanceGroup').css('display', '');
+                        $('#largestNumberAttendeesGroup').css('display', '');
 
                         $("#insuredInfoInsert").load("./../forms/shellCorp #insuredInfo", function () {
                             finishedLoading1 = true;
@@ -1184,6 +1199,9 @@ $(document).ready(function () {
                     }
                     else if (riskChosen.indexOf("Comedian") > -1 ){
                         $('#premiumExpectedInputGroup').css('display', '');
+                        $('#howManyDaysIsTheEventGroup').css('display', '');
+                        $('#estimatedTotalAttendanceGroup').css('display', '');
+                        $('#largestNumberAttendeesGroup').css('display', '');
 
                         $("#riskSpecificInsert").load("./../forms/otherForm.gsp #riskSpecificInfo", function () {
                             var head = document.getElementsByTagName('head')[0];
@@ -1196,6 +1214,9 @@ $(document).ready(function () {
                     }
                     else{
                         $('#premiumExpectedInputGroup').css('display', '');
+                        $('#howManyDaysIsTheEventGroup').css('display', '');
+                        $('#estimatedTotalAttendanceGroup').css('display', '');
+                        $('#largestNumberAttendeesGroup').css('display', '');
                         var finishedLoading1 = false;
                         var finishedLoading2 = false;
                         var finishedLoading3 = false;
@@ -1446,37 +1467,37 @@ $(document).ready(function () {
                 var CGLlimitsString = ""
                 var CGLdeductsString = "";
                 if($('#CPKCGLcoverage').is(':checked')) {
-                    $('div#limitsDeductPremiumInsert div.CPK_LOBRow').each(function () {
-                        cpkLOB = cpkLOB + $(this).find('.coverageColumn').children().first().html() + " ;&;" + $(this).find('.limitColumn').children().first().html() + " ;&;" +
-                            $(this).find('.deductibleColumn').children().first().html() + ";&&;";
-                        CPKlimitsString = CPKlimitsString + $(this).find('.limitColumn').children().first().html() + "\tCPK:" + $(this).find('.coverageColumn').children().first().html() + "\n";
-                        CPKdeductsString = CPKdeductsString + $(this).find('.deductibleColumn').children().first().html() + "\tCPK:" + $(this).find('.coverageColumn').children().first().html() + "\n";
-
-
-
-
-                    });
-                    //ADD NOAL
                     if($('#CPKInputRadio').is(':checked')){
+                        $('div#limitsDeductPremiumInsert div.CPK_LOBRow').each(function () {
+                            cpkLOB = cpkLOB + $(this).find('.coverageColumn').children().first().html() + " ;&;" + $(this).find('.limitColumn').children().first().html() + " ;&;" +
+                                $(this).find('.deductibleColumn').children().first().html() + ";&&;";
+                            CPKlimitsString = CPKlimitsString + $(this).find('.limitColumn').children().first().html() + "\tCPK:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+                            CPKdeductsString = CPKdeductsString + $(this).find('.deductibleColumn').children().first().html() + "\tCPK:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+
+                        });
+
+                        //ADD NOAL
                         $('div#limitsDeductPremiumInsert div.NOAL_LOBRow').each(function () {
                             cpkLOB = cpkLOB + $(this).find('.coverageColumn').children().first().html() + " ;&;" + $(this).find('.limitColumn').children().first().html() + " ;&;" +
                                 $(this).find('.deductibleColumn').children().first().html() + ";&&;";
                             CPKlimitsString = CPKlimitsString + $(this).find('.limitColumn').children().first().html() + "\tNOAL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
                             CPKdeductsString = CPKdeductsString + $(this).find('.deductibleColumn').children().first().html() + "\tNOAL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+                        });
 
-
-
+                    }
+                    else if($('#CGLInputRadio').is(':checked')){
+                        $('div#limitsDeductPremiumInsert div.CGL_LOBRow').each(function () {
+                            cglLOB = cglLOB + $(this).find('.coverageColumn').children().first().html() + " ;&;" + $(this).find('.limitColumn').children().first().html() + " ;&;" +
+                                $(this).find('.deductibleColumn').children().first().html() + ";&&;";
+                            CPKlimitsString = CPKlimitsString + $(this).find('.limitColumn').children().first().html() + "\tCGL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+                            CPKdeductsString = CPKdeductsString + $(this).find('.deductibleColumn').children().first().html() + "\tCGL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
 
                         });
                     }
 
-                    $('div#limitsDeductPremiumInsert div.CGL_LOBRow').each(function () {
-                        cglLOB = cglLOB + $(this).find('.coverageColumn').children().first().html() + " ;&;" + $(this).find('.limitColumn').children().first().html() + " ;&;" +
-                            $(this).find('.deductibleColumn').children().first().html() + ";&&;";
-                        CPKlimitsString = CPKlimitsString + $(this).find('.limitColumn').children().first().html() + "\tCGL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
-                        CPKdeductsString = CPKdeductsString + $(this).find('.deductibleColumn').children().first().html() + "\tCGL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
 
-                    });
+
+
                 }
 
                 var premSummary = "";
@@ -1511,6 +1532,8 @@ $(document).ready(function () {
                 data["premSummary"] = premSummary;
                 data["termsInsert"] = $('#termsInsert').html();
                 data["endorseInsert"] = $('#endorseInsert').html();
+                data["maxCostOneProduction"] = $('#maxCostOneProduction').val();
+
                 data["EPKGlimitsString"] = EPKGlimitsString;
                 data["EPKGdeductsString"] = EPKGdeductsString;
                 data["CPKlimitsString"] = CPKlimitsString;

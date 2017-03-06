@@ -282,50 +282,59 @@ body {
 
 #loadingModal{
     position:   fixed;
-    z-index:    1000;
+    z-index:    1050;
     top:        0;
     left:       0;
     height:     100%;
     width:      100%;
-    background: rgba( 255, 255, 255, .8 )
-    url(/portal/images/loading.gif)
-    50% 50%
-    no-repeat;
+    background-color: rgba(19, 25, 34, 0.75);
+    /*background-color: rgba( 255, 255, 255, .8 );*/
+    /*url(/portal/images/loading.gif)*/
+    /*50% 50%*/
+    /*no-repeat;*/
 }
 .progress-bar {
     -webkit-transition: none !important;
     transition: none !important;
 }
 
+.loader {
+    width: 40px;
+    height: 40px;
 
-/*flash a input*/
-/*.flash{*/
+    position: relative;
+    margin: 100px auto;
+}
 
-    /*-moz-animation: flash 1s ease-out;*/
-    /*-moz-animation-iteration-count: 1;*/
+.double-bounce1, .double-bounce2 {
+    width: 130%;
+    height: 130%;
+    border-radius: 50%;
+    background-color: rgba(206, 206, 206, 0.7);
+    opacity: 0.6;
+    position: absolute;
+    top: 200px;
+    left: 0;
+    -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
+    animation: sk-bounce 2.0s infinite ease-in-out;
+}
 
-    /*-webkit-animation: flash 1s ease-out;*/
-    /*-webkit-animation-iteration-count: 1;*/
+.double-bounce2 {
+    -webkit-animation-delay: -1.0s;
+    animation-delay: -1.0s;
+}
 
-    /*-ms-animation: flash 1s ease-out;*/
-    /*-ms-animation-iteration-count: 1;*/
+@-webkit-keyframes sk-bounce {
+    0%, 100% { -webkit-transform: scale(0.0) }
+    50% { -webkit-transform: scale(1.0) }
+}
 
-/*}*/
-
-/*@-webkit-keyframes flash {*/
-    /*0% { background-color:none;}*/
-    /*50% { background-color:#cccccc;}*/
-    /*100% {background-color:none;}*/
-/*}*/
-
-/*@-moz-keyframes flash {*/
-    /*0% { background-color:none;}*/
-    /*50% { background-color:#cccccc;}*/
-    /*100% {background-color:none;}*/
-/*}*/
-
-/*@-ms-keyframes flash {*/
-    /*0% { background-color:none;}*/
-    /*50% { background-color:#cccccc;}*/
-    /*100% {background-color:none;}*/
+@keyframes sk-bounce {
+    0%, 100% {
+        transform: scale(0.0);
+        -webkit-transform: scale(0.0);
+    } 50% {
+          transform: scale(1.0);
+          -webkit-transform: scale(1.0);
+      }
 }

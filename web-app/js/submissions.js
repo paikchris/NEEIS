@@ -8,66 +8,146 @@ var ratesMapToSave;
 $(document).ready(function () {
     var userRole = $('#userRole').html().trim();
     var neeisUWList = $('#neeisUWListHidden').html().trim().slice(1, -1).split(",");
+    //$('#loadingModal').modal('show');
+    $('#smartwizard').smartWizard({
+        theme: 'arrows',
+        transitionEffect: 'fade', // Effect on navigation, none/slide/fade
+        transitionSpeed: '400',
+        autoAdjustHeight:false,
+        selected: 0
+    });
+
+
     //alert(userRole);
     $("#submissionSearch").on('input', function() {
-        $(this).val();
 
+        //$.ajax({
+        //    method: "POST",
+        //    url: "/portal/Async/searchSubmissions",
+        //    data: {riskType:  "",
+        //        searchString :  $(this).val()
+        //
+        //    }
+        //})
+        //    .done(function (msg) {
+        //        //alert(msg);
+        //        console.log(msg);
+        //
+        //        var htmlString = "";
+        //        var submissionsArray = msg.split("&;;&");
+        //        var aimQuoteID = "";
+        //        var namedInsured = "";
+        //        var coverages = "";
+        //        var submittedBy = "";
+        //        var submitDate = "";
+        //        var statusCode = "";
+        //        var underwriter = "";
+        //
+        //
+        //        submissionsArray.forEach(function(it) {
+        //            var aimQuoteID = it.split("&,&")[0];
+        //            var namedInsured = it.split("&,&")[1];
+        //            var coverages = it.split("&,&")[2];
+        //            var submittedBy = it.split("&,&")[3];
+        //            var submitDate = it.split("&,&")[4];
+        //            var statusCode = it.split("&,&")[5];
+        //            if(statusCode === "QO"){
+        //                statusCode = "Quoted";
+        //            }
+        //
+        //            var underwriter = it.split("&,&")[6];
+        //            if(underwriter == "null"){
+        //                underwriter = "";
+        //            }
+        //
+        //            htmlString = htmlString + "<tr>" +
+        //            "<th scope='row'><a href='./../main/submissionView?s=${s.aimQuoteID}'>" + aimQuoteID + "</a></th>" +
+        //            "<td>" + namedInsured + "</td>" +
+        //            "<td>" + coverages + "</td>" +
+        //            "<td>" + submittedBy + "</td>" +
+        //            "<td>" + submitDate + "</td>" +
+        //                "<td>" + statusCode + "</td>" +
+        //                "<td>" + underwriter + "</td>" +
+        //            "<td><a href='./../web-app/attachments/testpdf.pdf'>my link</a></td>" +
+        //            "</tr>";
+        //        });
+        //
+        //        $('#submissionRows').html(htmlString);
+        //    });
+    });
+    ////////////////////////////////////////
+    $(document).on('click', '#searchButton', function () {
+        window.location.href = "./../main/submissions.gsp?search=true&s=" + encodeURIComponent($("#submissionSearch").val().trim());
+    });
+    $(document).on("keypress", "#submissionSearch", function(e) {
+        if (e.which == 13) {
+            window.location.href = "./../main/submissions.gsp?search=true&s=" + encodeURIComponent($("#submissionSearch").val().trim());
+            return false;
+        }
+    });
+
+    $(document).on('click', '.filterButton', function () {
+        //alert($(this).attr('data-filteroption'));
+        $('.submissionQuickOptions').css('display', 'none');
+
+        var filterOption = $(this).attr('data-filteroption').trim();
+
+        if(filterOption === "none"){
+            $('.submissionRow').css('display','');
+        }
+        else if(filterOption === "BND"){
+            $('td.statusCode').each(function(){
+                if($(this).html().trim() !== "BND" && $(this).html().trim() !== "BIF"){
+                    $(this).parent('.submissionRow').css('display','none');
+                }
+                else{
+                    $(this).parent('.submissionRow').css('display','');
+                }
+            });
+        }
+        else{
+            $('td.statusCode').each(function(){
+                if($(this).html().trim() !== filterOption){
+                    $(this).parent('.submissionRow').css('display','none');
+                }
+                else{
+                    $(this).parent('.submissionRow').css('display','');
+                }
+            });
+        }
+
+    });
+
+
+
+    $(document).on('click', '#addInsuredButton', function () {
+        $('#addInsuredDiv').toggle();
+    });
+    $(document).on('click', '#saveInsuredButton', function () {
+        $('#progressBarHeader').html("Saving...");
+        $('#progressBarModal').modal('show');
+        $('.progress-bar').attr('aria-valuenow', "75").animate({
+            width: "75%"
+        }, 1000);
         $.ajax({
             method: "POST",
-            url: "/portal/Async/searchSubmissions",
-            data: {riskType:  "",
-                searchString :  $(this).val()
-
+            url: "/portal/Async/addNewInsured",
+            data: {description: $('#descriptionInput').val().trim(),
+                ops: $('#operationsInput').val().trim(),
+                additionalInsured: $('#additionaInsuredInput').val().trim()
             }
         })
             .done(function (msg) {
+                $('.progress-bar').attr('aria-valuenow', "100").css("width", "100%");
+                $('#progressBarModal').modal('hide');
                 //alert(msg);
-                console.log(msg);
-
-                var htmlString = "";
-                var submissionsArray = msg.split("&;;&");
-                var aimQuoteID = "";
-                var namedInsured = "";
-                var coverages = "";
-                var submittedBy = "";
-                var submitDate = "";
-                var statusCode = "";
-                var underwriter = "";
-
-
-                submissionsArray.forEach(function(it) {
-                    var aimQuoteID = it.split("&,&")[0];
-                    var namedInsured = it.split("&,&")[1];
-                    var coverages = it.split("&,&")[2];
-                    var submittedBy = it.split("&,&")[3];
-                    var submitDate = it.split("&,&")[4];
-                    var statusCode = it.split("&,&")[5];
-                    if(statusCode === "QO"){
-                        statusCode = "Quoted";
-                    }
-
-                    var underwriter = it.split("&,&")[6];
-                    if(underwriter == "null"){
-                        underwriter = "";
-                    }
-
-                    htmlString = htmlString + "<tr>" +
-                    "<th scope='row'><a href='./../main/submissionView?s=${s.aimQuoteID}'>" + aimQuoteID + "</a></th>" +
-                    "<td>" + namedInsured + "</td>" +
-                    "<td>" + coverages + "</td>" +
-                    "<td>" + submittedBy + "</td>" +
-                    "<td>" + submitDate + "</td>" +
-                        "<td>" + statusCode + "</td>" +
-                        "<td>" + underwriter + "</td>" +
-                    "<td><a href='./../web-app/attachments/testpdf.pdf'>my link</a></td>" +
-                    "</tr>";
-                });
-
-                $('#submissionRows').html(htmlString);
+                //$('#some_id').click(function() {
+                //
+                //});
+                window.location='/portal/main/submissions';
             });
     });
 
-    ////////////////////////////////////////
     $(document).on('click', '.submissionRow', function () {
         $('.submissionQuickOptions').remove();
         if($(this).next().hasClass("submissionQuickOptions")){
@@ -78,6 +158,9 @@ $(document).ready(function () {
             var statusCode = $(this).find('.statusCode').html().trim();
             var aimQuoteID = $(this).find('.aimQuoteIDTD').html().trim();
             var underwriter = $(this).find('.underwriterTD').html().trim();
+            var broker = $(this).find('.submittedByTD').html().trim();
+            var brokerEmail = $(this).find('.brokerEmail').html().trim();
+
             //alert(statusCode);
             if(userRole === "Broker" ){
 
@@ -151,13 +234,17 @@ $(document).ready(function () {
                     "<td class='QOaimQuoteID' style='display:none'>" + aimQuoteID +  "</td>" +
                     "<td class='QOstatusCode' style='display:none'>" + statusCode +  "</td>" +
                     "<td class='QOUWAssigned' style='display:none'>" + underwriter +  "</td>" +
+                    "<td class='QOSubmittedBy' style='display:none'>" + broker +  "</td>" +
+                    "<td class='QOBrokerEmail' style='display:none'>" + brokerEmail +  "</td>" +
+
                     "<td colspan='9'>" +
                     "<div class='col-xs-12' style='text-align:center'>" +
                     "<button type='button' class='btn btn-sm btn-default submissionOptionButton messageButton'> " +
                     "<i class='fa fa-envelope-o' aria-hidden='true'></i>" +
                     "<span>Message Broker </span>" +
-                    "<span class='underWriterToMessage' style='display: none;'>" + underwriter
-                "</span>" +
+                    "<span class='underWriterToMessage' style='display: none;'>" + underwriter + "</span>" +
+                    "<span class='brokerToMessage' style='display:none'>" + brokerEmail +  "</span>" +
+                    "<span class='brokerName' style='display:none'>" + broker +  "</span>" +
                 "</button>";
 
                 if(statusCode === "QO"){
@@ -374,11 +461,143 @@ $(document).ready(function () {
             });
     });
 
-    $(document).on('click', '#reviewStatusChangeButton', function () {
 
+    ////////////////////////////////BIND FUNCTION STUFF///////////////////////////////
+    $(document).on('click', '#bindOptionsButton', function () {
+        $('#bindReviewTabButton').click();
+    });
+    $(document).on('click', '#bindReviewTabButton', function () {
+        var thisQuoteID = $('#reviewQuoteID').html().trim();
+        $('#smartwizard').smartWizard("reset");
+        $('.sw-btn-next').attr("disabled", "disabled");
+        $.ajax({
+            method: "POST",
+            url: "/portal/Async/bindPrepare",
+            data: {
+                aimQuoteID: thisQuoteID
+            }
+        })
+            .done(function (msg) {
+                //alert(msg)
+                if(msg.indexOf("isInvoiced") > -1){
+                    alert("This submission is already invoiced");
+                    $('#policyNumberTable').html("");
+                    $('#getPolicyFromRegisterButton').attr('disabled', 'disabled');
+                }
+                else if(msg.indexOf("hasPolicyNum") > -1){
+                    alert("This submission already has a policy number");
+                    $('#policyNumberTable').html("");
+                    $('#getPolicyFromRegisterButton').attr('disabled', 'disabled');
+                }
+                else{
+                    var policyKeyID = msg;
+                    $('#policyKeyID').html(policyKeyID);
+                }
+            });
+    });
+    $(document).on('click', '#getPolicyFromRegisterButton', function () {
+        var thisQuoteID = $('#reviewQuoteID').html().trim();
+
+        $.ajax({
+            method: "POST",
+            url: "/portal/Async/bindGetPolicyNumbersFromRegister",
+            data: {
+                aimQuoteID: thisQuoteID,
+                policyKeyID: $('#policyKeyID').html(),
+            }
+        })
+            .done(function (msg) {
+                //alert(msg)
+                var response = msg.trim();
+                if(msg.indexOf("isInvoiced") > -1){
+                    alert("This submission is already invoiced");
+                    $('#policyNumberTable').html("");
+                }
+                else{
+                    var policyNumbersJSON = JSON.parse(msg);
+                    var htmlString = "";
+
+                    var limitNumPolicy = 10;
+                    var count =0;
+                    for(var i=1; i <10 && i<policyNumbersJSON.length; i++){
+                        var policyRow = policyNumbersJSON[i];
+                        console.log(policyRow);
+                        htmlString = htmlString + "<div class='row card policyRow'>" +
+                            "<div class='col-xs-2 '>" +
+                            "<span class='policyNumber'>" + policyRow.PolicyID + "</span>" +
+                            "</div>" +
+                            "<div class='col-xs-2 '>" +
+                            "<span>" + policyRow.Describe + "</span>" +
+                            "</div>" +
+                            "<div class='col-xs-2 '>" +
+                            "<span>" + policyRow.CompanyID + "</span>" +
+                            "</div>" +
+                            "<div class='col-xs-2 '>" +
+                            "<span>" + policyRow.CompanyName + "</span>" +
+                            "</div>" +
+                            "<div class='col-xs-2 '>" +
+                            "<span>" + policyRow.ProductID + "</span>" +
+                            "</div>" +
+                            "<div class='col-xs-2 '>" +
+                            "<span>" + policyRow.PolicyRegisterKey_SK + "</span>" +
+                            "</div>" +
+                            "</div>";
+                    };
+                    $('#policyNumberTable').html(htmlString);
+
+                    $('.sw-btn-next').click();
+                }
+
+
+            });
+    });
+
+    $(document).on('click', '.policyRow', function () {
+        var thisQuoteID = $('#reviewQuoteID').html().trim();
+        var policyNumber = $(this).find('.policyNumber').html();
+        $.ajax({
+            method: "POST",
+            url: "/portal/Async/bindReviewSubmissionDetails",
+            data: {
+                aimQuoteID: thisQuoteID,
+                policyNumber: policyNumber,
+                policyKeyID: $('#policyKeyID').html(),
+            }
+        })
+            .done(function (msg) {
+                $('#policyNumberHeader').html(policyNumber);
+                $('#proposedDatesForBind').html($('#reviewProposedDates').html())
+                $('#premiumBreakdownOverviewForBind').html($('#premiumBreakdownOverview').html())
+                $('#limitsDeductOverviewForBind').html($('#limitsDeductOverview').html())
+                $('.sw-btn-next').removeAttr("disabled");
+                $('.sw-btn-next').click();
+            });
+
+    });
+
+    $(document).on('click', '#bindFinalButton', function () {
+        var thisQuoteID = $('#reviewQuoteID').html().trim();
+        $.ajax({
+            method: "POST",
+            url: "/portal/Async/bindSubmission",
+            data: {
+                aimQuoteID: thisQuoteID,
+                policyNumber: $('#policyNumberHeader').html().trim(),
+                policyKeyID: $('#policyKeyID').html(),
+                proposedEffective: $('#proposedDatesForBind').find('.proposedEffective').html().trim()
+            }
+        }).done(function (msg) {
+            //alert(msg);
+            window.location='/portal/main/submissions';
+        });
+    });
+
+    ////////////////////////////////END BIND FUNCTION STUFF///////////////////////////////
+
+    $(document).on('click', '.reviewStatusChangeButton', function () {
         var currentStatus = $(this).attr('data-currentstatuscode');
         var changeStatusTo = "";
-        var thisQuoteID = $('#reviewQuoteID').html().trim()
+        var thisQuoteID = $('#reviewQuoteID').html().trim();
         var newButtonText = $(this).attr('data-nextbuttontext');
         //alert(currentStatus);
         if(currentStatus === "QO"){
@@ -388,8 +607,6 @@ $(document).ready(function () {
             }
             else{
                 changeStatusTo = "WB3"
-                //newButtonText = "Approved"
-
             }
 
         }
@@ -447,12 +664,34 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '.messageButton', function () {
-        $('#newMessageModal').modal('show');
-        var recipientString = $(this).find('.underWriterToMessage').html().trim();
 
-        var htmlString = "<option value='" + recipientString + "'>" + recipientString + "</option>" ;
+        var recipientString;
 
-        $('#recipientSelect').html(htmlString);
+        if(userRole == "Broker"){
+            recipientString = $(this).find('.underWriterToMessage').html().trim();
+            $('#newMessageModal').modal('show');
+            var htmlString = "<option value='" + recipientString + "'>" + recipientString + "</option>" ;
+            $('#recipientSelect').html(htmlString);
+        }
+        else if(userRole == "Underwriter"){
+            $.ajax({
+                method: "POST",
+                url: "/portal/Async/findUserFromName",
+                data: {
+                    brokerName: $(this).find('.brokerName').html().trim(),
+                    brokerEmail: $(this).find('.brokerToMessage').html().trim()
+                }
+            })
+                .done(function (msg) {
+                    $('#newMessageModal').modal('show');
+                    recipientString = msg;
+                    var htmlString = "<option value='" + recipientString + "'>" + recipientString + "</option>" ;
+                    $('#recipientSelect').html(htmlString);
+
+                });
+        }
+
+
     });
     $(document).on('click', '.reviewMessageButton', function () {
         $('#newMessageModal').modal('show');
@@ -521,11 +760,12 @@ $(document).ready(function () {
         })
             .done(function (msg) {
                 //alert(msg)
+                $('.DAOspan').html("");
                 if(msg === "NOTWEB"){
                     //$('#alertMessageContent').html("Only Web Submissions are reviewable through the portal currently");
                     //$('#alertMessageModal').modal('show');
                     //$("#reviewModalHeader").html("Reviewing: " + questionJSON['namedInsured']);
-                    alert(msg)
+                    //alert(msg)
                     $('#reviewModal').modal('show');
                 }
                 else{
@@ -533,6 +773,8 @@ $(document).ready(function () {
                     //alert(msg)
                     var questionJSON = JSON.parse(msg);
                     //alert(questionJSON['riskChosen']);
+                    //alert(questionJSON['questionAnswerMap'])
+
                     reviewRiskChosen = questionJSON['riskChosen'];
                     $("#reviewModalHeader").html(questionJSON['namedInsured']);
                     $("#reviewQuoteID").html(questionJSON['aimQuoteID']);
@@ -639,29 +881,38 @@ $(document).ready(function () {
                     });
                     $('.dateDAO').each(function(){
                         if($(this).html().trim().length > 0){
-                            sqldateString = $(this).html();
-                            console.log(sqldateString);
-                            date = sqlToJsDate(sqldateString)
-                            dateString = date.toLocaleDateString();
-                            $(this).html(dateString);
+                            if($(this).html().split("/").length == 3){
+
+                            }
+                            else{
+                                sqldateString = $(this).html();
+                                console.log(sqldateString);
+                                date = sqlToJsDate(sqldateString)
+                                dateString = date.toLocaleDateString();
+                                $(this).html(dateString);
+                            }
+
                         }
 
                     });
 
                     ////FORMAT LIMITS
-                    var limitRowsArray = questionJSON['Version-Limits'].split("\n");
-                    var deductRowsArray = questionJSON['Version-Deductible'].split("\n");
+                    var limitRowsArray = questionJSON['Version-Limits'].split(/\r\n|\n|\r/);
+                    var deductRowsArray = questionJSON['Version-Deductible'].split(/\r\n|\n|\r/);
+                    console.log ("DEDUCT: " + deductRowsArray);
+                    console.log ("LIMITS: " + limitRowsArray);
+
                     var deductMap = {};
                     for (var i=0; i < deductRowsArray.length; i++){
-                        var deductAmount = deductRowsArray[i].split("\t")[0];
-                        var deductName = deductRowsArray[i].split("\t")[1]
+                        var deductAmount = deductRowsArray[i] ? deductRowsArray[i].split("\t")[0] : "";
+                        var deductName = deductRowsArray[i] ? deductRowsArray[i].split("\t")[1] : "";
                         deductMap[deductName] = deductAmount;
                     }
                     limitDeductString = "";
                     for (var i=0; i < limitRowsArray.length; i++){
-                        var limitAmount = limitRowsArray[i].split("\t")[0];
-                        var limitName = limitRowsArray[i].split("\t")[1];
-                        var deductAmount = deductMap[limitName];
+                        var limitAmount = limitRowsArray[i] ? limitRowsArray[i].split("\t")[0] : "";
+                        var limitName = limitRowsArray[i] ? limitRowsArray[i].split("\t")[1] : "";
+                        var deductAmount = deductMap[limitName] ? deductMap[limitName] : "";
 
                         if(limitAmount.length == 0){
                             limitAmount = "&nbsp;"
@@ -692,8 +943,8 @@ $(document).ready(function () {
                     $('#limitsDeductOverview').html(limitDeductString);
 
                     ////FORMAT PREMIUM BREAKDOWN
-                    var coverageRowsArray = questionJSON['Version-LobDistribSched'].split("\n");
-                    var feesRowsArray = questionJSON['Version-FeeSchedule'].split("\n");
+                    var coverageRowsArray = questionJSON['Version-LobDistribSched'].split(/\r\n|\n|\r/);
+                    var feesRowsArray = questionJSON['Version-FeeSchedule'].split(/\r\n|\n|\r/);
                     var nameColWidth = 5;
                     var premColWidth = 7;
                     premiumBreakdownString = "";
@@ -746,16 +997,16 @@ $(document).ready(function () {
 
                     //UW Questions
                     if(questionJSON['webSubmission'] === "true" && questionJSON['uwQuestionsOrder']){
-                        var uwQuestionsJSON = JSON.parse(questionJSON['uwQuestionsMap']);
+                        var uwQuestionsJSON = JSON.parse(questionJSON['questionAnswerMap']);
                         var uwQuestionsOrderArray = questionJSON['uwQuestionsOrder'].split("&;&");
 
                         var uwHTMLString = "<dl class='dl-horizontal'>";
-
+                        console.log(questionJSON['questionAnswerMap']);
                         for(var k in uwQuestionsOrderArray) {
-                            console.log(k, uwQuestionsOrderArray[k]);
+                            //console.log(k, uwQuestionsOrderArray[k]);
                             uwHTMLString = uwHTMLString +
-                                "<dt>" + key + "</dt>" +
-                                "<dd>" + uwQuestionsJSON[key] + "</dt>";
+                                "<dt>" + k + "</dt>" +
+                                "<dd>" + uwQuestionsJSON[k] + "</dt>";
                         }
 
                         uwHTMLString = uwHTMLString + "<dd>";
@@ -767,23 +1018,32 @@ $(document).ready(function () {
                         $('#uwQuestionsReview').html(uwHTMLString);
                     }
 
-
-
-
                     if(reviewRiskChosen.indexOf("Film Projects") > -1){
-                        $("#coverageCheckboxesDiv").load("./../forms/specFilm #coverageCheckboxesDiv", function () {
-                            var head = document.getElementsByTagName('head')[0];
-                            var script = document.createElement('script');
-                            script.type = 'text/javascript';
-                            script.src = '/portal/js/forms/specFilm.js'+"?ts=" + new Date().getTime();
-                            head.appendChild(script);
-                            loadSaveFunction(questionJSON);
+                        //console.log($("#coverageCheckboxesDiv").html());
+                        if(userRole == "Broker"){
                             $('#reviewModal').modal('show');
-                        });
+                        }
+                        else{
+                            $('#reviewModal').modal('show');
+                            //$("#coverageCheckboxesDiv").load("./../forms/specFilm #coverageCheckboxesDiv", function () {
+                            //    var head = document.getElementsByTagName('head')[0];
+                            //    var script = document.createElement('script');
+                            //    script.type = 'text/javascript';
+                            //    script.src = '/portal/js/forms/specFilm.js'+"?ts=" + new Date().getTime();
+                            //    head.appendChild(script);
+                            //    loadSaveFunction(questionJSON);
+                            //
+                            //
+                            //    $('#reviewModal').modal('show');
+                            //});
+                        }
+
                     }
                     else{
                         $('#reviewModal').modal('show');
                     }
+                    $('#overviewTabButton').click();
+
                 }
             });
     });
@@ -838,11 +1098,19 @@ $(document).ready(function () {
             var certHolder = encodeURI($('#AITextArea').val());
             var encodedCertHolder = encodeURI($('<div/>').text(certHolder).html());
 
+            var useAcordform = "false"
+            if($('#useAcordForm').is(':checked')){
+                useAcordform = "true";
+            }
+            else{
+                useAcordform = "false";
+            }
+
             console.log(certHolder);
             $('.progress-bar').attr('aria-valuenow', "0")
             $('#progressBarHeader_cert').html("Downloading");
             $('#progressBarModal_cert').modal('show');
-            window.location='/portal/async/downloadCert?quoteID='+certQuoteID +"&r=" + certRemarks + "&h=" + certHolder ;
+            window.location='/portal/async/downloadCert?quoteID='+certQuoteID +"&r=" + certRemarks + "&h=" + certHolder + "&ai=" + useAcordform ;
             //$('#progressBarHeader').css('z-index', 3000);
 
 
@@ -906,7 +1174,25 @@ $(document).ready(function () {
     });
     $(document).on('change', '#evidenceOfInsurance', function () {
         if($('#evidenceOfInsurance').is(':checked')){
-            $('#AITextArea').val("Evidence of Insurance");
+            $('#AITextArea').val("Enter Evidence of Insured");
+            $('#useAcordForm').prop("checked", false);
+
+
+        }
+        else{
+            $('#useAcordForm').prop("checked", true);
+            var selectedOption = $(this).find(":selected").val();
+            $.ajax({
+                method: "POST",
+                url: "/portal/main/getCertWords",
+                data: {additionalID: selectedOption
+                }
+            })
+                .done(function (msg) {
+                    var opsText = msg.split("&;&")[0];
+                    var AIText = msg.split("&;&")[1];
+                    $('#AITextArea').val(AIText);
+                });
         }
     });
 

@@ -104,6 +104,14 @@
 
                 </div>
             </div>
+            <div class="form-group col-xs-12">
+                <div class="form-group">
+                    <label>Maximum Cost of Any One Production</label>
+                    <input type="text" class="form-control showReview" name="maxCostOneProduction" id="maxCostOneProduction"
+                           data-reviewName="Maximum Cost of Any One Production"
+                           placeholder="$"/>
+                </div>
+            </div>
             <div class="form-group col-xs-12" style ="display:none" id="questionListPriorFilmProjects">
                 <div class="row">
                     <div class="col-xs-12">
@@ -508,9 +516,36 @@
             <div class="col-xs-12">
                 <div class="form-group">
                     <label for="equipmentSchedule">Provide Equipment Schedule if any one item exceeds $10,000 in value</label>
-                    <input type="text" id="equipmentSchedule" class="showReview form-control" name="name" data-reviewName="Equipment Schedule" style="display: none;" placeholder="Equipment schedule"/>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <input type="text" id="equipmentSchedule" class="showReview form-control" name="name" data-reviewName="Equipment Schedule" style="display: none;" placeholder="Equipment schedule"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                            <div class="col-xs-3">
+                                <form enctype="multipart/form-data">
+                                    <div class="fileUpload btn btn-primary">
+                                        <span>Attach File</span>
+                                        <input name="equipScheduleFile" type="file" class="file" id="equipScheduleFile" style="width:120px"/>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-xs-9 fileNameContainer" style="margin-top:2px; display: none">
+                                <div class="col-xs-9" style="text-align:right; font-size:11px">
+                                    <span class="equipScheduleFileSpan" id="equipScheduleFileSpan">File Name</span>
+                                </div>
+                                <div class="col-xs-3" style="padding-left:22px">
+                                    <button type="button" class="btn btn-default btn-xs attachClearButton">Clear</button>
+                                </div>
+                            </div>
+                    </div>
+
                 </div>
             </div>
+                <div class="col-xs-12">
+
+                </div>
+
             <div class="col-xs-12">
                 <div class="form-group">
                     <label for="equipmentLocation">Where is equipment kept when not in use?</label>
@@ -940,7 +975,7 @@
         <div class="col-xs-12">
             <div class="form-group">
                 <label for="totalEmployees">Total number of employees</label>
-                <input type="text" class="form-control" name="name" placeholder="Country" id="totalNumEmployees"/>
+                <input type="text" class="form-control" name="name" placeholder="# of Employees" id="totalNumEmployees"/>
             </div>
         </div>
         <div class="col-xs-12">

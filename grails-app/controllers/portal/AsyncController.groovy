@@ -62,39 +62,39 @@ class AsyncController {
                         else{
                             if (params.totalGrossBudget.toFloat() <= 500000) {
                                 aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                        "FROM lkpProduct " +
+                                        "FROM lkpProduct with (NOLOCK) " +
                                         "WHERE (ProductID = 'PIP CHOI') AND (ActiveFlag = 'Y')") {
                                     renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
                                 }
                                 aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                        "FROM lkpProduct " +
+                                        "FROM lkpProduct with (NOLOCK) " +
                                         "WHERE (ProductID = 'PIP 2') AND (ActiveFlag = 'Y')") {
                                     renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
                                 }
                                 if (params.totalGrossBudget.toFloat() <= 100000) {
                                     aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                            "FROM lkpProduct " +
+                                            "FROM lkpProduct with (NOLOCK) " +
                                             "WHERE (ProductID = 'PIP 1') AND (ActiveFlag = 'Y')") {
                                         renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
                                     }
                                 }
                                 if ((params.totalGrossBudget.toFloat() >= 1 && params.totalGrossBudget.toFloat() <= 300000)) {
                                     aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                            "FROM lkpProduct " +
+                                            "FROM lkpProduct with (NOLOCK) " +
                                             "WHERE (ProductID = 'PIP 3') AND (ActiveFlag = 'Y')") {
                                         renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
                                     }
                                 }
                                 if ((params.totalGrossBudget.toFloat() > 300000 && params.totalGrossBudget.toFloat() <= 400000)) {
                                     aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                            "FROM lkpProduct " +
+                                            "FROM lkpProduct with (NOLOCK) " +
                                             "WHERE (ProductID = 'PIP 4') AND (ActiveFlag = 'Y')") {
                                         renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
                                     }
                                 }
                                 if ((params.totalGrossBudget.toFloat() > 400000 && params.totalGrossBudget.toFloat() <= 500000)) {
                                     aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                            "FROM lkpProduct " +
+                                            "FROM lkpProduct with (NOLOCK) " +
                                             "WHERE (ProductID = 'PIP 5') AND (ActiveFlag = 'Y')") {
                                         renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
                                     }
@@ -102,19 +102,19 @@ class AsyncController {
                             }
                             else if (params.totalGrossBudget.toFloat() > 500000) {
                                 aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                        "FROM lkpProduct " +
+                                        "FROM lkpProduct with (NOLOCK) " +
                                         "WHERE (ProductID = 'PIP 5') AND (ActiveFlag = 'Y')") {
                                     log.info("${it.CoverageID} : ${it.ProductID}")
                                     renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
                                 }
 
                                 aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                        "FROM lkpProduct " +
+                                        "FROM lkpProduct with (NOLOCK) " +
                                         "WHERE (ProductID = 'PIP CHOI') AND (ActiveFlag = 'Y')") {
                                     renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
                                 }
                                 aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                        "FROM lkpProduct " +
+                                        "FROM lkpProduct with (NOLOCK) " +
                                         "WHERE (ProductID = 'PIP 2') AND (ActiveFlag = 'Y')") {
                                     renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
                                 }
@@ -127,7 +127,7 @@ class AsyncController {
                     }
                     else if (it == "CPK") {
                         aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                "FROM lkpProduct " +
+                                "FROM lkpProduct with (NOLOCK) " +
                                 "WHERE (CoverageID = '" + it + "') AND (ActiveFlag = 'Y')") {
                             if (it.ProductID.startsWith("BAR")) {
                                 log.info "PRODUCTS BAR ======== " + it.ProductID
@@ -137,7 +137,7 @@ class AsyncController {
                         }
                     } else {
                         aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                "FROM lkpProduct " +
+                                "FROM lkpProduct with (NOLOCK) " +
                                 "WHERE (CoverageID = '" + it + "') AND (ActiveFlag = 'Y')") {
                             log.info("${it.CoverageID} : ${it.ProductID}")
 
@@ -150,7 +150,7 @@ class AsyncController {
                 }
                 else {
                     aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                            "FROM lkpProduct " +
+                            "FROM lkpProduct with (NOLOCK) " +
                             "WHERE (CoverageID = '" + it + "') AND (ActiveFlag = 'Y')") {
 
                         renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
@@ -185,7 +185,7 @@ class AsyncController {
         Sql aimsql = new Sql(dataSource_aim)
         String renderString = ""
         aimsql.eachRow("SELECT Limits, Deduct, Subject, Endorse, LobDistrib, ActiveFlag " +
-                "FROM Product " +
+                "FROM Product with (NOLOCK) " +
                 "WHERE (ProductID = '" + params.productID + "') ") {
             renderString = renderString + it.Limits + ";####&&&&;" + it.Deduct + ";####&&&&;" + it.Subject + ";####&&&&;" + it.Endorse + ";####&&&&;" + it.LobDistrib + ";";
         }
@@ -212,11 +212,26 @@ class AsyncController {
         render renderString
     }
 
+
+    def getAllRiskTypesForCategory(){
+        log.info "GET ALL RISK TYPES FOR CATEGORY"
+        log.info params
+
+        def riskTypes = RiskType.list();
+
+        render(contentType: 'text/json') {[
+                'riskTypes': riskTypes,
+                'status': riskTypes ? "OK" : "Nothing present"
+        ]}
+    }
+
     def getAttachmentsList(){
         log.info("GET LIST OF ATTACHMENTS")
         log.info(params);
 
-        def renderString = aimDAO.getAttachmentsList(params.quoteID, dataSource_aim)
+        FileTransferHelper fileHelper = new FileTransferHelper();
+
+        def renderString = fileHelper.getFileList(params.quoteID);
 
         render renderString;
     }
@@ -243,6 +258,21 @@ class AsyncController {
         }
         else render "Error!" // appropriate error handling
         }
+    def addNewInsured(){
+        log.info "SAVING ADDITIONAL INSURED"
+        log.info params
+        try{
+            def newAdditionalInsured = new Certwords (description: params.description, producerid: session.user.company, additionalInsured: params.additionalInsured, ops: params.ops)
+            newAdditionalInsured.save(flush: true, failOnError: true)
+        }
+        catch(Exception e){
+            log.info (e)
+            render "error"
+        }
+
+        render "good"
+
+    }
 
     def downloadCert = {
         log.info("DOWNLOADING CERT")
@@ -338,7 +368,7 @@ class AsyncController {
 
 //        WHERE     (QuoteID IN ('0622031', '0622032', '0622033', '0622034')) AND (CoverageID IN ('CPK', 'CGL')) AND (StatusID IN ('BND', 'BND', 'PIF'))
             aimsql.eachRow( "SELECT TOP (1) *  " +
-                    "FROM dbo.Quote " +
+                    "FROM dbo.Quote with (NOLOCK) " +
                     "WHERE QuoteID='" + params.quoteID +
                     "' ORDER BY  QuoteID ASC") {
                 log.info "Quote Record =========== " + it
@@ -370,7 +400,7 @@ class AsyncController {
             }
 
             def insuredMap = [:]
-            aimsql.eachRow( "SELECT *  FROM dbo.Insured WHERE InsuredID='" + record['InsuredID'] +
+            aimsql.eachRow( "SELECT *  FROM dbo.Insured with (NOLOCK) WHERE InsuredID='" + record['InsuredID'] +
                     "' ORDER BY  InsuredID ASC") {
                 log.info "Insured Record =========== " + it
                 record['InsuredPhone'] = it.Phone
@@ -388,7 +418,7 @@ class AsyncController {
                 //ContactID=3631 (Use as NameKeyPK)
             }
 
-            aimsql.eachRow( "SELECT *  FROM Company " +
+            aimsql.eachRow( "SELECT *  FROM Company with (NOLOCK) " +
                     "WHERE CompanyID='" + record['CompanyID'] + "'") {
                 record['companyName'] = it.Name
                 record['companyNAIC'] = it.NAIC //NAIC needs to be entered in AIM
@@ -404,7 +434,7 @@ class AsyncController {
 //        WHERE     (ReferenceID = '87533') AND (TableKey_FK = '17561')
             def tudUWInfoMap = [:]
             aimsql.eachRow( "SELECT TOP (1) *  " +
-                    "FROM tud_UWInfo " +
+                    "FROM tud_UWInfo with (NOLOCK) " +
                     "WHERE (ReferenceID = '${record['AccountKey_FK']}') AND (TableKey_FK = '${record['TableKey_FK']}') " ){
                 record['ContactPhone'] = it.ContactPhone
                 record['ContactFax'] = it.ContactFax
@@ -413,6 +443,8 @@ class AsyncController {
             }
             if(record['ContactPhone'] == null){
                 record['ContactPhone'] = session.user.phoneNumber
+
+                log.info record['ContactPhone']
                 record['ContactPhone'] = String.format("(%s) %s-%s", record['ContactPhone'].substring(0, 3), record['ContactPhone'].substring(3, 6),
                         record['ContactPhone'].substring(6, 10));
 
@@ -440,7 +472,7 @@ class AsyncController {
             }
             else{
                 aimsql.eachRow( "SELECT TOP (1) *  " +
-                        "FROM taaNameMaster " +
+                        "FROM taaNameMaster with (NOLOCK) " +
                         "WHERE (NameKeyPK = '${record['ContactID']}')" ){
 
                 }
@@ -460,7 +492,7 @@ class AsyncController {
                     "                      ProfessionalAffiliation, MktRepID, CsrID, ProcessBatchKey_FK, AuthorizedTeams, LOBAccess, CountyName, RollbookDate, CommMethodID, FlagDisplayPopupNote, \n" +
                     "                      AcctgEMail, AcctgContactKey_FK, ContactKey_FK, DateIRFileCreated, FinanceMapCode, FlagExportToFinance, CountryID, MailCountryID, AcctgCountryID, \n" +
                     "                      MembershipKey_FK, MembershipExp, Membership2Key_FK, Membership2Exp, Membership3Key_FK, Membership3Exp, NPR, DandB\n" +
-                    "FROM         Producer\n" +
+                    "FROM         Producer with (NOLOCK) \n" +
                     "WHERE     (ProducerID = 'AGT007')") {
 
                 companyMap['Name']=it.Name
@@ -586,34 +618,35 @@ class AsyncController {
             def relatedSubmissionObj=[:]
             log.info("SUBMIT GROUP ID = " + record['SubmitGrpID'])
             aimsql.eachRow("SELECT QuoteID, CoverageID " +
-                    "FROM Quote " +
+                    "FROM Quote with (NOLOCK) " +
                     "WHERE (SubmitGrpID = '" + record['SubmitGrpID'] + "') ") {
+                relatedSubmissionObj=[:]
                 relatedSubmissionObj['aimQuoteID'] = it.QuoteID
                 relatedSubmissionObj['coverages'] = it.CoverageID
-                relatedSubmissions.add(relatedSubmissionObj)
+                relatedSubmissions.push(relatedSubmissionObj)
 
                 log.info it
             }
 //            def relatedSubmissions = Submissions.findAllBySubmitGroupID(submissionInfo[0].submitGroupID)
             def tempSubmission;
             def tempQuoteID;
-            log.info(relatedSubmissions)
+            log.info("ALL RELATED: " + relatedSubmissions)
             params['cpkLOB'] =""
             params['cglLOB'] = ""
             params['epkgLOB'] = ""
             relatedSubmissions.each{
                 tempQuoteID = it.aimQuoteID
-                log.info tempQuoteID
-                log.info it.coverages
+                log.info "PROCESSING: " + tempQuoteID
+                log.info "PROCESSING: " + it.coverages
                 aimsql.eachRow( "SELECT  *  " +
-                        "FROM Version " +
+                        "FROM Version with (NOLOCK) " +
                         "WHERE QuoteID='" + tempQuoteID + "'") {
                     log.info "Limits Record =========== " + it.Limits
                     record['Limits'] = it.Limits
                     record['Deductible'] = it.Deductible
                 }
                 aimsql.eachRow( "SELECT TOP (1) *  " +
-                        "FROM dbo.Quote " +
+                        "FROM dbo.Quote with (NOLOCK) " +
                         "WHERE QuoteID='" + tempQuoteID +
                         "' ORDER BY  QuoteID ASC") {
                     if(it.PolicyID == null){
@@ -648,7 +681,7 @@ class AsyncController {
                     params['otherPolicyNumber']= record['PolicyID']
                     params['otherStart']= record['Effective']
                     params['otherEnd']= record['Expiration']
-                    params['otherLimit']= "" //Needs to allow text
+                    params['otherLimit']= "See Attached" //Needs to allow text
 
 
                     //BUILD LOB
@@ -656,19 +689,19 @@ class AsyncController {
                     def deductMap = [:]
                     def limitAmount
                     def limitDesc
-                    record['Limits'].split("\\r?\\n").each {
+                    record['Limits'].split(/\r\n|\n|\r/).each {
                         log.info it
-                        limitAmount = it.split('\t')[0];
-                        limitDesc = it.split('\t')[1];
+                        limitAmount = it.split('\t').size() > 1 ? it.split('\t')[0] : "";
+                        limitDesc = it.split('\t').size() > 1 ? it.split('\t')[1] : it.split('\t')[0];
                         limitDesc = limitDesc.minus("EPKG:")
                         limitMap["${limitDesc}"] = limitAmount;
                     }
                     def deductAmount
                     def deductDesc
-                    record['Deductible'].split("\\r?\\n").each {
+                    record['Deductible'].split(/\r\n|\n|\r/).each {
                         log.info it
-                        deductAmount = it.split('\t')[0];
-                        deductDesc = it.split('\t')[1];
+                        deductAmount = it.split('\t').size() > 1 ? it.split('\t')[0] : "";
+                        deductDesc = it.split('\t').size() > 1 ? it.split('\t')[1] : it.split('\t')[0];
                         deductDesc = deductDesc.minus("EPKG:")
                         deductMap["${deductDesc}"] = deductAmount;
                     }
@@ -678,14 +711,6 @@ class AsyncController {
                         def tempDeduct = deductMap["${k}"]
                         epkgLOB = epkgLOB + "${k} ;&;${v} ;&;${tempDeduct} ;&&;"
                     }
-//                    deductMap.each{ k, v ->
-//                        if(limitMap.containsKey("${k}")){
-//
-//                        }
-//                        else{
-//                            epkgLOB = epkgLOB + "${k} ;&; ;&;${tempDeduct} ;&&;"
-//                        }
-//                    }
 
                     params['epkgLOB'] = epkgLOB
 
@@ -748,13 +773,15 @@ class AsyncController {
                     Number number;
                     def limitTag = "";
 
+                    log.info("STARTING LIMITS")
                     log.info (record['Limits'])
-                    record['Limits'].split("\\r?\\n").each{
-                        log.info it
-                        limitAmount = it.split('\t')[0];
-                        limitDesc = it.split('\t')[1];
+                    record['Limits'].split(/\r\n|\n|\r/).each{
+                        limitTag = "";
+                        log.info "PROCESSING THIS LIMIT: " + it
+                        limitAmount = it.split('\t').size() > 1 ? it.split('\t')[0] : "";
+                        limitDesc = it.split('\t').size() > 1 ? it.split('\t')[1] : it.split('\t')[0];
 
-//                        log.info(limitDesc + "  -  " + limitAmount)
+                        log.info(limitDesc + "  -  " + limitAmount)
                         if(StringUtils.containsIgnoreCase(limitDesc, "Each Occurrence")){
                             limitTag = "genEachLimit"
                         }
@@ -775,8 +802,10 @@ class AsyncController {
                         }
 
                         if(limitDesc.length()>0 && limitAmount.matches(".*\\d+.*")){
+                            log.info("Assigning: " + limitTag + "  -  " + limitAmount)
                             number = format.parse(limitAmount);
                             params["${limitTag}"]= number.toString()
+                            log.info("Assigning: " + limitTag + "  -  " + number.toString())
                         }
 
                     }
@@ -786,20 +815,20 @@ class AsyncController {
                     def limitMap = [:]
                     def deductMap = [:]
 
-                    record['Limits'].split("\\r?\\n").each {
+                    record['Limits'].split(/\r\n|\n|\r/).each {
                         log.info it
-                        limitAmount = it.split('\t')[0];
-                        limitDesc = it.split('\t')[1];
+                        limitAmount = it.split('\t').size() > 1 ? it.split('\t')[0] : "";
+                        limitDesc = it.split('\t').size() > 1 ? it.split('\t')[1] : it.split('\t')[0];
                         limitDesc = limitDesc.minus("CPK:")
                         limitDesc = limitDesc.minus("CGL:")
                         limitMap["${limitDesc}"] = limitAmount;
                     }
                     def deductAmount
                     def deductDesc
-                    record['Deductible'].split("\\r?\\n").each {
+                    record['Deductible'].split(/\r\n|\n|\r/).each {
                         log.info it
-                        deductAmount = it.split('\t')[0];
-                        deductDesc = it.split('\t')[1];
+                        deductAmount = it.split('\t').size() > 1 ? it.split('\t')[0] : "";
+                        deductDesc = it.split('\t').size() > 1 ? it.split('\t')[1] : it.split('\t')[0];
                         deductDesc = deductDesc.minus("CPK:")
                         deductDesc = deductDesc.minus("CGL:")
                         deductMap["${deductDesc}"] = deductAmount;
@@ -843,9 +872,9 @@ class AsyncController {
                     params['autoAddl']= ""
                     params['autoSubr']= ""
 
-                    params['autoPolicyNumber']= ""
-                    params['autoStart']= ""
-                    params['autoEnd']= ""
+                    params['autoPolicyNumber']= params['generalPolicyNumber']
+                    params['autoStart']= params['genStart']
+                    params['autoEnd']= params['genEnd']
 
                     params['autoCombinedSingleLimit']= ""
                     params['autoBodilyInjuryPersonLimit']= ""
@@ -857,9 +886,9 @@ class AsyncController {
                     NumberFormat format = NumberFormat.getCurrencyInstance();
                     Number number;
                     def limitTag = "";
-                    record['Limits'].split("\\r?\\n").each {
-                        limitAmount = it.split('\t')[0];
-                        limitDesc = it.split('\t')[1];
+                    record['Limits'].split(/\r\n|\n|\r/).each {
+                        limitAmount = it.split('\t').size() > 1 ? it.split('\t')[0] : "";
+                        limitDesc = it.split('\t').size() > 1 ? it.split('\t')[1] : it.split('\t')[0];
                         if (StringUtils.containsIgnoreCase(limitDesc, "Non-Owned &amp; Hired Auto Liability")) {
                             number = format.parse(limitAmount);
                             params['autoCombinedSingleLimit'] = number.toString()
@@ -1244,6 +1273,7 @@ class AsyncController {
             log.info productLOBS
             productLOBS.each{ productLOB ->
                 def lobMinPremium = productLOB.minPremium;
+                float lobPremium =0;
 
                 //IF THIS LOB IS OPTIONAL, CHECK IF LOB WAS SELECTED
                 if(productLOB.optionalFlag == "Y"){
@@ -1255,8 +1285,6 @@ class AsyncController {
                     else{
                         productLOBName = productLOB.lobCode
                     }
-                    log.info(productLOBName)
-                    log.info("LOB: " + optionalProducts[productLOBName])
                     if(optionalProducts[productLOBName] != "true"){ // if optional and params does not include option
                         return
                     }
@@ -1293,19 +1321,21 @@ class AsyncController {
                         NumberFormat format = NumberFormat.getCurrencyInstance();
 
                         def customLimitAmount = customLimitsMap[productLOB.lobName].replaceAll("[\$,]", "");;
-                        premiumsMap[productLOB.lobName] = (productLOB.rateValue.toDouble() * customLimitAmount.toDouble()) / 100
-                        productTotalPremium = productTotalPremium + premiumsMap[productLOB.lobName]
+                        lobPremium = (productLOB.rateValue.toFloat() * customLimitAmount.toFloat()) / 100
                     }
                     else{
-                        premiumsMap[productLOB.lobName] = (productLOB.rateValue.toDouble() * totalBudget) / 100
+                        lobPremium = (productLOB.rateValue.toFloat() * totalBudget) / 100
                     }
 
                     //IF LOB has a minimum premium, CHECK IF LOB PREMIUM MEETS MINIMUM PREMIUM
                     if(lobMinPremium != null){
-                        if(premiumsMap[productLOB.lobName] < Double.parseDouble(lobMinPremium)){
-                            premiumsMap[productLOB.lobName] = lobMinPremium
+                        if(lobPremium < lobMinPremium.toFloat()){
+                            lobPremium = lobMinPremium.toFloat()
                         }
                     }
+
+                    premiumsMap[productLOB.lobName] = lobPremium
+                    productTotalPremium = productTotalPremium + lobPremium
                 }
             }
 
@@ -1315,7 +1345,7 @@ class AsyncController {
                 productTotalPremium = product.flatPremium
             }
             else if(product.rateBasis == "budget"){ //if product premium is based on budget
-                productTotalPremium = (product.rate.toDouble() * totalBudget) /100
+                productTotalPremium = (product.rate.toFloat() * totalBudget) /100
             }
             else if(product.rateBasis == "limit"){ //if product premium is based on limit
                 //SHOULD ALREADY BE CALCULATED IN LOB LOOP
@@ -1564,7 +1594,7 @@ class AsyncController {
 
                     String renderString = ""
                     aimsql.eachRow("SELECT Limits, Deduct, Subject, Endorse, LobDistrib, ActiveFlag " +
-                            "FROM Product " +
+                            "FROM Product with (NOLOCK)" +
                             "WHERE (ProductID = '" + productID + "') ") {
                         renderString = renderString + it.Limits + ";####&&&&;" + it.Deduct + ";####&&&&;" + it.Subject + ";####&&&&;" + it.Endorse + ";####&&&&;" + it.LobDistrib + ";";
 
@@ -2559,11 +2589,11 @@ class AsyncController {
                                     rateInfo = rateInfo + "${coverageID}\tflat\t\$500\tBlanket Additional Insured Endorsement\t\n";
                                 }
                                 else{
-                                    tempPremiumsMap["Blanket Additional Insured Endorsement"] = ["flat", 250];
+                                    tempPremiumsMap["Blanket Additional Insured Endorsement"] = ["flat", 100];
                                     tempDeductsMap["Blanket Additional Insured Endorsement"] = "";
                                     tempLimitsMap["Blanket Additional Insured Endorsement"] = ""
-                                    productTotalPremium = productTotalPremium + 250
-                                    rateInfo = rateInfo + "${coverageID}\tflat\t\$250\tBlanket Additional Insured Endorsement\t\n";
+                                    productTotalPremium = productTotalPremium + 100
+                                    rateInfo = rateInfo + "${coverageID}\tflat\t\$100\tBlanket Additional Insured Endorsement\t\n";
                                 }
 
                             }
@@ -2582,11 +2612,11 @@ class AsyncController {
                                 rateInfo = rateInfo + "${coverageID}\tflat\t\$100\tAdditional Charge to Include Medical Payments\t\n";
                             }
                             if (params.additionalProducts.contains("MEDAdditionalCoverage")) {
-                                tempPremiumsMap["Medical Payments (Per Person)"] = ["flat", 100];
+                                tempPremiumsMap["Medical Payments (Per Person)"] = ["flat", 25];
                                 tempDeductsMap["Medical Payments (Per Person)"] = "";
                                 tempLimitsMap["Medical Payments (Per Person)"] = "\$5,000"
-                                productTotalPremium = productTotalPremium + 100
-                                rateInfo = rateInfo + "${coverageID}\tflat\t\$100\tMedical Payments (Per Person)\t\n";
+                                productTotalPremium = productTotalPremium + 25
+                                rateInfo = rateInfo + "${coverageID}\tflat\t\$25\tMedical Payments (Per Person)\t\n";
 
                             }
                             if (params.additionalProducts.contains("AGGAdditionalCoverage")) {
@@ -2870,7 +2900,7 @@ class AsyncController {
                 aimsql.eachRow("SELECT     TransCode, TransTypeID, Description, FlatAmount_Flag, Rate, CollectedBy, AllowOverRide, State, FlagUserSelected, AP_AccountID, IncludeFees, RoundingRule, \n" +
                 "                      RecordKey_PK, PremiumBasis, BasisSection, FlatRateFlag, TaxValue, TaxCodeID, FlagFullyEarned, FlagPolicyOnly, TaxRate, MinAmount, MaxAmount, AppliesTo, \n" +
                 "                      CompanyID, Municipality\n" +
-                "FROM         dvTaxTable\n" +
+                "FROM         dvTaxTable with (NOLOCK)\n" +
                 "WHERE     (State LIKE '${params.state}') AND (ISNULL(Municipality, '') = '') OR\n" +
                 "                      (State LIKE '${params.state}') AND (Municipality = '')\n" +
                 "ORDER BY Description") {
@@ -2927,7 +2957,7 @@ class AsyncController {
 
             //AIMSQL SEARCH RESULTS
             aimsql.eachRow("SELECT QuoteID, NamedInsured, CoverageID, Received\n" +
-                    "FROM Quote\n" +
+                    "FROM Quote with (NOLOCK)\n" +
                     "WHERE (QuoteID LIKE '%${params.searchString}%') OR\n" +
                     "(NamedInsured LIKE '%${params.searchString}%') OR\n" +
                     "(CoverageID LIKE '%${params.searchString}%') \n" +
@@ -3001,7 +3031,7 @@ class AsyncController {
                 "                      ProfessionalAffiliation, MktRepID, CsrID, ProcessBatchKey_FK, AuthorizedTeams, LOBAccess, CountyName, RollbookDate, CommMethodID, FlagDisplayPopupNote, \n" +
                 "                      AcctgEMail, AcctgContactKey_FK, ContactKey_FK, DateIRFileCreated, FinanceMapCode, FlagExportToFinance, CountryID, MailCountryID, AcctgCountryID, \n" +
                 "                      MembershipKey_FK, MembershipExp, Membership2Key_FK, Membership2Exp, Membership3Key_FK, Membership3Exp, NPR, DandB\n" +
-                "FROM         Producer\n" +
+                "FROM         Producer with (NOLOCK)\n" +
                 "WHERE         ProducerID='${params.agencyID}'\n" +
                 "ORDER BY Name") {
             log.info "Result: " + it.Name
@@ -3029,7 +3059,7 @@ class AsyncController {
                 "                      ProfessionalAffiliation, MktRepID, CsrID, ProcessBatchKey_FK, AuthorizedTeams, LOBAccess, CountyName, RollbookDate, CommMethodID, FlagDisplayPopupNote, \n" +
                 "                      AcctgEMail, AcctgContactKey_FK, ContactKey_FK, DateIRFileCreated, FinanceMapCode, FlagExportToFinance, CountryID, MailCountryID, AcctgCountryID, \n" +
                 "                      MembershipKey_FK, MembershipExp, Membership2Key_FK, Membership2Exp, Membership3Key_FK, Membership3Exp, NPR, DandB\n" +
-                "FROM         Producer\n" +
+                "FROM         Producer with (NOLOCK)\n" +
                 "WHERE         ProducerID='${params.agencyID}'\n" +
                 "ORDER BY Name") {
             log.info "Result: " + it.ReferenceID
@@ -3114,6 +3144,30 @@ class AsyncController {
 
     }
 
+    def findUserFromName(){
+        log.info "Find User"
+        log.info params
+
+        def broker = User.findWhere(email:params.brokerEmail)
+        log.info broker
+
+        if (broker){
+            render broker[0].email
+
+        }
+        else{
+            broker = User.findAllByFirstNameIlikeAndLastName("%${params.brokerName.split(" ")[0]}%", "${params.brokerName.split(" ")[1]}")
+            if(broker){
+                render broker[0].email
+
+            }
+            else{
+                render "User Not Found"
+            }
+        }
+
+    }
+
     def sendMessage(){
         log.info "GETTING QUESTIONS FOR RISK TYPE"
         log.info params
@@ -3190,6 +3244,7 @@ class AsyncController {
         aimsql.execute "UPDATE dbo.Quote\n" +
                 "SET AcctExec = '" + underwriterUsername +  "'\n" +
                 "WHERE QuoteID = " + params.aimQuoteID + "; ";
+        aimsql.commit();
 
 
 //        aimDAO.updateSubmissionActivity(params.aimQuoteID, description, params.statusCode, typeID, quoteVersion, dataSource_aim)
@@ -3198,19 +3253,36 @@ class AsyncController {
     }
 
     def changeSubmissionStatus(){
-        log.info "CHANGE SUBMISSION STATUS"
+        log.info "CHANGE SUBMISSION STATUS!!!!!!!!!!!!!!!!!!"
         log.info params
         Sql aimsql = new Sql(dataSource_aim)
 
         def updatedRecords = Submissions.executeUpdate("update Submissions set statusCode = ? where aimQuoteID = ?", [params.statusCode, params.aimQuoteID])
 
-        aimsql.execute "UPDATE dbo.Version\n" +
-                "SET StatusID = '" + params.statusCode +  "'\n" +
-                "WHERE QuoteID = " + params.aimQuoteID + "; ";
+//        aimsql.withTransaction {
+//            aimsql.executeUpdate("UPDATE dbo.Version\n" +
+//                    "SET StatusID = ?\n" +
+//                    "WHERE dbo.Version.QuoteID = ?; ", [params.statusCode, params.aimQuoteID]);
+////
+//            aimsql.executeUpdate("UPDATE dbo.Quote\n" +
+//                    "SET StatusID = ?\n" +
+//                    "WHERE dbo.Quote.QuoteID = ?; ", [params.statusCode, params.aimQuoteID]);
+//
+//            aimsql.executeUpdate("UPDATE dvQuoteView\n" +
+//                    "SET StatusID = ?\n" +
+//                    "WHERE QuoteID = ?; ", [params.statusCode, params.aimQuoteID]);
+//            aimsql.commit();
+//        }
 
-        aimsql.execute "UPDATE dbo.Quote\n" +
-                "SET StatusID = '" + params.statusCode +  "'\n" +
-                "WHERE QuoteID = " + params.aimQuoteID + "; ";
+//        aimsql.call("{call dbo.spUpdateStatus( '${quoteID}', 'web', '${description}', '${timestamp}', '${statusCode}', NULL, '${typeID}'," +
+//                " '${quoteVersion}', 0, NULL, 0, '1899-12-30 00:00:00:000')}") { num ->
+//            log.info "ADD TRANSACTION ID $num"
+//        }
+
+        aimsql.call("{call dbo.spUpdateStatus(?, ?)}", [params.statusCode, params.aimQuoteID])
+
+
+
 
         def description = "";
         def typeID = "";
@@ -3246,6 +3318,7 @@ class AsyncController {
             submissionInfoMap = new JsonSlurper().parseText(submissionInfo[0].questionAnswerMap)
             submissionInfoMap['webSubmission'] = "true"
             submissionInfoMap['uwQuestionsMap'] = submissionInfo[0].uwQuestionMap;
+            submissionInfoMap['questionAnswerMap'] = submissionInfo[0].questionAnswerMap;
             submissionInfoMap['uwQuestionsOrder'] = submissionInfo[0].uwQuestionsOrder;
         }
 
@@ -3271,7 +3344,7 @@ class AsyncController {
         */
         def row;
         aimsql.eachRow("SELECT * " +
-                "FROM Quote " +
+                "FROM Quote with (NOLOCK) " +
                 "WHERE (QuoteID = '" + params.quoteID + "') ") {
             submissionInfoMap['aimQuoteID'] = it.QuoteID
             submissionInfoMap['namedInsured'] = it.NamedInsured
@@ -3286,7 +3359,7 @@ class AsyncController {
             }
         }
         aimsql.eachRow("SELECT * " +
-                "FROM Version " +
+                "FROM Version with (NOLOCK) " +
                 "WHERE (QuoteID = '" + params.quoteID + "') ") {
             it.toRowResult().each { key, val ->
                 if(val){
@@ -3295,7 +3368,7 @@ class AsyncController {
             }
         }
         aimsql.eachRow("SELECT * " +
-                "FROM Insured " +
+                "FROM Insured with (NOLOCK) " +
                 "WHERE (InsuredID = '" + submissionInfoMap['Quote-InsuredID'] + "') ") {
             it.toRowResult().each { key, val ->
                 if(val){
@@ -3304,11 +3377,30 @@ class AsyncController {
             }
         }
         aimsql.eachRow("SELECT * " +
-                "FROM Status " +
+                "FROM Status with (NOLOCK) " +
                 "WHERE (StatusID = '" + submissionInfoMap['Quote-StatusID'] + "') ") {
             it.toRowResult().each { key, val ->
                 if(val){
                     submissionInfoMap["Status-" + key] = val;
+                }
+            }
+        }
+
+        aimsql.eachRow("SELECT * " +
+                "FROM Company with (NOLOCK) " +
+                "WHERE (CompanyID = '" + submissionInfoMap['Quote-CompanyID'] + "') ") {
+            it.toRowResult().each { key, val ->
+                if(val){
+                    submissionInfoMap["Company-" + key] = val;
+                }
+            }
+        }
+        aimsql.eachRow("SELECT * " +
+                "FROM Product with (NOLOCK) " +
+                "WHERE (ProductID = '" + submissionInfoMap['Version-ProductID'] + "') ") {
+            it.toRowResult().each { key, val ->
+                if(val){
+                    submissionInfoMap["Product-" + key] = val;
                 }
             }
         }
@@ -3328,7 +3420,9 @@ class AsyncController {
             submissionInfoMap['submittedBy'] = submissionInfo.submittedBy
             submissionInfoMap['underwriter'] = submissionInfo.underwriter
 
-            log.info submissionInfoMap
+//            log.info submissionInfoMap
+            log.info "UW QUESTIONS ORDER: " +  submissionInfoMap['questionAnswerMap']
+
             render JsonOutput.toJson(submissionInfoMap)
         }
 
@@ -3359,5 +3453,34 @@ class AsyncController {
         }
 
         render "good"
+    }
+
+    def bindPrepare(){
+        log.info "BIND PREPARE"
+        log.info params
+
+        render  JsonOutput.toJson(aimDAO.bindPrepare(params, dataSource_aim));
+    }
+
+    def bindGetPolicyNumbersFromRegister(){
+        log.info "GET POLICY NUMBERS FROM REGISTER"
+        log.info params
+
+        render  JsonOutput.toJson(aimDAO.bindGetPolicyNumberFromRegister(params, dataSource_aim));
+    }
+
+    def bindReviewSubmissionDetails(){
+        log.info "BINDING, ASSIGN POLICY NUMBER, REVIEW SUBMISSION DETAILS"
+        log.info params
+
+        render  JsonOutput.toJson(aimDAO.bindReviewSubmission(params, dataSource_aim));
+
+    }
+
+    def bindSubmission(){
+        log.info "BIND SUBMISSION"
+        log.info params
+
+        render  JsonOutput.toJson(aimDAO.bind(params, dataSource_aim));
     }
 }

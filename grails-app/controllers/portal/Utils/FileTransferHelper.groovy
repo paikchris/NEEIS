@@ -194,10 +194,10 @@ class FileTransferHelper {
             log.info("Error Details - " + exceptionAsString)
 
         } finally {
-                if (ftpClient.isConnected()) {
-                    ftpClient.logout();
-                    ftpClient.disconnect();
-                }
+            if (ftpClient.isConnected()) {
+                ftpClient.logout();
+                ftpClient.disconnect();
+            }
 
 
 
@@ -210,6 +210,70 @@ class FileTransferHelper {
         log.info "Activity Logged: " + decodedFileName
         return decodedFileName
     }
+
+    def getFileList(quoteID){
+        log.info("GET FILE LIST")
+
+        AIMSQL aimHelper = new AIMSQL();
+
+        boolean done = false;
+
+        String server = "74.100.162.203";
+        int port = 21;
+        String user = "web_ftp";
+        String pass = "Get@4Files";
+
+        FTPClient ftpClient = new FTPClient();
+        def filesInFolder;
+        def listOfFiles = "";
+        try {
+
+            ftpClient.connect(server, port);
+            ftpClient.login(user, pass);
+            ftpClient.enterLocalPassiveMode();
+
+            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+
+            def remoteFolderPath;
+            if (Environment.current == Environment.DEVELOPMENT) {
+                remoteFolderPath = "/AIMAPP/ATTACHTEST/${quoteID}/";
+
+            }
+            else if (Environment.current == Environment.PRODUCTION) {
+                remoteFolderPath = "/AIMAPP/ATTACH/${quoteID}/";
+            }
+
+            String tempString = remoteFolderPath
+            filesInFolder = ftpClient.listNames(remoteFolderPath).toList();
+            log.info filesInFolder
+
+            filesInFolder.each{
+                File f = new File(it);
+                System.out.println(f.getName());
+                listOfFiles = listOfFiles + f.getName() + "&;&";
+            }
+
+            if (done) {
+                log.info("The file is uploaded successfully.");
+            }
+
+
+        } catch (Exception e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+
+        } finally {
+            if (ftpClient.isConnected()) {
+                ftpClient.logout();
+                ftpClient.disconnect();
+            }
+        }
+
+        return listOfFiles
+    }
+
 
     def getAIMAttachment(quoteID, fileName){
 //        def fileName;
@@ -242,9 +306,14 @@ class FileTransferHelper {
             else if (Environment.current == Environment.PRODUCTION) {
                 remoteFile2 = "/AIMAPP/ATTACH/${quoteID}/${fileName.replaceAll("\\s", "\\ ")}";
             }
-            log.info remoteFile2
+            log.info "remoteFile: " + remoteFile2
             InputStream inputStream = ftpClient.retrieveFileStream(remoteFile2);
 
+            int returnCode = ftpClient.getReplyCode();
+            log.info "RETURN CODE: " + returnCode
+//            if (returnCode == 550) {
+//                // file/directory is unavailable
+//            }
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
             int nRead;

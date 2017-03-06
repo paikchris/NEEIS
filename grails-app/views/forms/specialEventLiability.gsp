@@ -2,24 +2,24 @@
     <div class="col-xs-12">
         <div class="col-xs-6">
             <div class="form-group">
-                <label for="nameOfContactProducer">Name Of Principal</label>
-                <input type="text" class="form-control showReview" name="nameOfProducer"
-                       data-reviewName="Name Of Producer"
-                       id="nameOfProducer" placeholder="Name of Producer"/>
+                <label for="nameOfContactPrincipal">Name Of Principal</label>
+                <input type="text" class="form-control showReview" name="nameOfPrincipal"
+                       data-reviewName="Name Of Principal"
+                       id="nameOfPrincipal" placeholder="Name of Principal"/>
             </div>
 
             <div class="form-group">
-                <label for="producerContactEmail">Principal Contact Email Address</label>
-                <input type="text" class="form-control showReview" name="producerEmail" id="producerEmail"
-                       data-reviewName="Producer Email"
-                       placeholder="Producer Email"/>
+                <label for="principalContactEmail">Principal Contact Email Address</label>
+                <input type="text" class="form-control showReview" name="PrincipalEmail" id="principalEmail"
+                       data-reviewName="Principal Email"
+                       placeholder="Principal Email"/>
             </div>
 
             <div class="form-group">
-                <label for="producerContactPhone">Principal Contact Phone Number</label>
-                <input type="text" class="form-control showReview" name="producerPhone" id="producerPhone"
-                       data-reviewName="Producer Phone"
-                       placeholder="Producer Email"/>
+                <label for="principalContactPhone">Principal Contact Phone Number</label>
+                <input type="text" class="form-control showReview" name="PrincipalPhone" id="principalPhone"
+                       data-reviewName="Principal Phone"
+                       placeholder="Principal Email"/>
             </div>
 
             %{--<div class="form-group">--}%
@@ -65,13 +65,13 @@
             </div>
         </div>
 
-<div class="col-xs-6">
-        <div class="form-group">
-            <label for="stateWhereEntityEstablished">State Where Entity Established</label>
-            <input type="text" class="form-control showReview" name="whereEstablished" id="whereEstablished"
-                   data-reviewName="whereEstablished"
-                   placeholder=""/>
-        </div>
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="stateWhereEntityEstablished">State Where Entity Established</label>
+                <input type="text" class="form-control showReview" name="whereEstablished" id="whereEstablished"
+                       data-reviewName="whereEstablished"
+                       placeholder=""/>
+            </div>
 
 
             <div class="form-group">
@@ -141,7 +141,6 @@
                 </div>
             </div>
 
-
         </div>
     </div>
 </div>
@@ -152,6 +151,7 @@
         <div class="col-xs-6">
             <div class="row">
 
+                %{--DESCRIBE PRIMARY BUSINESS OPERATIONS--}%
                 <div class="form-group">
                     <label for="describeBusinessOperations">Describe Primary Business Operations</label>
                     <input type="text" class="form-control showReview" name="businessOperations" id="businessOperations"
@@ -159,6 +159,7 @@
                            placeholder="Describe"/>
                 </div>
 
+                %{--DESCRIBE OTHER BUSINESS OPERATIONS--}%
                 <div class="form-group">
                     <label for="describeOtherBusinessOperations">Describe Other Business Operations</label>
                     <input type="text" class="form-control showReview" name="otherBusinessOperations"
@@ -167,6 +168,7 @@
                            placeholder="Describe"/>
                 </div>
 
+                %{--SUB CONTRACTORS--}%
                 <div class="form-group col-xs-12">
                     <div class="row">
                         <label for="whatServiceDoYouHireSubContractorsFor">What services, if any, do you hire Sub-Contractors for? (Attach contract copy)</label>
@@ -184,24 +186,31 @@
                             <form enctype="multipart/form-data">
                                 <div class="fileUpload btn btn-primary">
                                     <span>Attach File</span>
-                                    <input name="budgetFile" type="file" class="file" id="budgetFile" style="width:120px"/>
+                                    <input name="budgetFile" type="file" class="file" id="budgetFile"
+                                           style="width:120px"/>
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
-<div class="row">
-                <div class="form-group col-xs-12">
-                    <label class="control-label">What Type of Security will be at the Event</label>
-                    <select class="form-control securityTypeSelect showReview" name="securityType"  data-reviewName="securityType" id="securityType">
-                        <option value="invalid" selected="selected">Unarmed Crowd Control Security</option>
-                        <option value="armedSecurity" selected="selected">Armed Security</option>
-                        <option value="otherSecurity" selected="selected">Other</option>
-                    </select>
+
+                %{--TYPE OF SECURITY AT EVENT--}%
+                <div class="row">
+                    <div class="form-group col-xs-12">
+                        <label class="control-label">What Type of Security will be at the Event</label>
+                        <select class="form-control securityTypeSelect showReview" name="securityType"
+                                data-reviewName="securityType" id="securityType">
+                            <option value="invalid" selected="selected">Unarmed Crowd Control Security</option>
+                            <option value="armedSecurity" selected="selected">Armed Security</option>
+                            <option value="otherSecurity" selected="selected">Other</option>
+                        </select>
+                    </div>
+
                 </div>
 
-</div>
+                %{--HAZARDS--}%
                 <label for="describeBusinessOperations">Check additional Hazards if Applicable below:</label>
+
                 <p class="control-label"><input type="checkbox"
                                                 class="productionInvolvesCheckbox pyrotechnics showReview"
                                                 data-reviewName="Special Hazards Declared" name="pyrotechnics"
@@ -209,6 +218,7 @@
                                                 value="Pyrotechnics (Explosions, fire) (Supplemental Application)"/> Pyrotechnics (Explosions, fire) (Supplemental Application)
                 </p>
 
+                %{--PYROTECHNICS CONTAINER--}%
                 <div class="row" id="pyrotechnicsAttachContainer" style="margin-bottom: 20px; display:none">
                     <div class="col-xs-3" style="margin-left:20px">
                         <form enctype="multipart/form-data">
@@ -224,15 +234,19 @@
                     </div>
 
                 </div>
+
+                %{--ATTACHMENT FOR PYROTECH--}%
                 <div class="row fileNameContainer" style="padding-top:6px; display:none">
                     <div class="col-xs-9" style="text-align:right; font-size:11px">
                         <span class="fileNameSpan" id="pyroFileSpan">File Name</span>
                     </div>
+
                     <div class="col-xs-3">
                         <button type="button" class="btn btn-default btn-xs attachClearButton">Clear</button>
                     </div>
                 </div>
 
+                %{--STUNTS OR HAZARDS--}%
                 <p class="control-label"><input type="checkbox"
                                                 class="productionInvolvesCheckbox stuntsOrHazardousActivites showReview"
                                                 data-reviewName="Special Hazards Declared"
@@ -241,6 +255,7 @@
                                                 value="Stunts or Hazardous Activities(Supplemental Application)"/> Stunts or Hazardous Activities (Supplemental Application)
                 </p>
 
+                %{--CONTAINER // ATTACHMENT FOR STUNTS OR HAZARDS--}%
                 <div class="row attachFileContainer" id="stuntsHazardousActivitiesAttachContainer"
                      style="margin-bottom: 20px; display:none; margin-left:0px;">
                     <div class="row">
@@ -248,7 +263,8 @@
                             <form enctype="multipart/form-data">
                                 <div class="fileUpload btn btn-primary">
                                     <span>Attach File</span>
-                                    <input name="stuntsFile" type="file" class="file" id="stuntsFile" style="width:120px"/>
+                                    <input name="stuntsFile" type="file" class="file" id="stuntsFile"
+                                           style="width:120px"/>
                                 </div>
                             </form>
                         </div>
@@ -258,224 +274,432 @@
                         </div>
                     </div>
                 </div>
-<div class="row">
-                <div class="col-xs-12">
-                    <div class="form-group">
-                        <label>Are Participants Signing Waivers??</label><br>
-                        <input type="radio" name="signingWaivers"
-                               class="showReview"
-                               value="Yes"
-                               data-reviewName="Are Participants Signing Waivers?"
-                               id="signingWaiversYes_RadioButton"> Yes
-                        <input type="radio" name="signingWaivers"
-                               class=""
-                               value="No"
-                               data-reviewName="Are Participants Signing Waivers?"
-                               id="signingWaiversNo_RadioButton"
-                               checked="checked"> No
-                    </div>
-                </div>
 
-
-
-
-
-                <div class="col-xs-12">
-                    <div class="form-group">
-                        <label>Has your insurance have ever been cancelled or declined?</label><br>
-                        <input type="radio" name="insuranceCancelled"
-                               class="showReview"
-                               value="Yes"
-                               data-reviewName="Has your insurance have ever been cancelled or declined?"
-                               id="insuranceCancelledYes_RadioButton"> Yes
-                        <input type="radio" name="insuranceCancelled"
-                               class=""
-                               value="No"
-                               data-reviewName="Has your insurance have ever been cancelled or declined?"
-                               id="insuranceCancelledNo_RadioButton"
-                               checked="checked"> No
-                    </div>
-                </div>
-                </div>
-<div class="row">
-                <div id="insuranceCancelledContainer" style="display:none">
+                %{--WAIVER SIGNING--}%
+                <div class="row">
                     <div class="col-xs-12">
-                        %{--<div class="form-group">--}%
-                        %{--<label for="cancelledDeclinedExplain"></label>--}%
-                        <input type="text" class=" showReview form-control" name="name"
-                               data-reviewName="Explain why it was cancelled or declined"
-                               placeholder="Please explain why it was cancelled or declined"
-                               id="insuredCancelledExplain"/>
-                        %{--</div>--}%
-                    </div>
-                </div>
-
-                <div class="form-group col-xs-12">
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <label for="listOfPriorLosses">List and Describe all Prior Losses (Or Enter "None")</label>
+                        <div class="form-group">
+                            <label>Are Participants Signing Waivers??</label><br>
+                            <input type="radio" name="signingWaivers"
+                                   class="showReview"
+                                   value="Yes"
+                                   data-reviewName="Are Participants Signing Waivers?"
+                                   id="signingWaiversYes_RadioButton"> Yes
+                            <input type="radio" name="signingWaivers"
+                                   class=""
+                                   value="No"
+                                   data-reviewName="Are Participants Signing Waivers?"
+                                   id="signingWaiversNo_RadioButton"
+                                   checked="checked"> No
                         </div>
                     </div>
 
-                    <div class="row">
-                        <!--attach bio/resume if available-->
+
+                    <div class="col-xs-12">
                         <div class="form-group">
-                            <div class="col-xs-9">
-                                <input type="text" class="form-control showReview" name="listOfPriorLosses"
-                                       id="listOfPriorLosses" data-reviewName="Prior Losses"
-                                       placeholder="List/Describe Prior Losses"/>
+                            <label>Has your insurance have ever been cancelled or declined?</label><br>
+                            <input type="radio" name="insuranceCancelled"
+                                   class="showReview"
+                                   value="Yes"
+                                   data-reviewName="Has your insurance have ever been cancelled or declined?"
+                                   id="insuranceCancelledYes_RadioButton"> Yes
+                            <input type="radio" name="insuranceCancelled"
+                                   class=""
+                                   value="No"
+                                   data-reviewName="Has your insurance have ever been cancelled or declined?"
+                                   id="insuranceCancelledNo_RadioButton"
+                                   checked="checked"> No
+                        </div>
+                    </div>
+                </div>
+
+                %{--INSURANCE CANCELLED--}%
+                <div class="row">
+                    <div id="insuranceCancelledContainer" style="display:none">
+                        <div class="col-xs-12">
+                            %{--<div class="form-group">--}%
+                            %{--<label for="cancelledDeclinedExplain"></label>--}%
+                            <input type="text" class=" showReview form-control" name="name"
+                                   data-reviewName="Explain why it was cancelled or declined"
+                                   placeholder="Please explain why it was cancelled or declined"
+                                   id="insuredCancelledExplain"/>
+                            %{--</div>--}%
+                        </div>
+                    </div>
+
+                    <div class="form-group col-xs-12">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <label for="listOfPriorLosses">List and Describe all Prior Losses (Or Enter "None")</label>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!--attach bio/resume if available-->
+                            <div class="form-group">
+                                <div class="col-xs-9">
+                                    <input type="text" class="form-control showReview" name="listOfPriorLosses"
+                                           id="listOfPriorLosses" data-reviewName="Prior Losses"
+                                           placeholder="List/Describe Prior Losses"/>
+                                </div>
+
+                                <div class="col-xs-3">
+                                    <form enctype="multipart/form-data">
+                                        <div class="fileUpload btn btn-primary">
+                                            <span>Attach File</span>
+                                            <input name="lossesFile" type="file" class="file" id="lossesFile"
+                                                   style="width:120px"/>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row fileNameContainer" style="padding-top:6px; display:none">
+                            <div class="col-xs-9" style="text-align:right; font-size:11px">
+                                <span class="fileNameSpan" id="lossesFileSpan">File Name</span>
                             </div>
 
                             <div class="col-xs-3">
-                                <form enctype="multipart/form-data">
-                                    <div class="fileUpload btn btn-primary">
-                                        <span>Attach File</span>
-                                        <input name="lossesFile" type="file" class="file" id="lossesFile"
-                                               style="width:120px"/>
-                                    </div>
-                                </form>
+                                <button type="button"
+                                        class="btn btn-default btn-xs attachClearButton">Clear</button>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+                %{--</div>--}%
+                <div class="row">
+                    %{--OVERNIGHT EVENT--}%
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label>Are there any overnight events?</label><br>
+                            <input type="radio" name="overnight"
+                                   class="showReview"
+                                   value="Yes"
+                                   data-reviewName="Are there any overnight events?"
+                                   id="overnightYes_RadioButton"> Yes
+                            <input type="radio" name="overnight"
+                                   class=""
+                                   value="No"
+                                   data-reviewName="Are there any overnight events?"
+                                   id="overnightNo_RadioButton"
+                                   checked="checked"> No
+                        </div>
+                    </div>
+                    %{--OVERNIGHT EVENT CONTAINER // DESCRIBE EVENT // WILL THERE BE CHILDREN--}%
+                    <div id="overnightContainer" style="display:none">
+                        <div class="form-group">
+                            <label for="descriptionOfOvernightEvent">Provide full description of overnight events</label>
+                            <input type="text" class="form-control showReview" name="descriptionOvernight"
+                                   id="descriptionOvernight"
+                                   data-reviewName="Provide full description of overnight events"
+                                   placeholder="Describe"/>
+                        </div>
+
+
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label>Will there be children in these overnight events?</label><br>
+                                <input type="radio" name="overnightChildren"
+                                       class="showReview"
+                                       value="Yes"
+                                       data-reviewName="Will there be children in these overnight events?"
+                                       id="overnightChildrenYes_RadioButton"> Yes
+                                <input type="radio" name="overnightChildren"
+                                       class=""
+                                       value="No"
+                                       data-reviewName="Will there be children in these overnight events?"
+                                       id="overnightChildrenNo_RadioButton"
+                                       checked="checked"> No
                             </div>
                         </div>
                     </div>
-
-                    <div class="row fileNameContainer" style="padding-top:6px; display:none">
-                        <div class="col-xs-9" style="text-align:right; font-size:11px">
-                            <span class="fileNameSpan" id="lossesFileSpan">File Name</span>
-                        </div>
-
-                        <div class="col-xs-3">
-                            <button type="button"
-                                    class="btn btn-default btn-xs attachClearButton">Clear</button>
-                        </div>
-
-                    </div>
-
                 </div>
-
-
-            </div>
-        %{--</div>--}%
-                <div class="row">
-        <div class="col-xs-12">
-            <div class="form-group">
-                <label for="totalEmployees">Estimated Total Attendance</label>
-                <input type="text" class="form-control" name="name" placeholder="Total" id="totalAttendance"/>
             </div>
         </div>
-
-        <div class="col-xs-12">
-            <div class="form-group">
-                <label for="totalEmployees">Largest Number of Attendees Any One Event Per Day</label>
-                <input type="text" class="form-control" name="name" placeholder="" id="largestAttendees"/>
-            </div>
-        </div>
-
-        <div class="col-xs-12">
-            <div class="form-group">
-                <label>Are there any overnight events?</label><br>
-                <input type="radio" name="insuranceCancelled"
-                       class="showReview"
-                       value="Yes"
-                       data-reviewName="Are there any overnight events?"
-                       id="overnightYes_RadioButton"> Yes
-                <input type="radio" name="insuranceCancelled"
-                       class=""
-                       value="No"
-                       data-reviewName="Are there any overnight events?"
-                       id="overnightNo_RadioButton"
-                       checked="checked"> No
-            </div>
-        </div>
-</div>
-            </div>
-</div>
 
         <div class="col-xs-6">
-
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label for="totalEmployees">Total number of employees</label>
-                    <input type="text" class="form-control" name="name" placeholder="Total" id="totalNumEmployees"/>
+            <div class="row">
+                %{--Work Comp--}%
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label>Work Comp Coverage Requested?</label><br>
+                        <input type="radio" name="workCompCoverageRequested?"
+                               class="showReview"
+                               value="Yes"
+                               data-reviewName="Work Comp Coverage Requested?"
+                               id="workCompCoverageRequestedYes_RadioButton"> Yes
+                        <input type="radio" name="workCompCoverageRequested?"
+                               class=""
+                               value="No"
+                               data-reviewName="Work Comp Coverage Requested?"
+                               id="workCompCoverageRequestedNo_RadioButton"
+                               checked="checked"> No
+                    </div>
                 </div>
-            </div>
+                %{--Work Comp--}%
+                <br>
+                %{--TABLE WORK COMP--}%
+                <div id="workCompCoverageRequestedContainer" style="display:none">
+                    <div id="limitsDeductPremiumInsert">
+                        <div class="form-group">
+                        <div class="col-xs-10 ">
+                            <strong class="coverageCodeString"
+                                    style="padding-left:40px">Work Comp
+                            </strong>
+                        </div>
 
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label for="annualGrossReceipts">Annual Gross Receipts</label>
-                    <input type="text" class="form-control" name="name" placeholder="\$USD" id="annualReceipts"/>
+                        <div class="col-xs-2 "><span>Limits</span></div>
+
+                        <div class="row WC_LOBRow">
+                            <div class="col-xs-10 coverageColumn"
+                                 %{--style="padding-left:40px"--}%
+                                 style="background-color: rgba(38, 80, 159, 0.13) ; padding-left:40px">
+                                <span>WC: Bodily Injury by Accident (each)</span>
+                            </div>
+
+                            <div class="col-xs-2 limitColumn"><span>$1,000,000</span>
+                            </div>
+                        </div>
+
+                        <div class="row WC_LOBRow">
+                            <div class="col-xs-6 coverageColumn"
+                                 style="padding-left:40px">
+                                <span>WC: Bodily Injury by Disease (policy limit)</span>
+                            </div>
+
+                            <div class="col-xs-2 limitColumn"><span>$1,000,000</span>
+                            </div>
+                        </div>
+
+                        <div class="row WC_LOBRow" style="background-color: rgba(38, 80, 159, 0.13)">
+                            <div class="col-xs-10 coverageColumn"
+                                 style="padding-left:40px">
+                                <span>WC: Bodily Injury by Disease (each employee)</span>
+                            </div>
+
+                            <div class="col-xs-2 limitColumn"><span>$1,000,000</span>
+                            </div>
+                        </div>
+
+                        %{--<div class="row" style="border-top: 1px solid rgba(0, 0, 0, 0.19);">--}%
+                        %{--<div class="col-xs-10 "><strong style="font-size:13px"></strong>--}%
+                        %{--</div>--}%
+                        %{--</div>--}%
+
+                    </div>
+                        <br>
+
+                    %{--State of Hire--}%
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label for="stateOfHire">States of Hire & Total Payroll Each State</label>
+                            <input type="text" class="form-control" name="name" placeholder=""
+                                   data-reviewName="States of Hire & Total Payroll Each State"
+                                   id="stateOfHireAndPayroll"/>
+                        </div>
+                    </div>
+
+                    %{--Names of Officers--}%
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label for="namesOfOfficers">Names of Officers, Title, % of Ownership</label>
+                            <input type="text" class="form-control" name="name" placeholder=""
+                                   data-reviewName="Names of Officers, Title, % of Ownership"
+                                   id="namesOfficerTitleOwnership"/>
+                        </div>
+                    </div>
+
+                    %{--Names of Officers Excluded--}%
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label for="namesOfOfficersExcluded">Name of Officers to be Excluded under WC</label>
+                            <input type="text" class="form-control" name="name" placeholder=""
+                                   data-reviewName="Name of Officers to be Excluded under WC"
+                                   id="officersExcludedUnderWC"/>
+                        </div>
+                    </div>
+
+                        </div>
                 </div>
-            </div>
+                %{--TABLE WORK COMP--}%
+                <br>
 
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label for="annualPayroll">Annual Payroll</label>
-                    <input type="text" class="form-control" name="name" placeholder="\$USD" id="annualPayroll"/>
+                %{--Hired / Non-Owned Auto Liability--}%
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label>Hired and Non-Owned Auto Liability Limits Requested?</label><br>
+                        <input type="radio" name="autoLiability"
+                               class="showReview"
+                               value="Yes"
+                               data-reviewName="Hired and Non-Owned Auto Liability Limits Requested?"
+                               id="autoLiabilityYes_RadioButton"> Yes
+                        <input type="radio" name="autoLiability"
+                               class=""
+                               value="No"
+                               data-reviewName="Hired and Non-Owned Auto Liability Limits Requested?"
+                               id="autoLiabilityNo_RadioButton"
+                               checked="checked"> No
+                    </div>
                 </div>
-            </div>
 
+                <div class="costRentedVehiclesContainer" style="display:none">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label for="costOfRentedVehicles">What is Cost of Hire of Rented Vehicles?</label>
+                            <input type="text" id="costVehicles" class=" showReview form-control"
+                                   name="costVehicles" data-reviewName="What is Cost of Hire of Rented Vehicles"
+                                   placeholder="\$USD"/>
+                        </div>
+                    </div>
 
-            <div id="numberOfPerformancesEventsInYear">
-                <div class="row col-xs-12">
-                    <div class="col-xs-9">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label>Do you require Owned Scheduled Auto Coverage?</label><br>
+                            <input type="radio" name="requireOwnedAutoCoverage"
+                                   class="showReview"
+                                   value="Yes"
+                                   data-reviewName="Do you require Owned Scheduled Auto Coverage??"
+                                   id="requireOwnedAutoCoverageYes_RadioButton"> Yes
+                            <input type="radio" name="requireOwnedAutoCoverage"
+                                   class=""
+                                   value="No"
+                                   data-reviewName="Do you require Owned Scheduled Auto Coverage??"
+                                   id="requireOwnedAutoCoverageNo_RadioButton"
+                                   checked="checked"> No
+                        </div>
+                    </div>
+                </div>
+                %{--Hired / Non-Owned Auto Liability--}%
+                <br>
+                %{--TABLE HIRED NON-OWNED AUTO--}%
+                <div class="costRentedVehiclesContainer" style="display:none">
+                    <div id="limitsDeductPremiumInsert"><div class="row coverageCodeRow"><div
+                            class="col-xs-10 "><strong
+                                class="coverageCodeString" style="font-size:13px">Hired / Non-Owned Auto</strong>
+                    </div>
+
+                        <div class="col-xs-2 "><span'>-</span'></div>
+
+                        <div class="row Auto_LOBRow" style="background-color: rgba(38, 80, 159, 0.13)">
+                            <div class="col-xs-10 coverageColumn"
+                                 style="padding-left:20px"><span>NOAL: Hired Auto Liability - CSL</span>
+                            </div>
+
+                            <div class="col-xs-2 limitColumn"><span>$1,000,000</span>
+                            </div>
+                        </div>
+
+                        <div class="row WC_LOBRow">
+                            <div class="col-xs-10 coverageColumn"
+                                 style="padding-left:20px"><span>NOAPD: Hired Auto Physical Damage</span>
+                            </div>
+
+                            <div class="col-xs-2 limitColumn"><span>ACV Unlimited</span>
+                            </div>
+                        </div>
+
+                        <div class="row" style="border-top: 1px solid rgba(0, 0, 0, 0.19);">
+                            <div class="col-xs-10 "><strong style="font-size:13px"></strong>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                %{--TABLE HIRED NON-OWNED AUTO--}%
+                <br>
+
+                %{--TOTAL EMPLOYEES--}%
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label for="totalEmployees">Total Number of Employees</label>
+                        <input type="text" class="form-control" name="name" placeholder="Total" id="totalNumEmployees"
+                               data-reviewName="Total Number of Employees"/>
+                    </div>
+                </div>
+                %{--TOTAL EMPLOYEES--}%
+
+                %{--TOTAL GROSS RECEIPT--}%
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label for="annualGrossReceipts">Total Gross Receipts</label>
+                        <input type="text" class="form-control" name="name" placeholder="\$USD" id="annualReceipts"
+                               data-reviewName="Annual Gross Receipts"/>
+                    </div>
+                </div>
+                %{--TOTAL GROSS RECEIPT--}%
+
+                %{--TOTAL PAYROLL--}%
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label for="annualPayroll">Total Payroll</label>
+                        <input type="text" class="form-control" name="name" placeholder="\$USD" id="annualPayroll"
+                               data-reviewName="Annual Payroll"/>
+                    </div>
+                </div>
+                %{--TOTAL PAYROLL--}%
+
+                %{--NUMBER PERFORMANCE LAST 12 MONTHS--}%
+                <div class="col-xs-12">
+                    <div class="form-group">
                         <label for="numberOfPerformancesEventInLastYear">Number of Performances / Events in the last 12 Months</label>
+                        <input type="text" class="form-control" name="numberOfPerformanceLastYear" placeholder=""
+                               id="numberOfPerformancesLastYear"
+                               data-reviewName="Number of Performances Events in the last 12 Months"/>
                     </div>
                 </div>
+                %{--NUMBER PERFORMANCE LAST 12 MONTHS--}%
 
-                <div class="row col-xs-12">
-                    <div class="col-xs-9">
-                        <input type="text" class="form-control showReview"
-                               data-reviewName="Number of Performances Events in the last 12 Months"
-                               name="numberOfPerformanceLastYear" placeholder="" id="numberOfPerformancesLastYear"/>
-                    </div>
-                </div>
-            </div>
-
-            <div id="numberOfPerformancesEventsInNextYear">
-                <div class="row col-xs-12">
-                    <div class="col-xs-9">
+                %{--NUMBER PERFORMANCE NEXT 12 MONTHS--}%
+                <div class="col-xs-12">
+                    <div class="form-group">
                         <label for="numberOfPerformancesEventInNextYear">Number of Performances / Events in the Next 12 Months</label>
+                        <input type="text" class="form-control" name="numberOfPerformanceNextYear" placeholder=""
+                               id="numberOfPerformancesNextYear"
+                               data-reviewName="Number of Performances Events in the Next 12 Months"/>
                     </div>
                 </div>
+                %{--NUMBER PERFORMANCE NEXT 12 MONTHS--}%
 
-                <div class="row col-xs-12">
-                    <div class="col-xs-9">
-                        <input type="text" class="form-control showReview"
-                               data-reviewName="Number of Performances Events in the Next 12 Months"
-                               name="numberOfPerformanceNextYear" placeholder="" id="numberOfPerformancesNextYear"/>
+                %{--NUMBER OF SEATS--}%
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label for="numberOfSeatsInTheater">What is the number of seats in the Theater/Venue?</label>
+                        <input type="text" id="numberSeats" class=" showReview form-control" name="numberSeats"
+                               data-reviewName="What is the number of seats in the Theater/Venue"
+                               placeholder="Number of Seats"/>
                     </div>
                 </div>
-            </div>
+                %{--NUMBER OF SEATS--}%
 
-
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label for="numberOfSeatsInTheater">What is the number of seats in the Theater/Venue?</label>
-                    <input type="text" id="numberSeats" class=" showReview form-control" name="numberSeats"
-                           data-reviewName="What is the number of seats in the Theater/Venue"
-                           placeholder="Number of Seats"/>
+                %{--TYPES OF SEATING--}%
+                <div class="form-group col-xs-12">
+                    <label class="control-label">Type of Seating</label>
+                    <select class="form-control seatingTypeSelect showReview" name="seatingType"
+                            data-reviewName="seatingType" id="seatingType">
+                        <option value="invalid" selected="selected">Permanent</option>
+                        <option value="pullDownSeat" selected="selected">Pull Down</option>
+                        <option value="portableChairSeat" selected="selected">Portable Chairs</option>
+                        <option value="stadiumSeat" selected="selected">Stadium</option>
+                        <option value="openAreaSeat" selected="selected">Open Area Seating</option>
+                    </select>
                 </div>
-            </div>
+                %{--TYPES OF SEATING--}%
 
-            <div class="form-group col-xs-12">
-                <label class="control-label">Type of Seating</label>
-                <select class="form-control seatingTypeSelect showReview" name="seatingType"  data-reviewName="seatingType" id="seatingType">
-                    <option value="invalid" selected="selected">Permanent</option>
-                    <option value="pullDownSeat" selected="selected">Pull Down</option>
-                    <option value="portableChairSeat" selected="selected">Portable Chairs</option>
-                    <option value="stadiumSeat" selected="selected">Stadium</option>
-                    <option value="openAreaSeat" selected="selected">Open Area Seating</option>
-                </select>
-            </div>
 
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label for="totalEventDays">What is the total event days?</label>
-                    <input type="text" id="numberEventDays" class=" showReview form-control" name="numberEventDays"
-                           data-reviewName="What is the total event days?"
-                           placeholder="#"/>
-                </div>
-            </div>
+                %{--<div class="col-xs-12">--}%
+                %{--<div class="form-group">--}%
+                %{--<label for="totalEventDays">What is the total event days?</label>--}%
+                %{--<input type="text" id="numberEventDays" class=" showReview form-control" name="numberEventDays"--}%
+                %{--data-reviewName="What is the total event days?"--}%
+                %{--placeholder="#"/>--}%
+                %{--</div>--}%
+                %{--</div>--}%
 
+            </div>
         </div>
     </div>
 </div>
@@ -484,14 +708,27 @@
     <div class="panel-body" id="undefined_panelBody">
         <div class="col-xs-12">
             <div class="row">
-                <div class="col-xs-12">
-                    <label class="control-label">Please select the Coverages being requested:</label>
+                <div class="col-xs-6">
+                    <div class="col-xs-12">
+                        <label class="control-label">Please select the Coverages being requested:</label>
+                    </div>
+                </div>
+
+                <div class="col-xs-6">
+                    <div class="col-xs-10">
+                        <label class="control-label"><u>Coverage:</u></label>
+                    </div>
+
+                    <div class="col-xs-2">
+                        <label class="control-label"><u>Limits:</u></label>
+                    </div>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-xs-6">
 
+                    %{--CGL--}%
                     <div class="col-xs-12">
                         <div class="form-group">
                             <label>Commercial General Liability Limits Requested?</label><br>
@@ -509,6 +746,25 @@
                         </div>
                     </div>
 
+                    %{--Umbrella--}%
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label>Umbrella Limit Requested?</label><br>
+                            <input type="radio" name="umbrellaLimitRequested"
+                                   class="showReview"
+                                   value="Yes"
+                                   data-reviewName="Umbrella Limit Requested?"
+                                   id="umbrellaLimitRequestedYes_RadioButton"> Yes
+                            <input type="radio" name="umbrellaLimitRequested"
+                                   class=""
+                                   value="No"
+                                   data-reviewName="Umbrella Limit Requested?"
+                                   id="umbrellaLimitRequestedNo_RadioButton"
+                                   checked="checked"> No
+                        </div>
+                    </div>
+
+                    %{--Blanket--}%
                     <div class="col-xs-12">
                         <div class="form-group">
                             <label>Blanket Additional Insured Requested?</label><br>
@@ -526,6 +782,7 @@
                         </div>
                     </div>
 
+                    %{--Subrogation--}%
                     <div class="col-xs-12">
                         <div class="form-group">
                             <label>Waiver of Subrogation Requested?</label><br>
@@ -543,15 +800,16 @@
                         </div>
                     </div>
 
+                    %{--Alcohol--}%
                     <div class="col-xs-12">
                         <div class="form-group">
                             <label>Will alcohol be served?</label><br>
-                            <input type="radio" name="waiverSubrogation"
+                            <input type="radio" name="willAlcoholBeServed"
                                    class="showReview"
                                    value="Yes"
                                    data-reviewName="Will alcohol be served?"
                                    id="alcoholYes_RadioButton"> Yes
-                            <input type="radio" name="waiverSubrogation"
+                            <input type="radio" name="willAlcoholBeServed"
                                    class=""
                                    value="No"
                                    data-reviewName="Will alcohol be served?"
@@ -560,8 +818,19 @@
                         </div>
                     </div>
 
+                    <div class="alcoholSaleContainer" style="display:none">
+                        <div class="col-xs-12">
+                            <div class="form-group effectsTotalPremium">
+                                <label for="estimatedTotalSalesReceipts">What is the Estimated Total Sales Receipts?</label>
+                                <input type="text" id="alcoholSales" class=" showReview form-control"
+                                       name="alcoholSales"
+                                       data-reviewName="What is the Estimated Total Sales Receipts?"
+                                       placeholder="\$USD"/>
+                            </div>
+                        </div>
+                    </div>
 
-
+                    %{--Equipment Coverage--}%
                     <div class="col-xs-12">
                         <div class="form-group">
                             <label>Misc Equipment Coverage Requested?</label><br>
@@ -582,17 +851,15 @@
                     <div id="equipmentOwnedRentedContainer" style="display:none">
                         <div class="col-xs-12">
                             <div class="form-group">
-                                <input type="radio" name="equipmentOwned"
+                                <input type="radio" name="equipmentOR"
                                        class=""
-                                       value="owned"
-                                       id="equipmentOwned"
-                                       style="display: none;"> Owned
-                                <input type="radio" name="equipmentRented"
+                                       value="Yes"
+                                       id="equipmentOwnedRented"> Owned
+                                <input type="radio" name="equipmentOR"
                                        class=""
-                                       value="rented"
-                                       id="equipmentRented"
-                                       checked="checked"
-                                       style="display: none;"> Rented
+                                       value="No"
+                                       id="equipmentOwnedRented"
+                                       checked="checked"> Rented
                             </div>
                         </div>
 
@@ -600,7 +867,7 @@
                             <div class="form-group">
                                 <label for="equipmentLimitRequested">What Equipment Limit is Requested?</label>
                                 <input type="text" id="equipmentLimit" class=" showReview form-control" name="name"
-                                       data-reviewName="Requested Equipment Limit" style="display: none;"
+                                       data-reviewName="Requested Equipment Limit"
                                        placeholder="\$USD"/>
                             </div>
                         </div>
@@ -609,7 +876,7 @@
                             <div class="form-group">
                                 <label for="equipmentSchedule">Provide Equipment Schedule if any one item exceeds $10,000 in value</label>
                                 <input type="text" id="equipmentSchedule" class="showReview form-control"
-                                       name="name" data-reviewName="Equipment Schedule" style="display: none;"
+                                       name="name" data-reviewName="Equipment Schedule"
                                        placeholder="Equipment schedule"/>
                             </div>
                         </div>
@@ -619,7 +886,7 @@
                                 <label for="equipmentLocation">Where is equipment kept when not in use?</label>
                                 <input type="text" id="equipmentLocation" class="showReview form-control"
                                        name="name" data-reviewName="Where is equipment kept when not in use?"
-                                       style="display: none;" placeholder="Location of equipment"/>
+                                       placeholder="Location of equipment"/>
                             </div>
                         </div>
 
@@ -629,7 +896,7 @@
                                 <input type="text" id="equipmentSecurity" class="showReview form-control"
                                        name="name"
                                        data-reviewName="Security Measures against theft, loss, and damage"
-                                       style="display: none;" placeholder="Equipment security measures"/>
+                                       placeholder="Equipment security measures"/>
                             </div>
                         </div>
 
@@ -637,9 +904,38 @@
                             <div class="form-group">
                                 <label for="equipmentInventoryAndProcedures">What method of inventory do you use? Please describe procedures and how often</label>
                                 <input type="text" id="equipmentInventory" class="showReview form-control"
-                                       name="name" data-reviewName="Method of Inventory" style="display: none;"
+                                       name="name" data-reviewName="Method of Inventory"
                                        placeholder="equipment inventory and procedures"/>
                             </div>
+                        </div>
+                    </div>
+
+                    %{--Premises--}%
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label>Are you contractually responsible for Premises?</label><br>
+                            <input type="radio" name="premisesResponsible"
+                                   class="showReview"
+                                   value="Yes"
+                                   data-reviewName="Are you contractually responsible for Premises?"
+                                   id="premisesYes_RadioButton"> Yes
+                            <input type="radio" name="premisesResponsible"
+                                   class=""
+                                   value="No"
+                                   data-reviewName="Are you contractually responsible for Premises?"
+                                   id="premisesNo_RadioButton"
+                                   checked="checked"> No
+                        </div>
+                    </div>
+
+
+                    <br>
+                    <br>
+                    <br>
+                    <div class="row">
+                        <div class="form-group col-xs-4">
+                            <label class="control-label effectsTotalPremium">Broker Fee</label>
+                            <input class="form-control" id="brokerFeeInput"type="text" placeholder = "$" name="brokerFee" />
                         </div>
                     </div>
 
@@ -647,212 +943,220 @@
 
                 <div class="col-xs-6">
 
-                    <div class="col-xs-12">
-                        <div class="form-group">
-                            <label>Hired and Non-Owned Auto Liability Limits Requested?</label><br>
-                            <input type="radio" name="autoLiability"
-                                   class="showReview"
-                                   value="Yes"
-                                   data-reviewName="Hired and Non-Owned Auto Liability Limits Requested?"
-                                   id="autoLiabilityYes_RadioButton"> Yes
-                            <input type="radio" name="autoLiability"
-                                   class=""
-                                   value="No"
-                                   data-reviewName="Hired and Non-Owned Auto Liability Limits Requested?"
-                                   id="autoLiabilityNo_RadioButton"
-                                   checked="checked"> No
+                    %{--TABLE CGL--}%
+                    <div id="commercialGeneralLiabilityRequestedContainer" style="display:none">
+                        <div id="limitsDeductPremiumInsert"><div class="row coverageCodeRow"><div
+                                class="col-xs-10 "><strong
+                                    class="coverageCodeString"
+                                    style="font-size:13px">Commercial General Liability</strong></div>
+
+                            <div class="col-xs-2 "><span'>-</span'></div>
+
+                            <div class="row CGL_LOBRow" style="background-color: rgba(38, 80, 159, 0.13)">
+                                <div class="col-xs-10 coverageColumn"
+                                     style="padding-left:20px"><span>CGL: General Aggregate Limit</span>
+                                </div>
+
+                                <div class="col-xs-2 limitColumn"><span>$2,000,000</span>
+                                </div>
+                            </div>
+
+                            <div class="row CGL_LOBRow">
+                                <div class="col-xs-10 coverageColumn"
+                                     style="padding-left:20px"><span>CGL: Products & Completed Operations Agg Limit</span>
+                                </div>
+
+                                <div class="col-xs-2 limitColumn"><span>$1,000,000</span>
+                                </div>
+                            </div>
+
+                            <div class="row CGL_LOBRow" style="background-color: rgba(38, 80, 159, 0.13)">
+                                <div
+                                        class="col-xs-10 coverageColumn"
+                                        style="padding-left:20px"><span>CGL: Personal & Advertising Injury (Any One Person or Organization)</span>
+                                </div>
+
+                                <div class="col-xs-2 limitColumn"><span>$1,000,000</span></div>
+                            </div>
+
+                            <div class="row CGL_LOBRow">
+                                <div class="col-xs-10 coverageColumn"
+                                     style="padding-left:20px"><span>CGL: Each Occurrence Limit</span>
+                                </div>
+
+                                <div class="col-xs-2 limitColumn"><span>$1,000,000</span>
+                                </div>
+                            </div>
+
+                            <div class="row CGL_LOBRow" style="background-color: rgba(38, 80, 159, 0.13)">
+                                <div class="col-xs-10 coverageColumn"
+                                     style="padding-left:20px"><span>CGL: Damage to Premises Rented to You Limit</span>
+                                </div>
+
+                                <div class="col-xs-2 limitColumn"><span>$100,000</span>
+                                </div>
+                            </div>
+
+                            <div class="row CGL_LOBRow">
+                                <div class="col-xs-10 coverageColumn"
+                                     style="padding-left:20px"><span>CGL: Medical Payments</span>
+                                </div>
+
+                                <div class="col-xs-2 limitColumn"><span>Excluded</span>
+                                </div>
+                            </div>
+
+                            <div class="row" style="border-top: 1px solid rgba(0, 0, 0, 0.19);">
+                                <div class="col-xs-10 "><strong style="font-size:13px"></strong>
+                                </div>
+                            </div>
+                        </div>
                         </div>
                     </div>
+                    %{--TABLE CGL--}%
+                    <br>
 
-                    <div id="costRentedVehiclesContainer" style="display:none">
-                        <div class="col-xs-12">
-                            <div class="form-group">
-                                <label for="costOfRentedVehicles">What is Cost of Hire of Rented Vehicles?</label>
-                                <input type="text" id="costVehicles" class=" showReview form-control"
-                                       name="costVehicles" data-reviewName="What is Cost of Hire of Rented Vehicles"
-                                       style="display: none;" placeholder="\$USD"/>
+                    %{--TABLE UMBRELLA--}%
+                    <div id="umbrellaLimitRequestedContainer" style="display:none">
+                        <div id="limitsDeductPremiumInsert"><div class="row coverageCodeRow"><div
+                                class="col-xs-10 "><strong
+                                    class="coverageCodeString" style="font-size:13px">Umbrella</strong></div>
+
+                            <div class="col-xs-2 "><span'>-</span'></div>
+
+                            <div class="row Umbrella_LOBRow" style="background-color: rgba(38, 80, 159, 0.13)">
+                                <div class="col-xs-10 coverageColumn"
+                                     style="padding-left:20px"><span>CUMB: Each Occurrence Limit (Liability Coverage)</span>
+                                </div>
+
+                                <div class="col-xs-2 limitColumn"><span>$1,000,000</span>
+                                </div>
+                            </div>
+
+                            <div class="row Umbrella_LOBRow">
+                                <div class="col-xs-10 coverageColumn"
+                                     style="padding-left:20px"><span>CUMB: Personal & Advertising Injury Limit (Any one person or organization)</span>
+                                </div>
+
+                                <div class="col-xs-2 limitColumn"><span>$1,000,000</span>
+                                </div>
+                            </div>
+
+                            <div class="row Umbrella_LOBRow" style="background-color: rgba(38, 80, 159, 0.13)">
+                                <div
+                                        class="col-xs-10 coverageColumn"
+                                        style="padding-left:20px"><span>CUMB: Aggregate Limit (Liability Coverage) (except with respect to covered autos)</span>
+                                </div>
+
+                                <div class="col-xs-2 limitColumn"><span>$1,000,000</span></div>
+                            </div>
+
+                            <div class="row Umbrella_LOBRow">
+                                <div class="col-xs-10 coverageColumn"
+                                     style="padding-left:20px"><span>CUMB: Covered Auto Aggregate Limit</span>
+                                </div>
+
+                                <div class="col-xs-2 limitColumn"><span>$1,000,000</span>
+                                </div>
+                            </div>
+
+                            <div class="row Umbrella_LOBRow" style="background-color: rgba(38, 80, 159, 0.13)">
+                                <div class="col-xs-10 coverageColumn"
+                                     style="padding-left:20px"><span>CUMB: Self-Insured Retention</span>
+                                </div>
+
+                                <div class="col-xs-2 limitColumn"><span>nil</span>
+                                </div>
+                            </div>
+
+                            <div class="row" style="border-top: 1px solid rgba(0, 0, 0, 0.19);">
+                                <div class="col-xs-10 "><strong style="font-size:13px"></strong>
+                                </div>
                             </div>
                         </div>
-
-                        <div class="col-xs-12">
-                            <div class="form-group">
-                                <label>Do you require Owned Scheduled Auto Coverage?</label><br>
-                                <input type="radio" name="requireOwnedAutoCoverage"
-                                       class="showReview"
-                                       value="Yes"
-                                       data-reviewName="Do you require Owned Scheduled Auto Coverage??"
-                                       id="requireOwnedAutoCoverageYes_RadioButton"> Yes
-                                <input type="radio" name="requireOwnedAutoCoverage"
-                                       class=""
-                                       value="No"
-                                       data-reviewName="Do you require Owned Scheduled Auto Coverage??"
-                                       id="requireOwnedAutoCoverageNo_RadioButton"
-                                       checked="checked"> No
-                            </div>
                         </div>
                     </div>
+                    %{--TABLE UMBRELLA--}%
 
-                    <div id="">
-                        <div class="col-xs-12" id="workCompCoverageRequested">
-                            <p class="control-label"><input type="checkbox"
-                                                            class=""
-                                                            data-reviewName="" name=""
-                                                            id="workCompCoverageRequestedCheckbox"
-                                                            value=""/> Work Comp Coverage Requested
-                            </p>
-                        </div>
-
+                    %{--Premiums--}%
+                    <div class="row" id="premiumDistDivContainer">
                         <div class="col-xs-12">
-                            <div class="form-group">
-                                <label>Will Payroll Service Co provide primary Work Comp Coverage?</label><br>
-                                <input type="radio" name="primaryWorkCompCoverage"
-                                       class="showReview"
-                                       value="Yes"
-                                       data-reviewName="Will Payroll Service Co provide primary Work Comp Coverage?"
-                                       id="primaryWorkCompCoverageYes_RadioButton"> Yes
-                                <input type="radio" name="primaryWorkCompCoverage"
-                                       class=""
-                                       value="No"
-                                       data-reviewName="Will Payroll Service Co provide primary Work Comp Coverage?"
-                                       id="primaryWorkCompCoverageNo_RadioButton"
-                                       checked="checked"> No
-                            </div>
-                        </div>
+                            <h5>Premium Distribution</h5>
 
-                        <div id="statesOfHire">
-                            <div class="row col-xs-12">
-                                <div class="col-xs-9">
-                                    <label for="storySynopsis">States of Hire & Total Payroll Each State</label>
+                            <div class="row">
+                                <div class="col-xs-8">
+                                    <u>Line Of Business</u>
+                                </div>
+
+                                <div class="col-xs-2">
+                                    <u>Premium</u>
+                                </div>
+
+                                <div class="col-xs-2">
+                                    <u>Agent %</u>
                                 </div>
                             </div>
 
-                            <div class="row col-xs-12">
-                                <div class="col-xs-9">
-                                    <input type="text" class="form-control showReview"
-                                           data-reviewName="States of Hire & Total Payroll Each State"
-                                           name="statesOfHire" placeholder="" id="statesOfHireAndPayroll"/>
-                                </div>
-                            </div>
-                        </div>
+                            <div class="premDistributionInsert">
+                                <div id="commercialGeneralLiabilityPremiumContainer">
+                                    <div class="row" style="background-color: rgba(38, 80, 159, 0.13)">
+                                        <div class="col-xs-8"><span class="eventLineOfBusinessSpan"
+                                                                    id="commercialGeneralLiabilityPremiumName">Commercial General Liability</span>
+                                        </div>
 
-                        <div id="namesOfOfficers">
-                            <div class="row col-xs-12">
-                                <div class="col-xs-9">
-                                    <label for="storySynopsis">Names of Officers, Title, % of Ownership</label>
-                                </div>
-                            </div>
+                                        <div class="col-xs-2"><span class="eventPremiumSpan"
+                                                                    id="commercialGeneralLiabilityPremiumCost"></span>
+                                        </div>
 
-                            <div class="row col-xs-12">
-                                <div class="col-xs-9">
-                                    <input type="text" class="form-control showReview"
-                                           data-reviewName="Names of Officers, Title, % of Ownership"
-                                           name="namesOfOfficers" placeholder="" id="namesOfficerTitleOwnership"/>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div id="namesOfOfficersExcluded">
-                            <div class="row col-xs-12">
-                                <div class="col-xs-9">
-                                    <label for="storySynopsis">Name of Officers to be Excluded under WC</label>
+                                        <div class="col-xs-2"><span class="eventAgentPercentSpan"></span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="row col-xs-12">
-                                <div class="col-xs-9">
-                                    <input type="text" class="form-control showReview"
-                                           data-reviewName="Name of Officers to be Excluded under WC"
-                                           name="namesOfOfficersExcluded" placeholder=""
-                                           id="officersExcludedUnderWC"/>
+                            <div class="premDistributionInsert">
+                                <div class="alcoholSaleContainer" style="display:none">
+                                    <div class="row">
+                                        <div class="col-xs-8"><span class="eventLineOfBusinessSpan"
+                                                                    id="alcoholSalePremiumName">Liquor Liability</span>
+                                        </div>
+
+                                        <div class="col-xs-2"><span class="eventPremiumSpan"
+                                                                    id="alcoholSalePremiumCost"></span>
+                                        </div>
+
+                                        <div class="col-xs-2"><span class="alcoholSalePercentSpan"></span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="col-xs-12">
-                            <div class="form-group">
-                                <label for="umbrellaRequested">Umbrella Limit Requested</label>
-                                <input type="text" class="form-control" name="name" placeholder="\$USD"
-                                       id="umbrellaLimitRequested"/>
+                            <div class="premDistributionInsert">
+                                <div class="totalSaleContainer">
+                                    <div class="row">
+                                        <div class="col-xs-8"><strong><span class="eventLineOfBusinessSpan"
+                                                                            id="totalSalePremiumName">Total:</span>
+                                        </strong>
+                                        </div>
+
+                                        <div class="col-xs-2"><span class=""
+                                                                    id="totalSalePremiumCost"></span>
+                                        </div>
+
+                                        <div class="col-xs-2"><span class="totalSalePercentSpan"></span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="col-xs-12">
-                            <div class="form-group">
-                                <label>Are you contractually responsible for Premises?</label><br>
-                                <input type="radio" name="equipmentOwnedRented"
-                                       class="showReview"
-                                       value="Yes"
-                                       data-reviewName="Are you contractually responsible for Premises?"
-                                       id="premisesYes_RadioButton"> Yes
-                                <input type="radio" name="equipmentOwnedRented"
-                                       class=""
-                                       value="No"
-                                       data-reviewName="Are you contractually responsible for Premises?"
-                                       id="premisesNo_RadioButton"
-                                       checked="checked"> No
+
+                            <div id="premTotalInsert">
+
                             </div>
+                            <span id="premiumInsert"></span>
                         </div>
-
-                        %{--<div class="col-xs-12">--}%
-                            %{--<div class="form-group">--}%
-                                %{--<label>Is Foreign GL, Hired Auto and Workers Comp Required?</label><br>--}%
-                                %{--<input type="radio" name="foreignGL"--}%
-                                       %{--class="showReview"--}%
-                                       %{--value="Yes"--}%
-                                       %{--data-reviewName="Is Foreign GL, Hired Auto and Workers Comp Required?"--}%
-                                       %{--id="foreignGLYes_RadioButton"> Yes--}%
-                                %{--<input type="radio" name="foreignGL"--}%
-                                       %{--class=""--}%
-                                       %{--value="No"--}%
-                                       %{--data-reviewName="Is Foreign GL, Hired Auto and Workers Comp Required?"--}%
-                                       %{--id="foreignGLNo_RadioButton"--}%
-                                       %{--checked="checked"> No--}%
-                            %{--</div>--}%
-                        %{--</div>--}%
-
-
-                        %{--<div class="col-xs-12">--}%
-                            %{--<div class="form-group">--}%
-                                %{--<label>Do you require Film Producers Error and Omissions Liability? If yes, what limits? Please complete online application and submit for quoting</label><br>--}%
-                                %{--<input type="radio" name="errorOmissionsLiability"--}%
-                                       %{--class="showReview"--}%
-                                       %{--value="Yes"--}%
-                                       %{--data-reviewName="Do you require Film Producer Error and Omissions Liability? If yes, what limits? Please complete online application and submit for quoting"--}%
-                                       %{--id="errorOmissionsLiabilityYes_RadioButton"> Yes--}%
-                                %{--<input type="radio" name="errorOmissionsLiability"--}%
-                                       %{--class=""--}%
-                                       %{--value="No"--}%
-                                       %{--data-reviewName="Do you require Film Producers Error and Omissions Liability? If yes, what limits? Please complete online application and submit for quoting"--}%
-                                       %{--id="errorOmissionsLiabilityNo_RadioButton"--}%
-                                       %{--checked="checked"> No--}%
-                            %{--</div>--}%
-                        %{--</div>--}%
-
-                        %{--<div id="errorOmissionsLiabilityContainer" style="display:none">--}%
-                            %{--<input type="text" id="errorOmissionsLiability" class="showReview form-control col-xs-12"--}%
-                                   %{--name="name" data-reviewName="Error and Omission Limit"--}%
-                                   %{--id="errorOmissionsLimit" style="display:none" placeholder="\$USD"/>--}%
-                        %{--</div>--}%
-
-                        %{--<div class="col-xs-12">--}%
-                            %{--<div class="form-group">--}%
-                                %{--<label>Do you require Miscellaneous Professional Liability? If yes, what limits? Please complete online application and submit for quoting</label><br>--}%
-                                %{--<input type="radio" name="miscellaneousLiability"--}%
-                                       %{--class="showReview"--}%
-                                       %{--value="Yes"--}%
-                                       %{--data-reviewName="Do you require Miscellaneous Professional Liability? If yes, what limits? Please complete online application and submit for quoting"--}%
-                                       %{--id="miscellaneousLiabilityYes_RadioButton"> Yes--}%
-                                %{--<input type="radio" name="miscellaneousLiability"--}%
-                                       %{--class=""--}%
-                                       %{--value="No"--}%
-                                       %{--data-reviewName="Do you require Miscellaneous Professional Liability? If yes, what limits? Please complete online application and submit for quoting"--}%
-                                       %{--id="miscellaneousLiabilityNo_RadioButton"--}%
-                                       %{--checked="checked"> No--}%
-                            %{--</div>--}%
-                        %{--</div>--}%
-
                     </div>
+                    %{--Premium--}%
 
                 </div>
             </div>

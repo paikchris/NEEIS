@@ -6,53 +6,93 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="google-site-verification" content="gPZot81P_RcO5zhJN4DNKLra618gqM11Z2NeJ0MWPVo" />
 	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
 	<title>New Empire Portal</title>
+
+	<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+	<meta name="viewport" content="width=device-width" />
+
+	<link rel="apple-touch-icon" sizes="76x76" href="assets/img/apple-icon.png" />
+	<link rel="icon" type="image/png" href="assets/img/favicon.png" />
 
 	<!-- Bootstrap -->
 	<link rel="stylesheet" href="${resource(dir: 'css', file: 'bootstrap.min.css')}" type="text/css">
+
+	<!-- Font Awesome -->
 	<link rel="stylesheet" href="${resource(dir: 'font-awesome-4.7.0', file: '/css/font-awesome.min.css')}" type="text/css">
-	%{--CUSTOM STYLESHEET--}%
-	<link rel="stylesheet" href="${resource(dir: 'css', file: 'neeisTheme.css')}" type="text/css">
-	%{--<link rel="stylesheet" href="${resource(dir: 'css', file: 'squarespaceTheme.css')}" type="text/css">--}%
+
+	%{--Neeis Custom Style Sheet--}%
+	<link rel="stylesheet" href="${resource(dir: 'css', file: "neeisTheme.css?ts=" + new Date().getTime())}" type="text/css">
 
 	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 	<!--[if lt IE 9]>
 		  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 		  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+		  <script type="text/javascript">
+		   	alert("IE Compatibility is currently limited while development is ongoing. We apologize for any inconveniences.");
+			</script>
 		<![endif]-->
 	<!--[if IE]>
-
 	<![endif]-->
-	%{--<script type="text/javascript">--}%
-		%{--window.location = "./../auth/iesupport";--}%
-	%{--</script>--}%
+	<!--[if lt IE 11]>
+		  <script type="text/javascript">
+		   	alert("IE Compatibility is currently limited while development is ongoing. We apologize for any inconveniences.");
+			</script>
+		<![endif]-->
+	<!--[if IE]>
+	<![endif]-->
+
+	<!-- Google Analytics Script -->
 	<script>
 		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 					(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 				m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
 		ga('create', 'UA-91154540-1', 'auto');
 		ga('send', 'pageview');
-
 	</script>
 
 
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-	<script src="${resource(dir: 'js', file: 'jquery.maskedinput.js')}" ></script>
+	%{--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>--}%
+	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+	<script src="https://code.jquery.com/jquery-migrate-3.0.0.js"></script>
+
+
+	<!-- //////////////////////////////////////////////////////////////////////////// -->
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+
+	<!-- Moment plugin for Dates/Times -->
 	<script src="${resource(dir: 'js', file: 'moment.js')}" ></script>
+
+	<!-- Browser Cookie plugin -->
 	<script src="${resource(dir: 'js', file: 'js.cookie.js')}" ></script>
 
-	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<!-- Bootstrap JS file-->
 	<script src="${resource(dir: 'js', file: 'bootstrap.min.js')}" ></script>
+
+	<!-- Neeis Global JS file-->
 	<script src="${resource(dir: 'js', file: 'global.js')}" ></script>
 
+	<!-- Jquery Bootstrap Wizard Plugin-->
+	<link rel="stylesheet" href="${resource(dir: 'plugins/UI/bootstrap-wizard/css', file: 'smart_wizard.css')}" type="text/css">
+	<link rel="stylesheet" href="${resource(dir: 'plugins/UI/bootstrap-wizard/css', file: 'smart_wizard_theme_arrows.css')}" type="text/css">
+	<script src="${resource(dir: 'plugins/UI/bootstrap-wizard/js', file: 'jquery.smartWizard.min.js')}" ></script>
 
+
+
+	<!-- DATE PICKER PLUGIN -->
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js" ></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css" />
 
+
+
+	<!-- Masking Inputs plugin -->
+	<script src="${resource(dir: 'js', file: 'jquery.maskedinput.js')}" ></script>
+
+	<!-- Masking Currency plugin -->
+	<script src="${resource(dir: 'js', file: 'jquery.maskMoney.min.js')}"></script>
 
 
 	<script >
@@ -336,7 +376,13 @@
 		</div><!-- /.modal-content -->
 	</div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-<div class="modal" id="loadingModal"><!-- Place at bottom of page --></div>
+<div class="modal fade" tabindex="-1" role="dialog" id="loadingModal">
+	<div class="loader">
+		<div class="double-bounce1"></div>
+		<div class="double-bounce2"></div>
+	</div>
+
+</div>
 
 <div class="modal fade" tabindex="-1" role="dialog" id="attachmentsViewModal">
 	<div class="modal-dialog" role="document">

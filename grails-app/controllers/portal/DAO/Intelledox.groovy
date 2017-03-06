@@ -47,7 +47,7 @@ class Intelledox {
                     <int:Data><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <application>
 \t<basicInfo>
-\t\t<name>${jsonSerial.getAt("nameOfProductionCompany")}</name>
+\t\t<name>${XmlUtil.escapeXml(jsonSerial.getAt('nameOfProductionCompany'))}</name>
 \t\t<date>${jsonSerial.getAt("dateAdded").substring(1, jsonSerial.getAt("dateAdded").length() - 1).split(" ")[0]}</date>
 \t\t<phone>${jsonSerial.getAt("phoneNumber")}</phone>
 \t\t<address>${jsonSerial.getAt("streetNameMailing")}</address>
@@ -61,7 +61,7 @@ class Intelledox {
 \t\t<dateStart>${jsonSerial.getAt("proposedEffectiveDate")} - ${jsonSerial.getAt("proposedExpirationDate")} </dateStart>
 \t\t<annualOrShort>${jsonSerial.getAt("proposedTermLength")}</annualOrShort>
 \t\t<insuranceCompany>${jsonSerial.getAt("insuranceCompany")}</insuranceCompany>
-\t\t<primaryName>${jsonSerial.getAt("namedInsured")}</primaryName>
+\t\t<primaryName>${XmlUtil.escapeXml(jsonSerial.getAt('namedInsured'))}</primaryName>
 \t\t<primaryPhone>${jsonSerial.getAt("phoneNumber")}</primaryPhone>""";
 //\t\t<primaryFax>${jsonSerial.getAt("phoneNumber")}</primaryFax>
 soapXML = soapXML + """"
@@ -69,7 +69,7 @@ soapXML = soapXML + """"
 \t\t<physicalAddress>${jsonSerial.getAt("streetNameMailing")}, ${jsonSerial.getAt("cityMailing")}, ${
             jsonSerial.getAt("stateMailing")
         }, ${jsonSerial.getAt("zipCodeMailing")} </physicalAddress>
-\t\t<website> ${jsonSerial.getAt("website")}</website>
+\t\t<website> ${XmlUtil.escapeXml(jsonSerial.getAt('website'))}</website>
 \t\t<total> Total: </total>
 \t\t<totalCost>${jsonSerial.getAt("premiumAllLOBTotal")}</totalCost>
 \t\t<underwriter>Jason DeBolt</underwriter>
@@ -81,14 +81,14 @@ soapXML = soapXML + """"
 \t\t<locationOfRiskAddress>${jsonSerial.getAt("filmingLocation")}</locationOfRiskAddress>
 \t\t<locationOfRiskCity></locationOfRiskCity>
 \t\t<locationOfRiskZip></locationOfRiskZip>
-\t\t<cbGDY>X</cbGDY>
-\t\t<cbGDN>X</cbGDN>
-\t\t<cbCAARPY>X</cbCAARPY>
-\t\t<cbCAARPN>X</cbCAARPN>
-\t\t<cbCAARPIneligibleY>X</cbCAARPIneligibleY>
-\t\t<cbCAARPIneligibleN>X</cbCAARPIneligibleN>
-\t\t<cbHealthY>X</cbHealthY>
-\t\t<cbHealthN>X</cbHealthN>
+\t\t<cbGDY></cbGDY>
+\t\t<cbGDN></cbGDN>
+\t\t<cbCAARPY></cbCAARPY>
+\t\t<cbCAARPN></cbCAARPN>
+\t\t<cbCAARPIneligibleY></cbCAARPIneligibleY>
+\t\t<cbCAARPIneligibleN></cbCAARPIneligibleN>
+\t\t<cbHealthY></cbHealthY>
+\t\t<cbHealthN></cbHealthN>
 \t\t<RiskPurchasingGroupName></RiskPurchasingGroupName>
 \t\t<RiskPurchasingGroupAddress></RiskPurchasingGroupAddress>
 \t\t<nameOtherAgent></nameOtherAgent>
@@ -250,7 +250,7 @@ soapXML = soapXML + """
 \t<budgetInformation>
 \t\t<budget> ${jsonSerial.getAt("totalBudgetConfirm")} </budget>
 \t\t<numberProduction> ${jsonSerial.getAt("numberProductions")} </numberProduction>
-\t\t<maxBudget> To Follow </maxBudget>
+\t\t<maxBudget> ${jsonSerial.getAt("maxCostOneProduction")} </maxBudget>
 \t\t<workOthers> ${uwQuestionsMap.getAt("Do you do post production or special effects for others?")} </workOthers>
 \t\t<sourceFinance> To Follow </sourceFinance>
 \t\t<mediaType> N/A </mediaType>
@@ -258,7 +258,7 @@ soapXML = soapXML + """
 \t</budgetInformation>
 
 \t<productionInformation>
-\t\t<script> ${jsonSerial.getAt("story")} </script>
+\t\t<script> ${XmlUtil.escapeXml("${jsonSerial.getAt('story')}")} </script>
 \t\t<productions>
 \t\t\t<production typeOfProduction="Type Of Production">
 \t\t\t\t<typeProductions>
@@ -411,6 +411,7 @@ soapXML = soapXML + """
 \t\t<certificateNumber>n</certificateNumber>
 \t\t<revisionNumber>n</revisionNumber>
 
+
 \t\t<insrltrGen>A</insrltrGen>
 \t\t<cbGenCommercialGeneralLiability>X</cbGenCommercialGeneralLiability>
 \t\t<cbGenClaimsMade>x</cbGenClaimsMade>
@@ -541,6 +542,15 @@ soapXML = soapXML + """
         log.info "INTELLEDOX CERT BYTES"
         log.info params
         FileTransferHelper fileHelper = new FileTransferHelper();
+        def projectGUID="";
+        if(params.ai == "true"){
+            //WITH AI FORM
+            projectGUID="8285f070-4e75-4ab2-a265-e81d7e4b2517"
+        }
+        else{
+            //WITHOUT AI FORM
+            projectGUID = "d83d80e6-3683-4589-a747-24e98b14765c"
+        }
 
         def soapXML = """<x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:int="http://services.dpm.com.au/intelledox/">
     <x:Header/>
@@ -548,7 +558,7 @@ soapXML = soapXML + """
         <int:GenerateWithData>
             <int:userName>admin</int:userName>
             <int:password>admin</int:password>
-            <int:projectGroupGuid>8285f070-4e75-4ab2-a265-e81d7e4b2517</int:projectGroupGuid>
+            <int:projectGroupGuid>${projectGUID}</int:projectGroupGuid>
             <int:providedData>
                 <int:ProvidedData>
                     <int:DataServiceGuid>2c1ce06a-100f-40c8-b4d4-af4057349532</int:DataServiceGuid>
@@ -570,6 +580,7 @@ soapXML = soapXML + """
 \t\t<certificateNumber>${params.certificateNumber}</certificateNumber>
 \t\t<revisionNumber>${params.revisionNumber}</revisionNumber>
 \t\t<submissionID>${params.otherPolicyNumber + "\n" + params.generalPolicyNumber + "\n" + params.autoPolicyNumber}</submissionID>
+\t\t<broker>${params['contactName']}</broker>
 
 \t\t<insrltrGen>${params.insrltrGen}</insrltrGen>
 \t\t<cbGenCommercialGeneralLiability>${params.cbGenCommercialGeneralLiability}</cbGenCommercialGeneralLiability>
@@ -732,8 +743,8 @@ soapXML = soapXML + """
 \t\t\t</int:providedData>
 \t\t\t<int:options>
 \t\t\t\t<int:ReturnDocuments>true</int:ReturnDocuments>
-\t\t\t\t<int:RunProviders>false</int:RunProviders>
-\t\t\t\t<int:LogGeneration>false</int:LogGeneration>
+\t\t\t\t<int:RunProviders>1</int:RunProviders>
+\t\t\t\t<int:LogGeneration>true</int:LogGeneration>
 \t\t\t</int:options>
 \t\t</int:GenerateWithData>
     </x:Body>
@@ -748,14 +759,14 @@ soapXML = soapXML + """
 //        log.info response.text
 
         log.info response.text.substring(0,1000)
-        def fileName = "Certificate.pdf"
+        def fileName = "Certificate-" + params.insured + ".pdf"
 
         def a = new XmlSlurper().parseText(response.text)
         def nodeToSerialize = a."**".find {it.name() == 'BinaryFile'}
         def pdfBinaryFile = nodeToSerialize.text();
 
 //        def quoteID = it.split(";")[0]
-        def folderPath = org.codehaus.groovy.grails.web.context.ServletContextHolder.getServletContext().getRealPath("/attachments/")
+        def folderPath = org.codehaus.groovy.grails.web.context.ServletContextHolder.getServletContext().getRealPath("/attachments/${params.quoteID}")
         log.info folderPath
 
         fileName = fileHelper.ftpFileToAIM(fileName, folderPath, params.quoteID, dataSource_aim);
@@ -767,4 +778,96 @@ soapXML = soapXML + """
 
         return folderPath + "/" + fileName;
     }
+
+
+def createBindingPDF(jsonSerial, uwQuestionsMap, uwQuestionsOrder, dataSource_aim){
+    log.info "INTELLEDOX"
+    log.info "JSON ==== " + jsonSerial
+
+    FileTransferHelper fileHelper = new FileTransferHelper();
+
+
+
+    def soapXML = """<x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:int="http://services.dpm.com.au/intelledox/">
+    <x:Header/>
+    <x:Body>
+        <int:GenerateWithData>
+            <int:userName>admin</int:userName>
+            <int:password>admin</int:password>
+            <int:projectGroupGuid>afa418e4-ccea-403d-8eb6-b822ee2943d2</int:projectGroupGuid>
+            <int:providedData>
+                <int:ProvidedData>
+                    <int:DataServiceGuid>83931a73-1d33-4a70-b942-ea92d5aee282</int:DataServiceGuid>
+                    <int:Data><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<application>
+\t<binding>
+\t\t<date>${jsonSerial.getAt("dateAdded").substring(1, jsonSerial.getAt("dateAdded").length() - 1).split(" ")[0]}</date>
+\t\t<startDate>${jsonSerial.getAt("proposedEffectiveDate")} </startDate>
+\t\t<effectiveDate>${jsonSerial.getAt("proposedEffectiveDate")} - ${jsonSerial.getAt("proposedExpirationDate")} </effectiveDate>
+\t\t<endDate>${jsonSerial.getAt("proposedExpirationDate")}</endDate>
+\t\t<broker>${jsonSerial.getAt("brokerFirstName")} ${jsonSerial.getAt("brokerLastName")}</broker>
+\t\t<brokerCompany></brokerCompany>
+\t\t<insured>${XmlUtil.escapeXml(jsonSerial.getAt('namedInsured'))}</insured>
+\t\t<insuredStreet>${jsonSerial.getAt("streetNameMailing")}</insuredStreet>
+\t\t<insuredCity>${jsonSerial.getAt("cityMailing")}</insuredCity>
+\t\t<insuredState>${jsonSerial.getAt("stateMailing")}</insuredState>
+\t\t<insuredZip>${jsonSerial.getAt("zipCodeMailing")}</insuredZip>
+\t\t<coverageType>${coverages}</coverageType>
+\t\t<emailBody></emailBody>
+\t\t<insurer>${jsonSerial.getAt("insuranceCompany")}</insurer>
+\t\t<fees></fees>
+\t\t<policyNumber></policyNumber>
+\t\t<premium></premium>
+\t\t<producer></producer>
+\t\t<referenceNumber></referenceNumber>
+\t\t<term></term>
+\t\t<total></total>
+\t\t<triaPremium></triaPremium>
+\t\t<underwriter>Shauna DeBolt</underwriter>
+\t\t<underwriterEmail>shauna@neeis.com</underwriterEmail>
+\t\t<underwriterTitle>Vice-President, Underwriting Manager </underwriterTitle>
+\t\t<underwriterPhoneNumber>3102653803</underwriterPhoneNumber>
+\t\t<coverage>${coverages}</coverage>
+\t</binding>
+</application>]]></int:Data>
+                </int:ProvidedData>
+            </int:providedData>
+            <int:options>
+                <int:ReturnDocuments>true</int:ReturnDocuments>
+                <int:RunProviders>1</int:RunProviders>
+                <int:LogGeneration>true</int:LogGeneration>
+            </int:options>
+        </int:GenerateWithData>
+    </x:Body>
+</x:Envelope>"""
+
+//    log.info soapXML
+//
+//    def client = new SOAPClient('http://138.91.159.55/Produce/Service/GenerateDoc.asmx?WSDL')
+//    client.authorization = new HTTPBasicAuthorization("admin", "admin")
+//    def response = client.send(SOAPAction:'http://services.dpm.com.au/intelledox/GenerateWithData', soapXML)
+//
+//    log.info response.text
+//    def fileName = "Indication A.pdf"
+//
+//    def a = new XmlSlurper().parseText(response.text)
+//    def nodeToSerialize = a."**".find {it.name() == 'BinaryFile'}
+//    def pdfBinaryFile = nodeToSerialize.text();
+//
+//    log.info("NEW FOLDER QUOTE = " + jsonSerial.getAt("allQuoteIDs"))
+////        def quoteID = jsonSerial.getAt("allQuoteIDs").split(",")[0].split(";")[0]
+//
+//    jsonSerial.getAt("allQuoteIDs").split(",").each {
+//        def quoteID = it.split(";")[0]
+//        def folderPath = org.codehaus.groovy.grails.web.context.ServletContextHolder.getServletContext().getRealPath("/attachments/${quoteID}/")
+//        log.info folderPath
+//
+//        fileHelper.saveBinaryFileToLocalPath(pdfBinaryFile, folderPath, fileName);
+//
+//        fileHelper.ftpFileToAIM(fileName, folderPath, quoteID, dataSource_aim);
+//    }
+
+
+    return "good"
+}
 }

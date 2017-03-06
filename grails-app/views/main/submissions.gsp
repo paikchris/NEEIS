@@ -48,7 +48,7 @@
         <div class="input-group">
             <input type="text" class="form-control" id="submissionSearch" placeholder="Search">
             <span class="input-group-btn">
-                <button class="btn btn-default" type="button">Search</button>
+                <button class="btn btn-default" type="button" id="searchButton">Search</button>
             </span>
         </div><!-- /input-group -->
 
@@ -60,13 +60,12 @@
                 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
-                <li><a href="#"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Submission Received</a></li>
-                <li><a href="#"><span class="glyphicon glyphicon-transfer" aria-hidden="true"></span> Processing / Binding</a></li>
-                <li><a href="#"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Missing Information</a></li>
-                <li><a href="#"><span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span> Approved</a></li>
-                <li><a href="#"><span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span> Declined</a></li>
-                <li role="separator" class="divider"></li>
-                <li><a href="#"><span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span> Expired</a></li>
+                <li><a href="#" class="filterButton" data-filterOption="none"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> No Filter</a></li>
+                <li><a href="#" class="filterButton" data-filterOption="WRA"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Approval Requested</a></li>
+                <li><a href="#" class="filterButton" data-filterOption="BND"><span class="glyphicon glyphicon-transfer" aria-hidden="true"></span> Bound</a></li>
+                <li><a href="#" class="filterButton" data-filterOption="QO"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Quoted</a></li>
+                <li><a href="#" class="filterButton" data-filterOption="WB3"><span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span> Approved</a></li>
+                <li><a href="#" class="filterButton" data-filterOption="WB5"><span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span> Declined</a></li>
             </ul>
         </div>
     </div>
@@ -108,12 +107,17 @@
                                     <tr class="submissionRow" style="cursor:pointer">
                                 </g:else>
 
-                                <g:if test="${s.web == "true"}">
-                                    <td><span class="glyphicon glyphicon-cloud" aria-hidden="true" style="color: rgba(146, 221, 237, 1);font-size: 14px;"></span></td>
-                                </g:if>
-                                <g:else>
+                                <g:if test="${user.userRole == "Broker"}">
                                     <td><span class="" aria-hidden="" style="color: rgba(146, 221, 237, 1);font-size: 14px;"></span></td>
-                                </g:else>
+                                </g:if>
+                                <g:elseif test="${user.userRole == "Underwriter"}">
+                                    <g:if test="${s.web == "true"}">
+                                        <td><span class="glyphicon glyphicon-cloud" aria-hidden="true" style="color: rgba(146, 221, 237, 1);font-size: 14px;"></span></td>
+                                    </g:if>
+                                    <g:else>
+                                        <td><span class="" aria-hidden="" style="color: rgba(146, 221, 237, 1);font-size: 14px;"></span></td>
+                                    </g:else>
+                                </g:elseif>
 
                                 <g:if test="${user.userRole == "Broker"}">
                                     <th scope="row"><a href="#" class="aimQuoteIDTD">${s.aimQuoteID}</a></th>
@@ -125,6 +129,13 @@
                                     <td class="namedInsuredTD">${s.namedInsured}</td>
                                     <td class="coveragesTD">${s.coverages}</td>
                                     <td  class="submittedByTD">${s.submittedBy}</td>
+                                    <g:if test="${user.userRole == "Broker"}">
+                                        <td  class="brokerEmail" style="display:none">${session.user.email}</td>
+                                    </g:if>
+                                    <g:elseif test="${user.userRole == "Underwriter"}">
+                                        <td  class="brokerEmail" style="display:none">${s.brokerEmail}</td>
+                                    </g:elseif>
+
                                     <td  class="submitDateTD">${s.submitDate}</td>
                                     <td class="submissionStatusTD">
                                         <g:if test="${s.statusCode == "NBR"}">
@@ -178,8 +189,11 @@
                 </div>
     </div>
 
-<script src="${resource(dir: 'js', file: 'submissions.js?n=1')}"></script>
-<script src="${resource(dir: 'js', file: 'jquery.maskMoney.min.js')}"></script>
+<script src="${resource(dir: 'js', file: "submissions.js?ts=" + new Date().getTime())}"></script>
+
+
+
+
 <div class="modal fade" tabindex="-1" role="dialog" id="reviewModal">
     <style>
         .tab-pane{
@@ -263,37 +277,58 @@
                 <div class="col-xs-12" style="padding-bottom: 18px;padding-top:14px;padding-left:0px;padding-right:0px;">
                     <button class="btn btn-default reviewMessageButton" type="submit">
                         <span class="glyphicon glyphicon-envelope" aria-hidden="true" style="top: 3px; margin-right: 4px;"></span>
-                        <span class="DAOspan " data-daoName="Quote-Attention" style="font-size: 14px; font-weight: 500"></span>
+                        <g:if test="${user.userRole == "Broker"}">
+                            <span class="DAOspan " data-daoName="Quote-AcctExec" style="font-size: 14px; font-weight: 500"></span>
+                        </g:if>
+                        <g:elseif test="${user.userRole == "Underwriter"}">
+                            <span class="DAOspan " data-daoName="Quote-Attention" style="font-size: 14px; font-weight: 500"></span>
+                        </g:elseif>
                     </button>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-user-circle-o" aria-hidden="true"></i>
-                            <span class="DAOspan " data-daoName="Quote-AcctExec" id='acctExecName'style="font-size: 14px; font-weight: 500"></span>
-                            <span class="caret"></span>
+                    <g:if test="${user.userRole == "Underwriter"}">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-user-circle-o" aria-hidden="true"></i>
+                                <span class="DAOspan " data-daoName="Quote-AcctExec" id='acctExecName'style="font-size: 14px; font-weight: 500"></span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <g:each in="${neeisUWList}" var="s" status="i">
+                                    <li><a href="#" class="switchUWOption">${s}</a></li>
+                                </g:each>
+                            </ul>
+                        </div>
+
+                        <button class="btn btn-primary" id="bindOptionsButton" type="button" style="margin-left:20px;">
+                            <i class="fa fa-handshake-o" aria-hidden="true"></i>
+                            <span class="" id="bindOptionsButtonSpan" style="font-size: 14px; font-weight: 500" > Bind</span>
                         </button>
-                        <ul class="dropdown-menu">
-                            <g:each in="${neeisUWList}" var="s" status="i">
-                                <li><a href="#" class="switchUWOption">${s}</a></li>
-                            </g:each>
-                        </ul>
-                    </div>
+                    </g:if>
+
                     <span></span>
-                    <button class="btn btn-success pull-right" id="reviewStatusChangeButton" type="button" data-currentStatusCode="" data-nextStatus=''
+
+                    <button class="btn btn-success pull-right reviewStatusChangeButton" id="reviewStatusChangeButton" type="button" data-currentStatusCode="" data-nextStatus=''
                             data-nextButtonText=''>
                         <i class="fa fa-flag" aria-hidden="true"></i>
                         <span class="" id="reviewStatusButtonSpan" style="font-size: 14px; font-weight: 500" > Approve</span>
                     </button>
+
                      %{--(<span class="DAOspan Quote-ProducerName" style="font-style: italic;">Truman Van Dyke</span>)<br>--}%
                 </div>
                 <div class="row">
                     <div class="col-xs-12">
                         <!-- Nav tabs -->
                         <ul class="nav nav-tabs" role="tablist">
-                            <li role="presentation" class="active"><a class="reviewTab " href="#overview" aria-controls="overview" role="tab" data-toggle="tab">Overview</a></li>
+                            <li role="presentation" class="active"><a class="reviewTab " href="#overview" aria-controls="overview" role="tab" data-toggle="tab" id="overviewTabButton">Overview</a></li>
                             <li role="presentation"><a class="reviewTab " href="#forms" aria-controls="forms" role="tab" data-toggle="tab">Forms</a></li>
                         <li role="presentation"><a class="reviewTab " href="#insured" aria-controls="profile" role="tab" data-toggle="tab">Insured</a></li>
                         <li role="presentation"><a class="reviewTab " href="#underwriting" aria-controls="messages" role="tab" data-toggle="tab">Underwriting</a></li>
+
+                        <g:if test="${user.userRole == "Broker"}">
+                        </g:if>
+                        <g:elseif test="${user.userRole == "Underwriter"}">
                             <li role="presentation"><a class="reviewTab " href="#rating" aria-controls="rating" role="tab" data-toggle="tab">Rating</a></li>
+                            <li role="presentation"><a class="reviewTab " href="#bind" aria-controls="bind" role="tab" data-toggle="tab" id="bindReviewTabButton">Bind</a></li>
+                        </g:elseif>
                         </ul>
 
                         <!-- Tab panes -->
@@ -325,10 +360,10 @@
                                     </div>
                                     <div class="col-xs-3 rightPanel">
                                         <div class="row">
-                                            <div class="col-xs-12">
+                                            <div class="col-xs-12" id="reviewProposedDates">
                                                 <span style="font-weight:500">Proposed Dates</span><br>
                                                 <i class="fa fa-calendar" aria-hidden="true"></i>
-                                                <span class="DAOspan dateDAO" data-daoName="Version-ProposedEffective" >10/19/2016</span> - <span class="DAOspan dateDAO" data-daoName="Version-ProposedExpiration" >10/29/2016</span>
+                                                <span class="DAOspan dateDAO proposedEffective" data-daoName="Version-ProposedEffective" >10/19/2016</span> - <span class="DAOspan dateDAO proposedExpiration" data-daoName="Version-ProposedExpiration" >10/29/2016</span>
                                                 <br>
                                             </div>
                                         </div>
@@ -397,6 +432,7 @@
                                     </div>
                                 </div>
                             </div>
+                        <g:if test="${user.userRole == "Underwriter"}">
                             <div role="tabpanel" class="tab-pane fade" id="rating">
                                 <div class="row">
                                     <div class="col-md-12">
@@ -819,6 +855,307 @@
                                     </div>
                                 </div>
                             </div>
+                            <div role="tabpanel" class="tab-pane fade" id="bind">
+                                <style>
+                                    .policyNumberOptionButtonRow{
+                                        margin-top:12px;
+                                        margin-bottom:12px;
+                                    }
+
+                                    .policyNumberOptionButtonRow .btn.disabled,
+                                    .policyNumberOptionButtonRow .btn[disabled],
+                                    .policyNumberOptionButtonRow fieldset[disabled] .btn{
+                                        color: darkgray;
+                                    }
+                                    .policyRow{
+                                        background-color: rgba(17, 80, 53, 1);
+                                        color: white;
+                                        border-radius: 4px;
+                                        padding:4px;
+                                        margin-bottom: 14px;
+                                        cursor:pointer;
+                                    }
+                                    .card {
+                                    }
+
+                                    .card {
+                                        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+                                        transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+                                    }
+
+                                    .card:hover {
+                                        box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+                                    }
+                                </style>
+                                <div class="row">
+                                    <div class="col-xs-12" style="padding:9px 80px;">
+                                        <div  class="sw-theme-arrows" id="smartwizard">
+                                            <ul>
+                                                <li><a href="#step-1">Policy Number Options<br /><small>Select Bind Method</small></a></li>
+                                                <li><a href="#step-2">Available Policy Numbers<br /><small>Select a Policy Number</small></a></li>
+                                                <li><a href="#step-3">Review<br /><small>Step description</small></a></li>
+                                                <li><a href="#step-4">Bind<br /><small>Step description</small></a></li>
+                                            </ul>
+
+                                            <div>
+                                                <div id="step-1" class="" style="">
+                                                    <div class="row policyNumberOptionButtonRow">
+                                                        <div class="col-xs-4 col-xs-offset-4">
+                                                            <button class="btn btn-primary form-control"
+                                                                    type="button" id="getPolicyFromRegisterButton">Get Policy Number From Register</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row policyNumberOptionButtonRow">
+                                                        <div class="col-xs-4 col-xs-offset-4">
+                                                            <button class="btn btn-primary form-control"
+                                                                    type="button" disabled="disabled">Issue Binder, Policy Number TBD</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row policyNumberOptionButtonRow">
+                                                        <div class="col-xs-4 col-xs-offset-4">
+                                                            <button class="btn btn-primary form-control"
+                                                                    type="button" disabled="disabled">Enter Policy Number From Company</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row policyNumberOptionButtonRow">
+                                                        <div class="col-xs-4 col-xs-offset-4">
+                                                            <button class="btn btn-primary form-control"
+                                                                    type="button" disabled="disabled">Issue Binder With Master Policy Number</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row policyNumberOptionButtonRow">
+                                                        <div class="col-xs-4 col-xs-offset-4">
+                                                            <button class="btn btn-primary form-control"
+                                                                    type="button" disabled="disabled">Issue Renewal Certificate</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="step-2" class="" style="display:none">
+                                                    <h5>Select a Policy Number</h5>
+                                                    <div class="policyNumbersContainer" style="padding: 10px 20px">
+                                                        <div id="policyKeyID" style="display:none"></div>
+                                                        <div class="row">
+                                                            <div class="col-xs-2">
+                                                                <label>Policy Number</label>
+                                                            </div>
+                                                            <div class="col-xs-2 ">
+                                                                <label>Type</label>
+                                                            </div>
+                                                            <div class="col-xs-2 ">
+                                                                <label>Comp Cd</label>
+                                                            </div>
+                                                            <div class="col-xs-2 ">
+                                                                <label>Company</label>
+                                                            </div>
+                                                            <div class="col-xs-2 ">
+                                                                <label>Product ID</label>
+                                                            </div>
+                                                            <div class="col-xs-2 ">
+                                                                <label>Register</label>
+                                                            </div>
+                                                        </div>
+                                                        <div id="policyNumberTable" >
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="step-3" class="" style="display:none">
+                                                    <h4 id="policyNumberHeader"> </h4>
+                                                    <br>
+                                                    <div class="col-xs-6">
+                                                        <div class="col-xs-12">
+                                                            <div class="col-xs-12">
+                                                                <span style="font-weight:500">Premium Breakdown</span>
+                                                            </div>
+
+                                                        </div>
+                                                        <div class="col-xs-12">
+                                                            <div id="premiumBreakdownOverviewForBind">
+                                                            </div>
+                                                        </div>
+                                                        <br>
+                                                        <br>
+                                                        <br>
+                                                        <div class="col-xs-12">
+                                                            <div class="col-xs-3">
+                                                                <span style="font-weight:500">Limit</span>
+                                                            </div>
+                                                            <div class="col-xs-6">
+                                                                <span style="font-weight:500">Coverage</span>
+                                                            </div>
+                                                            <div class="col-xs-3">
+                                                                <span style="font-weight:500">Deductible</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-12">
+                                                            <div id="limitsDeductOverviewForBind" style="font-size:12px; text-overflow: ellipsis ;">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-6">
+                                                        <div class="col-xs-12" id="proposedDatesForBind">
+
+                                                        </div>
+                                                    </div>
+
+
+
+
+                                                </div>
+                                                <div id="step-4" class="" style="display:none">
+                                                    <div class="col-xs-12">
+                                                        <div class="col-xs-6">
+                                                            <h4 id="submitBindPolicyNumber"></h4>
+                                                        </div>
+                                                        <div class="col-xs-6">
+                                                            <h4 id="submitBindNamedInsured"></h4>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-12">
+                                                        <div class="col-xs-9" style="margin-bottom:40px;">
+                                                            <div class="col-xs-12">
+                                                                <span style="font-weight:500">Company</span><br>
+                                                                <i class="fa fa-building" aria-hidden="true"></i>
+                                                                <span class="DAOspan " data-daoName="Company-Name" >Company Name</span>
+                                                                <br>
+                                                                <span style="font-weight:500">Product</span><br>
+                                                                <i class="fa fa-star" aria-hidden="true"></i>
+                                                                <span class="DAOspan" data-daoName="Product-Description" >Product Desc</span>
+                                                            </div>
+                                                            <div class="col-xs-6">
+                                                                <span style="font-weight:500">Proposed Dates</span><br>
+                                                                <i class="fa fa-calendar" aria-hidden="true"></i>
+                                                                <span class="DAOspan dateDAO proposedEffective" data-daoName="Version-ProposedEffective" >10/19/2016</span> - <span class="DAOspan dateDAO proposedExpiration" data-daoName="Version-ProposedExpiration" >10/29/2016</span>
+                                                            </div>
+                                                            <div class="col-xs-2">
+                                                                <span style="font-weight:500">Term</span><br>
+                                                                <span class="DAOspan" data-daoName="Version-Term" >Term</span>
+                                                            </div>
+                                                            <div class="col-xs-2">
+                                                                <span style="font-weight:500">Time</span><br>
+                                                                <i class="fa fa-clock-o" aria-hidden="true"></i>
+                                                                <span class="">12:01 AM</span>
+                                                            </div>
+                                                            <div class="col-xs-2">
+                                                                <span style="font-weight:500">Binder Expires</span><br>
+                                                                <span class="">Input</span>
+                                                            </div>
+                                                            <div class="col-xs-6">
+                                                                <span style="font-weight:500">Billing Method</span><br>
+                                                                <i class="fa fa-university" aria-hidden="true"></i>
+                                                                <span class="">Input: (Agency Billed) / (Direct Bill / Insured Bill) / (Direct Bill / Company to Insured) / (Hybrid Bill)</span>
+                                                            </div>
+                                                            <div class="col-xs-6">
+                                                                <span style="font-weight:500">Agent License</span><br>
+                                                                <i class="fa fa-suitcase" aria-hidden="true"></i>
+                                                                <span class="">Input</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-3" style="margin-bottom:40px;">
+                                                            <div class="col-xs-12">
+                                                                <span style="font-weight:500">Premium</span><br>
+                                                                <span class="DAOspan" data-daoName="Version-Premium" >$$$</span>
+                                                                <br>
+                                                                <span style="font-weight:500">TRIA</span><br>
+                                                                <span class="DAOspan" data-daoName="Version-TerrorActStatus">Status</span>
+                                                                <br>
+                                                                <span style="font-weight:500">Fee (Taxable)</span><br>
+                                                                <span class="DAOspan" data-daoName="Version-Non_Premium" >Fees</span>
+                                                                <br>
+                                                                <span style="font-weight:500">Fee (Non-Taxable)</span><br>
+                                                                <span class="DAOspan" data-daoName="Version-NonTax_Premium" >Taxable Fee</span>
+                                                                <br>
+                                                                <span style="font-weight:500">Taxes</span><br>
+                                                                <span class="DAOspan " data-daoName="Version-Tax1Name"></span> <span class="DAOspan " data-daoName="Version-Tax1" ></span><br>
+                                                                <span class="DAOspan " data-daoName="Version-Tax2Name"></span> <span class="DAOspan " data-daoName="Version-Tax2" ></span><br>
+                                                                %{--<span class="DAOspan " data-daoName="Version-Tax3Name"></span> <span class="DAOspan " data-daoName="Version-Tax3" ></span><br>--}%
+                                                                %{--<span class="DAOspan " data-daoName="Version-Tax4Name"></span> <span class="DAOspan " data-daoName="Version-Tax4" ></span><br>--}%
+                                                                %{--<br>--}%
+                                                                <span style="font-weight:500">Premium Finance Fee</span><br>
+                                                                <span class="" data-daoName="" >$$$$</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-9">
+                                                            <div class="col-xs-4">
+                                                                <span style="font-weight:500">Loc Info</span><br>
+                                                                <span>TBD</span>
+                                                            </div>
+                                                            <div class="col-xs-4">
+                                                                <span style="font-weight:500">EC</span><br>
+                                                                <span>TBD</span>
+                                                            </div>
+                                                            <div class="col-xs-4">
+                                                                <span style="font-weight:500">RE Cat</span><br>
+                                                                <span>TBD</span>
+                                                            </div>
+                                                            <div class="col-xs-8">
+                                                                <span style="font-weight:500">SIC</span><br>
+                                                                <span>TBD</span>
+                                                            </div>
+                                                            <div class="col-xs-4">
+                                                                <span style="font-weight:500">SIC ID</span><br>
+                                                                <span>TBD</span>
+                                                            </div>
+                                                            <div class="col-xs-8">
+                                                                <span style="font-weight:500">Finance Co</span><br>
+                                                                <span>TBD</span>
+                                                            </div>
+                                                            <div class="col-xs-4">
+                                                                <span style="font-weight:500">Finance Co ID</span><br>
+                                                                <span>TBD</span>
+                                                            </div>
+                                                            <div class="col-xs-8">
+                                                                <span style="font-weight:500">Contract Nbr</span><br>
+                                                                <span>TBD</span>
+                                                            </div>
+                                                            <div class="col-xs-4">
+                                                                <span style="font-weight:500">Contract ID</span><br>
+                                                                <span>TBD</span>
+                                                            </div>
+                                                            <div class="col-xs-8">
+                                                                <span style="font-weight:500">ISO Code</span><br>
+                                                                <span>TBD</span>
+                                                            </div>
+                                                            <div class="col-xs-4">
+                                                                <span style="font-weight:500">SLA</span><br>
+                                                                <span>TBD</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-3">
+                                                            <div class="col-xs-12">
+                                                                <label>
+                                                                    <input type="checkbox"> Order Inspection
+                                                                </label>
+                                                                <br>
+                                                                <label>
+                                                                    <input type="checkbox"> Rewrite
+                                                                </label>
+                                                                <label>
+                                                                    <input type="checkbox"> Subject to Audit
+                                                                </label>
+                                                                <br>
+                                                                <label>
+                                                                    <input type="checkbox"> Issue Confirmation
+                                                                </label>
+                                                                <label>
+                                                                    <input type="checkbox"> Courtesy - Invoice Taxes Only
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-10 col-xs-offset-1" style="margin-top:40px">
+                                                        <div class="col-xs-4 col-xs-offset-4">
+                                                            <button class="btn btn-primary form-control"
+                                                                    type="button" id="bindFinalButton">Bind</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </g:if>
                         </div>
                     </div>
 
@@ -831,7 +1168,9 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-xs btn-danger pull-left" data-dismiss="modal" >Decline</button>
+                <button type="button" class="btn btn-xs btn-danger pull-left reviewStatusChangeButton" data-currentStatusCode="" data-nextStatus=''
+                        data-nextButtonText='Decline' id="reviewDeclineButton" >Decline</button>
+                <button class="btn btn-default"  type="button" value="Close" data-dismiss="modal">Close</button>
                 <button class="btn btn-primary"  type="button" value="Upload" >Save</button>
             </div>
         </div><!-- /.modal-content -->
@@ -902,6 +1241,45 @@
                                                    value="Other"
                                                    id="other"
                                                    style="margin-left:10px;"> Other
+                                        </div>
+
+                                        <div class="col-xs-12">
+                                            <button type="button" class="btn btn-default" id="addInsuredButton">Add New Additional Insured</button>
+                                        </div>
+                                        <div class="col-xs-12" style="display:none" id="addInsuredDiv">
+                                            <br>
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <div class="form-group">
+                                                        <label>Description</label>
+                                                        <input class="form-control" type="text" id="descriptionInput" data-fieldName="description" placeholder="Description">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <div class="form-group">
+                                                        <label>Operations</label>
+                                                        <textarea class="form-control" rows="5" id="operationsInput" data-fieldName="ops" placeholder="Operations"></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <div class="form-group">
+                                                        <label>Additional Insured</label>
+                                                        <textarea class="form-control" rows="5" id="additionaInsuredInput" data-fieldName="additionalInsured" placeholder="Additional Insured Name"></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <button type="button" class="btn btn-primary" id="saveInsuredButton">Save</button>
+                                                </div>
+                                            </div>
+
+
+
                                         </div>
                                     </div>
                                 </div>
@@ -991,7 +1369,8 @@
                                            class=""
                                            value="useAcordForm"
                                            id="useAcordForm"
-                                           style="margin-left:10px;"> Use ACORD form(s) for AI or Waiver
+                                           style="margin-left:10px;"
+                                            checked="checked"> Use ACORD form(s) for AI or Waiver
                                 </div>
                             </div>
                         </div>
@@ -1024,5 +1403,4 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-
 </body>
