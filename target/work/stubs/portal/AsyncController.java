@@ -39,8 +39,11 @@ public  void setDownloadCert(java.lang.Object value) { }
 public  java.lang.Object getProductsForCoverage() { return null;}
 public  java.lang.Object getLimitsDeductibles() { return null;}
 public  java.lang.Object getAvailableCoveragesForRiskType() { return null;}
+public  java.lang.Object getAllRiskTypesForCategory() { return null;}
 public  java.lang.Object getAttachmentsList() { return null;}
+public  java.lang.Object addNewInsured() { return null;}
 public  java.lang.Object ajaxAttach() { return null;}
+public  java.lang.Object newRatePremiums() { return null;}
 public  java.lang.Object ratePremiums() { return null;}
 public  java.lang.Object calcPIP3Deductibles(java.lang.Object totalBudget) { return null;}
 public  java.lang.Object saveSubmissionToAIM() { return null;}
@@ -49,8 +52,15 @@ public  java.lang.Object searchSubmissions() { return null;}
 public  java.lang.Object checkAgencyID() { return null;}
 public  java.lang.Object checkAgencyPIN() { return null;}
 public  java.lang.Object getQuestionsForRiskType() { return null;}
+public  java.lang.Object findUserFromName() { return null;}
 public  java.lang.Object sendMessage() { return null;}
 public  java.lang.Object markMessagesRead() { return null;}
+public  java.lang.Object assignSubmissionToUW() { return null;}
 public  java.lang.Object changeSubmissionStatus() { return null;}
+public  java.lang.Object getQuestionAnswers() { return null;}
 public  java.lang.Object saveSubmissionDraft() { return null;}
+public  java.lang.Object bindPrepare() { return null;}
+public  java.lang.Object bindGetPolicyNumbersFromRegister() { return null;}
+public  java.lang.Object bindReviewSubmissionDetails() { return null;}
+public  java.lang.Object bindSubmission() { return null;}
 }

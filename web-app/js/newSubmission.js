@@ -644,7 +644,6 @@ $(document).ready(function () {
                                     backdrop: 'static',
                                     keyboard: false
                                 });
-                                //$('#checkNamedInsuredModal').modal('show');
                                 $("#resolveNamedInsured").trigger('change');
                             }
 
@@ -727,11 +726,6 @@ $(document).ready(function () {
                             document.getElementById("resolveConflictBOR").disabled = false;
 
 
-                            //$('#checkNamedInsuredModal').modal({
-                            //    backdrop: 'static',
-                            //    keyboard: false
-                            //});
-                            //$('#checkNamedInsuredModal').modal('show');
                         }
                         else if(parseInt(matchNum) == 0){ //IF NAME IS GOOD AND UNIQUE
                             //console.log("resolve no error")
@@ -809,11 +803,6 @@ $(document).ready(function () {
                             $('#matchingSubmissionsContainer').html(htmlString);
                             $('#conflictExistsDiv').css('display','');
 
-                            //$('#checkNamedInsuredModal').modal({
-                            //    backdrop: 'static',
-                            //    keyboard: false
-                            //});
-                            //$('#checkNamedInsuredModal').modal('show');
 
                             $('#resolveNamedInsured').focus();
 
@@ -859,6 +848,26 @@ $(document).ready(function () {
         $('#BORRequestNotification').css('display', "");
         BORrequested=true;
         namedInsuredConflict=false;
+    });
+
+    $("#ignoreConflictBOR").on("click", function() {
+        var result = prompt("Renewal BOR Bypass");
+        if(result === "password"){
+            $("#namedInsured").closest(".form-group").removeClass("has-success");
+            $("#namedInsured").siblings(".glyphicon-ok").css("display", "none");
+
+            $("#namedInsured").closest(".form-group").removeClass("has-error");
+            $("#namedInsured").siblings(".glyphicon-remove").css("display", "none");
+            $('#namedInsured').attr("data-original-title", "");
+
+
+            $("#namedInsured").siblings(".glyphicon-list-alt").css("display","none");
+
+            $('#checkNamedInsuredModal').modal('hide');
+            BORrequested=false;
+            $('#BORRequestNotification').css('display', "none");
+            namedInsuredConflict=false;
+        }
 
     });
 
@@ -1137,32 +1146,69 @@ $(document).ready(function () {
                         $('#estimatedTotalAttendanceGroup').css('display', '');
                         $('#largestNumberAttendeesGroup').css('display', '');
 
-                        $("#insuredInfoInsert").load("./../forms/specialEventLiability #insuredInfo", function () {
-                            finishedLoading1 = true;
-                            if(finishedLoading1 && finishedLoading2 && finishedLoading3){
-                                $('#loadingModal').hide();
-                            }
-                        });
-                        $("#coverageInfoPanel").load("./../forms/specialEventLiability #coverageCheckboxesDiv", function () {
-                            finishedLoading3 = true;
-                            if(finishedLoading1 && finishedLoading2 && finishedLoading3){
-                                $('#loadingModal').hide();
-                            }
-                        });
-                        $("#riskSpecificInsert").load("./../forms/specialEventLiability #riskSpecificInfo", function () {
-                            var head = document.getElementsByTagName('head')[0];
-                            var script = document.createElement('script');
-                            script.type = 'text/javascript';
-                            script.src = '/portal/js/forms/specFilm.js'+"?ts=" + new Date().getTime();
-                            var script1 = document.createElement('script');
-                            script1.type = 'text/javascript';
-                            script1.src = '/portal/js/forms/specialEventLiability.js'+"?ts=" + new Date().getTime();
-                            head.appendChild(script1);
-                            finishedLoading2 = true;
-                            if(finishedLoading1 && finishedLoading2 && finishedLoading3){
-                                $('#loadingModal').hide();
-                            }
-                        });
+                        if (riskChosen === "Exhibitor" ||
+                            riskChosen === "Concessionaires Non Food Sales" ||
+                            riskChosen === "Concessionaires Food Sales" ||
+                            riskChosen === "Attractions / Performers"){
+                            $('.separatePolicy').css('display', '');
+
+                            $("#insuredInfoInsert").load("./../forms/specialEventVendor #insuredInfo", function () {
+                                finishedLoading1 = true;
+                                if(finishedLoading1 && finishedLoading2 && finishedLoading3){
+                                    $('#loadingModal').hide();
+                                }
+                            });
+                            $("#coverageInfoPanel").load("./../forms/specialEventVendor #coverageCheckboxesDiv", function () {
+                                finishedLoading3 = true;
+                                if(finishedLoading1 && finishedLoading2 && finishedLoading3){
+                                    $('#loadingModal').hide();
+                                }
+                            });
+                            $("#riskSpecificInsert").load("./../forms/specialEventVendor #riskSpecificInfo", function () {
+                                var head = document.getElementsByTagName('head')[0];
+                                var script = document.createElement('script');
+                                script.type = 'text/javascript';
+                                script.src = '/portal/js/forms/specFilm.js'+"?ts=" + new Date().getTime();
+                                var script1 = document.createElement('script');
+                                script1.type = 'text/javascript';
+                                script1.src = '/portal/js/forms/specialEventVendor.js'+"?ts=" + new Date().getTime();
+                                head.appendChild(script1);
+                                finishedLoading2 = true;
+                                if(finishedLoading1 && finishedLoading2 && finishedLoading3){
+                                    $('#loadingModal').hide();
+                                }
+                            });
+
+
+                        }
+                        else {
+                            $("#insuredInfoInsert").load("./../forms/specialEventLiability #insuredInfo", function () {
+                                finishedLoading1 = true;
+                                if (finishedLoading1 && finishedLoading2 && finishedLoading3) {
+                                    $('#loadingModal').hide();
+                                }
+                            });
+                            $("#coverageInfoPanel").load("./../forms/specialEventLiability #coverageCheckboxesDiv", function () {
+                                finishedLoading3 = true;
+                                if (finishedLoading1 && finishedLoading2 && finishedLoading3) {
+                                    $('#loadingModal').hide();
+                                }
+                            });
+                            $("#riskSpecificInsert").load("./../forms/specialEventLiability #riskSpecificInfo", function () {
+                                var head = document.getElementsByTagName('head')[0];
+                                var script = document.createElement('script');
+                                script.type = 'text/javascript';
+                                script.src = '/portal/js/forms/specFilm.js' + "?ts=" + new Date().getTime();
+                                var script1 = document.createElement('script');
+                                script1.type = 'text/javascript';
+                                script1.src = '/portal/js/forms/specialEventLiability.js' + "?ts=" + new Date().getTime();
+                                head.appendChild(script1);
+                                finishedLoading2 = true;
+                                if (finishedLoading1 && finishedLoading2 && finishedLoading3) {
+                                    $('#loadingModal').hide();
+                                }
+                            });
+                        }
                         //$('#totalBudgetConfirmGroup').css('display', 'none');
                     }
                     else if(riskCategory === "Shell Corporation"){

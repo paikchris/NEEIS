@@ -253,20 +253,40 @@
                 </div>
 
                 %{--WAIVER SIGNING--}%
-                <div class="col-xs-12 row">
-                    <div class="form-group">
-                        <label>Are Participants Signing Waivers??</label><br>
-                        <input type="radio" name="signingWaivers"
-                               class="showReview"
-                               value="Yes"
-                               data-reviewName="Are Participants Signing Waivers?"
-                               id="signingWaiversYes_RadioButton"> Yes
-                        <input type="radio" name="signingWaivers"
-                               class=""
-                               value="No"
-                               data-reviewName="Are Participants Signing Waivers?"
-                               id="signingWaiversNo_RadioButton"
-                               checked="checked"> No
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label>Are Participants Signing Waivers??</label><br>
+                            <input type="radio" name="signingWaivers"
+                                   class="showReview"
+                                   value="Yes"
+                                   data-reviewName="Are Participants Signing Waivers?"
+                                   id="signingWaiversYes_RadioButton"> Yes
+                            <input type="radio" name="signingWaivers"
+                                   class=""
+                                   value="No"
+                                   data-reviewName="Are Participants Signing Waivers?"
+                                   id="signingWaiversNo_RadioButton"
+                                   checked="checked"> No
+                        </div>
+                    </div>
+
+
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label>Has your insurance have ever been cancelled or declined?</label><br>
+                            <input type="radio" name="insuranceCancelled"
+                                   class="showReview"
+                                   value="Yes"
+                                   data-reviewName="Has your insurance have ever been cancelled or declined?"
+                                   id="insuranceCancelledYes_RadioButton"> Yes
+                            <input type="radio" name="insuranceCancelled"
+                                   class=""
+                                   value="No"
+                                   data-reviewName="Has your insurance have ever been cancelled or declined?"
+                                   id="insuranceCancelledNo_RadioButton"
+                                   checked="checked"> No
+                        </div>
                     </div>
                 </div>
 
@@ -394,102 +414,6 @@
 
         <div class="col-xs-6">
             <div class="row">
-
-                %{--WORK COMP COVERAGE REQUESTED?--}%
-                <div class="col-xs-12">
-                    <div class="form-group">
-                        <label>Work Comp Coverage Requested?</label><br>
-                        <input type="radio" name="workCompCoverageRequested?" class="showReview" value="Yes"
-                               data-reviewname="Work Comp Coverage Requested?"
-                               id="workCompCoverageRequestedYes_RadioButton"> Yes
-                        <input type="radio" name="workCompCoverageRequested?" class="" value="No"
-                               data-reviewname="Work Comp Coverage Requested?"
-                               id="workCompCoverageRequestedNo_RadioButton" checked="checked"> No
-                    </div>
-                </div>
-
-                <br>
-
-                %{--WORK COMP CONTAINER--}%
-                <div id="workCompCoverageRequestedContainer" style="display:none">
-
-                    <div class="col-xs-12">
-                        <div class="form-group">
-                            <label for="stateOfHire">States of Hire &amp; Total Payroll Each State</label>
-                            <input type="text" class="form-control" name="name" placeholder=""
-                                   data-reviewname="States of Hire &amp; Total Payroll Each State"
-                                   id="stateOfHireAndPayroll">
-                        </div>
-                    </div>
-
-
-                    <div class="col-xs-12">
-                        <div class="form-group">
-                            <label for="namesOfOfficers">Names of Officers, Title, % of Ownership</label>
-                            <input type="text" class="form-control" name="name" placeholder=""
-                                   data-reviewname="Names of Officers, Title, % of Ownership"
-                                   id="namesOfficerTitleOwnership">
-                        </div>
-                    </div>
-
-
-                    <div class="col-xs-12">
-                        <div class="form-group">
-                            <label for="namesOfOfficersExcluded">Name of Officers to be Excluded under WC</label>
-                            <input type="text" class="form-control" name="name" placeholder=""
-                                   data-reviewname="Name of Officers to be Excluded under WC"
-                                   id="officersExcludedUnderWC">
-                        </div>
-                    </div>
-
-                    <br>
-
-                    <div class="col-xs-12">
-                        <div class="col-xs-9 ">
-                            <strong class="coverageCodeString">Work Comp
-                            </strong>
-                        </div>
-
-                        <div class="col-xs-3 "><strong>Limits</strong>
-                        </div>
-
-                        <div class="col-xs-12 WC_LOBRow" style="background-color: rgba(38, 80, 159, 0.13)">
-                            <div class="col-xs-9 coverageColumn" style="padding-right:20px">
-                                <span>WC: Bodily Injury by Accident (each)</span>
-                            </div>
-
-                            <div class="col-xs-3 limitColumn"><span>$1,000,000</span>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 WC_LOBRow">
-                            <div class="col-xs-9 coverageColumn" style="">
-                                <span>WC: Bodily Injury by Disease (policy limit)</span>
-                            </div>
-
-                            <div class="col-xs-3 limitColumn"><span>$1,000,000</span>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12 WC_LOBRow" style="background-color: rgba(38, 80, 159, 0.13)">
-                            <div class="col-xs-9 coverageColumn">
-                                <span>WC: Bodily Injury by Disease (each employee)</span>
-                            </div>
-
-                            <div class="col-xs-3 limitColumn"><span>$1,000,000</span>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12"
-                             style="border-top: 1px solid rgba(0, 0, 0, 0.19); border-bottom: 1px solid rgba(0, 0, 0, 0.19)">
-                            <div class="col-xs-10 "><strong style="font-size:13px"></strong>
-                            </div>
-                        </div>
-                        <br>
-                    </div>
-                </div>
-
-                <br>
 
                 %{--HIRED AND NON-OWNED AUTO LIABILITY REQUESTED--}%
                 <div class="col-xs-12">
@@ -756,7 +680,6 @@
                                    checked="checked"> No
                         </div>
                     </div>
-
                     <div class="alcoholSaleContainer" style="display:none">
                         <div class="col-xs-12">
                             <div class="form-group effectsTotalPremium">

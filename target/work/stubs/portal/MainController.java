@@ -30,7 +30,10 @@ public  void setDateFormat(java.lang.Object value) { }
 public  java.lang.Object getDownloadPDF() { return null;}
 public  void setDownloadPDF(java.lang.Object value) { }
 public  java.lang.Object checkUser() { return null;}
+public  java.lang.Object SpecRunner() { return null;}
+public  java.lang.Object resetp() { return null;}
 public  java.lang.Object index() { return null;}
+public  java.lang.Object newSubmissionNew() { return null;}
 public  java.lang.Object newSubmission() { return null;}
 public  java.lang.Object messages() { return null;}
 public  java.lang.Object submitSubmission() { return null;}

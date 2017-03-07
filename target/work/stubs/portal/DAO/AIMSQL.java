@@ -1,5 +1,6 @@
 package portal.DAO;
 
+import groovy.json.JsonOutput.*;
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -25,7 +26,7 @@ public  void setDateFormat(java.lang.Object value) { }
 public  java.lang.Object getStateAbbrevToNameMAP() { return null;}
 public  void setStateAbbrevToNameMAP(java.lang.Object value) { }
 public  java.lang.Object test() { return null;}
-public  java.lang.Object saveNewSubmission(java.lang.Object policyFormJSON, java.lang.Object dataSource_aim, java.lang.Object user, java.lang.Object underwriter) { return null;}
+public  java.lang.Object saveNewSubmission(java.lang.Object policyFormJSON, java.lang.Object dataSource_aim, java.lang.Object user, java.lang.Object underwriter, java.lang.Object uwQuestionsMap, java.lang.Object uwQuestionsOrder) { return null;}
 public  java.lang.Object updateSubmissionActivity(java.lang.Object quoteID, java.lang.Object description, java.lang.Object statusCode, java.lang.Object typeID, java.lang.Object quoteVersion, java.lang.Object dataSource_aim) { return null;}
 public  java.lang.Object saveToQuote(java.lang.Object policyFormJSON, java.lang.Object dataSource_aim, java.lang.Object insuredID) { return null;}
 public  java.lang.Object updateSubmissionStatus() { return null;}
@@ -33,4 +34,11 @@ public  java.lang.Object insertUserIntoAIMPhoneBook(java.lang.Object user) { ret
 public  java.lang.Object logFileUpload(java.lang.Object localFileName, java.lang.Object localFolderPath, java.lang.Object quoteID, java.lang.Object dataSource_aim) { return null;}
 public  java.lang.Object generateCert() { return null;}
 public  java.lang.Object getAttachmentsList(java.lang.Object quoteID, java.lang.Object dataSource_aim) { return null;}
+public  java.lang.Object bindPrepare(java.lang.Object params, java.lang.Object dataSource_aim) { return null;}
+public  java.lang.Object bindGetPolicyNumberFromRegister(java.lang.Object params, java.lang.Object dataSource_aim) { return null;}
+public  java.lang.Object bindReviewSubmission(java.lang.Object params, java.lang.Object dataSource_aim) { return null;}
+public  java.lang.Object bind(java.lang.Object params, java.lang.Object dataSource_aim) { return null;}
+public  java.lang.Object testAIM(java.lang.Object table, java.lang.Object where, java.lang.Object dataSource_aim) { return null;}
+public  java.lang.Object printTableInfo(java.lang.Object table, java.lang.Object dataSource_aim) { return null;}
+public  java.lang.Object selectAllFromTableWhereWithFormatting(java.lang.Object table, java.lang.Object where, java.lang.Object dataSource_aim) { return null;}
 }

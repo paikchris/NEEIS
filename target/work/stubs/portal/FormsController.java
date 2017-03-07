@@ -21,7 +21,12 @@ public  void setBeforeInterceptor(java.lang.Object value) { }
 public  java.lang.Object checkUser() { return null;}
 public  java.lang.Object index() { return null;}
 public  java.lang.Object specFilm() { return null;}
+public  java.lang.Object specFilmNew() { return null;}
+public  java.lang.Object entertainerForm() { return null;}
+public  java.lang.Object shellCorp() { return null;}
+public  java.lang.Object otherForm() { return null;}
 public  java.lang.Object specialEventLiability() { return null;}
+public  java.lang.Object specialEventVendor() { return null;}
 public  java.lang.Object blanketFilmProduction() { return null;}
 public  java.lang.Object rate() { return null;}
 }

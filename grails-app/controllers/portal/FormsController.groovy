@@ -45,6 +45,9 @@ class FormsController {
     def specialEventLiability(){
 
     }
+    def specialEventVendor(){
+
+    }
 
     def blanketFilmProduction(){
         

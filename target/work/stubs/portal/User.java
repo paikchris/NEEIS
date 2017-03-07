@@ -32,6 +32,10 @@ public  java.lang.String getPhoneNumber() { return (java.lang.String)null;}
 public  void setPhoneNumber(java.lang.String value) { }
 public  java.lang.String getDefaultUnderwriter() { return (java.lang.String)null;}
 public  void setDefaultUnderwriter(java.lang.String value) { }
+public  java.lang.String getAdmin() { return (java.lang.String)null;}
+public  void setAdmin(java.lang.String value) { }
+public  java.lang.String getAimContactID() { return (java.lang.String)null;}
+public  void setAimContactID(java.lang.String value) { }
 public static  java.lang.Object getConstraints() { return null;}
 public static  void setConstraints(java.lang.Object value) { }
 public  java.lang.String toString() { return (java.lang.String)null;}

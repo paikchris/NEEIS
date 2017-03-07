@@ -10,6 +10,10 @@
 // if (System.properties["${appName}.config.location"]) {
 //    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
 // }
+//import com.getsentry.raven.log4j.SentryAppender;
+//import com.getsentry.raven.*;
+
+import org.apache.log4j.Level;
 
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 
@@ -103,9 +107,33 @@ log4j.main = {
     //appenders {
     //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
     //}
-    appenders{
-        file name:'file', file:'/universe/Neeis/logs/grails.log'
+
+    environments {
+        development{
+            appenders{
+                file name:'file', file:'/universe/Neeis/logs/grails.log'
+                appender new portal.SentryAppender(
+                        name: "Sentry",
+                        threshold: Level.WARN,
+                        dsn: "https://dbc11c2801a349afb0be298fe227925e:69c31ee13b1e4f289de6c4cdf05b65eb@sentry.io/145737",
+                        release:"1.0",
+                        environment: "development")
+            }
+        }
+        production {
+            appenders{
+                file name:'file', file:'/universe/Neeis/logs/grails.log'
+                appender new portal.SentryAppender(
+                        name: "Sentry",
+                        threshold: Level.WARN,
+                        dsn: "https://6ac7da9b8eba444fad37c91e68b560e0:2b75b2d200354e79bc82eb793c3c6bd4@sentry.io/145672",
+                        release:"1.0",
+                        environment: "production")
+            }
+
+        }
     }
+
 
 
     info  'org.codehaus.groovy.grails.web.servlet',        // controllers
@@ -119,10 +147,17 @@ log4j.main = {
            'org.springframework',
            'org.hibernate',
            'net.sf.ehcache.hibernate'
+
+
+
     root{
-        info 'file', 'stdout'
+        info 'file', 'stdout', 'Sentry'
     }
+
 }
+//# Configure the Sentry appender, overriding the logging threshold to the WARN level
+//log4j.appender.Sentry="com.getsentry.raven.log4j.SentryAppender"
+//log4j.appender.Sentry.threshold="WARN"
 
 beans {
     cacheManager {

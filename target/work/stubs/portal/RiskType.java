@@ -26,6 +26,10 @@ public  java.lang.String getBindingAuthority() { return (java.lang.String)null;}
 public  void setBindingAuthority(java.lang.String value) { }
 public  java.lang.String getCoverages() { return (java.lang.String)null;}
 public  void setCoverages(java.lang.String value) { }
+public  java.lang.String getSubCategoryFlag() { return (java.lang.String)null;}
+public  void setSubCategoryFlag(java.lang.String value) { }
+public  java.lang.String getParentSubCategory() { return (java.lang.String)null;}
+public  void setParentSubCategory(java.lang.String value) { }
 public static  java.lang.Object getConstraints() { return null;}
 public static  void setConstraints(java.lang.Object value) { }
 }

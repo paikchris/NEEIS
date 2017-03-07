@@ -256,6 +256,7 @@
                                                     <option value="Exhibitor">Exhibitor</option>
                                                     <option value="Concessionaires Non Food Sales">Concessionaires (Non-Food Sales)</option>
                                                     <option value="Concessionaires Food Sales">Concessionaires (Food Sales)</option>
+                                                    <option value="Attractions / Performers">Attractions / Performers</option>
                                                 </select>
                                             </div>
 
@@ -870,6 +871,22 @@
                             </div>
                             <div class="panel-body">
                                 <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="form-group separatePolicy" style="display:none">
+                                            <label>Is this policy for a specific vendor, concessionaire or exhibitor? - Separate Policy</label><br>
+                                            <input type="radio" name="separatePolicy"
+                                                   class="showReview"
+                                                   value="Yes"
+                                                   data-reviewName="Is this policy for a specific vendor, concessionaire or exhibitor? - Separate Policy"
+                                                   id="separatePolicyYes_RadioButton"> Yes
+                                            <input type="radio" name="separatePolicy"
+                                                   class=""
+                                                   value="No"
+                                                   data-reviewName="Is this policy for a specific vendor, concessionaire or exhibitor? - Separate Policy"
+                                                   id="separatePolicyNo_RadioButton"
+                                                   checked="checked"> No
+                                        </div>
+                                    </div>
                                     <div class="col-xs-3">
                                         <div class="form-group"> <!-- Date input -->
                                             <label class="control-label">Proposed Effective Date</label>
@@ -1660,8 +1677,8 @@
                 </div>
             </div>
             <div class="modal-footer">
+                <button class="btn btn-success pull-left" id="ignoreConflictBOR" type="button"  >UW Ignore BOR</button>
                 <button class="btn btn-info" id="resolveConflictBOR" type="button"  >Request BOR</button>
-                <button class="btn btn-primary" id="resolveConflictContinue" type="button" style="display:none" >Continue</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
