@@ -539,7 +539,7 @@ $(document).ready(function () {
             $("#umbrellaLimitRequestedExplain").css('display', "none");
         }
     });
-    
+
 // EQUIPMENT TABLE / ADDITIONAL HIDDEN QUESTIONS
     $(document.body).on('change', 'input[name="equipmentOwnedRented"]', function () {
         //alert();

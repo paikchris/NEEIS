@@ -1151,6 +1151,17 @@ $(document).ready(function () {
                             riskChosen === "Concessionaires Food Sales" ||
                             riskChosen === "Attractions / Performers"){
                             $('.separatePolicy').css('display', '');
+                            $(document.body).on('change', 'input[name="separatePolicy"]', function () {
+                                //alert();
+                                if ($(this).attr("value") == "Yes") {
+                                    $("#numberOfExhibitors").css('display', "");
+                                    $("#numberOfExhibitors").css('display', "");
+                                }
+                                if ($(this).attr("value") == "No") {
+                                    $("#numberOfExhibitors").css('display', "none");
+                                    $("#numberOfExhibitors").css('display', "none");
+                                }
+                            });
 
                             $("#insuredInfoInsert").load("./../forms/specialEventVendor #insuredInfo", function () {
                                 finishedLoading1 = true;

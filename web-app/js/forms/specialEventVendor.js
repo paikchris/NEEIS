@@ -66,11 +66,11 @@ $(document).ready(function () {
         alert(rate)
     }
     else if (riskChosen === "Concessionaires Non Food Sales") {
-        rate = concessionairesNoFood;
+        rate = concessionairesNoFoodRate;
         alert(rate)
     }
     else if (riskChosen === "Concessionaires Food Sales") {
-        rate = concessionairesFood;
+        rate = concessionairesFoodRate;
         alert(rate)
     }
     else if (riskChosen === "Attractions / Performers") {
@@ -81,77 +81,107 @@ $(document).ready(function () {
 
 // TOTAL PREMIUM COST !@#
 
-// COMMERCIAL GENERAL LIABILITY FEE
-    $(document.body).on('change', 'input[name="workCompCoverageRequested?"]', "#estimatedTotalAttendance,#howManyDaysIsTheEvent", function () {
+// COMMERCIAL GENERAL LIABILITY FEE + POLICY FEE
+    $(document.body).on('change',  "input[name='separatePolicy'],#estimatedTotalAttendance,#howManyDaysIsTheEvent", function () {
         attendance = $("#estimatedTotalAttendance").val()
         eventDays = $("#howManyDaysIsTheEvent").val()
-        if ($(this).attr("value") == "Yes") {
+        if ($("input[name='separatePolicy']").attr("value") == "Yes") {
             if (attendance.length > 0 && eventDays.length > 0) {
                 var attendanceValue = parseFloat(attendance)
                 var eventDaysValue = parseFloat(eventDays)
                 var rateValue = parseFloat(rate)
 
+                alert ("stepone" + rateValue)
+                alert ("steptwo" + attendanceValue)
+                alert ("stepthree" + eventDaysValue)
                 if (riskChosen === "Exhibitor") {
-                    if (eventDaysValue =>
-                    3
-                )
-                    {
+                    if (eventDaysValue <= 3){
                         totalPremium = 150
+                        var policyFee = 100
+                        $("#policyFeePremiumCost").html("$" + policyFee);
                     }
-                else
-                    if (eventDaysValue < 3) {
+                else if (eventDaysValue > 3) {
                         additionalDaysCost = 50
                         additionalDays = eventDaysValue - 3
                         totalPremium = additionalDaysCost * additionalDays + 150
+                        if (totalPremium < 250) {
+                            var policyFee = 100
+                            $("#policyFeePremiumCost").html("$" + policyFee);
+                        }
+                        else if (totalPremium >= 250){
+                            var policyFee = 50
+                            $("#policyFeePremiumCost").html("$" + policyFee);
+                        }
                     }
                 }
                 else if (riskChosen === "Concessionaires Non Food Sales") {
-                    if (eventDaysValue =>
-                    3
-                )
-                    {
+                    if (eventDaysValue >= 3) {
                         totalPremium = 175
+                        var policyFee = 100
+                        $("#policyFeePremiumCost").html("$" + policyFee);
                     }
                 else
                     if (eventDaysValue < 3) {
                         additionalDaysCost = 50
                         additionalDays = eventDaysValue - 3
                         totalPremium = additionalDaysCost * additionalDays + 150
+                        if (totalPremium < 250) {
+                            var policyFee = 100
+                            $("#policyFeePremiumCost").html("$" + policyFee);
+                        }
+                        else if (totalPremium >= 250){
+                            var policyFee = 50
+                            $("#policyFeePremiumCost").html("$" + policyFee);
+                        }
                     }
                 }
                 else if (riskChosen === "Concessionaires Food Sales") {
-                    if (eventDaysValue =>
-                    3
-                )
-                    {
+                    if (eventDaysValue >= 3) {
                         totalPremium = 200
+                        var policyFee = 100
+                        $("#policyFeePremiumCost").html("$" + policyFee);
                     }
                 else
                     if (eventDaysValue < 3) {
                         additionalDaysCost = 50
                         additionalDays = eventDaysValue - 3
                         totalPremium = additionalDaysCost * additionalDays + 150
+                        if (totalPremium < 250) {
+                            var policyFee = 100
+                            $("#policyFeePremiumCost").html("$" + policyFee);
+                        }
+                        else if (totalPremium >= 250){
+                            var policyFee = 50
+                            $("#policyFeePremiumCost").html("$" + policyFee);
+                        }
                     }
                 }
                 else if (riskChosen === "Attractions / Performers") {
-                    if (eventDaysValue =>
-                    3
-                )
-                    {
+                    if (eventDaysValue >= 3) {
                         totalPremium = 150
+                        var policyFee = 100
+                        $("#policyFeePremiumCost").html("$" + policyFee);
                     }
                 else
                     if (eventDaysValue < 3) {
                         additionalDaysCost = 50
                         additionalDays = eventDaysValue - 3
                         totalPremium = additionalDaysCost * additionalDays + 150
+                        if (totalPremium < 250) {
+                            var policyFee = 100
+                            $("#policyFeePremiumCost").html("$" + policyFee);
+                        }
+                        else if (totalPremium >= 250){
+                            var policyFee = 50
+                            $("#policyFeePremiumCost").html("$" + policyFee);
+                        }
                     }
                 }
 
                 $("#commercialGeneralLiabilityPremiumCost").html("$" + totalPremium);
             }
         }
-        if ($(this).attr("value") == "No") {
+        else if ($("input[name='separatePolicy']").attr("value") == "No") {
             if (attendance.length > 0 && eventDays.length > 0) {
                 var attendanceValue = parseFloat(attendance)
                 var eventDaysValue = parseFloat(eventDays)
@@ -163,8 +193,17 @@ $(document).ready(function () {
 
                     if (ratePerDay > 300) {
                         ratePerDay = 300
+                        totalPremium = ratePerDay * eventDaysValue
+                        if (totalPremium < 250) {
+                            var policyFee = 100
+                            $("#policyFeePremiumCost").html("$" + policyFee);
+                        }
+                        else if (totalPremium >= 250){
+                            var policyFee = 50
+                            $("#policyFeePremiumCost").html("$" + policyFee);
+                        }
+
                     }
-                    totalPremium = ratePerDay * eventDaysValue
                 }
                 else if (riskChosen === "Concessionaires Non Food Sales") {
 
@@ -172,8 +211,16 @@ $(document).ready(function () {
 
                     if (ratePerDay > 425) {
                         ratePerDay = 425
+                        totalPremium = ratePerDay * eventDaysValue
+                        if (totalPremium < 250) {
+                            var policyFee = 100
+                            $("#policyFeePremiumCost").html("$" + policyFee);
+                        }
+                        else if (totalPremium >= 250){
+                            var policyFee = 50
+                            $("#policyFeePremiumCost").html("$" + policyFee);
+                        }
                     }
-                    totalPremium = ratePerDay * eventDaysValue
                 }
                 else if (riskChosen === "Concessionaires Food Sales") {
 
@@ -181,8 +228,16 @@ $(document).ready(function () {
 
                     if (ratePerDay > 475) {
                         ratePerDay = 475
+                        totalPremium = ratePerDay * eventDaysValue
+                        if (totalPremium < 250) {
+                            var policyFee = 100
+                            $("#policyFeePremiumCost").html("$" + policyFee);
+                        }
+                        else if (totalPremium >= 250){
+                            var policyFee = 50
+                            $("#policyFeePremiumCost").html("$" + policyFee);
+                        }
                     }
-                    totalPremium = ratePerDay * eventDaysValue
                 }
                 else if (riskChosen === "Attractions / Performers") {
 
@@ -190,8 +245,16 @@ $(document).ready(function () {
 
                     if (ratePerDay > 950) {
                         ratePerDay = 950
+                        totalPremium = ratePerDay * eventDaysValue
+                        if (totalPremium < 250) {
+                            var policyFee = 100
+                            $("#policyFeePremiumCost").html("$" + policyFee);
+                        }
+                        else if (totalPremium >= 250){
+                            var policyFee = 50
+                            $("#policyFeePremiumCost").html("$" + policyFee);
+                        }
                     }
-                    totalPremium = ratePerDay * eventDaysValue
                 }
 
                 $("#commercialGeneralLiabilityPremiumCost").html("$" + totalPremium);
@@ -214,11 +277,6 @@ $(document).ready(function () {
 
     });
 
-// POLICY FEE
-    $(document.body).on('change', "#estimatedTotalAttendance,#howManyDaysIsTheEvent", function () {
-        var policyFee = 25
-        $("#policyFeePremiumCost").html("$" + policyFee);
-    });
 
 // ALCOHOL FEE
     $(document.body).on('change', "#alcoholSales", function () {
@@ -440,7 +498,7 @@ $(document).ready(function () {
 // TOTAL PREMIUM COST !@#
 
 
-    
+
 
 
 

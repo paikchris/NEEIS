@@ -819,7 +819,7 @@
                                      style="padding-left:20px"><span>CGL: General Aggregate Limit</span>
                                 </div>
 
-                                <div class="col-xs-2 limitColumn"><span>$2,000,000</span>
+                                <div class="col-xs-2 limitColumn"><span>$1,000,000</span>
                                 </div>
                             </div>
 

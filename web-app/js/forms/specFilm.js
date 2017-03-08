@@ -560,6 +560,14 @@ $(document.body).on('click', '.removeCastMember' ,function() {
                 $('#EPKGCIVIL500AdditionalCoverage').prop("checked", false);
                 $('.additionalCoverageCheckboxPIP5').prop("checked", false);
             }
+            else if($('#PIP5InputRadio').is(':checked') == true){
+                $("#EPKGoptions").css("display","");
+                $('.PIP5Options').css("display", "");
+                $("#EPKGNOHAOption").css("display","none");
+                $('#EPKGNOHAAdditionalCoverage').prop("checked", false);
+            }
+
+
         }
         if($('#PIPChoiceInputRadio').is(':checked')){
             $('#pipChoiceSelections').css('display', '');
@@ -952,11 +960,33 @@ $(document.body).on('click', '.removeCastMember' ,function() {
             currentChecked = $('#EPKGCIVIL500AdditionalCoverage').attr('id');
         }
     });
-    $(document.body).on('change', '.coverageInput, .additionalCoverageCheckboxCPKCGL, #EPKGNOHAAdditionalCoverage, #EPKGcoverage' +
+    $(document.body).on('change', '.coverageInput, .additionalCoverageCheckboxEPKG, .additionalCoverageCheckboxCPKCGL, #EPKGNOHAAdditionalCoverage, #EPKGcoverage' +
         '#EPKGCASTEssentialAdditionalCoverage, .FWCNWCCheckbox, #totalBudgetConfirm, .additionalCoverageCheckboxPIP5, .PIPCHOIOption, #castEssentialInput' ,function(){
        //console.log("CALL FROM COVERAGEINPUT CHANGE AND OTHERS")
        //console.log($(this));
+        var termLength = parseInt($("#proposedTermLength").val().split(" ")[0]);
         if($('#totalBudgetConfirm').val().length > 1){
+            //IF ANNUAL POLICY SHOW ANNUAL OPTIONS
+            if($('#EPKGcoverage').is(':checked')){
+                if($('#PIPChoiceInputRadio').is(':checked')){
+
+                }
+                else{
+                    if(termLength>=365){
+                        $('.AnnualOptions').css("display", "");
+                    }
+                    else{
+                        $('.AnnualOptions').css("display", "none");
+                    }
+                }
+
+
+            }
+            else{
+
+            }
+
+
             ratePremiums($('#totalBudgetconfirm'));
         }
 
@@ -1237,7 +1267,7 @@ function ratePremiums(thisObj){
         if($('#EPKGCASTEssentialAdditionalCoverage').is(':checked')){
             additionalProducts = additionalProducts + "EPKGCASTEssentialAdditionalCoverage" + ":" + "EPKGCASTEssentialAdditionalCoverage" + ",";
         }
-
+        //alert($("#hardwareElectronicDataCheckbox").is(':checked'));
         $(".additionalCoverageCheckboxEPKG").each(function( index ) {
             if($(this).is(':checked')){
                 additionalProducts = additionalProducts + $( this ).attr("id") + ":" + $( this ).attr("id") + ",";
@@ -1251,6 +1281,11 @@ function ratePremiums(thisObj){
                 if($(this).hasClass("CPK")){
                     productsSelected = productsSelected + "NOAL" + ":" + "NOAL01" + ",";
                 }
+            }
+        });
+        $(".additionalCoverageCheckboxEPKG").each(function( index ) {
+            if($(this).is(':checked')){
+                additionalProducts = additionalProducts + $( this ).attr("id") + ":" + $( this ).attr("id") + ",";
             }
         });
     }
@@ -1339,7 +1374,7 @@ function ratePremiums(thisObj){
     });
     //console.log(pipchoiceLimits);
     //alert(productsSelected)
-
+    //alert(additionalProducts)
     if(productsSelected.length > 0 && parseFloat($("#totalBudgetConfirm").val().replace(/\$|,/g, '')) > 0) {
             //console.log($('#costOfHireInput').val());
         //alert(pipchoiceLimits)
@@ -1647,6 +1682,35 @@ function ratePremiums(thisObj){
                             limitLines.splice(limitLines.indexOf("Civil Authority (US Only)"), 1);
                             limitLines.push("Civil Authority (US Only)");
                         }
+                        if(limitLines.indexOf("Money and Currency") > -1){
+                            limitLines.splice(limitLines.indexOf("Money and Currency"), 1);
+                            limitLines.push("Money and Currency");
+                        }
+                        if(limitLines.indexOf("Furs, Jewelry, Art & Antiques") > -1){
+                            limitLines.splice(limitLines.indexOf("Furs, Jewelry, Art & Antiques"), 1);
+                            limitLines.push("Furs, Jewelry, Art & Antiques");
+                        }
+                        if(limitLines.indexOf("Talent and Non Budgeted Costs") > -1){
+                            limitLines.splice(limitLines.indexOf("Talent and Non Budgeted Costs"), 1);
+                            limitLines.push("Talent and Non Budgeted Costs");
+                        }
+                        if(limitLines.indexOf("Administrative Costs") > -1){
+                            limitLines.splice(limitLines.indexOf("Administrative Costs"), 1);
+                            limitLines.push("Administrative Costs");
+                        }
+                        if(limitLines.indexOf("Hardware") > -1){
+                            limitLines.splice(limitLines.indexOf("Hardware"), 1);
+                            limitLines.push("Hardware");
+                        }
+                        if(limitLines.indexOf("Data and Media") > -1){
+                            limitLines.splice(limitLines.indexOf("Data and Media"), 1);
+                            limitLines.push("Data and Media");
+                        }
+                        if(limitLines.indexOf("Electronic Data Extra Expense") > -1){
+                            limitLines.splice(limitLines.indexOf("Electronic Data Extra Expense"), 1);
+                            limitLines.push("Electronic Data Extra Expense");
+                        }
+                        //
                         if(limitLines.indexOf("Animal Mortality") > -1){
                             limitLines.splice(limitLines.indexOf("Animal Mortality"), 1);
                             limitLines.push("Animal Mortality");

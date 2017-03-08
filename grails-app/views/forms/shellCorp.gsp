@@ -212,7 +212,7 @@
                 </div>
 
                 %{--PRIOR LOSSES--}%
-                <div class="form-group col-xs-12">
+                <div class="form-group col-xs-12 row">
                     <div class="row">
                         <div class="col-xs-12">
                             <label for="listOfPriorLosses">List and Describe all Prior Losses (Or Enter "None")</label>

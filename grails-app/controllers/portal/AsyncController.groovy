@@ -2382,7 +2382,51 @@ class AsyncController {
                                 premiumsMap = tempPremiumsMap
                             }
                         }
-                    } else if (coverageID == "CGL" || coverageID == "CPK") {
+
+                        if (params.additionalProducts.contains("moneyCurrencyCheckbox")) {
+                            premiumsMap["Money and Currency"] = ['flat','incl'];
+                            deductsMap["Money and Currency"] = "\$1500";
+                            limitsMap["Money and Currency"] = "\$25000";
+                            rateInfo = rateInfo + "EPKG\tflat\tincl\tMoney and Currency\t\n";
+                        }
+                        if (params.additionalProducts.contains("fursJewelryCheckbox")) {
+                            premiumsMap["Furs, Jewelry, Art & Antiques"] = ['flat','incl'];
+                            deductsMap["Furs, Jewelry, Art & Antiques"] = "\$2000";
+                            limitsMap["Furs, Jewelry, Art & Antiques"] = "\$50000";
+                            rateInfo = rateInfo + "EPKG\tflat\tincl\tFurs, Jewelry, Art & Antiques\t\n";
+                        }
+                        if (params.additionalProducts.contains("talentNonBudgetCheckbox")) {
+                            premiumsMap["Talent and Non Budgeted Costs"] = ['flat','incl'];
+                            deductsMap["Talent and Non Budgeted Costs"] = "\$1500";
+                            limitsMap["Talent and Non Budgeted Costs"] = "\$25000";
+                            rateInfo = rateInfo + "EPKG\tflat\tincl\tTalent and Non Budgeted Costs\t\n";
+                        }
+                        if (params.additionalProducts.contains("adminCostCheckbox")) {
+                            premiumsMap["Administrative Costs"] = ['flat','incl'];
+                            deductsMap["Administrative Costs"] = "";
+                            limitsMap["Administrative Costs"] = "5% of GPC";
+                            rateInfo = rateInfo + "EPKG\tflat\tincl\tAdministrative Costs\t\n";
+                        }
+                        if (params.additionalProducts.contains("hardwareElectronicDataCheckbox")) {
+                            premiumsMap["Hardware"] = ['flat','incl'];
+                            deductsMap["Hardware"] = "\$1000";
+                            limitsMap["Hardware"] = "\$25000";
+                            rateInfo = rateInfo + "EPKG\tflat\tincl\tHardware\t\n";
+                        }
+                        if (params.additionalProducts.contains("dataMediaElectronicDataCheckbox")) {
+                            premiumsMap["Data and Media"] = ['flat','incl'];
+                            deductsMap["Data and Media"] = "\$1000";
+                            limitsMap["Data and Media"] = "\$10000";
+                            rateInfo = rateInfo + "EPKG\tflat\tincl\tData and Media\t\n";
+                        }
+                        if (params.additionalProducts.contains("extraExpenseElectronicDataCheckbox")) {
+                            premiumsMap["Electronic Data Extra Expense"] = ['flat','incl'];
+                            deductsMap["Electronic Data Extra Expense"] = "\$1000";
+                            limitsMap["Electronic Data Extra Expense"] = "\$10000";
+                            rateInfo = rateInfo + "EPKG\tflat\tincl\tElectronic Data Extra Expense\t\n";
+                        }
+                    }
+                    else if (coverageID == "CGL" || coverageID == "CPK") {
                         def rate = 0.0;
                         def premium = 0;
                         def minPremium = 0;
@@ -2651,7 +2695,8 @@ class AsyncController {
                         deductsMap = tempDeductsMap
                         premiumsMap = tempPremiumsMap
 
-                    } else if (coverageID == "NOHA" || coverageID == "NOAL") {
+                    }
+                    else if (coverageID == "NOHA" || coverageID == "NOAL") {
 //                        def termLength = params.proposedTermLength.split(" ")[0].toInteger();
                         if (params.productsSelected.contains("CPK:")) {
                             def NOHARateMinPrem = [6.0, 500.0];

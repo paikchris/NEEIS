@@ -871,7 +871,7 @@
                             </div>
                             <div class="panel-body">
                                 <div class="row">
-                                    <div class="col-xs-12">
+                                    <div class="col-xs-6">
                                         <div class="form-group separatePolicy" style="display:none">
                                             <label>Is this policy for a specific vendor, concessionaire or exhibitor? - Separate Policy</label><br>
                                             <input type="radio" name="separatePolicy"
@@ -885,6 +885,12 @@
                                                    data-reviewName="Is this policy for a specific vendor, concessionaire or exhibitor? - Separate Policy"
                                                    id="separatePolicyNo_RadioButton"
                                                    checked="checked"> No
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-6">
+                                        <div class="form-group" id="numberOfExhibitorsGroup" style="display:none">
+                                            <label class="control-label">Number of Exhibitors</label>
+                                            <input class="form-control" id="numberOfExhibitors" name="numberOfExhibitors" type="text" style="color: black; background: white;"/>
                                         </div>
                                     </div>
                                     <div class="col-xs-3">

@@ -1182,14 +1182,36 @@
                                                                                             value="CIVIL500"
                                                                                             id='EPKGFWCNWCCIVIL500AdditionalCoverage'/> Civil Authority (US Only) - Over $100K, Refer Only Subj to MP
             </p>
-            <p class="FILMWITHCASTNOWCOptions" style=" font-size:12px; margin:0px; display:none;"><input type='checkbox'
-                                                                                                                         class='additionalCoverageCheckboxEPKG FWCNWCCheckbox'
-                                                                                                                         name='coverage' value="Money"
-                                                                                                                         id='EPKGFWCNWCAnimalAdditionalCoverage'/> Animal Mortality
-                <br></p>
-
-
-
+            <p class="AnnualOptions" style=" font-size:12px; margin:0px; display:none"><input type='checkbox'
+                                                                                              class='additionalCoverageCheckboxEPKG'
+                                                                                              name='coverage' value="MoneyCurrency"
+                                                                                              id='moneyCurrencyCheckbox'/> Money and Currency
+            </p>
+            <p class="AnnualOptions" style=" font-size:12px; margin:0px; display:none"><input type='checkbox'
+                                                                                              class='additionalCoverageCheckboxEPKG'
+                                                                                              name='coverage' value="FursJewelry"
+                                                                                              id='fursJewelryCheckbox'/> Furs, Jewelry, Art & Antiques
+            </p>
+            <p class="AnnualOptions" style=" font-size:12px; margin:0px; display:none"><input type='checkbox'
+                                                                                              class='additionalCoverageCheckboxEPKG'
+                                                                                              name='coverage' value="TalentNonBudgetCosts"
+                                                                                              id='talentNonBudgetCheckbox'/> Talent and Non Budgeted Costs
+            </p>
+            <p class="AnnualOptions" style=" font-size:12px; margin:0px; display:none"><input type='checkbox'
+                                                                                              class='additionalCoverageCheckboxEPKG'
+                                                                                              name='coverage' value="AdmnistrativeCosts"
+                                                                                              id='adminCostCheckbox'/> Administrative Costs
+            </p>
+            <p class="AnnualOptions ElectronicData" style=" font-size:12px; margin:0px; display:none">Electronic Data Processing</p>
+            <p class="AnnualOptions ElectronicData" style=" font-size:12px; margin:0px; padding-left: 20px;display:none">
+                <input type='checkbox' class='additionalCoverageCheckboxEPKG' name='coverage' value="Hardware"
+                    id='hardwareElectronicDataCheckbox'/> Hardware</p>
+            <p class="AnnualOptions ElectronicData" style=" font-size:12px; margin:0px; padding-left: 20px;display:none">
+                <input type='checkbox' class='additionalCoverageCheckboxEPKG' name='coverage' value="DataMedia"
+                       id='dataMediaElectronicDataCheckbox'/> Data and Media</p>
+            <p class="AnnualOptions ElectronicData" style=" font-size:12px; margin:0px; padding-left: 20px;display:none">
+                <input type='checkbox' class='additionalCoverageCheckboxEPKG' name='coverage' value="ExtraExpense"
+                       id='extraExpenseElectronicDataCheckbox'/> Extra Expense</p>
             <p class="PIP5Options" style=" font-size:12px; margin:0px; display:none"><input type='radio'
                                                                                             name="PIP5RadioOptionCoverage"
                                                                                             class='additionalCoverageCheckboxPIP5'
