@@ -366,6 +366,19 @@ describe('Testing Film Projects Without Cast (No Work Comp)', function() {
         checkCondition();
     });
 
+    it('type 30 into proposed term length', function(done) {
+        $('#proposedTermLength').click();
+        $('#proposedTermLength').focus();
+        $('#proposedTermLength').val("");
+
+        $('#proposedTermLength').bind('autotyped', function(){
+            expect($('#proposedTermLength').val()).toEqual('30');
+            $('#proposedTermLength').trigger('change');
+            done();
+        }).autotype("30", {delay: 90});
+
+    });
+
     it('type 100000 into Total Budget and is formatted as $100,000', function() {
         spyOnEvent('#totalBudgetConfirm', 'click');
         $('#totalBudgetConfirm').click();
@@ -414,7 +427,7 @@ describe('Testing Film Projects Without Cast (No Work Comp)', function() {
 
     describe('Premiums load and rate properly for $100,000 Budget', function() {
         describe('PIPCHOICE Testing', function() {
-            it('Premiums = $384, $100, $384, $100, $968', function(done) {
+            it('Premiums = 411, 100, 411, 100, 1022', function(done) {
                 spyOnEvent('#PIPChoiceInputRadio', 'click');
                 $('#PIPChoiceInputRadio').trigger('click');
                 expect('click').toHaveBeenTriggeredOn('#PIPChoiceInputRadio');
@@ -423,12 +436,12 @@ describe('Testing Film Projects Without Cast (No Work Comp)', function() {
                 var POLL_TIME = 10;
                 var endTime = new Date().getTime() + 5000;
                 var checkCondition = function() {
-                    if (new Date().getTime() <= endTime && $('.EPKG_LOBRow').length == 0) {
+                    if (new Date().getTime() <= endTime && $('.PIPCHOILimitsInput.MiscellaneousRentedEquipment').length == 0) {
                         setTimeout(checkCondition, POLL_TIME);
                     } else {
                         expect($( ".coverageColumn:contains('Miscellaneous Rented Equipment')").length).toEqual(1)
                         expect($( ".PIPCHOILimitsInput.MiscellaneousRentedEquipment").val()).toEqual("$100,000")
-                        expect($( ".coverageColumn:contains('Miscellaneous Rented Equipment')").closest(".EPKG_LOBRow").find('.PIPCHOIPremiumLine').html()).toEqual('$384');
+                        expect($( ".coverageColumn:contains('Miscellaneous Rented Equipment')").closest(".EPKG_LOBRow").find('.PIPCHOIPremiumLine').html()).toEqual('$411');
                         expect($( ".coverageColumn:contains('Miscellaneous Rented Equipment')").closest(".EPKG_LOBRow").find('.PIPCHOIDeductLine').html()).toEqual('$2,500');
 
                         expect($( ".coverageColumn:contains('Extra Expense')").length).toEqual(1)
@@ -438,7 +451,7 @@ describe('Testing Film Projects Without Cast (No Work Comp)', function() {
 
                         expect($( ".coverageColumn:contains('Props, Sets & Wardrobe')").length).toEqual(1)
                         expect($( ".PIPCHOILimitsInput.PropsSetsWardrobe").val()).toEqual("$100,000")
-                        expect($( ".coverageColumn:contains('Props, Sets & Wardrobe')").closest(".EPKG_LOBRow").find('.PIPCHOIPremiumLine').html()).toEqual('$384');
+                        expect($( ".coverageColumn:contains('Props, Sets & Wardrobe')").closest(".EPKG_LOBRow").find('.PIPCHOIPremiumLine').html()).toEqual('$411');
                         expect($( ".coverageColumn:contains('Props, Sets & Wardrobe')").closest(".EPKG_LOBRow").find('.PIPCHOIDeductLine').html()).toEqual('$2,500');
 
                         expect($( ".coverageColumn:contains('Third Party Prop Damage Liab')").length).toEqual(1)
@@ -446,7 +459,7 @@ describe('Testing Film Projects Without Cast (No Work Comp)', function() {
                         expect($( ".coverageColumn:contains('Third Party Prop Damage Liab')").closest(".EPKG_LOBRow").find('.PIPCHOIPremiumLine').html()).toEqual('$100');
                         expect($( ".coverageColumn:contains('Third Party Prop Damage Liab')").closest(".EPKG_LOBRow").find('.PIPCHOIDeductLine').html()).toEqual('$2,500');
 
-                        expect('#PIPCHOIPremiumTotal').toHaveHtml("$968");
+                        expect('#PIPCHOIPremiumTotal').toHaveHtml("$1,022");
 
 
 
@@ -487,23 +500,23 @@ describe('Testing Film Projects Without Cast (No Work Comp)', function() {
                         $('.PIPCHOILimitsInput.MiscellaneousRentedEquipment').val('')
                         $('.MiscellaneousRentedEquipment').bind('autotyped', function(){
                             expect($('.PIPCHOILimitsInput.MiscellaneousRentedEquipment').val()).toEqual('$50,000');
-                            expect($('.PIPCHOILimitsInput.MiscellaneousRentedEquipment').closest('.EPKG_LOBRow').find('.PIPCHOIPremiumLine').html().trim()).toEqual('$192');
+                            expect($('.PIPCHOILimitsInput.MiscellaneousRentedEquipment').closest('.EPKG_LOBRow').find('.PIPCHOIPremiumLine').html().trim()).toEqual('$206');
 
                             $('.PIPCHOILimitsInput.ExtraExpense').val('')
                             $('.ExtraExpense').bind('autotyped', function(){
                                 expect($('.PIPCHOILimitsInput.ExtraExpense').val()).toEqual('$500,000');
-                                expect($('.PIPCHOILimitsInput.ExtraExpense').closest('.EPKG_LOBRow').find('.PIPCHOIPremiumLine').html().trim()).toEqual('$384');
+                                expect($('.PIPCHOILimitsInput.ExtraExpense').closest('.EPKG_LOBRow').find('.PIPCHOIPremiumLine').html().trim()).toEqual('$411');
 
                                 $('.PIPCHOILimitsInput.PropsSetsWardrobe').val('')
                                 $('.PropsSetsWardrobe').bind('autotyped', function(){
                                     expect($('.PIPCHOILimitsInput.PropsSetsWardrobe').val()).toEqual('$200,000');
-                                    expect($('.PIPCHOILimitsInput.PropsSetsWardrobe').closest('.EPKG_LOBRow').find('.PIPCHOIPremiumLine').html().trim()).toEqual('$768');
+                                    expect($('.PIPCHOILimitsInput.PropsSetsWardrobe').closest('.EPKG_LOBRow').find('.PIPCHOIPremiumLine').html().trim()).toEqual('$822');
 
                                     $('.PIPCHOILimitsInput.ThirdPartyPropDamageLiab').val('')
                                     $('.ThirdPartyPropDamageLiab').bind('autotyped', function(){
                                         expect($('.PIPCHOILimitsInput.ThirdPartyPropDamageLiab').val()).toEqual('$300,000');
-                                        expect($('.PIPCHOILimitsInput.ThirdPartyPropDamageLiab').closest('.EPKG_LOBRow').find('.PIPCHOIPremiumLine').html().trim()).toEqual('$116');
-                                        expect('#PIPCHOIPremiumTotal').toHaveHtml("$1,460");
+                                        expect($('.PIPCHOILimitsInput.ThirdPartyPropDamageLiab').closest('.EPKG_LOBRow').find('.PIPCHOIPremiumLine').html().trim()).toEqual('$100');
+                                        expect('#PIPCHOIPremiumTotal').toHaveHtml("$1,539");
 
                                         expect($( ".coverageColumn:contains('Hired Auto Physical Damage')").length).toEqual(0)
                                         done();

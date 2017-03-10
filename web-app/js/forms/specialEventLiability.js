@@ -76,20 +76,19 @@ var minimum6Premium90Class3 = 950
 
 // ALCOHOL PREMIUMS
 // $25,000 and below
-var liquorMinimum100Below25000 = 100
-var liquorMinimum500Below25000 = 225
-var liquorMinimum1500Below25000 = 375
-var liquorMinimum3000Below25000 = 550
-var liquorMinimum5000Below25000 = 750
-var liquorMinimum5001Below25000 = 1000
+var liquorMinimum8Below25000 = 100
+var liquorMinimum12Below25000 = 375
+var liquorMinimum14Below25000 = 550
+var liquorMinimum15Below25000 = 750
+var liquorMinimum50Below25000 = 1000
 
 // 25,000 and above
-var liquorMinimum10Above25000 = 100
-var liquorMinimum20Above25000 = 250
-var liquorMinimum31Above25000 = 750
-var liquorMinimum45Above25000 = 800
-var liquorMinimum60Above25000 = 900
-var liquorMinimum75Above25000 = 2500
+var liquorMinimum8Above25000 = 100
+var liquorMinimum12Above25000 = 750
+var liquorMinimum14Above25000 = 800
+var liquorMinimum15Above25000 = 900
+var liquorMinimum50Above25000 = 2500
+
 
 var liquorRate
 var liquorRatePremium
@@ -160,7 +159,7 @@ $(document).ready(function () {
         riskChosen === "Weddings and Wedding Receptions Yodeler"
     ) {
         rate = classOne;
-        alert(rate)
+        // alert(rate)
     }
     else if (riskChosen === "Bingo Games" ||
         riskChosen === "Card Games - Blackjack Card Games - Poker" ||
@@ -186,7 +185,7 @@ $(document).ready(function () {
         riskChosen === "Video Game Contests"
     ) {
         rate = classTwo;
-        alert(rate)
+        // alert(rate)
     }
     else if (riskChosen === "Amateur Rodeo and Roping Events" ||
         riskChosen === "Baseball - Amateur Basketball - Amateur" ||
@@ -224,10 +223,88 @@ $(document).ready(function () {
         riskChosen === "Wine Tasting"
     ) {
         rate = classThree;
-        alert(rate)
+        // alert(rate)
     }
 
+    // MONEY FORMAT
+    $('.alcoholSales').maskMoney({prefix:'$', precision:"0"});
+    $('.equipmentLimit').maskMoney({prefix:'$', precision:"0"});
+    $('.brokerFeeInput').maskMoney({prefix:'$', precision:"0"});
+    $('.costVehicles').maskMoney({prefix:'$', precision:"0"});
+    $('.totalReceipts').maskMoney({prefix:'$', precision:"0"});
+    $('.totalPayroll').maskMoney({prefix:'$', precision:"0"});
+
 // TOTAL PREMIUM COST !@#
+
+// STATE SELECT
+    $("#selectState").change(function () {
+        var state = this.value;
+    // });
+    // $(document.body).on('change', 'input[name="selectState"]', function () {
+    //     alert(state)
+        if (state ==  "DE" ||
+            state ==   "KS" ||
+            state ==   "MD" ||
+            state ==   "NV" ||
+            state ==   "SD" ||
+            state ==   "VA") {
+            liquorRate = 8
+        }
+        else if (state == "AR" ||
+            state ==   "CA" ||
+            state ==   "CO" ||
+            state ==   "FL" ||
+            state ==   "GA" ||
+            state ==   "ID" ||
+            state ==   "IL" ||
+            state ==   "KY" ||
+            state ==   "LA" ||
+            state ==   "ME" ||
+            state ==   "MN" ||
+            state ==   "MS" ||
+            state ==   "MO" ||
+            state ==   "NE" ||
+            state ==   "NJ" ||
+            state ==   "OH" ||
+            state ==   "OR" ||
+            state ==   "TN") {
+            liquorRate = 12
+        }
+        else if (state ==  "AZ" ||
+            state ==   "IN" ||
+            state ==   "MA" ||
+            state ==   "MI" ||
+            state ==   "MT" ||
+            state ==   "NM" ||
+            state ==   "NY" ||
+            state ==   "NC" ||
+            state ==   "ND" ||
+            state ==   "OK" ||
+            state ==   "RI" ||
+            state ==   "SC" ||
+            state ==   "TX" ||
+            state ==   "UT" ||
+            state ==   "WA") {
+            liquorRate = 14
+        }
+        else if (state ==  "DC" ||
+            state ==   "IA" ||
+            state ==   "PA" ||
+            state ==   "WV") {
+            liquorRate = 15
+        }
+        else if (state ==  "AL" ||
+            state ==   "VT") {
+            liquorRate = 50
+        }
+        else if (state ==  "AK" ||
+            state ==   "CT" ||
+            state ==   "NH" ||
+            state ==   "HI") {
+            alert ("NOT ELIGIBLE STATE")
+        }
+        // alert ("LIQUOR RATE:" + liquorRate)
+    });
 
 // COMMERCIAL GENERAL LIABILITY FEE
     $(document.body).on('change', "#estimatedTotalAttendance,#howManyDaysIsTheEvent", function () {
@@ -651,6 +728,9 @@ $(document).ready(function () {
     $(document.body).on('change', "#brokerFeeInput", function () {
         brokerFee = $("#brokerFeeInput").val()
         // alert(attendance)
+
+        brokerFee = brokerFee.replace('$','')
+
         if (brokerFee.length > 0) {
             var brokerFeeValue = parseFloat(brokerFee)
         }
@@ -666,201 +746,143 @@ $(document).ready(function () {
 
 // ALCOHOL FEE
     $(document.body).on('change', "#alcoholSales", function () {
-        liquorSale = $("#alcoholSales").val()
+
+        var tempLiquorSale = $("#alcoholSales").val()
         eventDays = $("#howManyDaysIsTheEvent").val()
         attendance = $("#estimatedTotalAttendance").val()
-        // alert ("STEP 1 ALCOHOL PREMIUM")
 
-        if (liquorSale.length > 0) {
-            var liquorSaleValue = parseFloat(liquorSale)
-            var eventDaysValue = parseFloat(eventDays)
-            var attendanceValue = parseFloat(attendance)
+        // alert("Step2" + liquorSale) removes $ from val
+        liquorSale = tempLiquorSale.replace('$','').replace(',', '')
+        // alert (liquorSale)
 
-            // alert("Step2" + liquorSaleValue)
-            // alert("Step2" + eventDaysValue)
-            // alert("Step2" + attendanceValue)
+        var liquorSaleValue = parseFloat(liquorSale)
+        var eventDaysValue = parseFloat(eventDays)
+        var attendanceValue = parseFloat(attendance)
 
-            if (eventDaysValue >= 1 && eventDaysValue <=10) {
-                liquorRate = 8
-            }
-            else if (eventDaysValue >= 11 && eventDaysValue <=20) {
-                liquorRate = 10
-            }
-            else if (eventDaysValue >= 21 && eventDaysValue <=31) {
-                liquorRate = 12
-            }
-            else if (eventDaysValue >= 32 && eventDaysValue <=45) {
-                liquorRate = 14
-            }
-            else if (eventDaysValue >= 46 && eventDaysValue <=60) {
-                liquorRate = 15
-            }
-            else if (eventDaysValue >= 61 && eventDaysValue <=75) {
-                liquorRate = 50
-            }
-            else if (eventDaysValue >= 76 && eventDaysValue <=90) {
-                liquorRate = 1
-            }
+        // alert("liquorSaleValue" + liquorSaleValue)
+        // alert("eventDatsValue" + eventDaysValue)
+        // alert ("LiqourRate" + liquorRate)
 
-            liquorRatePremium = liquorRate * eventDaysValue
+        if (liquorSaleValue > 0 && liquorSaleValue < 25000 && eventDaysValue > 0 && eventDaysValue <= 5) {
 
-            // alert("Step3a" + liquorRatePremium)
-            // alert("Step3b" + eventDaysValue)
-            // alert("Step3c" + liquorRate)
-
-            // var liquorRateValue = parseFloat(liquorRate)
-            if (liquorSaleValue < 25000) {
-                // alert("1Step" + liquorSaleValue)
-
-                if (attendanceValue >= 1 && attendanceValue <= 100) {
-
-                    liquorMinimumPremium = liquorMinimum100Below25000
-                    if (liquorMinimumPremium < liquorRatePremium) {
-                        liquorTotalPremium = liquorRatePremium
-                    }
-                    else if (liquorMinimumPremium > liquorRatePremium) {
-                        liquorTotalPremium = liquorMinimumPremium
-                    }
-
-                    // alert("2Step" + liquorRatePremium)
-                    // alert("3Step" + liquorMinimumPremium)
-                    // alert("4Step" + attendanceValue)
+            if (liquorRate == 8) {
+                liquorRatePremium = liquorRate * liquorSaleValue / 1000
+                liquorMinimumPremium = liquorMinimum8Below25000
+                if (liquorMinimumPremium < liquorRatePremium) {
+                    liquorTotalPremium = liquorRatePremium
                 }
-                else if (attendanceValue >= 101 && attendanceValue <= 500) {
-
-                    liquorMinimumPremium = liquorMinimum500Below25000
-                    if (liquorMinimumPremium < liquorRatePremium) {
-                        liquorTotalPremium = liquorRatePremium
-                    }
-                    else if (liquorMinimumPremium > liquorRatePremium) {
-                        liquorTotalPremium = liquorMinimumPremium
-                    }
-
-                }
-                else if (attendanceValue >= 501 && attendanceValue <= 1500) {
-
-                    liquorMinimumPremium = liquorMinimum1500Below25000
-                    if (liquorMinimumPremium < liquorRatePremium) {
-                        liquorTotalPremium = liquorRatePremium
-                    }
-                    else if (liquorMinimumPremium > liquorRatePremium) {
-                        liquorTotalPremium = liquorMinimumPremium
-                    }
-
-                }
-                else if (attendanceValue >= 1501 && attendanceValue <= 3000) {
-
-                    liquorMinimumPremium = liquorMinimum3000Below25000
-                    if (liquorMinimumPremium < liquorRatePremium) {
-                        liquorTotalPremium = liquorRatePremium
-                    }
-                    else if (liquorMinimumPremium > liquorRatePremium) {
-                        liquorTotalPremium = liquorMinimumPremium
-                    }
-
-                }
-                else if (attendanceValue >= 3001 && attendanceValue <= 5000) {
-
-                    liquorMinimumPremium = liquorMinimum5000Below25000
-                    if (liquorMinimumPremium < liquorRatePremium) {
-                        liquorTotalPremium = liquorRatePremium
-                    }
-                    else if (liquorMinimumPremium > liquorRatePremium) {
-                        liquorTotalPremium = liquorMinimumPremium
-                    }
-
-                }
-                else if (attendanceValue >= 5001) {
-
-                    liquorMinimumPremium = liquorMinimum5001Below25000
-                    if (liquorMinimumPremium < liquorRatePremium) {
-                        liquorTotalPremium = liquorRatePremium
-                    }
-                    else if (liquorMinimumPremium > liquorRatePremium) {
-                        liquorTotalPremium = liquorMinimumPremium
-                    }
-
+                else if (liquorMinimumPremium > liquorRatePremium) {
+                    liquorTotalPremium = liquorMinimumPremium
                 }
             }
-            else if (liquorSaleValue > 25000) {
-                if (eventDaysValue >= 6 && eventDaysValue <=10) {
-                    liquorMinimumPremium = liquorMinimum10Above25000
-                    if (liquorMinimumPremium < liquorRatePremium) {
-                        liquorTotalPremium = liquorRatePremium
-                    }
-                    else if (liquorMinimumPremium > liquorRatePremium) {
-                        liquorTotalPremium = liquorMinimumPremium
-                    }
 
+            else if (liquorRate == 12) {
+
+                // alert ("LIQUORRATE" + liquorRate)
+                // alert ("LIQUORSALEVALUE" + liquorSaleValue)
+
+                liquorRatePremium = liquorRate * liquorSaleValue / 1000
+                liquorMinimumPremium = liquorMinimum12Below25000
+
+                // alert ("LIQUORPREMIUM" + liquorRatePremium)
+
+                if (liquorMinimumPremium < liquorRatePremium) {
+                    liquorTotalPremium = liquorRatePremium
                 }
-                else if (eventDaysValue >= 11 && eventDaysValue <=20) {
-                    liquorMinimumPremium = liquorMinimum20Above25000
-                    if (liquorMinimumPremium < liquorRatePremium) {
-                        liquorTotalPremium = liquorRatePremium
-                    }
-                    else if (liquorMinimumPremium > liquorRatePremium) {
-                        liquorTotalPremium = liquorMinimumPremium
-                    }
-
+                else if (liquorMinimumPremium > liquorRatePremium) {
+                    liquorTotalPremium = liquorMinimumPremium
                 }
-                else if (eventDaysValue >= 21 && eventDaysValue <=31) {
-                    liquorMinimumPremium = liquorMinimum31Above25000
-                    if (liquorMinimumPremium < liquorRatePremium) {
-                        liquorTotalPremium = liquorRatePremium
-                    }
-                    else if (liquorMinimumPremium > liquorRatePremium) {
-                        liquorTotalPremium = liquorMinimumPremium
-                    }
-
+            }
+            else if (liquorRate == 14) {
+                liquorRatePremium = liquorRate * liquorSaleValue / 1000
+                liquorMinimumPremium = liquorMinimum14Below25000
+                if (liquorMinimumPremium < liquorRatePremium) {
+                    liquorTotalPremium = liquorRatePremium
                 }
-                else if (eventDaysValue >= 32 && eventDaysValue <=45) {
-                    liquorMinimumPremium = liquorMinimum45Above25000
-                    if (liquorMinimumPremium < liquorRatePremium) {
-                        liquorTotalPremium = liquorRatePremium
-                    }
-                    else if (liquorMinimumPremium > liquorRatePremium) {
-                        liquorTotalPremium = liquorMinimumPremium
-                    }
-
+                else if (liquorMinimumPremium > liquorRatePremium) {
+                    liquorTotalPremium = liquorMinimumPremium
                 }
-                else if (eventDaysValue >= 46 && eventDaysValue <=60) {
-                    liquorMinimumPremium = liquorMinimum60Above25000
-                    if (liquorMinimumPremium < liquorRatePremium) {
-                        liquorTotalPremium = liquorRatePremium
-                    }
-                    else if (liquorMinimumPremium > liquorRatePremium) {
-                        liquorTotalPremium = liquorMinimumPremium
-                    }
-
+            }
+            else if (liquorRate == 15) {
+                liquorRatePremium = liquorRate * liquorSaleValue / 1000
+                liquorMinimumPremium = liquorMinimum15Below25000
+                if (liquorMinimumPremium < liquorRatePremium) {
+                    liquorTotalPremium = liquorRatePremium
                 }
-                else if (eventDaysValue >= 61 && eventDaysValue <=75) {
-                    liquorMinimumPremium = liquorMinimum75Above25000
-                    if (liquorMinimumPremium < liquorRatePremium) {
-                        liquorTotalPremium = liquorRatePremium
-                    }
-                    else if (liquorMinimumPremium > liquorRatePremium) {
-                        liquorTotalPremium = liquorMinimumPremium
-                    }
-
+                else if (liquorMinimumPremium > liquorRatePremium) {
+                    liquorTotalPremium = liquorMinimumPremium
                 }
-                else if (eventDaysValue >= 76 && eventDaysValue <=90) {
-                    liquorMinimumPremium = liquorMinimum90Above25000
-                    if (liquorMinimumPremium < liquorRatePremium) {
-                        liquorTotalPremium = liquorRatePremium
-                    }
-                    else if (liquorMinimumPremium > liquorRatePremium) {
-                        liquorTotalPremium = liquorMinimumPremium
-                    }
-
+            }
+            else if (liquorRate == 50) {
+                liquorRatePremium = liquorRate * liquorSaleValue / 1000
+                liquorMinimumPremium = liquorMinimum50Below25000
+                if (liquorMinimumPremium < liquorRatePremium) {
+                    liquorTotalPremium = liquorRatePremium
                 }
+                else if (liquorMinimumPremium > liquorRatePremium) {
+                    liquorTotalPremium = liquorMinimumPremium
+                }
+            }
+        }
+        else if (liquorSaleValue > 0 && eventDaysValue > 0) {
 
+            if (liquorRate == 8) {
+                liquorRatePremium = liquorRate * liquorSaleValue / 1000
+                liquorMinimumPremium = liquorMinimum8Above25000
+                if (liquorMinimumPremium < liquorRatePremium) {
+                    liquorTotalPremium = liquorRatePremium
+                }
+                else if (liquorMinimumPremium > liquorRatePremium) {
+                    liquorTotalPremium = liquorMinimumPremium
+                }
+            }
+
+            else if (liquorRate == 12) {
+                liquorRatePremium = liquorRate * liquorSaleValue / 1000
+                liquorMinimumPremium = liquorMinimum12Above25000
+                if (liquorMinimumPremium < liquorRatePremium) {
+                    liquorTotalPremium = liquorRatePremium
+                }
+                else if (liquorMinimumPremium > liquorRatePremium) {
+                    liquorTotalPremium = liquorMinimumPremium
+                }
+            }
+            else if (liquorRate == 14) {
+                liquorRatePremium = liquorRate * liquorSaleValue / 1000
+                liquorMinimumPremium = liquorMinimum14Above25000
+                if (liquorMinimumPremium < liquorRatePremium) {
+                    liquorTotalPremium = liquorRatePremium
+                }
+                else if (liquorMinimumPremium > liquorRatePremium) {
+                    liquorTotalPremium = liquorMinimumPremium
+                }
+            }
+            else if (liquorRate == 15) {
+                liquorRatePremium = liquorRate * liquorSaleValue / 1000
+                liquorMinimumPremium = liquorMinimum15Above25000
+                if (liquorMinimumPremium < liquorRatePremium) {
+                    liquorTotalPremium = liquorRatePremium
+                }
+                else if (liquorMinimumPremium > liquorRatePremium) {
+                    liquorTotalPremium = liquorMinimumPremium
+                }
+            }
+            else if (liquorRate == 50) {
+                liquorRatePremium = liquorRate * liquorSaleValue / 1000
+                liquorMinimumPremium = liquorMinimum50Above25000
+                if (liquorMinimumPremium < liquorRatePremium) {
+                    liquorTotalPremium = liquorRatePremium
+                }
+                else if (liquorMinimumPremium > liquorRatePremium) {
+                    liquorTotalPremium = liquorMinimumPremium
+                }
             }
             // alert("5Step" + liquorMinimumPremium)
             // alert("6Step" + liquorRatePremium)
             // alert("7Step" + liquorTotalPremium)
-            $("#alcoholSalePremiumCost").html("$" + liquorTotalPremium);
+            // $("#alcoholSalePremiumCost").html("$" + liquorTotalPremium);
         }
-
+        $("#alcoholSalePremiumCost").html("$" + liquorTotalPremium);
     });
 
 // TOTAL SALES
@@ -872,7 +894,7 @@ $(document).ready(function () {
                 var tempVal = parseFloat($(this).html().replace('$',''));
                 // var totalPremiumValue = parseFloat $(this)
                 totalPremium = totalPremium + tempVal
-                alert (totalPremium)
+                // alert (totalPremium)
             }
 
         });
@@ -899,7 +921,7 @@ $(document).ready(function () {
         }
     });
 
-//WORK COMP TABLE / ADDITIONAL HIDDEN QUESTIONS
+// WORK COMP TABLE / ADDITIONAL HIDDEN QUESTIONS
     $(document.body).on('change', 'input[name="workCompCoverageRequested?"]', function () {
         //alert();
         if ($(this).attr("value") == "Yes") {
@@ -1012,6 +1034,30 @@ $(document).ready(function () {
         if ($(this).attr("value") == "No") {
             $("#insuranceCancelledContainer").css('display', "none");
             $("#insuranceCancelledExplain").css('display', "none");
+        }
+    });
+
+// PHONE NUMBER FORMAT
+    $(document.body).on('focus', '.phoneNumberMask' ,function(){
+        //this.value = this.value.replace(/(\d{3})\-?(\d{3})\-?(\d{4})/,'$1-$2-$3');
+        //alert ("OK");
+        $(".phoneNumberMask").mask("(999) 999-9999");
+    });
+
+// BROKER FEE HIDDEN PREMIUM
+    $(document.body).on('change', '.brokerFeeInput', function () {
+        //alert();
+        var brokerFeeCostTemp = $(".brokerFeeInput").val()
+        var brokerFeeCost = brokerFeeCostTemp.replace('$','').replace(',', '')
+        var brokerFeeCostValue = parseFloat(brokerFeeCost)
+
+        if (brokerFeeCostValue > 0){
+            $("#brokerFeePremiumContainer").css('display', "");
+            $("#brokerFeePremiumExplain").css('display', "");
+        }
+        else if (brokerFeeCostValue <= 0){
+            $("#brokerFeePremiumContainer").css('display', "none");
+            $("#brokerFeePremiumExplain").css('display', "none");
         }
     });
 

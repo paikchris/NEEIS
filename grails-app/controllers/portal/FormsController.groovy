@@ -30,9 +30,21 @@ class FormsController {
 
     }
 
+    def specialEventLiability(){
+
+    }
+
+    def specialEventVendor(){
+
+    }
     def entertainerForm() {
 
     }
+
+    def office() {
+
+    }
+
     def shellCorp() {
 
     }
@@ -42,17 +54,9 @@ class FormsController {
         log.info params
     }
 
-    def specialEventLiability(){
-
-    }
-    def specialEventVendor(){
-
-    }
-
     def blanketFilmProduction(){
         
     }
-
 
     def rate(){
         log.info("RATING SUBMISSION")

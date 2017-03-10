@@ -61,59 +61,59 @@
 
 	%{--SENTRY--}%
 	<script src="https://cdn.ravenjs.com/3.12.1/raven.min.js" crossorigin="anonymous"></script>
-	<script>
-	<g:if env="development">
-		Raven.config('https://dbc11c2801a349afb0be298fe227925e@sentry.io/145737', {
-			environment: 'development',
-			release: '1.0',
-//			whitelistUrls: [
-//				/disqus\.com/,
-//				/getsentry\.com/
-//			],
-//			ignoreErrors: [
-//				'fb_xd_fragment',
-//				/ReferenceError:.*/
-//			],
-			includePaths: [
-				/https?:\/\/(www\.)?104.236.23.128\.com/
-			]
-		}).install();
-	</g:if>
-	<g:elseif env="production">
-		Raven.config('https://6ac7da9b8eba444fad37c91e68b560e0@sentry.io/145672', {
-			environment: 'production',
-			release: '1.0',
-//            whitelistUrls: [
-//                /disqus\.com/,
-//                /getsentry\.com/
-//            ],
-//            ignoreErrors: [
-//                'fb_xd_fragment',
-//                /ReferenceError:.*/
-//            ],
-            includePaths: [
-                /https?:\/\/(www\.)?104.131.41.129\.com/
-            ]
-        }).install();
-	</g:elseif>
-		Raven.setUserContext({
-			email: '${user.email}',
-			role: '${user.userRole}'
-		});
-		$(document).ajaxError(function(event, jqXHR, ajaxSettings, thrownError) {
-			Raven.captureMessage(thrownError || jqXHR.statusText, {
-				extra: {
-					type: ajaxSettings.type,
-					url: ajaxSettings.url,
-					data: ajaxSettings.data,
-					status: jqXHR.status,
-					error: thrownError || jqXHR.statusText,
-					response: jqXHR.responseText.substring(0, 100)
-				}
-			});
-		});
+	%{--<script>--}%
+	%{--<g:if env="development">--}%
+		%{--Raven.config('https://dbc11c2801a349afb0be298fe227925e@sentry.io/145737', {--}%
+			%{--environment: 'development',--}%
+			%{--release: '1.0',--}%
+%{--//			whitelistUrls: [--}%
+%{--//				/disqus\.com/,--}%
+%{--//				/getsentry\.com/--}%
+%{--//			],--}%
+%{--//			ignoreErrors: [--}%
+%{--//				'fb_xd_fragment',--}%
+%{--//				/ReferenceError:.*/--}%
+%{--//			],--}%
+			%{--includePaths: [--}%
+				%{--/https?:\/\/(www\.)?104.236.23.128\.com/--}%
+			%{--]--}%
+		%{--}).install();--}%
+	%{--</g:if>--}%
+	%{--<g:elseif env="production">--}%
+		%{--Raven.config('https://6ac7da9b8eba444fad37c91e68b560e0@sentry.io/145672', {--}%
+			%{--environment: 'production',--}%
+			%{--release: '1.0',--}%
+%{--//            whitelistUrls: [--}%
+%{--//                /disqus\.com/,--}%
+%{--//                /getsentry\.com/--}%
+%{--//            ],--}%
+%{--//            ignoreErrors: [--}%
+%{--//                'fb_xd_fragment',--}%
+%{--//                /ReferenceError:.*/--}%
+%{--//            ],--}%
+            %{--includePaths: [--}%
+                %{--/https?:\/\/(www\.)?104.131.41.129\.com/--}%
+            %{--]--}%
+        %{--}).install();--}%
+	%{--</g:elseif>--}%
+		%{--Raven.setUserContext({--}%
+			%{--email: '${user.email}',--}%
+			%{--role: '${user.userRole}'--}%
+		%{--});--}%
+		%{--$(document).ajaxError(function(event, jqXHR, ajaxSettings, thrownError) {--}%
+			%{--Raven.captureMessage(thrownError || jqXHR.statusText, {--}%
+				%{--extra: {--}%
+					%{--type: ajaxSettings.type,--}%
+					%{--url: ajaxSettings.url,--}%
+					%{--data: ajaxSettings.data,--}%
+					%{--status: jqXHR.status,--}%
+					%{--error: thrownError || jqXHR.statusText,--}%
+					%{--response: jqXHR.responseText.substring(0, 100)--}%
+				%{--}--}%
+			%{--});--}%
+		%{--});--}%
 
-	</script>
+	%{--</script>--}%
 
 	<!-- //////////////////////////////////////////////////////////////////////////// -->
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
@@ -226,6 +226,7 @@
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" style="padding-left: 2px" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
 						${user.firstName} ${user.lastName}
+						<span id="userDetails-email" style="display:none">${user.email}</span>
 						<span class="caret"></span>
 					</a>
 					<ul class="dropdown-menu">

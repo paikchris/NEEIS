@@ -1090,6 +1090,7 @@
             <span class='coverageInput' style="display:none" id="PIPChoiceInput"><input type="radio" name="EPKGRadio"
                                                                                         class="coverageRadioButton EPKG"
                                                                                         value="PIP CHOI"
+                                                                                        data-object="product" data-key="productID" data-value="PIP CHOI"
                                                                                         id="PIPChoiceInputRadio"> PIP Choice (A la Carte)<br>
             </span>
 
@@ -1111,26 +1112,31 @@
             <span class='coverageInput' style="display:none" id="PIP1Input"><input type="radio" name="EPKGRadio"
                                                                                    class="coverageRadioButton EPKG"
                                                                                    value="PIP 1"
+                                                                                   data-object="product" data-key="productID" data-value="PIP 1"
                                                                                    id="PIP1InputRadio"> PIP 1 (60 Days or less)<br>
             </span>
             <span class='coverageInput' style="display:none" id="PIP2Input"><input type="radio" name="EPKGRadio"
                                                                                    class="coverageRadioButton EPKG"
                                                                                    value="PIP 2"
+                                                                                   data-object="product" data-key="productID" data-value="PIP 2"
                                                                                    id="PIP2InputRadio"> PIP 2 (60 Days or less)<br>
             </span>
             <span class='coverageInput' style="display:none" id="PIP3Input"><input type="radio" name="EPKGRadio"
                                                                                    class="coverageRadioButton EPKG"
                                                                                    value="PIP 3"
+                                                                                   data-object="product" data-key="productID" data-value="PIP 3"
                                                                                    id="PIP3InputRadio"> PIP 3 (365 Days Policy)<br>
             </span>
             <span class='coverageInput' style="display:none" id="PIP4Input"><input type="radio" name="EPKGRadio"
                                                                                    class="coverageRadioButton EPKG"
                                                                                    value="PIP 4"
+                                                                                   data-object="product" data-key="productID" data-value="PIP 4"
                                                                                    id="PIP4InputRadio"> PIP 4 (365 Days Policy)<br>
             </span>
             <span class='coverageInput' style="display:none" id="PIP5Input"><input type="radio" name="EPKGRadio"
                                                                                    class="coverageRadioButton EPKG"
                                                                                    value="PIP 5"
+                                                                                   data-object="product" data-key="productID" data-value="PIP 5"
                                                                                    id="PIP5InputRadio"> PIP 5 (365 Days Policy)
             </span>
         </div>
@@ -1269,6 +1275,7 @@
         <div class='form-group col-xs-12 CPKDiv' style="padding-left: 40px; margin-top:-20px;">
             <span class='coverageInput' id="CPKInput"><input type="radio" name="commercial"
                                                              class="coverageRadioButton CPK" value="BARCPKGC"
+                                                             data-object="product" data-key="productID" data-value="BARCPKGC-CPK"
                                                              id="CPKInputRadio"> Commercial Package  (CGL & NOAL)<br>
             </span>
 
@@ -1279,6 +1286,7 @@
             </div>
             <span class='coverageInput' id="CGLInput"><input type="radio" name="commercial"
                                                              class="coverageRadioButton CGL" value="BARCPKGC"
+                                                             data-object="product" data-key="productID" data-value="BARCPKGC-CGL"
                                                              id="CGLInputRadio"> Commercial General Liability</span>
         </div>
 

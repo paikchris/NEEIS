@@ -78,17 +78,27 @@ class AsyncController {
                                         renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
                                     }
                                 }
-                                if ((params.totalGrossBudget.toFloat() >= 1 && params.totalGrossBudget.toFloat() <= 300000)) {
+                                if ((params.totalGrossBudget.toFloat() >= 1 && params.totalGrossBudget.toFloat() < 300000)) {
                                     aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
                                             "FROM lkpProduct with (NOLOCK) " +
                                             "WHERE (ProductID = 'PIP 3') AND (ActiveFlag = 'Y')") {
                                         renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
                                     }
                                 }
-                                if ((params.totalGrossBudget.toFloat() > 300000 && params.totalGrossBudget.toFloat() <= 400000)) {
+                                if ((params.totalGrossBudget.toFloat() >= 300000 && params.totalGrossBudget.toFloat() <= 400000)) {
+                                    aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
+                                            "FROM lkpProduct with (NOLOCK) " +
+                                            "WHERE (ProductID = 'PIP 3') AND (ActiveFlag = 'Y')") {
+                                        renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
+                                    }
                                     aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
                                             "FROM lkpProduct with (NOLOCK) " +
                                             "WHERE (ProductID = 'PIP 4') AND (ActiveFlag = 'Y')") {
+                                        renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
+                                    }
+                                    aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
+                                            "FROM lkpProduct with (NOLOCK) " +
+                                            "WHERE (ProductID = 'PIP 5') AND (ActiveFlag = 'Y')") {
                                         renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
                                     }
                                 }
@@ -257,7 +267,7 @@ class AsyncController {
             response.outputStream << renderStringBytesArray
         }
         else render "Error!" // appropriate error handling
-        }
+    }
     def addNewInsured(){
         log.info "SAVING ADDITIONAL INSURED"
         log.info params
@@ -567,52 +577,52 @@ class AsyncController {
             params['autoPropertyDamageLimit'] = ""
 
 
-        params['insrltrUmbrella']= ""
-        params['cbUmbrellaLiab']= ""
-        params['cbUmbrellaExcessLiab']= ""
-        params['cbUmbrellaDeductible']= ""
-        params['cbUmbrellaRetention']= ""
+            params['insrltrUmbrella']= ""
+            params['cbUmbrellaLiab']= ""
+            params['cbUmbrellaExcessLiab']= ""
+            params['cbUmbrellaDeductible']= ""
+            params['cbUmbrellaRetention']= ""
 
-        params['cbUmbrellaOccur']= ""
-        params['cbUmbrellaClaimsMade']= ""
+            params['cbUmbrellaOccur']= ""
+            params['cbUmbrellaClaimsMade']= ""
 
-        params['umbrellaRetentionLimit']= ""
-        params['umbrellaAddl']= ""
-        params['umbrellaSubr']= ""
+            params['umbrellaRetentionLimit']= ""
+            params['umbrellaAddl']= ""
+            params['umbrellaSubr']= ""
 
-        params['umbrellaPolicyNumber']= ""
-        params['umbrellaStart']= ""
-        params['umbrellaEnd']= ""
-        params['umbrellaEachOccurrenceLimit']= ""
-        params['umbrellaAggregateLimit']= ""
+            params['umbrellaPolicyNumber']= ""
+            params['umbrellaStart']= ""
+            params['umbrellaEnd']= ""
+            params['umbrellaEachOccurrenceLimit']= ""
+            params['umbrellaAggregateLimit']= ""
 
-        params['insrltrWorkersComp']= ""
-        params['cbWorkerCompMemberExcluded']= ""
-        params['workersCompDescriptionNH']= ""
-        params['workersCompSubr']= ""
-        params['workersCompPolicyNumber']= ""
+            params['insrltrWorkersComp']= ""
+            params['cbWorkerCompMemberExcluded']= ""
+            params['workersCompDescriptionNH']= ""
+            params['workersCompSubr']= ""
+            params['workersCompPolicyNumber']= ""
 
-        params['workersCompStart']= ""
-        params['workersCompEnd']= ""
+            params['workersCompStart']= ""
+            params['workersCompEnd']= ""
 
-        params['cbWorkersCompStatutoryLimits']= ""
-        params['cbWorkersCompOther']= ""
-         params['workersCompEachAccidentLimit']= ""
+            params['cbWorkersCompStatutoryLimits']= ""
+            params['cbWorkersCompOther']= ""
+            params['workersCompEachAccidentLimit']= ""
 
-        params['workersCompDiseaseEmployeeLimit']= ""
-        params['workersCompDiseasePolicyLimit']= ""
+            params['workersCompDiseaseEmployeeLimit']= ""
+            params['workersCompDiseasePolicyLimit']= ""
 
 
             params['additionalRemarks']= ""
             params['certificateHolder']= ""
 
 
-        if(record['Expiration'] != null){
-            params['genEnd']= record['Expiration']
-        }
-        else {
-            params['genEnd'] = ""
-        }
+            if(record['Expiration'] != null){
+                params['genEnd']= record['Expiration']
+            }
+            else {
+                params['genEnd'] = ""
+            }
 
             def relatedSubmissions = []
             def relatedSubmissionObj=[:]
@@ -962,18 +972,18 @@ class AsyncController {
             def pathToCert = intelledoxHelper.createCertPDF(params, dataSource_aim);
 
             def certFile = new File(pathToCert)
-                if (certFile.exists()) {
-                    log.info("building response" + certFile.exists())
-                    response.setContentType("application/octet-stream") // or or image/JPEG or text/xml or whatever type the file is
-                    response.setHeader("Content-disposition", "attachment;filename=\"${certFile.name}\"")
-                    log.info("cert file: " + certFile.name)
-                    response.outputStream << certFile.bytes
-                    log.info "done"
+            if (certFile.exists()) {
+                log.info("building response" + certFile.exists())
+                response.setContentType("application/octet-stream") // or or image/JPEG or text/xml or whatever type the file is
+                response.setHeader("Content-disposition", "attachment;filename=\"${certFile.name}\"")
+                log.info("cert file: " + certFile.name)
+                response.outputStream << certFile.bytes
+                log.info "done"
 //                    render certFile.bytes
-                }
-                else{
-                    render "Error!" // appropriate error handling
-                }
+            }
+            else{
+                render "Error!" // appropriate error handling
+            }
         }
         catch(Exception e){
             StringWriter sw = new StringWriter();
@@ -1249,7 +1259,7 @@ class AsyncController {
 
         //SELECT PRODUCTS FROM DB
         def products = Products.where {
-                productID in productsToRate
+            productID in productsToRate
 
         }.list()
 
@@ -1468,44 +1478,44 @@ class AsyncController {
             }
             log.info "ADJUSTING RATES"
 
-             pipChoice_miscRentedEquipRateMinPrem = [ rateMap['PIPCHOI_miscRate'].toDouble(), rateMap['PIPCHOI_miscMP'].toInteger()];
-             pipChoice_propsSetWardrobeRateMinPrem = [ rateMap['PIPCHOI_propsRate'].toDouble(), rateMap['PIPCHOI_propsMP'].toInteger()];
-             pipChoice_thirdPartyPropDamageRateMinPrem = [ rateMap['PIPCHOI_thirdRate'].toDouble(), rateMap['PIPCHOI_thirdMP'].toInteger()];
-             pipChoice_extraExpenseRateMinPrem = [ rateMap['PIPCHOI_extraRate'].toDouble(), rateMap['PIPCHOI_extraMP'].toInteger()];
-             pipChoice_rate = pipChoice_miscRentedEquipRateMinPrem[0];
-             pipChoice_minPremium = pipChoice_miscRentedEquipRateMinPrem[1];
-             pipChoice_NOHARateMinPrem = [ 'flat', rateMap['PIPCHOI_NOHAMP'].toInteger()];
+            pipChoice_miscRentedEquipRateMinPrem = [ rateMap['PIPCHOI_miscRate'].toDouble(), rateMap['PIPCHOI_miscMP'].toInteger()];
+            pipChoice_propsSetWardrobeRateMinPrem = [ rateMap['PIPCHOI_propsRate'].toDouble(), rateMap['PIPCHOI_propsMP'].toInteger()];
+            pipChoice_thirdPartyPropDamageRateMinPrem = [ rateMap['PIPCHOI_thirdRate'].toDouble(), rateMap['PIPCHOI_thirdMP'].toInteger()];
+            pipChoice_extraExpenseRateMinPrem = [ rateMap['PIPCHOI_extraRate'].toDouble(), rateMap['PIPCHOI_extraMP'].toInteger()];
+            pipChoice_rate = pipChoice_miscRentedEquipRateMinPrem[0];
+            pipChoice_minPremium = pipChoice_miscRentedEquipRateMinPrem[1];
+            pipChoice_NOHARateMinPrem = [ 'flat', rateMap['PIPCHOI_NOHAMP'].toInteger()];
 
             //PIP1 RATING
-             pip1_negativeFilmVideoRateMinPrem = ["flat", "incl"];
-             pip1_faultyStockCameraProcessingRateMinPrem = ["flat", "incl"];
-             pip1_miscRentedEquipRateMinPrem = ["flat", "incl"];
-             pip1_propsSetWardrobeRateMinPrem = ["flat", "incl"];
-             pip1_thirdPartyPropDamageRateMinPrem = ["flat", "incl"];
-             pip1_extraExpenseRateMinPrem = ["flat", "incl"];
-             pip1_minPremium = rateMap['PIP1_MP'].toInteger();
+            pip1_negativeFilmVideoRateMinPrem = ["flat", "incl"];
+            pip1_faultyStockCameraProcessingRateMinPrem = ["flat", "incl"];
+            pip1_miscRentedEquipRateMinPrem = ["flat", "incl"];
+            pip1_propsSetWardrobeRateMinPrem = ["flat", "incl"];
+            pip1_thirdPartyPropDamageRateMinPrem = ["flat", "incl"];
+            pip1_extraExpenseRateMinPrem = ["flat", "incl"];
+            pip1_minPremium = rateMap['PIP1_MP'].toInteger();
 
             //PIP2 RATING
-             pip2_PIP2premium = rateMap['PIP2_MP'];
-             pip2_negativeFilmVideoRateMinPrem = ["flat", "incl"];
-             pip2_faultyStockCameraProcessingRateMinPrem = ["flat", "incl"];
-             pip2_miscRentedEquipRateMinPrem = ["flat", "incl"];
-             pip2_propsSetWardrobeRateMinPrem = ["flat", "incl"];
-             pip2_thirdPartyPropDamageRateMinPrem = ["flat", "incl"];
-             pip2_extraExpenseRateMinPrem = ["flat", "incl"];
-             pip2_officeContentsRateMinPrem = ["flat", "incl"];
-             pip2_NOHARateMinPrem = [ 'flat', rateMap['PIP2_NOHAMP'].toInteger()];
+            pip2_PIP2premium = rateMap['PIP2_MP'];
+            pip2_negativeFilmVideoRateMinPrem = ["flat", "incl"];
+            pip2_faultyStockCameraProcessingRateMinPrem = ["flat", "incl"];
+            pip2_miscRentedEquipRateMinPrem = ["flat", "incl"];
+            pip2_propsSetWardrobeRateMinPrem = ["flat", "incl"];
+            pip2_thirdPartyPropDamageRateMinPrem = ["flat", "incl"];
+            pip2_extraExpenseRateMinPrem = ["flat", "incl"];
+            pip2_officeContentsRateMinPrem = ["flat", "incl"];
+            pip2_NOHARateMinPrem = [ 'flat', rateMap['PIP2_NOHAMP'].toInteger()];
 
             //PIP3 RATING
-             pip3_negativeFilmVideoRateMinPrem = [ rateMap['PIP3_Rate'].toDouble(), rateMap['PIP3_MP'].toInteger()];
+            pip3_negativeFilmVideoRateMinPrem = [ rateMap['PIP3_Rate'].toDouble(), rateMap['PIP3_MP'].toInteger()];
 
             //PIP4
-             pip4_negativeFilmVideoRateMinPrem = [ rateMap['PIP4_Rate'].toDouble(), rateMap['PIP4_MP'].toInteger()];
+            pip4_negativeFilmVideoRateMinPrem = [ rateMap['PIP4_Rate'].toDouble(), rateMap['PIP4_MP'].toInteger()];
 
             //PIP5
-             pip5_negativeFilmVideoRateMinPrem = [ rateMap['PIP5_Rate'].toDouble(), rateMap['PIP5_MP'].toInteger()];
-             pip5_civilAuthority100Limit = ["flat", rateMap['PIP5_civil100MP'].toInteger()];
-             pip5_civilAuthority500Limit = ["flat", rateMap['PIP5_civil500MP'].toInteger()];
+            pip5_negativeFilmVideoRateMinPrem = [ rateMap['PIP5_Rate'].toDouble(), rateMap['PIP5_MP'].toInteger()];
+            pip5_civilAuthority100Limit = ["flat", rateMap['PIP5_civil100MP'].toInteger()];
+            pip5_civilAuthority500Limit = ["flat", rateMap['PIP5_civil500MP'].toInteger()];
         }
 
         def submissionRateMap = [:]
@@ -1587,6 +1597,8 @@ class AsyncController {
                     def subjectString = "";
                     def endorseString = "";
                     def lobString = "";
+                    def agentPct = "";
+                    def grossPct = "";
                     def additionaLOBString = "";
                     def rateInfo = "";
 
@@ -1625,7 +1637,9 @@ class AsyncController {
 
 
                     }
-
+                    agentPct = lobString.split('\r')[0].split('\t')[3].trim();
+                    grossPct = lobString.split('\r')[0].split('\t')[2].trim();
+                    log.info("ORIGINAL LOB STRING = " + lobString)
                     if (coverageID == "EPKG") {
                         if (productID == "PIP CHOI") {
 
@@ -2376,57 +2390,16 @@ class AsyncController {
 
                                     productTotalPremium = productTotalPremium + 0;
                                 }
-                                lobString = "Entertainment Package" + "\t" + Math.ceil(productTotalPremium) + "\t" + "28\t" + "15\r"
+
+
+
+                                lobString = "Entertainment Package" + "\t" + Math.ceil(productTotalPremium) + "\t" + grossPct + "\t" + agentPct+"\r"
                                 limitsMap = tempLimitsMap
                                 deductsMap = tempDeductsMap
                                 premiumsMap = tempPremiumsMap
                             }
                         }
-
-                        if (params.additionalProducts.contains("moneyCurrencyCheckbox")) {
-                            premiumsMap["Money and Currency"] = ['flat','incl'];
-                            deductsMap["Money and Currency"] = "\$1500";
-                            limitsMap["Money and Currency"] = "\$25000";
-                            rateInfo = rateInfo + "EPKG\tflat\tincl\tMoney and Currency\t\n";
-                        }
-                        if (params.additionalProducts.contains("fursJewelryCheckbox")) {
-                            premiumsMap["Furs, Jewelry, Art & Antiques"] = ['flat','incl'];
-                            deductsMap["Furs, Jewelry, Art & Antiques"] = "\$2000";
-                            limitsMap["Furs, Jewelry, Art & Antiques"] = "\$50000";
-                            rateInfo = rateInfo + "EPKG\tflat\tincl\tFurs, Jewelry, Art & Antiques\t\n";
-                        }
-                        if (params.additionalProducts.contains("talentNonBudgetCheckbox")) {
-                            premiumsMap["Talent and Non Budgeted Costs"] = ['flat','incl'];
-                            deductsMap["Talent and Non Budgeted Costs"] = "\$1500";
-                            limitsMap["Talent and Non Budgeted Costs"] = "\$25000";
-                            rateInfo = rateInfo + "EPKG\tflat\tincl\tTalent and Non Budgeted Costs\t\n";
-                        }
-                        if (params.additionalProducts.contains("adminCostCheckbox")) {
-                            premiumsMap["Administrative Costs"] = ['flat','incl'];
-                            deductsMap["Administrative Costs"] = "";
-                            limitsMap["Administrative Costs"] = "5% of GPC";
-                            rateInfo = rateInfo + "EPKG\tflat\tincl\tAdministrative Costs\t\n";
-                        }
-                        if (params.additionalProducts.contains("hardwareElectronicDataCheckbox")) {
-                            premiumsMap["Hardware"] = ['flat','incl'];
-                            deductsMap["Hardware"] = "\$1000";
-                            limitsMap["Hardware"] = "\$25000";
-                            rateInfo = rateInfo + "EPKG\tflat\tincl\tHardware\t\n";
-                        }
-                        if (params.additionalProducts.contains("dataMediaElectronicDataCheckbox")) {
-                            premiumsMap["Data and Media"] = ['flat','incl'];
-                            deductsMap["Data and Media"] = "\$1000";
-                            limitsMap["Data and Media"] = "\$10000";
-                            rateInfo = rateInfo + "EPKG\tflat\tincl\tData and Media\t\n";
-                        }
-                        if (params.additionalProducts.contains("extraExpenseElectronicDataCheckbox")) {
-                            premiumsMap["Electronic Data Extra Expense"] = ['flat','incl'];
-                            deductsMap["Electronic Data Extra Expense"] = "\$1000";
-                            limitsMap["Electronic Data Extra Expense"] = "\$10000";
-                            rateInfo = rateInfo + "EPKG\tflat\tincl\tElectronic Data Extra Expense\t\n";
-                        }
-                    }
-                    else if (coverageID == "CGL" || coverageID == "CPK") {
+                    } else if (coverageID == "CGL" || coverageID == "CPK") {
                         def rate = 0.0;
                         def premium = 0;
                         def minPremium = 0;
@@ -2603,11 +2576,11 @@ class AsyncController {
                         tempPremiumsMap["Medical Expense Limit (Any One Person)"] = ["flat", "incl"]
 
                         if(coverageID == "CGL"){
-                            lobString = "Commercial General Liability" + "\t" + Math.ceil(productTotalPremium) + "\t" + "28\t" + "15\r"
+                            lobString = "Commercial General Liability" + "\t" + Math.ceil(productTotalPremium) + "\t" + grossPct + "\t" + agentPct+"\r"
                             rateInfo = "CGL\tRate\tPremium\tCoverage\tMin Prem\n";
                         }
                         else if(coverageID == "CPK"){
-                            lobString = "Commercial Package" + "\t" + Math.ceil(productTotalPremium) + "\t" + "28\t" + "15\r"
+                            lobString = "Commercial Package" + "\t" + Math.ceil(productTotalPremium) + "\t" + grossPct + "\t" + agentPct+"\r"
                             rateInfo = "CPK\tRate\tPremium\tCoverage\tMin Prem\n";
                         }
 
@@ -2695,8 +2668,7 @@ class AsyncController {
                         deductsMap = tempDeductsMap
                         premiumsMap = tempPremiumsMap
 
-                    }
-                    else if (coverageID == "NOHA" || coverageID == "NOAL") {
+                    } else if (coverageID == "NOHA" || coverageID == "NOAL") {
 //                        def termLength = params.proposedTermLength.split(" ")[0].toInteger();
                         if (params.productsSelected.contains("CPK:")) {
                             def NOHARateMinPrem = [6.0, 500.0];
@@ -2707,7 +2679,7 @@ class AsyncController {
                                 NOHARateMinPrem = [6.0, 500.0];
                             }
                             else {
-                                NOHARateMinPrem = [6.0, 550.0];
+                                NOHARateMinPrem = [6.0, 500.0];
                             }
 
 
@@ -2942,7 +2914,7 @@ class AsyncController {
 //        def taxState = testjson.getAt("stateMailing");
         def taxCodes = [:];
 
-                aimsql.eachRow("SELECT     TransCode, TransTypeID, Description, FlatAmount_Flag, Rate, CollectedBy, AllowOverRide, State, FlagUserSelected, AP_AccountID, IncludeFees, RoundingRule, \n" +
+        aimsql.eachRow("SELECT     TransCode, TransTypeID, Description, FlatAmount_Flag, Rate, CollectedBy, AllowOverRide, State, FlagUserSelected, AP_AccountID, IncludeFees, RoundingRule, \n" +
                 "                      RecordKey_PK, PremiumBasis, BasisSection, FlatRateFlag, TaxValue, TaxCodeID, FlagFullyEarned, FlagPolicyOnly, TaxRate, MinAmount, MaxAmount, AppliesTo, \n" +
                 "                      CompanyID, Municipality\n" +
                 "FROM         dvTaxTable with (NOLOCK)\n" +
@@ -3304,20 +3276,20 @@ class AsyncController {
 
         def updatedRecords = Submissions.executeUpdate("update Submissions set statusCode = ? where aimQuoteID = ?", [params.statusCode, params.aimQuoteID])
 
-//        aimsql.withTransaction {
-//            aimsql.executeUpdate("UPDATE dbo.Version\n" +
-//                    "SET StatusID = ?\n" +
-//                    "WHERE dbo.Version.QuoteID = ?; ", [params.statusCode, params.aimQuoteID]);
-////
-//            aimsql.executeUpdate("UPDATE dbo.Quote\n" +
-//                    "SET StatusID = ?\n" +
-//                    "WHERE dbo.Quote.QuoteID = ?; ", [params.statusCode, params.aimQuoteID]);
+        aimsql.withTransaction {
+            aimsql.executeUpdate("UPDATE dbo.Version\n" +
+                    "SET StatusID = ?\n" +
+                    "WHERE dbo.Version.QuoteID = ?; ", [params.statusCode, params.aimQuoteID]);
 //
-//            aimsql.executeUpdate("UPDATE dvQuoteView\n" +
-//                    "SET StatusID = ?\n" +
-//                    "WHERE QuoteID = ?; ", [params.statusCode, params.aimQuoteID]);
-//            aimsql.commit();
-//        }
+            aimsql.executeUpdate("UPDATE dbo.Quote\n" +
+                    "SET StatusID = ?\n" +
+                    "WHERE dbo.Quote.QuoteID = ?; ", [params.statusCode, params.aimQuoteID]);
+
+            aimsql.executeUpdate("UPDATE dvQuoteView\n" +
+                    "SET StatusID = ?\n" +
+                    "WHERE QuoteID = ?; ", [params.statusCode, params.aimQuoteID]);
+            aimsql.commit();
+        }
 
 //        aimsql.call("{call dbo.spUpdateStatus( '${quoteID}', 'web', '${description}', '${timestamp}', '${statusCode}', NULL, '${typeID}'," +
 //                " '${quoteVersion}', 0, NULL, 0, '1899-12-30 00:00:00:000')}") { num ->

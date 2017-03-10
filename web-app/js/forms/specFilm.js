@@ -14,8 +14,8 @@ var pipChoiceCastEssential = "";
 var riskHasCast = false;
 var riskHasWC = false;
 
-var uwQuestionsMap = {};
-var uwQuestionsOrder = [];
+
+
 var riskChosen;
 $(document).ready(function () {
 
@@ -156,7 +156,9 @@ $(document).ready(function () {
                 $("#hideMe").css('display',"none");
             }
     });
-    //NUMBER OF CAST MEMBERS
+
+
+        //NUMBER OF CAST MEMBERS
     $(document.body).on('change', '#numberOfCastMembers' ,function(){
         if($.isNumeric($(this).val())){
             var htmlString = "";
@@ -2072,6 +2074,7 @@ function ratePremiums(thisObj){
                 totalUpPremiumAndTax();
                 addOverflowTransitionClass();
                 $('#castInsuranceRequiredCheckBox').trigger('change');
+
             });
 
     }
@@ -2130,272 +2133,272 @@ function totalUpPremiumAndTax(){
     $("#premiumAllLOBTotal").html(formatTaxAndFee(totalPremium));
 }
 
-function buildReview() {
-    $("#reviewRiskType").html($("li.active").children("a.riskOptionLink").html().trim());
-    //alert($("#namedInsured").html());
-    $("#reviewNamedInsured").html($("#namedInsured").val());
-    $("#reviewMailingAddress").html($("#googleAutoAddress").val());
-    $("#reviewMailingCity").html($("#cityMailing").val());
-    $("#reviewMailingZipcode").html($("#zipCodeMailing").val());
-    $("#reviewMailingState").html($("#stateMailing").val());
-    $("#reviewPhoneNumber").html($("#phoneNumber").val());
-    $("#reviewEmail").html($("#namedInsuredEmail").val());
-    $("#reviewWebsite").html($("#website").val());
-
-    $("#reviewTotalBudget").html($("#totalBudgetConfirm").val());
-    $("#reviewPrincipalPhotographyDates").html($("#principalPhotographyDateStart").val() + " to " + $("#principalPhotographyDateEnd").val());
-    $("#reviewProposedEffective").html($("#proposedEffectiveDate").val());
-    $("#reviewProposedExpiration").html($("#proposedExpirationDate").val());
-    $("#reviewProposedTerm").html($("#proposedTermLength").val());
-    $("#reviewSubject").html($("#endorseInsert").html());
-
-
-    $("#reviewNameProduction").html($("#titleOfProduction").val());
-    $("#reviewNameProductionCompany").html($("#nameOfProductionCompany").val());
-    $("#reviewNamePrincipals").html($("#nameOfPrincipal").val());
-    $("#reviewNumberYearsExperience").html($("#numberOfYearsOfExperience").val());
-    $("#reviewPriorLosses").html($("#listOfPriorLosses").val());
-
-    var limitValueArray = [];
-    $("#limitsDeductPremiumInsert").find('.limitColumn').each(function () {
-        if ($(this).find('input').length) {
-            limitValueArray.push($(this).find('input').val());
-        }
-    });
-    var htmlString = $("#limitsDeductPremiumInsert").html();
-    var object = $('<div/>').html(htmlString).contents();
-    object.find('.limitColumn').each(function (index) {
-        if ($(this).find('input').length) {
-            $(this).html("<span>" + limitValueArray[index] + "<span>");
-        }
-    });
-    $("#reviewLimitsDeducts").html(object);
-
-    var str = $("<div />").append($('#premDistributionInsert').clone()).html();
-        str = str + $("<div />").append($('.TaxHeaderRow').clone()[0]).html();
-    str = str + $("<div />").append($('#taxRows').clone()[0]).html();
-    str = str + $("<div />").append($('.TotalPremiumRow').clone()[0]).html();
-    $("#reviewPremDistribution").html( str);
-    $("#reviewTerms").html($("#termsInsert").html());
-    //$("#reviewSubject").html($("#subjectInsert").html());
-    $("#reviewBrokerFee").html($("#brokerFeeInput").val());
-
-    var reviewString = "";
-    var checkboxesReviewed = "";
-    var blankAnswer = "To Follow"
-    $(".showReview").each(function () {
-        if ($(this).css("display") != "none") {
-            if ($(this).is("select")) {
-                // the input field is not a select
-                var answer = "";
-                if ($(this).find(":selected").text().length > 0) {
-                    answer = $(this).find(":selected").text()
-                }
-                else {
-                    answer = blankAnswer;
-                }
-                reviewString = reviewString + "<div class='row'>" +
-                    "<div class='col-xs-3 text-left'>" +
-                    "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
-                    "</div>" +
-                    "<div class='col-xs-9'>" +
-                    "<div class='reviewSpan' id='reviewBrokerFee'>" + answer + "</div>" +
-                    "</div>" +
-                    "</div>";
-                reviewString = reviewString + "<br>";
-
-                //STORE IN UW QUESTIONS
-                uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
-                uwQuestionsOrder.push($(this).attr("data-reviewName"));
-
-            }
-            else if ($(this).is(':checkbox') && $(this).attr("data-reviewName")) {
-                // the input field is not a select
-                //alert($(this).attr("data-reviewName") + " - " + checkboxesReviewed + " - " +  checkboxesReviewed.indexOf($(this).attr("data-reviewName")));
-                if (checkboxesReviewed.indexOf($(this).attr("data-reviewName")) == -1) {
-                    var checkboxesCheckedString = "";
-
-                    var answer = "";
-
-
-                    reviewString = reviewString + "<div class='row'>" +
-                        "<div class='col-xs-3 text-left'>" +
-                        "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
-                        "</div>";
-
-                    $('input[data-reviewName="' + $(this).attr("data-reviewName") + '"]').each(function () {
-                        if ($(this).is(":checked")) {
-                            //alert($(this).val());
-                            checkboxesCheckedString = checkboxesCheckedString + $(this).val() + ", ";
-                        }
-                    });
-                    checkboxesCheckedString = checkboxesCheckedString.replace(/,\s*$/, "");
-
-                    if (checkboxesCheckedString.length > 0) {
-                        answer = checkboxesCheckedString;
-                    }
-                    else {
-                        answer = blankAnswer;
-                    }
-
-                    reviewString = reviewString + "<div class='col-xs-9'>" +
-                        "<div class='reviewSpan' id='reviewBrokerFee'>" + answer + "</div>" +
-                        "</div>";
-
-                    reviewString = reviewString + "</div>";
-                    reviewString = reviewString + "<br>";
-                    checkboxesReviewed = checkboxesReviewed + $(this).attr("data-reviewName") + ";";
-
-
-                    //STORE IN UW QUESTIONS
-                    uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
-                    uwQuestionsOrder.push($(this).attr("data-reviewName"));
-                }
-                else {
-
-                }
-
-            }
-            else if ($(this).is(':radio') && $(this).attr("data-reviewName")) {
-                var answer = "";
-                if ($("input:radio[name='" + $(this).attr('name') + "']:checked").val().length > 0) {
-                    answer = $("input:radio[name='" + $(this).attr('name') + "']:checked").val();
-                }
-                else {
-                    answer = blankAnswer;
-                }
-
-                reviewString = reviewString + "<div class='row'>" +
-                    "<div class='col-xs-3 text-left'>" +
-                    "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
-                    "</div>" +
-                    "<div class='col-xs-9'>" +
-                    "<div class='reviewSpan' id='reviewBrokerFee'>" + answer + "</div>" +
-                    "</div>" +
-                    "</div>";
-                reviewString = reviewString + "<br>";
-
-                //STORE IN UW QUESTIONS
-                uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
-                uwQuestionsOrder.push($(this).attr("data-reviewName"));
-            }
-            else if ($(this).attr("id") === "numberOfCastMembers") {
-                var answer = "";
-                $("#castMemberDetailContainer").find('.row').each(function(){
-                    if ($(this).css("display") != "none") {
-                        if($(this).find(".castMemberName").val().trim().length > 0){
-                            answer = answer + $(this).find(".castMemberName").val() + "," + $(this).find(".castMemberAge").val() + "," + $(this).find(".castMemberRole").val() + "\n"
-
-                        }
-                    }
-
-                });
-
-                if(answer === ""){
-                    answer = "To Follow";
-                }
-
-                reviewString = reviewString + "<div class='row'>" +
-                    "<div class='col-xs-3 text-left'>" +
-                    "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
-                    "</div>" +
-                    "<div class='col-xs-9'>" +
-                    "<div class='reviewSpan' id='reviewBrokerFee'>" + answer + "</div>" +
-                    "</div>" +
-                    "</div>";
-                reviewString = reviewString + "<br>";
-
-                //STORE IN UW QUESTIONS
-                uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
-                uwQuestionsOrder.push($(this).attr("data-reviewName"));
-            }
-            else {
-                var answer = "";
-                if ($(this).val().length > 0) {
-                    answer = $(this).val()
-                }
-                else {
-                    answer = blankAnswer;
-                }
-
-                reviewString = reviewString + "<div class='row'>" +
-                    "<div class='col-xs-3 text-left'>" +
-                    "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
-                    "</div>" +
-                    "<div class='col-xs-9'>" +
-                    "<div class='reviewSpan' id='reviewBrokerFee'>" + answer + "</div>" +
-                    "</div>" +
-                    "</div>";
-                reviewString = reviewString + "<br>";
-
-                //STORE IN UW QUESTIONS
-                uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
-                uwQuestionsOrder.push($(this).attr("data-reviewName"));
-            }
-
-            //console.log($(this).attr("data-reviewName"));
-        }
-
-
-    });
-    //alert("review String: " + reviewString);
-    $("#otherReviewInsert").html(reviewString);
-
-    //ATTACHED FILES
-    var filesInsert = "";
-    $(':file').each(function(){
-        var file = this.files[0];
-        if(file === undefined){
-
-        }
-        else{
-            var ext = $(this).val().split('.').pop().toLowerCase();
-
-            //alert('Only .zip, .doc, .docx, .xlsx, .xls, .pdf are permitted');
-            var iconFilePath = "";
-            if(ext == "zip") {
-                iconFilePath = "zipIcon.png"
-            }
-            else if(ext == "doc"){
-                iconFilePath = "docIcon.png"
-            }
-            else if(ext == "docx"){
-                iconFilePath = "docxIcon.png"
-            }
-            else if(ext == "xls"){
-                iconFilePath = "xlsIcon.png"
-            }
-            else if(ext == "xlsx"){
-                iconFilePath = "xlsxIcon.png"
-            }
-            else if(ext == "pdf"){
-                iconFilePath = "pdfIcon.png"
-            }
-            else if(ext == "txt"){
-                iconFilePath = "txtIcon.png"
-            }
-            else{
-                iconFilePath = "fileIcon.png"
-            }
-
-           //console.log("Change: " + file);
-
-            var name = file.name;
-            var size = file.size;
-            var type = file.type;
-            filesInsert = filesInsert +
-                "<div class='row'>" +
-                "<div class='col-xs-12 text-left'>" +
-                "<div class='reviewSpan' id='review'><img src='/portal/images/" + iconFilePath + "' height='16' width='16' style='margin-right:10px'/>" + name + "</div>" +
-                "</div>" +
-                "</div>";
-        }
-
-    });
-
-    $('#reviewAttachedFilesInsert').html(filesInsert);
-
-}
+//function buildReview() {
+//    $("#reviewRiskType").html($("li.active").children("a.riskOptionLink").html().trim());
+//    //alert($("#namedInsured").html());
+//    $("#reviewNamedInsured").html($("#namedInsured").val());
+//    $("#reviewMailingAddress").html($("#googleAutoAddress").val());
+//    $("#reviewMailingCity").html($("#cityMailing").val());
+//    $("#reviewMailingZipcode").html($("#zipCodeMailing").val());
+//    $("#reviewMailingState").html($("#stateMailing").val());
+//    $("#reviewPhoneNumber").html($("#phoneNumber").val());
+//    $("#reviewEmail").html($("#namedInsuredEmail").val());
+//    $("#reviewWebsite").html($("#website").val());
+//
+//    $("#reviewTotalBudget").html($("#totalBudgetConfirm").val());
+//    $("#reviewPrincipalPhotographyDates").html($("#principalPhotographyDateStart").val() + " to " + $("#principalPhotographyDateEnd").val());
+//    $("#reviewProposedEffective").html($("#proposedEffectiveDate").val());
+//    $("#reviewProposedExpiration").html($("#proposedExpirationDate").val());
+//    $("#reviewProposedTerm").html($("#proposedTermLength").val());
+//    $("#reviewSubject").html($("#endorseInsert").html());
+//
+//
+//    $("#reviewNameProduction").html($("#titleOfProduction").val());
+//    $("#reviewNameProductionCompany").html($("#nameOfProductionCompany").val());
+//    $("#reviewNamePrincipals").html($("#nameOfPrincipal").val());
+//    $("#reviewNumberYearsExperience").html($("#numberOfYearsOfExperience").val());
+//    $("#reviewPriorLosses").html($("#listOfPriorLosses").val());
+//
+//    var limitValueArray = [];
+//    $("#limitsDeductPremiumInsert").find('.limitColumn').each(function () {
+//        if ($(this).find('input').length) {
+//            limitValueArray.push($(this).find('input').val());
+//        }
+//    });
+//    var htmlString = $("#limitsDeductPremiumInsert").html();
+//    var object = $('<div/>').html(htmlString).contents();
+//    object.find('.limitColumn').each(function (index) {
+//        if ($(this).find('input').length) {
+//            $(this).html("<span>" + limitValueArray[index] + "<span>");
+//        }
+//    });
+//    $("#reviewLimitsDeducts").html(object);
+//
+//    var str = $("<div />").append($('#premDistributionInsert').clone()).html();
+//        str = str + $("<div />").append($('.TaxHeaderRow').clone()[0]).html();
+//    str = str + $("<div />").append($('#taxRows').clone()[0]).html();
+//    str = str + $("<div />").append($('.TotalPremiumRow').clone()[0]).html();
+//    $("#reviewPremDistribution").html( str);
+//    $("#reviewTerms").html($("#termsInsert").html());
+//    //$("#reviewSubject").html($("#subjectInsert").html());
+//    $("#reviewBrokerFee").html($("#brokerFeeInput").val());
+//
+//    var reviewString = "";
+//    var checkboxesReviewed = "";
+//    var blankAnswer = "To Follow"
+//    $(".showReview").each(function () {
+//        if ($(this).css("display") != "none") {
+//            if ($(this).is("select")) {
+//                // the input field is not a select
+//                var answer = "";
+//                if ($(this).find(":selected").text().length > 0) {
+//                    answer = $(this).find(":selected").text()
+//                }
+//                else {
+//                    answer = blankAnswer;
+//                }
+//                reviewString = reviewString + "<div class='row'>" +
+//                    "<div class='col-xs-3 text-left'>" +
+//                    "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
+//                    "</div>" +
+//                    "<div class='col-xs-9'>" +
+//                    "<div class='reviewSpan' id='reviewBrokerFee'>" + answer + "</div>" +
+//                    "</div>" +
+//                    "</div>";
+//                reviewString = reviewString + "<br>";
+//
+//                //STORE IN UW QUESTIONS
+//                uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
+//                uwQuestionsOrder.push($(this).attr("data-reviewName"));
+//
+//            }
+//            else if ($(this).is(':checkbox') && $(this).attr("data-reviewName")) {
+//                // the input field is not a select
+//                //alert($(this).attr("data-reviewName") + " - " + checkboxesReviewed + " - " +  checkboxesReviewed.indexOf($(this).attr("data-reviewName")));
+//                if (checkboxesReviewed.indexOf($(this).attr("data-reviewName")) == -1) {
+//                    var checkboxesCheckedString = "";
+//
+//                    var answer = "";
+//
+//
+//                    reviewString = reviewString + "<div class='row'>" +
+//                        "<div class='col-xs-3 text-left'>" +
+//                        "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
+//                        "</div>";
+//
+//                    $('input[data-reviewName="' + $(this).attr("data-reviewName") + '"]').each(function () {
+//                        if ($(this).is(":checked")) {
+//                            //alert($(this).val());
+//                            checkboxesCheckedString = checkboxesCheckedString + $(this).val() + ", ";
+//                        }
+//                    });
+//                    checkboxesCheckedString = checkboxesCheckedString.replace(/,\s*$/, "");
+//
+//                    if (checkboxesCheckedString.length > 0) {
+//                        answer = checkboxesCheckedString;
+//                    }
+//                    else {
+//                        answer = blankAnswer;
+//                    }
+//
+//                    reviewString = reviewString + "<div class='col-xs-9'>" +
+//                        "<div class='reviewSpan' id='reviewBrokerFee'>" + answer + "</div>" +
+//                        "</div>";
+//
+//                    reviewString = reviewString + "</div>";
+//                    reviewString = reviewString + "<br>";
+//                    checkboxesReviewed = checkboxesReviewed + $(this).attr("data-reviewName") + ";";
+//
+//
+//                    //STORE IN UW QUESTIONS
+//                    uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
+//                    uwQuestionsOrder.push($(this).attr("data-reviewName"));
+//                }
+//                else {
+//
+//                }
+//
+//            }
+//            else if ($(this).is(':radio') && $(this).attr("data-reviewName")) {
+//                var answer = "";
+//                if ($("input:radio[name='" + $(this).attr('name') + "']:checked").val().length > 0) {
+//                    answer = $("input:radio[name='" + $(this).attr('name') + "']:checked").val();
+//                }
+//                else {
+//                    answer = blankAnswer;
+//                }
+//
+//                reviewString = reviewString + "<div class='row'>" +
+//                    "<div class='col-xs-3 text-left'>" +
+//                    "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
+//                    "</div>" +
+//                    "<div class='col-xs-9'>" +
+//                    "<div class='reviewSpan' id='reviewBrokerFee'>" + answer + "</div>" +
+//                    "</div>" +
+//                    "</div>";
+//                reviewString = reviewString + "<br>";
+//
+//                //STORE IN UW QUESTIONS
+//                uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
+//                uwQuestionsOrder.push($(this).attr("data-reviewName"));
+//            }
+//            else if ($(this).attr("id") === "numberOfCastMembers") {
+//                var answer = "";
+//                $("#castMemberDetailContainer").find('.row').each(function(){
+//                    if ($(this).css("display") != "none") {
+//                        if($(this).find(".castMemberName").val().trim().length > 0){
+//                            answer = answer + $(this).find(".castMemberName").val() + "," + $(this).find(".castMemberAge").val() + "," + $(this).find(".castMemberRole").val() + "\n"
+//
+//                        }
+//                    }
+//
+//                });
+//
+//                if(answer === ""){
+//                    answer = "To Follow";
+//                }
+//
+//                reviewString = reviewString + "<div class='row'>" +
+//                    "<div class='col-xs-3 text-left'>" +
+//                    "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
+//                    "</div>" +
+//                    "<div class='col-xs-9'>" +
+//                    "<div class='reviewSpan' id='reviewBrokerFee'>" + answer + "</div>" +
+//                    "</div>" +
+//                    "</div>";
+//                reviewString = reviewString + "<br>";
+//
+//                //STORE IN UW QUESTIONS
+//                uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
+//                uwQuestionsOrder.push($(this).attr("data-reviewName"));
+//            }
+//            else {
+//                var answer = "";
+//                if ($(this).val().length > 0) {
+//                    answer = $(this).val()
+//                }
+//                else {
+//                    answer = blankAnswer;
+//                }
+//
+//                reviewString = reviewString + "<div class='row'>" +
+//                    "<div class='col-xs-3 text-left'>" +
+//                    "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
+//                    "</div>" +
+//                    "<div class='col-xs-9'>" +
+//                    "<div class='reviewSpan' id='reviewBrokerFee'>" + answer + "</div>" +
+//                    "</div>" +
+//                    "</div>";
+//                reviewString = reviewString + "<br>";
+//
+//                //STORE IN UW QUESTIONS
+//                uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
+//                uwQuestionsOrder.push($(this).attr("data-reviewName"));
+//            }
+//
+//            //console.log($(this).attr("data-reviewName"));
+//        }
+//
+//
+//    });
+//    //alert("review String: " + reviewString);
+//    $("#otherReviewInsert").html(reviewString);
+//
+//    //ATTACHED FILES
+//    var filesInsert = "";
+//    $(':file').each(function(){
+//        var file = this.files[0];
+//        if(file === undefined){
+//
+//        }
+//        else{
+//            var ext = $(this).val().split('.').pop().toLowerCase();
+//
+//            //alert('Only .zip, .doc, .docx, .xlsx, .xls, .pdf are permitted');
+//            var iconFilePath = "";
+//            if(ext == "zip") {
+//                iconFilePath = "zipIcon.png"
+//            }
+//            else if(ext == "doc"){
+//                iconFilePath = "docIcon.png"
+//            }
+//            else if(ext == "docx"){
+//                iconFilePath = "docxIcon.png"
+//            }
+//            else if(ext == "xls"){
+//                iconFilePath = "xlsIcon.png"
+//            }
+//            else if(ext == "xlsx"){
+//                iconFilePath = "xlsxIcon.png"
+//            }
+//            else if(ext == "pdf"){
+//                iconFilePath = "pdfIcon.png"
+//            }
+//            else if(ext == "txt"){
+//                iconFilePath = "txtIcon.png"
+//            }
+//            else{
+//                iconFilePath = "fileIcon.png"
+//            }
+//
+//           //console.log("Change: " + file);
+//
+//            var name = file.name;
+//            var size = file.size;
+//            var type = file.type;
+//            filesInsert = filesInsert +
+//                "<div class='row'>" +
+//                "<div class='col-xs-12 text-left'>" +
+//                "<div class='reviewSpan' id='review'><img src='/portal/images/" + iconFilePath + "' height='16' width='16' style='margin-right:10px'/>" + name + "</div>" +
+//                "</div>" +
+//                "</div>";
+//        }
+//
+//    });
+//
+//    $('#reviewAttachedFilesInsert').html(filesInsert);
+//
+//}
 
 
 

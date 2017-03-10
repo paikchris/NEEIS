@@ -442,7 +442,7 @@ $(document).ready(function () {
         //alert(changeStatusTo)
 
         var buttonObject = $(this);
-
+        $('#loadingModal').modal('show');
         $.ajax({
             method: "POST",
             url: "/portal/Async/changeSubmissionStatus",
@@ -451,6 +451,7 @@ $(document).ready(function () {
             }
         })
             .done(function (msg) {
+                $('#loadingModal').modal('hide');
                 //alert(msg);
                 //$('#some_id').click(function() {
                 //

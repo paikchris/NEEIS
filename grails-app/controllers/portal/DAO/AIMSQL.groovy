@@ -6,6 +6,7 @@ import groovy.json.JsonSlurper
 import groovy.sql.Sql
 import portal.DAO.Intelledox;
 import groovy.json.JsonOutput.*
+import org.apache.commons.lang.StringUtils;
 
 
 class AIMSQL {
@@ -191,7 +192,7 @@ class AIMSQL {
 //        ORDER BY Name
 //        Commercial Wholesale = 3941 -> GroupKey
 
-        /////////SAVE INSURED
+        ///////SAVE INSURED
         def map = [InsuredID:"'${insuredID}'",
                    NamedInsured: "'${testjson.getAt("namedInsured")replaceAll("'","''")}'",
                    NameType: "'B'",
@@ -268,6 +269,8 @@ class AIMSQL {
                    CountryID: 'NULL',
                    ParentInsuredName : 'NULL'
         ]
+
+
         aimsql.execute "insert into Insured (InsuredID, NamedInsured, NameType, DBAName, Prefix, First_Name, Last_Name,\n" +
                 "                Middle_Name, Suffix, CombinedName, Address1, Address2, City, State,\n" +
                 "                Zip, AddressID, ProducerID, AcctExec, AcctAsst, CSR, Entity, FormMakerName,\n" +
@@ -330,10 +333,12 @@ class AIMSQL {
             def deductsString = "";
             def coverageID = "";
 
+
+
             if(productID == "PIP CHOI" || productID == "PIP 1" || productID == "PIP 2"|| productID == "PIP 3"|| productID == "PIP 4"||
                     productID == "PIP 5" || productID == "EPKG37"){
-                limitsString = testjson.getAt("EPKGlimitsString");
-                deductsString = testjson.getAt("EPKGdeductsString");
+                limitsString = StringUtils.chomp(testjson.getAt("EPKGlimitsString").trim());
+                deductsString = StringUtils.chomp(testjson.getAt("EPKGdeductsString").trim());
                 coverageID = "EPKG";
                 if(testjson.getAt("epkgLOB").length() > 1){
                     stringLOB = testjson.getAt("epkgLOB");
@@ -342,8 +347,8 @@ class AIMSQL {
                 premiumRaw = testjson.getAt("EPKGPremium")
             }
             else if(productID == "BARCPKSF" || productID == "BARCPKGP"||productID == "BARCPKGC"){
-                limitsString = testjson.getAt("CPKlimitsString");
-                deductsString = testjson.getAt("CPKdeductsString");
+                limitsString = StringUtils.chomp(testjson.getAt("CPKlimitsString").trim());
+                deductsString = StringUtils.chomp(testjson.getAt("CPKdeductsString").trim());
                 coverageID = "CPK";
 
                 if(testjson.getAt("cpkLOB").length() > 1){

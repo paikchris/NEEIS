@@ -1,5 +1,5 @@
-// VARIABLES FOR SPECIAL EVENTS RATING
-// VARIABLES FOR SPECIAL EVENTS RATING
+// VARIABLES FOR SHELL CORP
+// VARIABLES FOR SHELL CORP
 var riskChosen;
 
 var attendance
@@ -27,6 +27,13 @@ $(document).ready(function () {
     }
     console.log(riskChosen)
 
+    // MONEY FORMAT
+    $('.alcoholSales').maskMoney({prefix:'$', precision:"0"});
+    $('.equipmentLimit').maskMoney({prefix:'$', precision:"0"});
+    $('.brokerFeeInput').maskMoney({prefix:'$', precision:"0"});
+    $('.costVehicles').maskMoney({prefix:'$', precision:"0"});
+    $('.totalReceipts').maskMoney({prefix:'$', precision:"0"});
+    $('.totalPayroll').maskMoney({prefix:'$', precision:"0"});
 
 // TOTAL PREMIUM COST !@#
 
@@ -488,6 +495,21 @@ $(document).ready(function () {
 
 
 
+
+
+// COMPREHENSIVE PERSONAL LIABILITY (CPL) / ADDITIONAL
+    $(document.body).on('change', 'input[name="comprehensivePersonalLiabilityRequested"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#cplAddressContainer").css('display', "");
+            $("#cplAddressExplain").css('display', "");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#cplAddressContainer").css('display', "none");
+            $("#cplAddressExplain").css('display', "none");
+        }
+    });
+
 // COMMERCIAL GENERAL LIABILITY TABLE
     $(document.body).on('change', 'input[name="commercialGeneralLiabilityRequested?"]', function () {
         //alert();
@@ -550,6 +572,56 @@ $(document).ready(function () {
         if ($(this).attr("value") == "No") {
             $("#equipmentOwnedRentedContainer").css('display', "none");
             $("#equipmentOwnedRentedExplain").css('display', "none");
+        }
+    });
+
+// INSURANCE BEEN CANCELLED ADDITIONAL HIDDEN QUESTIONS
+    $(document.body).on('change', 'input[name="insuranceCancelled"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#insuranceCancelledContainer").css('display', "");
+            $("#insuranceCancelledExplain").css('display', "");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#insuranceCancelledContainer").css('display', "none");
+            $("#insuranceCancelledExplain").css('display', "none");
+        }
+    });
+
+// PHONE NUMBER FORMAT
+    $(document.body).on('focus', '.phoneNumberMask' ,function(){
+        //this.value = this.value.replace(/(\d{3})\-?(\d{3})\-?(\d{4})/,'$1-$2-$3');
+        //alert ("OK");
+        $(".phoneNumberMask").mask("(999) 999-9999");
+    });
+
+// BROKER FEE HIDDEN PREMIUM
+    $(document.body).on('change', '.brokerFeeInput', function () {
+        //alert();
+        var brokerFeeCostTemp = $(".brokerFeeInput").val()
+        var brokerFeeCost = brokerFeeCostTemp.replace('$','').replace(',', '')
+        var brokerFeeCostValue = parseFloat(brokerFeeCost)
+
+        if (brokerFeeCostValue > 0){
+            $("#brokerFeePremiumContainer").css('display', "");
+            $("#brokerFeePremiumExplain").css('display', "");
+        }
+        else if (brokerFeeCostValue <= 0){
+            $("#brokerFeePremiumContainer").css('display', "none");
+            $("#brokerFeePremiumExplain").css('display', "none");
+        }
+    });
+
+// DOGS BREED ADDITIONAL QUESTION
+    $(document.body).on('change', 'input[name="doesApplicantHaveDogs"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#dogsContainer").css('display', "");
+            $("#dogsExplain").css('display', "");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#dogsContainer").css('display', "none");
+            $("#dogsExplain").css('display', "none");
         }
     });
 

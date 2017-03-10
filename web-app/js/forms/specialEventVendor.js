@@ -1,6 +1,7 @@
 // VARIABLES FOR EXHIBITOR RATING
 // VARIABLES FOR EXHIBITOR RATING
 var exhibitorRate
+var numberOfExhibitors
 
 var riskChosen;
 var attendance
@@ -13,6 +14,7 @@ var attractionRate = 185
 var eventDays
 var brokerFee
 var ratePerDay
+var NumberOfExhibitor
 
 // TOTAL SALES
 var totalSale
@@ -20,20 +22,19 @@ var commercialTotal
 
 // ALCOHOL PREMIUMS
 // $25,000 and below
-var liquorMinimum100Below25000 = 100
-var liquorMinimum500Below25000 = 225
-var liquorMinimum1500Below25000 = 375
-var liquorMinimum3000Below25000 = 550
-var liquorMinimum5000Below25000 = 750
-var liquorMinimum5001Below25000 = 1000
+var liquorMinimum8Below25000 = 100
+var liquorMinimum12Below25000 = 375
+var liquorMinimum14Below25000 = 550
+var liquorMinimum15Below25000 = 750
+var liquorMinimum50Below25000 = 1000
 
 // 25,000 and above
-var liquorMinimum10Above25000 = 100
-var liquorMinimum20Above25000 = 250
-var liquorMinimum31Above25000 = 750
-var liquorMinimum45Above25000 = 800
-var liquorMinimum60Above25000 = 900
-var liquorMinimum75Above25000 = 2500
+var liquorMinimum8Above25000 = 100
+var liquorMinimum12Above25000 = 750
+var liquorMinimum14Above25000 = 800
+var liquorMinimum15Above25000 = 900
+var liquorMinimum50Above25000 = 2500
+
 
 var liquorRate
 var liquorRatePremium
@@ -63,44 +64,52 @@ $(document).ready(function () {
 
     if (riskChosen === "Exhibitor") {
         rate = exhibitorRate;
-        alert(rate)
+        // alert(rate)
     }
     else if (riskChosen === "Concessionaires Non Food Sales") {
         rate = concessionairesNoFoodRate;
-        alert(rate)
+        // alert(rate)
     }
     else if (riskChosen === "Concessionaires Food Sales") {
         rate = concessionairesFoodRate;
-        alert(rate)
+        // alert(rate)
     }
     else if (riskChosen === "Attractions / Performers") {
         rate = attractionRate;
-        alert(rate)
+        // alert(rate)
     }
 
+    $('.alcoholSales').maskMoney({prefix:'$', precision:"0"});
+    $('.equipmentLimit').maskMoney({prefix:'$', precision:"0"});
+    $('.brokerFeeInput').maskMoney({prefix:'$', precision:"0"});
+    $('.costVehicles').maskMoney({prefix:'$', precision:"0"});
+    $('.totalReceipts').maskMoney({prefix:'$', precision:"0"});
+    $('.totalPayroll').maskMoney({prefix:'$', precision:"0"});
 
 // TOTAL PREMIUM COST !@#
 
 // COMMERCIAL GENERAL LIABILITY FEE + POLICY FEE
-    $(document.body).on('change',  "input[name='separatePolicy'],#estimatedTotalAttendance,#howManyDaysIsTheEvent", function () {
-        attendance = $("#estimatedTotalAttendance").val()
+    $(document.body).on('change', "input[name='separatePolicy'],#numberOfExhibitors,#howManyDaysIsTheEvent", function () {
+        numberOfExhibitors = $("#numberOfExhibitors").val()
         eventDays = $("#howManyDaysIsTheEvent").val()
-        if ($("input[name='separatePolicy']").attr("value") == "Yes") {
-            if (attendance.length > 0 && eventDays.length > 0) {
-                var attendanceValue = parseFloat(attendance)
+
+            var separatePolicy = $("input[name='separatePolicy']:checked").val();
+
+        // alert("stepone:" + separatePolicy)
+        if (separatePolicy == "Yes") {
+            if (eventDays.length > 0) {
                 var eventDaysValue = parseFloat(eventDays)
                 var rateValue = parseFloat(rate)
 
-                alert ("stepone" + rateValue)
-                alert ("steptwo" + attendanceValue)
-                alert ("stepthree" + eventDaysValue)
+                // alert("steptwo:" + rateValue)
+                // alert("stepthree:" + eventDaysValue)
                 if (riskChosen === "Exhibitor") {
-                    if (eventDaysValue <= 3){
+                    if (eventDaysValue <= 3) {
                         totalPremium = 150
                         var policyFee = 100
                         $("#policyFeePremiumCost").html("$" + policyFee);
                     }
-                else if (eventDaysValue > 3) {
+                    else if (eventDaysValue > 3) {
                         additionalDaysCost = 50
                         additionalDays = eventDaysValue - 3
                         totalPremium = additionalDaysCost * additionalDays + 150
@@ -108,20 +117,20 @@ $(document).ready(function () {
                             var policyFee = 100
                             $("#policyFeePremiumCost").html("$" + policyFee);
                         }
-                        else if (totalPremium >= 250){
+                        else if (totalPremium >= 250) {
                             var policyFee = 50
                             $("#policyFeePremiumCost").html("$" + policyFee);
                         }
                     }
                 }
                 else if (riskChosen === "Concessionaires Non Food Sales") {
-                    if (eventDaysValue >= 3) {
+                    if (eventDaysValue <= 3) {
                         totalPremium = 175
                         var policyFee = 100
                         $("#policyFeePremiumCost").html("$" + policyFee);
                     }
-                else
-                    if (eventDaysValue < 3) {
+
+                    else if (eventDaysValue > 3) {
                         additionalDaysCost = 50
                         additionalDays = eventDaysValue - 3
                         totalPremium = additionalDaysCost * additionalDays + 150
@@ -129,20 +138,19 @@ $(document).ready(function () {
                             var policyFee = 100
                             $("#policyFeePremiumCost").html("$" + policyFee);
                         }
-                        else if (totalPremium >= 250){
+                        else if (totalPremium >= 250) {
                             var policyFee = 50
                             $("#policyFeePremiumCost").html("$" + policyFee);
                         }
                     }
                 }
                 else if (riskChosen === "Concessionaires Food Sales") {
-                    if (eventDaysValue >= 3) {
+                    if (eventDaysValue <= 3) {
                         totalPremium = 200
                         var policyFee = 100
                         $("#policyFeePremiumCost").html("$" + policyFee);
                     }
-                else
-                    if (eventDaysValue < 3) {
+                    else if (eventDaysValue > 3) {
                         additionalDaysCost = 50
                         additionalDays = eventDaysValue - 3
                         totalPremium = additionalDaysCost * additionalDays + 150
@@ -150,20 +158,19 @@ $(document).ready(function () {
                             var policyFee = 100
                             $("#policyFeePremiumCost").html("$" + policyFee);
                         }
-                        else if (totalPremium >= 250){
+                        else if (totalPremium >= 250) {
                             var policyFee = 50
                             $("#policyFeePremiumCost").html("$" + policyFee);
                         }
                     }
                 }
                 else if (riskChosen === "Attractions / Performers") {
-                    if (eventDaysValue >= 3) {
+                    if (eventDaysValue <= 3) {
                         totalPremium = 150
                         var policyFee = 100
                         $("#policyFeePremiumCost").html("$" + policyFee);
                     }
-                else
-                    if (eventDaysValue < 3) {
+                    else if (eventDaysValue > 3) {
                         additionalDaysCost = 50
                         additionalDays = eventDaysValue - 3
                         totalPremium = additionalDaysCost * additionalDays + 150
@@ -171,26 +178,29 @@ $(document).ready(function () {
                             var policyFee = 100
                             $("#policyFeePremiumCost").html("$" + policyFee);
                         }
-                        else if (totalPremium >= 250){
+                        else if (totalPremium >= 250) {
                             var policyFee = 50
                             $("#policyFeePremiumCost").html("$" + policyFee);
                         }
                     }
                 }
-
                 $("#commercialGeneralLiabilityPremiumCost").html("$" + totalPremium);
             }
         }
-        else if ($("input[name='separatePolicy']").attr("value") == "No") {
-            if (attendance.length > 0 && eventDays.length > 0) {
-                var attendanceValue = parseFloat(attendance)
+        else if (separatePolicy == "No") {
+            if (numberOfExhibitors.length > 0 && eventDays.length > 0) {
+                var numberOfExhibitorsValue = parseFloat(numberOfExhibitors)
                 var eventDaysValue = parseFloat(eventDays)
                 var rateValue = parseFloat(rate)
 
                 if (riskChosen === "Exhibitor") {
 
-                    ratePerDay = rateValue * attendanceValue
+                    ratePerDay = rateValue * numberOfExhibitorsValue
+                    // alert("stepONE" + rateValue)
+                    // alert("stepTWO" + eventDaysValue)
+                    // alert("stepTHREE" + numberOfExhibitorsValue)
 
+                    // alert("stepFOUR" + ratePerDay)
                     if (ratePerDay > 300) {
                         ratePerDay = 300
                         totalPremium = ratePerDay * eventDaysValue
@@ -198,16 +208,27 @@ $(document).ready(function () {
                             var policyFee = 100
                             $("#policyFeePremiumCost").html("$" + policyFee);
                         }
-                        else if (totalPremium >= 250){
+                        else if (totalPremium >= 250) {
                             var policyFee = 50
                             $("#policyFeePremiumCost").html("$" + policyFee);
                         }
 
                     }
+                    else if (ratePerDay < 300) {
+                        totalPremium = ratePerDay * eventDaysValue
+                        if (totalPremium < 250) {
+                            var policyFee = 100
+                            $("#policyFeePremiumCost").html("$" + policyFee);
+                        }
+                        else if (totalPremium >= 250) {
+                            var policyFee = 50
+                            $("#policyFeePremiumCost").html("$" + policyFee);
+                        }
+                    }
                 }
                 else if (riskChosen === "Concessionaires Non Food Sales") {
 
-                    ratePerDay = rateValue * attendanceValue
+                    ratePerDay = rateValue * numberOfExhibitorsValue
 
                     if (ratePerDay > 425) {
                         ratePerDay = 425
@@ -216,7 +237,18 @@ $(document).ready(function () {
                             var policyFee = 100
                             $("#policyFeePremiumCost").html("$" + policyFee);
                         }
-                        else if (totalPremium >= 250){
+                        else if (totalPremium >= 250) {
+                            var policyFee = 50
+                            $("#policyFeePremiumCost").html("$" + policyFee);
+                        }
+                    }
+                    else if (ratePerDay < 425) {
+                        totalPremium = ratePerDay * eventDaysValue
+                        if (totalPremium < 250) {
+                            var policyFee = 100
+                            $("#policyFeePremiumCost").html("$" + policyFee);
+                        }
+                        else if (totalPremium >= 250) {
                             var policyFee = 50
                             $("#policyFeePremiumCost").html("$" + policyFee);
                         }
@@ -224,7 +256,7 @@ $(document).ready(function () {
                 }
                 else if (riskChosen === "Concessionaires Food Sales") {
 
-                    ratePerDay = rateValue * attendanceValue
+                    ratePerDay = rateValue * numberOfExhibitorsValue
 
                     if (ratePerDay > 475) {
                         ratePerDay = 475
@@ -233,7 +265,18 @@ $(document).ready(function () {
                             var policyFee = 100
                             $("#policyFeePremiumCost").html("$" + policyFee);
                         }
-                        else if (totalPremium >= 250){
+                        else if (totalPremium >= 250) {
+                            var policyFee = 50
+                            $("#policyFeePremiumCost").html("$" + policyFee);
+                        }
+                    }
+                    else if (ratePerDay < 475) {
+                        totalPremium = ratePerDay * eventDaysValue
+                        if (totalPremium < 250) {
+                            var policyFee = 100
+                            $("#policyFeePremiumCost").html("$" + policyFee);
+                        }
+                        else if (totalPremium >= 250) {
                             var policyFee = 50
                             $("#policyFeePremiumCost").html("$" + policyFee);
                         }
@@ -241,7 +284,7 @@ $(document).ready(function () {
                 }
                 else if (riskChosen === "Attractions / Performers") {
 
-                    ratePerDay = rateValue * attendanceValue
+                    ratePerDay = rateValue * numberOfExhibitorsValue
 
                     if (ratePerDay > 950) {
                         ratePerDay = 950
@@ -250,17 +293,27 @@ $(document).ready(function () {
                             var policyFee = 100
                             $("#policyFeePremiumCost").html("$" + policyFee);
                         }
-                        else if (totalPremium >= 250){
+                        else if (totalPremium >= 250) {
                             var policyFee = 50
                             $("#policyFeePremiumCost").html("$" + policyFee);
                         }
                     }
+                    else if (ratePerDay < 950) {
+                        totalPremium = ratePerDay * eventDaysValue
+                        if (totalPremium < 250) {
+                            var policyFee = 100
+                            $("#policyFeePremiumCost").html("$" + policyFee);
+                        }
+                        else if (totalPremium >= 250) {
+                            var policyFee = 50
+                            $("#policyFeePremiumCost").html("$" + policyFee);
+                        }
+                    }
+                    // $("#commercialGeneralLiabilityPremiumCost").html("$" + totalPremium);
                 }
 
                 $("#commercialGeneralLiabilityPremiumCost").html("$" + totalPremium);
             }
-
-
         }
 
 
@@ -270,6 +323,9 @@ $(document).ready(function () {
     $(document.body).on('change', "#brokerFeeInput", function () {
         brokerFee = $("#brokerFeeInput").val()
         // alert(attendance)
+
+        brokerFee = brokerFee.replace('$','')
+
         if (brokerFee.length > 0) {
             var brokerFeeValue = parseFloat(brokerFee)
         }
@@ -277,204 +333,215 @@ $(document).ready(function () {
 
     });
 
+// STATE SELECT
+    $("#selectState").change(function () {
+        var state = this.value;
+        // });
+        // $(document.body).on('change', 'input[name="selectState"]', function () {
+        // alert(state)
+        if (state ==  "DE" ||
+            state ==   "KS" ||
+            state ==   "MD" ||
+            state ==   "NV" ||
+            state ==   "SD" ||
+            state ==   "VA") {
+            liquorRate = 8
+        }
+        else if (state == "AR" ||
+            state ==   "CA" ||
+            state ==   "CO" ||
+            state ==   "FL" ||
+            state ==   "GA" ||
+            state ==   "ID" ||
+            state ==   "IL" ||
+            state ==   "KY" ||
+            state ==   "LA" ||
+            state ==   "ME" ||
+            state ==   "MN" ||
+            state ==   "MS" ||
+            state ==   "MO" ||
+            state ==   "NE" ||
+            state ==   "NJ" ||
+            state ==   "OH" ||
+            state ==   "OR" ||
+            state ==   "TN") {
+            liquorRate = 12
+        }
+        else if (state ==  "AZ" ||
+            state ==   "IN" ||
+            state ==   "MA" ||
+            state ==   "MI" ||
+            state ==   "MT" ||
+            state ==   "NM" ||
+            state ==   "NY" ||
+            state ==   "NC" ||
+            state ==   "ND" ||
+            state ==   "OK" ||
+            state ==   "RI" ||
+            state ==   "SC" ||
+            state ==   "TX" ||
+            state ==   "UT" ||
+            state ==   "WA") {
+            liquorRate = 14
+        }
+        else if (state ==  "DC" ||
+            state ==   "IA" ||
+            state ==   "PA" ||
+            state ==   "WV") {
+            liquorRate = 15
+        }
+        else if (state ==  "AL" ||
+            state ==   "VT") {
+            liquorRate = 50
+        }
+        else if (state ==  "AK" ||
+            state ==   "CT" ||
+            state ==   "NH" ||
+            state ==   "HI") {
+            // alert ("NOT ELIGIBLE STATE")
+        }
+        // alert ("LIQUOR RATE:" + liquorRate)
+    });
 
 // ALCOHOL FEE
     $(document.body).on('change', "#alcoholSales", function () {
-        liquorSale = $("#alcoholSales").val()
+
+        var tempLiquorSale = $("#alcoholSales").val()
         eventDays = $("#howManyDaysIsTheEvent").val()
         attendance = $("#estimatedTotalAttendance").val()
-        // alert ("STEP 1 ALCOHOL PREMIUM")
 
-        if (liquorSale.length > 0) {
-            var liquorSaleValue = parseFloat(liquorSale)
-            var eventDaysValue = parseFloat(eventDays)
-            var attendanceValue = parseFloat(attendance)
+        // alert("Step2" + liquorSale) removes $ from val
+        liquorSale = tempLiquorSale.replace('$','').replace(',', '')
+        // alert (liquorSale)
 
-            // alert("Step2" + liquorSaleValue)
-            // alert("Step2" + eventDaysValue)
-            // alert("Step2" + attendanceValue)
+        var liquorSaleValue = parseFloat(liquorSale)
+        var eventDaysValue = parseFloat(eventDays)
+        var attendanceValue = parseFloat(attendance)
 
-            if (eventDaysValue >= 1 && eventDaysValue <= 10) {
-                liquorRate = 8
-            }
-            else if (eventDaysValue >= 11 && eventDaysValue <= 20) {
-                liquorRate = 10
-            }
-            else if (eventDaysValue >= 21 && eventDaysValue <= 31) {
-                liquorRate = 12
-            }
-            else if (eventDaysValue >= 32 && eventDaysValue <= 45) {
-                liquorRate = 14
-            }
-            else if (eventDaysValue >= 46 && eventDaysValue <= 60) {
-                liquorRate = 15
-            }
-            else if (eventDaysValue >= 61 && eventDaysValue <= 75) {
-                liquorRate = 50
-            }
-            else if (eventDaysValue >= 76 && eventDaysValue <= 90) {
-                liquorRate = 1
-            }
+        // alert("liquorSaleValue" + liquorSaleValue)
+        // alert("eventDatsValue" + eventDaysValue)
+        // alert ("LiqourRate" + liquorRate)
 
-            liquorRatePremium = liquorRate * eventDaysValue
+        if (liquorSaleValue > 0 && liquorSaleValue < 25000 && eventDaysValue > 0 && eventDaysValue <= 5) {
 
-            // alert("Step3a" + liquorRatePremium)
-            // alert("Step3b" + eventDaysValue)
-            // alert("Step3c" + liquorRate)
-
-            // var liquorRateValue = parseFloat(liquorRate)
-            if (liquorSaleValue < 25000) {
-                // alert("1Step" + liquorSaleValue)
-
-                if (attendanceValue >= 1 && attendanceValue <= 100) {
-
-                    liquorMinimumPremium = liquorMinimum100Below25000
-                    if (liquorMinimumPremium < liquorRatePremium) {
-                        liquorTotalPremium = liquorRatePremium
-                    }
-                    else if (liquorMinimumPremium > liquorRatePremium) {
-                        liquorTotalPremium = liquorMinimumPremium
-                    }
-
-                    // alert("2Step" + liquorRatePremium)
-                    // alert("3Step" + liquorMinimumPremium)
-                    // alert("4Step" + attendanceValue)
+            if (liquorRate == 8) {
+                liquorRatePremium = liquorRate * liquorSaleValue / 1000
+                liquorMinimumPremium = liquorMinimum8Below25000
+                if (liquorMinimumPremium < liquorRatePremium) {
+                    liquorTotalPremium = liquorRatePremium
                 }
-                else if (attendanceValue >= 101 && attendanceValue <= 500) {
-
-                    liquorMinimumPremium = liquorMinimum500Below25000
-                    if (liquorMinimumPremium < liquorRatePremium) {
-                        liquorTotalPremium = liquorRatePremium
-                    }
-                    else if (liquorMinimumPremium > liquorRatePremium) {
-                        liquorTotalPremium = liquorMinimumPremium
-                    }
-
-                }
-                else if (attendanceValue >= 501 && attendanceValue <= 1500) {
-
-                    liquorMinimumPremium = liquorMinimum1500Below25000
-                    if (liquorMinimumPremium < liquorRatePremium) {
-                        liquorTotalPremium = liquorRatePremium
-                    }
-                    else if (liquorMinimumPremium > liquorRatePremium) {
-                        liquorTotalPremium = liquorMinimumPremium
-                    }
-
-                }
-                else if (attendanceValue >= 1501 && attendanceValue <= 3000) {
-
-                    liquorMinimumPremium = liquorMinimum3000Below25000
-                    if (liquorMinimumPremium < liquorRatePremium) {
-                        liquorTotalPremium = liquorRatePremium
-                    }
-                    else if (liquorMinimumPremium > liquorRatePremium) {
-                        liquorTotalPremium = liquorMinimumPremium
-                    }
-
-                }
-                else if (attendanceValue >= 3001 && attendanceValue <= 5000) {
-
-                    liquorMinimumPremium = liquorMinimum5000Below25000
-                    if (liquorMinimumPremium < liquorRatePremium) {
-                        liquorTotalPremium = liquorRatePremium
-                    }
-                    else if (liquorMinimumPremium > liquorRatePremium) {
-                        liquorTotalPremium = liquorMinimumPremium
-                    }
-
-                }
-                else if (attendanceValue >= 5001) {
-
-                    liquorMinimumPremium = liquorMinimum5001Below25000
-                    if (liquorMinimumPremium < liquorRatePremium) {
-                        liquorTotalPremium = liquorRatePremium
-                    }
-                    else if (liquorMinimumPremium > liquorRatePremium) {
-                        liquorTotalPremium = liquorMinimumPremium
-                    }
-
+                else if (liquorMinimumPremium > liquorRatePremium) {
+                    liquorTotalPremium = liquorMinimumPremium
                 }
             }
-            else if (liquorSaleValue > 25000) {
-                if (eventDaysValue >= 6 && eventDaysValue <= 10) {
-                    liquorMinimumPremium = liquorMinimum10Above25000
-                    if (liquorMinimumPremium < liquorRatePremium) {
-                        liquorTotalPremium = liquorRatePremium
-                    }
-                    else if (liquorMinimumPremium > liquorRatePremium) {
-                        liquorTotalPremium = liquorMinimumPremium
-                    }
 
+            else if (liquorRate == 12) {
+
+                // alert ("LIQUORRATE" + liquorRate)
+                // alert ("LIQUORSALEVALUE" + liquorSaleValue)
+
+                liquorRatePremium = liquorRate * liquorSaleValue / 1000
+                liquorMinimumPremium = liquorMinimum12Below25000
+
+                // alert ("LIQUORPREMIUM" + liquorRatePremium)
+
+                if (liquorMinimumPremium < liquorRatePremium) {
+                    liquorTotalPremium = liquorRatePremium
                 }
-                else if (eventDaysValue >= 11 && eventDaysValue <= 20) {
-                    liquorMinimumPremium = liquorMinimum20Above25000
-                    if (liquorMinimumPremium < liquorRatePremium) {
-                        liquorTotalPremium = liquorRatePremium
-                    }
-                    else if (liquorMinimumPremium > liquorRatePremium) {
-                        liquorTotalPremium = liquorMinimumPremium
-                    }
-
+                else if (liquorMinimumPremium > liquorRatePremium) {
+                    liquorTotalPremium = liquorMinimumPremium
                 }
-                else if (eventDaysValue >= 21 && eventDaysValue <= 31) {
-                    liquorMinimumPremium = liquorMinimum31Above25000
-                    if (liquorMinimumPremium < liquorRatePremium) {
-                        liquorTotalPremium = liquorRatePremium
-                    }
-                    else if (liquorMinimumPremium > liquorRatePremium) {
-                        liquorTotalPremium = liquorMinimumPremium
-                    }
-
+            }
+            else if (liquorRate == 14) {
+                liquorRatePremium = liquorRate * liquorSaleValue / 1000
+                liquorMinimumPremium = liquorMinimum14Below25000
+                if (liquorMinimumPremium < liquorRatePremium) {
+                    liquorTotalPremium = liquorRatePremium
                 }
-                else if (eventDaysValue >= 32 && eventDaysValue <= 45) {
-                    liquorMinimumPremium = liquorMinimum45Above25000
-                    if (liquorMinimumPremium < liquorRatePremium) {
-                        liquorTotalPremium = liquorRatePremium
-                    }
-                    else if (liquorMinimumPremium > liquorRatePremium) {
-                        liquorTotalPremium = liquorMinimumPremium
-                    }
-
+                else if (liquorMinimumPremium > liquorRatePremium) {
+                    liquorTotalPremium = liquorMinimumPremium
                 }
-                else if (eventDaysValue >= 46 && eventDaysValue <= 60) {
-                    liquorMinimumPremium = liquorMinimum60Above25000
-                    if (liquorMinimumPremium < liquorRatePremium) {
-                        liquorTotalPremium = liquorRatePremium
-                    }
-                    else if (liquorMinimumPremium > liquorRatePremium) {
-                        liquorTotalPremium = liquorMinimumPremium
-                    }
-
+            }
+            else if (liquorRate == 15) {
+                liquorRatePremium = liquorRate * liquorSaleValue / 1000
+                liquorMinimumPremium = liquorMinimum15Below25000
+                if (liquorMinimumPremium < liquorRatePremium) {
+                    liquorTotalPremium = liquorRatePremium
                 }
-                else if (eventDaysValue >= 61 && eventDaysValue <= 75) {
-                    liquorMinimumPremium = liquorMinimum75Above25000
-                    if (liquorMinimumPremium < liquorRatePremium) {
-                        liquorTotalPremium = liquorRatePremium
-                    }
-                    else if (liquorMinimumPremium > liquorRatePremium) {
-                        liquorTotalPremium = liquorMinimumPremium
-                    }
-
+                else if (liquorMinimumPremium > liquorRatePremium) {
+                    liquorTotalPremium = liquorMinimumPremium
                 }
-                else if (eventDaysValue >= 76 && eventDaysValue <= 90) {
-                    liquorMinimumPremium = liquorMinimum90Above25000
-                    if (liquorMinimumPremium < liquorRatePremium) {
-                        liquorTotalPremium = liquorRatePremium
-                    }
-                    else if (liquorMinimumPremium > liquorRatePremium) {
-                        liquorTotalPremium = liquorMinimumPremium
-                    }
-
+            }
+            else if (liquorRate == 50) {
+                liquorRatePremium = liquorRate * liquorSaleValue / 1000
+                liquorMinimumPremium = liquorMinimum50Below25000
+                if (liquorMinimumPremium < liquorRatePremium) {
+                    liquorTotalPremium = liquorRatePremium
                 }
+                else if (liquorMinimumPremium > liquorRatePremium) {
+                    liquorTotalPremium = liquorMinimumPremium
+                }
+            }
+        }
+        else if (liquorSaleValue >= 25000 && eventDaysValue > 0) {
 
+            if (liquorRate == 8) {
+                liquorRatePremium = liquorRate * liquorSaleValue / 1000
+                liquorMinimumPremium = liquorMinimum8Above25000
+                if (liquorMinimumPremium < liquorRatePremium) {
+                    liquorTotalPremium = liquorRatePremium
+                }
+                else if (liquorMinimumPremium > liquorRatePremium) {
+                    liquorTotalPremium = liquorMinimumPremium
+                }
+            }
+
+            else if (liquorRate == 12) {
+                liquorRatePremium = liquorRate * liquorSaleValue / 1000
+                liquorMinimumPremium = liquorMinimum12Above25000
+                if (liquorMinimumPremium < liquorRatePremium) {
+                    liquorTotalPremium = liquorRatePremium
+                }
+                else if (liquorMinimumPremium > liquorRatePremium) {
+                    liquorTotalPremium = liquorMinimumPremium
+                }
+            }
+            else if (liquorRate == 14) {
+                liquorRatePremium = liquorRate * liquorSaleValue / 1000
+                liquorMinimumPremium = liquorMinimum14Above25000
+                if (liquorMinimumPremium < liquorRatePremium) {
+                    liquorTotalPremium = liquorRatePremium
+                }
+                else if (liquorMinimumPremium > liquorRatePremium) {
+                    liquorTotalPremium = liquorMinimumPremium
+                }
+            }
+            else if (liquorRate == 15) {
+                liquorRatePremium = liquorRate * liquorSaleValue / 1000
+                liquorMinimumPremium = liquorMinimum15Above25000
+                if (liquorMinimumPremium < liquorRatePremium) {
+                    liquorTotalPremium = liquorRatePremium
+                }
+                else if (liquorMinimumPremium > liquorRatePremium) {
+                    liquorTotalPremium = liquorMinimumPremium
+                }
+            }
+            else if (liquorRate == 50) {
+                liquorRatePremium = liquorRate * liquorSaleValue / 1000
+                liquorMinimumPremium = liquorMinimum50Above25000
+                if (liquorMinimumPremium < liquorRatePremium) {
+                    liquorTotalPremium = liquorRatePremium
+                }
+                else if (liquorMinimumPremium > liquorRatePremium) {
+                    liquorTotalPremium = liquorMinimumPremium
+                }
             }
             // alert("5Step" + liquorMinimumPremium)
             // alert("6Step" + liquorRatePremium)
             // alert("7Step" + liquorTotalPremium)
-            $("#alcoholSalePremiumCost").html("$" + liquorTotalPremium);
+            // $("#alcoholSalePremiumCost").html("$" + liquorTotalPremium);
         }
-
+        $("#alcoholSalePremiumCost").html("$" + liquorTotalPremium);
     });
 
 // TOTAL SALES
@@ -486,7 +553,7 @@ $(document).ready(function () {
                 var tempVal = parseFloat($(this).html().replace('$', ''));
                 // var totalPremiumValue = parseFloat $(this)
                 totalPremium = totalPremium + tempVal
-                alert(totalPremium)
+                // alert(totalPremium)
             }
 
         });
@@ -496,10 +563,6 @@ $(document).ready(function () {
     });
 
 // TOTAL PREMIUM COST !@#
-
-
-
-
 
 
 // CGL TABLE
@@ -594,23 +657,23 @@ $(document).ready(function () {
     });
 
 // PYRO ADDITIONAL HIDDEN QUESTIONS
-    $(document.body).on('change', '#pyrotechnicsCheckbox' ,function(){
-        if($("#pyrotechnicsCheckbox").is(':checked')) {
+    $(document.body).on('change', '#pyrotechnicsCheckbox', function () {
+        if ($("#pyrotechnicsCheckbox").is(':checked')) {
             $('#pyrotechnicsAttachContainer').css("display", "");
         }
-        else{
+        else {
             $('#pyrotechnicsAttachContainer').css("display", "none");
         }
     });
 
 // STUNTS HAZARDOUS EVENTS ADDITIONAL HIDDEN QUESTIONS
-    $(document.body).on('change', '#stuntsHazardousCheckbox' ,function(){
-        if($("#stuntsHazardousCheckbox").is(':checked')) {
+    $(document.body).on('change', '#stuntsHazardousCheckbox', function () {
+        if ($("#stuntsHazardousCheckbox").is(':checked')) {
             $('#stuntsHazardousActivitiesAttachContainer').css("display", "");
             $('#stuntCoordinatorName').css("display", "");
             $('#participantsSigningWaivers').css("display", "");
         }
-        else{
+        else {
             $('#stuntsHazardousActivitiesAttachContainer').css("display", "none");
             $('#stuntCoordinatorName').css("display", "none");
             $('#participantsSigningWaivers').css("display", "none");
@@ -631,6 +694,42 @@ $(document).ready(function () {
         }
     });
 
+// SEPARATE POLICY
+    $(document.body).on('change', 'input[name="separatePolicy"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#numberOfExhibitorsGroup").css('display', "none");
+            $("#numberOfExhibitorsGroup").css('display', "none");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#numberOfExhibitorsGroup").css('display', "");
+            $("#numberOfExhibitorsGroup").css('display', "");
+        }
+    });
+
+// BROKER FEE HIDDEN PREMIUM
+    $(document.body).on('change', '.brokerFeeInput', function () {
+        //alert();
+        var brokerFeeCostTemp = $(".brokerFeeInput").val()
+        var brokerFeeCost = brokerFeeCostTemp.replace('$','').replace(',', '')
+        var brokerFeeCostValue = parseFloat(brokerFeeCost)
+
+        if (brokerFeeCostValue > 0){
+            $("#brokerFeePremiumContainer").css('display', "");
+            $("#brokerFeePremiumExplain").css('display', "");
+        }
+        else if (brokerFeeCostValue <= 0){
+            $("#brokerFeePremiumContainer").css('display', "none");
+            $("#brokerFeePremiumExplain").css('display', "none");
+        }
+    });
+
+
+    $(document.body).on('focus', '.phoneNumberMask' ,function(){
+        //this.value = this.value.replace(/(\d{3})\-?(\d{3})\-?(\d{4})/,'$1-$2-$3');
+        //alert ("OK");
+        $(".phoneNumberMask").mask("(999) 999-9999");
+    });
 
 
 });

@@ -26,9 +26,28 @@
 <form id="intelledox" role="form">
 </form>
 <div class="container">
-    <h1>New Policy</h1>
-    <h4 style="text-align: center; margin-bottom:4px;" id="riskCategoryHeader"></h4>
-    <h5 style="text-align: center; margin-top: 0px; margin-bottom:0px;" id="riskTypeHeader"></h5>
+    <div class="row">
+        <div class="col-xs-1">
+
+        </div>
+        <div class="col-xs-10">
+            <h1>New Policy</h1>
+            <h4 style="text-align: center; margin-bottom:4px;" id="riskCategoryHeader"></h4>
+            <h5 style="text-align: center; margin-top: 0px; margin-bottom:0px;" id="riskTypeHeader"></h5>
+        </div>
+        <div class="col-xs-1" style="margin-top:80px">
+            <button class="btn btn-xs btn-success pull-right" id="saveProgress" type="button"
+                    style="display:none;background-color: #68848f;border-color: #68848f;margin: 2px;">
+                <i class="fa fa-floppy-o" aria-hidden="true"></i>
+                <span class="" style="font-size: 14px; font-weight: 500" > Save Progress</span>
+            </button>
+            <button class="btn btn-xs btn-success pull-right" id="loadProgress" type="button" style=";background-color: #15a175;border-color: #15a175;margin: 2px; ">
+                <i class="fa fa-folder-open-o" aria-hidden="true"></i>
+                <span class="" style="font-size: 14px; font-weight: 500" > Load Previous</span>
+            </button>
+        </div>
+    </div>
+
     <div class="row" style="text-align: center;">
         <span class="label label-info" id="BORRequestNotification" style="display:none; ">BOR Requested</span>
     </div>
@@ -871,11 +890,129 @@
                             </div>
                             <div class="panel-body">
                                 <div class="row">
-                                    <div class="col-xs-6">
-                                        <div class="form-group separatePolicy" style="display:none">
-                                            <label>Is this policy for a specific vendor, concessionaire or exhibitor? - Separate Policy</label><br>
+                                    <div class="col-xs-3">
+                                        <div class="form-group"> <!-- Date input -->
+                                            <label class="control-label">Proposed Effective Date</label>
+                                            <input class="form-control" type="text" placeholder = "Hidden Text Field To Adjust Focus off Date" name="hiddenField" style="display: none;"/>
+                                            <input class="form-control datepicker" id="proposedEffectiveDate" name="proposedEffectiveDate" placeholder="MM/DD/YYY" type="text"
+                                                   data-object="submission" data-key="proposedEffectiveDate" required/>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="form-group"> <!-- Date input -->
+                                            <label class="control-label">Proposed Expiration Date</label>
+                                            <input class="form-control datepicker" id="proposedExpirationDate" name="proposedExpirationDate" placeholder="MM/DD/YYY" type="text"
+                                                   data-object="submission" data-key="proposedExpirationDate" required/>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="form-group"> <!-- Date input -->
+                                            <label class="control-label">Proposed Term Length</label>
+                                            <input class="form-control" id="proposedTermLength" name="proposedTermLength" type="text" style="color: black; background: white;"
+                                                   data-object="submission" data-key="proposedTermLength" />
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="form-group" id="totalBudgetConfirmGroup"> <!-- Date input -->
+                                            <label class="control-label">Total Budget</label>
+                                            <input class="form-control" id="totalBudgetConfirm" name="totalBudgetConfirm" type="text"
+                                                   data-object="submission" data-key="totalBudget" required="required">
+                                        </div>
+                                        <div class="form-group" id="premiumExpectedInputGroup" style="display:none">
+                                            <label class="control-label">Target Premium</label>
+                                            <input class="form-control" id="premiumExpectedInput" name="premiumExpectedInput" type="text" required="" >
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-2">
+                                        <div class="form-group" id="howManyDaysIsTheEventGroup" style="display:none">
+                                            <label class="control-label">Number of Event days</label>
+                                            <input class="form-control effectsTotalPremium" id="howManyDaysIsTheEvent" name="howManyDaysIsTheEvent" type="text"
+                                                   style="color: black; background: white;"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-2">
+                                        <div class="form-group"id="estimatedTotalAttendanceGroup" style="display:none">
+                                            <label class="control-label">Total Attendance</label>
+                                            <input class="form-control effectsTotalPremium" id="estimatedTotalAttendance" name="estimatedTotalAttendance" type="text"
+                                                   style="color: black; background: white;"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-5">
+                                        <div class="form-group" id="largestNumberAttendeesGroup" style="display:none">
+                                            <label class="control-label">Largest Number of Attendees Any One Event Per Day</label>
+                                            <input class="form-control" id="largestNumberAttendees" name="largestNumberAttendees" type="text"
+                                                   style="color: black; background: white;"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="form-group" id="selectStateGroup" style="display:none">
+                                            <label class="control-label">Select Location of Event</label>
+                                            %{--<input class="form-control" type="text" placeholder = "State" name="stateMailing" id="stateMailing"/>--}%
+                                            <select class="form-control effectsTotalPremium" required="required"
+                                                    id="selectState" name="selectState" type="text" style="color: black; background: white;">
+                                                    <option value="invalid" selected="selected">State</option>
+                                                    <option value="AL">Alabama</option>
+                                                    <option value="AK">Alaska</option>
+                                                    <option value="AZ">Arizona</option>
+                                                    <option value="AR">Arkansas</option>
+                                                    <option value="CA">California</option>
+                                                    <option value="CO">Colorado</option>
+                                                    <option value="CT">Connecticut</option>
+                                                    <option value="DE">Delaware</option>
+                                                    <option value="DC">District Of Columbia</option>
+                                                    <option value="FL">Florida</option>
+                                                    <option value="GA">Georgia</option>
+                                                    <option value="GU">Guam</option>
+                                                    <option value="HI">Hawaii</option>
+                                                    <option value="ID">Idaho</option>
+                                                    <option value="IL">Illinois</option>
+                                                    <option value="IN">Indiana</option>
+                                                    <option value="IA">Iowa</option>
+                                                    <option value="KS">Kansas</option>
+                                                    <option value="KY">Kentucky</option>
+                                                    <option value="LA">Louisiana</option>
+                                                    <option value="ME">Maine</option>
+                                                    <option value="MD">Maryland</option>
+                                                    <option value="MA">Massachusetts</option>
+                                                    <option value="MI">Michigan</option>
+                                                    <option value="MN">Minnesota</option>
+                                                    <option value="MS">Mississippi</option>
+                                                    <option value="MO">Missouri</option>
+                                                    <option value="MT">Montana</option>
+                                                    <option value="NE">Nebraska</option>
+                                                    <option value="NV">Nevada</option>
+                                                    <option value="NH">New Hampshire</option>
+                                                    <option value="NJ">New Jersey</option>
+                                                    <option value="NM">New Mexico</option>
+                                                    <option value="NY">New York</option>
+                                                    <option value="NC">North Carolina</option>
+                                                    <option value="ND">North Dakota</option>
+                                                    <option value="OH">Ohio</option>
+                                                    <option value="OK">Oklahoma</option>
+                                                    <option value="OR">Oregon</option>
+                                                    <option value="PA">Pennsylvania</option>
+                                                    <option value="PR">Puerto Rico</option>
+                                                    <option value="RI">Rhode Island</option>
+                                                    <option value="SC">South Carolina</option>
+                                                    <option value="SD">South Dakota</option>
+                                                    <option value="TN">Tennessee</option>
+                                                    <option value="TX">Texas</option>
+                                                    <option value="UT">Utah</option>
+                                                    <option value="VT">Vermont</option>
+                                                    <option value="VI">Virgin Islands</option>
+                                                    <option value="VA">Virginia</option>
+                                                    <option value="WA">Washington</option>
+                                                    <option value="WV">West Virginia</option>
+                                                    <option value="WI">Wisconsin</option>
+                                                    <option value="WY">Wyoming</option>
+                                                </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-9">
+                                        <div class="form-group separatePolicyGroup" style="display:none">
+                                            <label>Is this policy for a specific vendor / concessionaire / exhibitor? - Separate Policy</label><br>
                                             <input type="radio" name="separatePolicy"
-                                                   class="showReview"
+                                                   class="showReview effectsTotalPremium"
                                                    value="Yes"
                                                    data-reviewName="Is this policy for a specific vendor, concessionaire or exhibitor? - Separate Policy"
                                                    id="separatePolicyYes_RadioButton"> Yes
@@ -887,57 +1024,10 @@
                                                    checked="checked"> No
                                         </div>
                                     </div>
-                                    <div class="col-xs-6">
+                                    <div class="col-xs-3">
                                         <div class="form-group" id="numberOfExhibitorsGroup" style="display:none">
-                                            <label class="control-label">Number of Exhibitors</label>
-                                            <input class="form-control" id="numberOfExhibitors" name="numberOfExhibitors" type="text" style="color: black; background: white;"/>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-3">
-                                        <div class="form-group"> <!-- Date input -->
-                                            <label class="control-label">Proposed Effective Date</label>
-                                            <input class="form-control" type="text" placeholder = "Hidden Text Field To Adjust Focus off Date" name="hiddenField" style="display: none;"/>
-                                            <input class="form-control datepicker" id="proposedEffectiveDate" name="proposedEffectiveDate" placeholder="MM/DD/YYY" type="text" required/>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-3">
-                                        <div class="form-group"> <!-- Date input -->
-                                            <label class="control-label">Proposed Expiration Date</label>
-                                            <input class="form-control datepicker" id="proposedExpirationDate" name="proposedExpirationDate" placeholder="MM/DD/YYY" type="text" required/>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-3">
-                                        <div class="form-group"> <!-- Date input -->
-                                            <label class="control-label">Proposed Term Length</label>
-                                            <input class="form-control" id="proposedTermLength" name="proposedTermLength" type="text" style="color: black; background: white;"/>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-3">
-                                        <div class="form-group" id="totalBudgetConfirmGroup"> <!-- Date input -->
-                                            <label class="control-label">Total Budget</label>
-                                            <input class="form-control" id="totalBudgetConfirm" name="totalBudgetConfirm" type="text" required="required">
-                                        </div>
-                                        <div class="form-group" id="premiumExpectedInputGroup" style="display:none">
-                                            <label class="control-label">Target Premium</label>
-                                            <input class="form-control" id="premiumExpectedInput" name="premiumExpectedInput" type="text" required="" >
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-3">
-                                        <div class="form-group" id="howManyDaysIsTheEventGroup" style="display:none">
-                                            <label class="control-label">List the number of Event days</label>
-                                            <input class="form-control effectsTotalPremium" id="howManyDaysIsTheEvent" name="howManyDaysIsTheEvent" type="text" style="color: black; background: white;"/>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-3">
-                                        <div class="form-group"id="estimatedTotalAttendanceGroup" style="display:none">
-                                            <label class="control-label">Estimated Total Attendance</label>
-                                            <input class="form-control effectsTotalPremium" id="estimatedTotalAttendance" name="estimatedTotalAttendance" type="text" style="color: black; background: white;"/>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-6">
-                                        <div class="form-group" id="largestNumberAttendeesGroup" style="display:none">
-                                            <label class="control-label">Largest Number of Attendees Any One Event Per Day</label>
-                                            <input class="form-control" id="largestNumberAttendees" name="largestNumberAttendees" type="text" style="color: black; background: white;"/>
+                                            <label class="control-label">Enter number of Exhibitors</label>
+                                            <input class="form-control effectsTotalPremium" id="numberOfExhibitors" name="numberOfExhibitors" type="text" style="color: black; background: white;"/>
                                         </div>
                                     </div>
                                 </div>
@@ -1092,7 +1182,7 @@
                                     </div>
                                     <div class="form-group col-xs-12">
                                         <label for="email">Email address <span style="color:red;">*</span></label>
-                                        <g:textField type="email" class="form-control" name="namedInsuredEmail" placeholder="user@company.com" required="required" />
+                                        <g:field type="email" class="form-control" name="namedInsuredEmail" placeholder="user@company.com" required="required" />
                                     </div>
                                     <div class="form-group col-xs-12">
                                         <label for="company">Website</label>
@@ -1558,8 +1648,56 @@
 
 
 
+<div class="modal fade" tabindex="-1" role="dialog" id="loadSaveModal">
+    <div class="modal-dialog" role="document" style="">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Load Previous Submission</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12" >
+                        <div class="list-group" id="savedSubmissionsContainer">
+                            <a href="#" class="list-group-item">
+                                Cras justo odio
+                            </a>
+                            <a href="#" class="list-group-item">Dapibus ac facilisis in</a>
+                            <a href="#" class="list-group-item">Morbi leo risus</a>
+                            <a href="#" class="list-group-item">Porta ac consectetur ac</a>
+                            <a href="#" class="list-group-item">Vestibulum at eros</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            %{--<div class="modal-footer">--}%
+                %{--<button class="btn btn-primary" id="loadSubmissionButton" type="button"  >Load</button>--}%
+            %{--</div>--}%
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" tabindex="-1" role="dialog" id="saveAsModal">
+    <div class="modal-dialog" role="document" style="">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Save Progress</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="form-group">
+                        <label class="col-xs-2 control-label">Save As:</label>
+                        <div class="col-xs-10">
+                            <input type="text" class="form-control" id="saveName" placeholder="" >
+                        </div>
+                    </div>
 
-
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="saveAsButton" type="button"  >Save</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 <div class="modal fade" tabindex="-1" role="dialog" id="checkNamedInsuredModal">
     <div class="modal-dialog" role="document" style="width: 820px;">
         <div class="modal-content">
