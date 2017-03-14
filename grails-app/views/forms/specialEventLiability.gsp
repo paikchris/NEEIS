@@ -109,7 +109,7 @@
             </div>
 
             %{--PROMOTER Y/N--}%
-            <div class="col-xs-12">
+            <div class="col-xs-12 row">
                 <div class="form-group">
                     <label>Are you the promoter of sponsor of the event?</label><br>
                     <input type="radio" name="signingWaivers"
@@ -180,185 +180,61 @@
                 </div>
 
                 %{--TYPE OF SECURITY AT EVENT--}%
-                <div class="row">
-                    <div class="form-group col-xs-12">
-                        <label class="control-label">What Type of Security will be at the Event</label>
-                        <select class="form-control securityTypeSelect showReview" name="securityType"
-                                data-reviewName="What Type of Security will be at the Event" id="securityType">
-                            <option value="invalid" selected="selected">Unarmed Crowd Control Security</option>
-                            <option value="Armed Security" selected="selected">Armed Security</option>
-                            <option value="Other Security" selected="selected">Other</option>
-                        </select>
-                    </div>
-
+                <div class="form-group col-xs-12 row">
+                    <label class="control-label">What Type of Security will be at the Event</label>
+                    <select class="form-control securityTypeSelect showReview" name="securityType"
+                            data-reviewName="What Type of Security will be at the Event" id="securityType">
+                        <option value="invalid" selected="selected">Unarmed Crowd Control Security</option>
+                        <option value="Armed Security" selected="selected">Armed Security</option>
+                        <option value="Other Security" selected="selected">Other</option>
+                    </select>
                 </div>
 
-                %{--HAZARDS--}%
-                <label for="describeBusinessOperations">Check additional Hazards if Applicable below:</label>
-
-                %{--PYROTECHNIC CHECKBOX--}%
-                <p class="control-label"><input type="checkbox"
-                                                class="productionInvolvesCheckbox pyrotechnicsActivites showReview"
-                                                data-reviewName="Special Hazard Declared"
-                                                name="pyrotechnicsActivities"
-                                                id="pyrotechnicsCheckbox"
-                                                value="Pyrotechnic Activities(Supplemental Application)"/> Pyrotechnic Activities(Supplemental Application)
-                </p>
-
-                %{--PYROTECHNICS CONTAINER--}%
-                <div class="row" id="pyrotechnicsAttachContainer" style="margin-bottom: 20px; display:none">
-                    <div class="col-xs-3" style="margin-left:20px">
-                        <form enctype="multipart/form-data">
-                            <div class="fileUpload btn btn-primary">
-                                <span>Attach File</span>
-                                <input name="pyroFile" type="file" class="file" id="pyroFile" style="width:120px"/>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div class="col-xs-8">
-                        <small>Please attach details</small>
-                    </div>
-
-                </div>
-
-                %{--ATTACHMENT FOR PYROTECH--}%
-                <div class="row fileNameContainer" style="padding-top:6px; display:none">
-                    <div class="col-xs-9" style="text-align:right; font-size:11px">
-                        <span class="fileNameSpan" id="pyroFileSpan">File Name</span>
-                    </div>
-
-                    <div class="col-xs-3">
-                        <button type="button" class="btn btn-default btn-xs attachClearButton">Clear</button>
-                    </div>
-                </div>
-
-                %{--STUNTS OR HAZARDS CHECKBOX--}%
-                <p class="control-label"><input type="checkbox"
-                                                class="productionInvolvesCheckbox stuntsOrHazardousActivites showReview"
-                                                data-reviewName="Special Hazard Declared"
-                                                name="stuntsOrHazardousActivities"
-                                                id="stuntsHazardousCheckbox"
-                                                value="Stunts or Hazardous Activities(Supplemental Application)"/> Stunts or Hazardous Activities (Supplemental Application)
-                </p>
-
-                %{--CONTAINER // ATTACHMENT FOR STUNTS OR HAZARDS--}%
-                <div class="row attachFileContainer" id="stuntsHazardousActivitiesAttachContainer"
-                     style="margin-bottom: 20px; display:none; margin-left:0px;">
-                    <div class="row">
-                        <div class="col-xs-3" style="margin-left:20px">
-                            <form enctype="multipart/form-data">
-                                <div class="fileUpload btn btn-primary">
-                                    <span>Attach File</span>
-                                    <input name="stuntsFile" type="file" class="file" id="stuntsFile"
-                                           style="width:120px"/>
-                                </div>
-                            </form>
-                        </div>
-
-                        <div class="col-xs-8" style="padding-left:0px; line-height: 30px;">
-                            <small>Please attach details</small>
-                        </div>
-                    </div>
-                </div>
-
-                %{--WAIVER SIGNING Y/N--}%
+                %{--NUMBER OF PERFORMANCES LAST 12 MONTHS--}%
                 <div class="col-xs-12 row">
                     <div class="form-group">
-                        <label>Are Participants Signing Waivers??</label><br>
-                        <input type="radio" name="signingWaivers"
-                               class="showReview"
-                               value="Yes"
-                               data-reviewName="Are Participants Signing Waivers?"
-                               id="signingWaiversYes_RadioButton"> Yes
-                        <input type="radio" name="signingWaivers"
-                               class=""
-                               value="No"
-                               data-reviewName="Are Participants Signing Waivers?"
-                               id="signingWaiversNo_RadioButton"
-                               checked="checked"> No
+                        <label for="numberOfPerformancesEventInLastYear">Number of Performances / Events in the last 12 Months</label>
+                        <input type="text" class="form-control showReview" name="numberOfPerformanceLastYear"
+                               placeholder=""
+                               id="numberOfPerformancesLastYear"
+                               data-reviewname="Number of Performances Events in the last 12 Months">
                     </div>
                 </div>
 
-                %{--INSURANCE CANCELLED OR DECLINED Y/N--}%
-                <div class="form-group col-xs-12">
-                    <div class="row">
-                        <label>Has your insurance have ever been cancelled or declined?</label><br>
-                        <input type="radio" name="insuranceCancelled"
-                               class="showReview"
-                               value="Yes"
-                               data-reviewName="Has your insurance have ever been cancelled or declined?"
-                               id="insuranceCancelledYes_RadioButton"> Yes
-                        <input type="radio" name="insuranceCancelled"
-                               class=""
-                               value="No"
-                               data-reviewName="Has your insurance have ever been cancelled or declined?"
-                               id="insuranceCancelledNo_RadioButton"
-                               checked="checked"> No
+                %{--NUMBER OF PERFORMANCES NEXT 12 MONTHS--}%
+                <div class="col-xs-12 row">
+                    <div class="form-group">
+                        <label for="numberOfPerformancesEventInNextYear">Number of Performances / Events in the Next 12 Months</label>
+                        <input type="text" class="form-control showReview" name="numberOfPerformanceNextYear"
+                               placeholder=""
+                               id="numberOfPerformancesNextYear"
+                               data-reviewname="Number of Performances Events in the Next 12 Months">
                     </div>
                 </div>
 
-                %{--INSURANCE CANCELLED OR DECLINE CONTAINER / ADDITIONAL QUESTION--}%
-                <div id="insuranceCancelledContainer" style="display:none">
-                    <div class="col-xs-12 row">
-                        <div class="form-group">
-                            %{--<label for="cancelledDeclinedExplain"></label>--}%
-                            <input type="text" class=" showReview form-control" name="name"
-                                   data-reviewName="Explain why it was cancelled or declined"
-                                   placeholder="Please explain why it was cancelled or declined"
-                                   id="insuredCancelledExplain"/>
-                        </div>
+                %{--WHAT IS NUMBER OF SEATS--}%
+                <div class="col-xs-12 row">
+                    <div class="form-group">
+                        <label for="numberOfSeatsInTheater">What is the number of seats in the Theater/Venue?</label>
+                        <input type="text" id="numberSeats" class=" showReview form-control" name="numberSeats"
+                               data-reviewname="What is the number of seats in the Theater/Venue"
+                               placeholder="Number of Seats">
                     </div>
                 </div>
 
-                %{--OVERNIGHT EVENT Y/N--}%
-                <div class="col-xs-12 form-group">
-                    <div class="row">
-                        <label>Are there any overnight events?</label><br>
-                        <input type="radio" name="overnight"
-                               class="showReview"
-                               value="Yes"
-                               data-reviewName="Are there any overnight events?"
-                               id="overnightYes_RadioButton"> Yes
-                        <input type="radio" name="overnight"
-                               class=""
-                               value="No"
-                               data-reviewName="Are there any overnight events?"
-                               id="overnightNo_RadioButton"
-                               checked="checked"> No
-                    </div>
+                %{--TYPE OF SEATING--}%
+                <div class="form-group col-xs-12 row">
+                    <label class="control-label">Type of Seating</label>
+                    <select class="form-control seatingTypeSelect showReview" name="seatingType"
+                            data-reviewname="Seating Type" id="seatingType">
+                        <option value="invalid" selected="selected">Permanent</option>
+                        <option value="pullDownSeat" selected="selected">Pull Down</option>
+                        <option value="portableChairSeat" selected="selected">Portable Chairs</option>
+                        <option value="stadiumSeat" selected="selected">Stadium</option>
+                        <option value="openAreaSeat" selected="selected">Open Area Seating</option>
+                    </select>
                 </div>
 
-                %{--OVERNIGHT EVENT CONTAINER // DESCRIBE EVENT // WILL THERE BE CHILDREN--}%
-                <div id="overnightContainer" style="display:none">
-
-                    %{--PROVIDE FULL DESCRIPTION OF OVERNIGHT EVENTS--}%
-                    <div class="form-group col-xs-12 row">
-                        <label for="descriptionOfOvernightEvent">Provide full description of overnight events</label>
-                        <input type="text" class="form-control showReview" name="descriptionOvernight"
-                               id="descriptionOvernight"
-                               data-reviewName="Provide full description of overnight events"
-                               placeholder="Describe"/>
-                    </div>
-
-                    %{--WILL THERE BE CHILDREN IN THESE OVERNIGHT EVENTS Y/N--}%
-                    <div class="col-xs-12 form-group">
-                        <div class="row">
-                            <label>Will there be children in these overnight events?</label><br>
-                            <input type="radio" name="overnightChildren"
-                                   class="showReview"
-                                   value="Yes"
-                                   data-reviewName="Will there be children in these overnight events?"
-                                   id="overnightChildrenYes_RadioButton"> Yes
-                            <input type="radio" name="overnightChildren"
-                                   class=""
-                                   value="No"
-                                   data-reviewName="Will there be children in these overnight events?"
-                                   id="overnightChildrenNo_RadioButton"
-                                   checked="checked"> No
-                        </div>
-                    </div>
-                </div>
 
             </div>
         </div>
@@ -618,49 +494,172 @@
                 </div>
                 <br>
 
-                %{--NUMBER OF PERFORMANCES LAST 12 MONTHS--}%
-                <div class="col-xs-12">
-                    <div class="form-group">
-                        <label for="numberOfPerformancesEventInLastYear">Number of Performances / Events in the last 12 Months</label>
-                        <input type="text" class="form-control showReview" name="numberOfPerformanceLastYear"
-                               placeholder=""
-                               id="numberOfPerformancesLastYear"
-                               data-reviewname="Number of Performances Events in the last 12 Months">
-                    </div>
-                </div>
-
-                %{--NUMBER OF PERFORMANCES NEXT 12 MONTHS--}%
-                <div class="col-xs-12">
-                    <div class="form-group">
-                        <label for="numberOfPerformancesEventInNextYear">Number of Performances / Events in the Next 12 Months</label>
-                        <input type="text" class="form-control showReview" name="numberOfPerformanceNextYear"
-                               placeholder=""
-                               id="numberOfPerformancesNextYear"
-                               data-reviewname="Number of Performances Events in the Next 12 Months">
-                    </div>
-                </div>
-
-                %{--WHAT IS NUMBER OF SEATS--}%
-                <div class="col-xs-12">
-                    <div class="form-group">
-                        <label for="numberOfSeatsInTheater">What is the number of seats in the Theater/Venue?</label>
-                        <input type="text" id="numberSeats" class=" showReview form-control" name="numberSeats"
-                               data-reviewname="What is the number of seats in the Theater/Venue"
-                               placeholder="Number of Seats">
-                    </div>
-                </div>
-
-                %{--TYPE OF SEATING--}%
+                %{--HAZARDS PYRO / STUNTS / CONTAINERS FILE ATTACHMENT--}%
                 <div class="form-group col-xs-12">
-                    <label class="control-label">Type of Seating</label>
-                    <select class="form-control seatingTypeSelect showReview" name="seatingType"
-                            data-reviewname="Seating Type" id="seatingType">
-                        <option value="invalid" selected="selected">Permanent</option>
-                        <option value="pullDownSeat" selected="selected">Pull Down</option>
-                        <option value="portableChairSeat" selected="selected">Portable Chairs</option>
-                        <option value="stadiumSeat" selected="selected">Stadium</option>
-                        <option value="openAreaSeat" selected="selected">Open Area Seating</option>
-                    </select>
+                    %{--HAZARDS--}%
+                    <label for="describeBusinessOperations">Check additional Hazards if Applicable below:</label>
+
+                    %{--PYROTECHNIC CHECKBOX--}%
+                    <p class="control-label"><input type="checkbox"
+                                                    class="productionInvolvesCheckbox pyrotechnicsActivites showReview"
+                                                    data-reviewName="Special Hazard Declared"
+                                                    name="pyrotechnicsActivities"
+                                                    id="pyrotechnicsCheckbox"
+                                                    value="Pyrotechnic Activities(Supplemental Application)"/> Pyrotechnic Activities(Supplemental Application)
+                    </p>
+
+                    %{--PYROTECHNICS CONTAINER--}%
+                    <div class="row" id="pyrotechnicsAttachContainer" style="margin-bottom: 20px; display:none">
+                        <div class="col-xs-3" style="margin-left:20px">
+                            <form enctype="multipart/form-data">
+                                <div class="fileUpload btn btn-primary">
+                                    <span>Attach File</span>
+                                    <input name="pyroFile" type="file" class="file" id="pyroFile" style="width:120px"/>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="col-xs-8">
+                            <small>Please attach details</small>
+                        </div>
+
+                    </div>
+
+                    %{--ATTACHMENT FOR PYROTECH--}%
+                    <div class=" fileNameContainer row" style="padding-top:6px; display:none">
+                        <div class="col-xs-9" style="text-align:right; font-size:11px">
+                            <span class="fileNameSpan" id="pyroFileSpan">File Name</span>
+                        </div>
+
+                        <div class="col-xs-3">
+                            <button type="button" class="btn btn-default btn-xs attachClearButton">Clear</button>
+                        </div>
+                    </div>
+
+                    %{--STUNTS OR HAZARDS CHECKBOX--}%
+                    <p class="control-label"><input type="checkbox"
+                                                    class="productionInvolvesCheckbox stuntsOrHazardousActivites showReview"
+                                                    data-reviewName="Special Hazard Declared"
+                                                    name="stuntsOrHazardousActivities"
+                                                    id="stuntsHazardousCheckbox"
+                                                    value="Stunts or Hazardous Activities(Supplemental Application)"/> Stunts or Hazardous Activities (Supplemental Application)
+                    </p>
+
+                    %{--CONTAINER // ATTACHMENT FOR STUNTS OR HAZARDS--}%
+                    <div class="row" id="stuntsHazardousActivitiesAttachContainer" style="margin-bottom: 20px; display:none">
+                        <div class="col-xs-3" style="margin-left:20px">
+                            <form enctype="multipart/form-data">
+                                <div class="fileUpload btn btn-primary">
+                                    <span>Attach File</span>
+                                    <input name="stuntsFile" type="file" class="file" id="stuntsFile" style="width:120px"/>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="col-xs-8">
+                            <small>Please attach details</small>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                %{--WAIVER SIGNING Y/N--}%
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label>Are Participants Signing Waivers??</label><br>
+                        <input type="radio" name="signingWaivers"
+                               class="showReview"
+                               value="Yes"
+                               data-reviewName="Are Participants Signing Waivers?"
+                               id="signingWaiversYes_RadioButton"> Yes
+                        <input type="radio" name="signingWaivers"
+                               class=""
+                               value="No"
+                               data-reviewName="Are Participants Signing Waivers?"
+                               id="signingWaiversNo_RadioButton"
+                               checked="checked"> No
+                    </div>
+                </div>
+
+                %{--INSURANCE CANCELLED OR DECLINED Y/N--}%
+                <div class="form-group col-xs-12">
+                    <div class="">
+                        <label>Has your insurance have ever been cancelled or declined?</label><br>
+                        <input type="radio" name="insuranceCancelled"
+                               class="showReview"
+                               value="Yes"
+                               data-reviewName="Has your insurance have ever been cancelled or declined?"
+                               id="insuranceCancelledYes_RadioButton"> Yes
+                        <input type="radio" name="insuranceCancelled"
+                               class=""
+                               value="No"
+                               data-reviewName="Has your insurance have ever been cancelled or declined?"
+                               id="insuranceCancelledNo_RadioButton"
+                               checked="checked"> No
+                    </div>
+                </div>
+
+                %{--INSURANCE CANCELLED OR DECLINE CONTAINER / ADDITIONAL QUESTION--}%
+                <div id="insuranceCancelledContainer" style="display:none">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            %{--<label for="cancelledDeclinedExplain"></label>--}%
+                            <input type="text" class=" showReview form-control" name="name"
+                                   data-reviewName="Explain why it was cancelled or declined"
+                                   placeholder="Please explain why it was cancelled or declined"
+                                   id="insuredCancelledExplain"/>
+                        </div>
+                    </div>
+                </div>
+
+                %{--OVERNIGHT EVENT Y/N--}%
+                <div class="col-xs-12 form-group">
+                    <div class="">
+                        <label>Are there any overnight events?</label><br>
+                        <input type="radio" name="overnight"
+                               class="showReview"
+                               value="Yes"
+                               data-reviewName="Are there any overnight events?"
+                               id="overnightYes_RadioButton"> Yes
+                        <input type="radio" name="overnight"
+                               class=""
+                               value="No"
+                               data-reviewName="Are there any overnight events?"
+                               id="overnightNo_RadioButton"
+                               checked="checked"> No
+                    </div>
+                </div>
+
+                %{--OVERNIGHT EVENT CONTAINER // DESCRIBE EVENT // WILL THERE BE CHILDREN--}%
+                <div id="overnightContainer" style="display:none">
+
+                    %{--PROVIDE FULL DESCRIPTION OF OVERNIGHT EVENTS--}%
+                    <div class="form-group col-xs-12 ">
+                        <label for="descriptionOfOvernightEvent">Provide full description of overnight events</label>
+                        <input type="text" class="form-control showReview" name="descriptionOvernight"
+                               id="descriptionOvernight"
+                               data-reviewName="Provide full description of overnight events"
+                               placeholder="Describe"/>
+                    </div>
+
+                    %{--WILL THERE BE CHILDREN IN THESE OVERNIGHT EVENTS Y/N--}%
+                    <div class="col-xs-12 form-group">
+                        <div class="">
+                            <label>Will there be children in these overnight events?</label><br>
+                            <input type="radio" name="overnightChildren"
+                                   class="showReview"
+                                   value="Yes"
+                                   data-reviewName="Will there be children in these overnight events?"
+                                   id="overnightChildrenYes_RadioButton"> Yes
+                            <input type="radio" name="overnightChildren"
+                                   class=""
+                                   value="No"
+                                   data-reviewName="Will there be children in these overnight events?"
+                                   id="overnightChildrenNo_RadioButton"
+                                   checked="checked"> No
+                        </div>
+                    </div>
                 </div>
 
             </div>

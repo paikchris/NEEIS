@@ -1582,7 +1582,7 @@ class AsyncController {
             def NOHAPremiumsMap = [:];
             params.productsSelected.split(",").each {
                 if (it.length() > 1) {
-                    log.info it.split(":")[1]
+                    log.info "NAME OF PRODUCT: " + it.split(":")[1]
                     def productID = it.split(":")[1];
                     def coverageID = it.split(":")[0];
 
@@ -1637,8 +1637,22 @@ class AsyncController {
 
 
                     }
-                    agentPct = lobString.split('\r')[0].split('\t')[3].trim();
-                    grossPct = lobString.split('\r')[0].split('\t')[2].trim();
+
+                    try{
+                        agentPct = lobString.split('\r')[0].split('\t')[3].trim();
+                    }
+                    catch(Exception e){
+                        agentPct = "";
+                    }
+
+                    log.info "NFL"
+                    try{
+                        grossPct = lobString.split('\r')[0].split('\t')[2].trim();
+                    }
+                    catch(Exception e){
+                        grossPct = "";
+                    }
+
                     log.info("ORIGINAL LOB STRING = " + lobString)
                     if (coverageID == "EPKG") {
                         if (productID == "PIP CHOI") {
@@ -2668,6 +2682,7 @@ class AsyncController {
                         deductsMap = tempDeductsMap
                         premiumsMap = tempPremiumsMap
 
+
                     } else if (coverageID == "NOHA" || coverageID == "NOAL") {
 //                        def termLength = params.proposedTermLength.split(" ")[0].toInteger();
                         if (params.productsSelected.contains("CPK:")) {
@@ -2823,6 +2838,54 @@ class AsyncController {
 
         return deductAmount;
     }
+
+/*
+    def saveSubmissionToAIMv2(){
+        log.info "SAVING SUBMISSION TO AIMSQL"
+        log.info params
+        def uwQuestionsOrder = params.uwQuestionsOrder.split("&;&");
+        def uwQuestionsMap = new JsonSlurper().parseText(params.uwQuestionsMap)
+        def quoteID ="";
+
+        //GET TIMESTAMP
+        def now = new Date()
+        def timestamp = now.format(dateFormat, timeZone)
+
+        try {
+            //SAVE SUBMISSION INTO AIM
+            def quoteIDCoverages = aimDAO.saveNewSubmission(params.dataMap, dataSource_aim, session.user, uwQuestionsMap, uwQuestionsOrder)
+            log.info "QuoteID: " + quoteIDCoverages
+            //0620584;EPKG,0620585;CPK
+
+            //Assign GroupID for 2+ submissions
+            def submitGroupID = ""
+            quoteIDCoverages.split(",").each{
+                submitGroupID = submitGroupID + it.split(";")[0] + ","
+            }
+            if (submitGroupID.endsWith(",")) {
+                submitGroupID = submitGroupID.substring(0, submitGroupID.length() - 1);
+            }
+
+
+
+            //SAVE SUBMISSION TO MYSQL
+            Submissions s;
+            quoteIDCoverages.split(",").each{
+                quoteID = quoteID + it.split(";")[0] + ","
+                s = new portal.Submissions(submittedBy: session.user.email, aimQuoteID: it.split(";")[0], namedInsured: jsonParams.getAt("namedInsured"), submitDate: timestamp,
+                        coverages: it.split(";")[1], statusCode: "QO", underwriter: accountExec+"@neeis.com", questionAnswerMap: params.questionAnswerMap,
+                        uwQuestionMap:uwQuestionsMap, uwQuestionsOrder:uwQuestionsOrder, submitGroupID: submitGroupID)
+                s.save(flush: true, failOnError: true)
+            }
+
+            log.info "REDIRECTING"
+            if (quoteID.endsWith(",")) {
+                quoteID = quoteID.substring(0, quoteID.length() - 1);
+            }
+        }
+
+    }
+    */
 
     def saveSubmissionToAIM() {
         log.info "SAVING SUBMISSION TO AIMSQL"

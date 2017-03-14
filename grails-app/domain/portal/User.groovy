@@ -11,7 +11,7 @@ class User {
     String phoneNumber
     String defaultUnderwriter
     String admin
-    String aimContactID
+    String aimContactID //
 
 
     String toString(){

@@ -733,3 +733,109 @@ $(document).ready(function () {
 
 
 });
+
+
+function sendSubmissiontoAIM(){
+    // //IN GSP file
+    // //<input class="form-control" type="text" placeholder = "Zip Code" name="zipCodeMailing" id="zipCodeMailing" required="required" />
+    //
+    // //GET value
+    // //$('#zipCodeMailing').value();
+    //
+    // //Put it in a data map
+    // //data["zipCode"] = $('#zipCodeMailing').value();
+    //
+    // //CALL ASYNC saveSubmissionToAIM method
+    // $.ajax({
+    //     method: "POST",
+    //     url: "/portal/Async/saveSubmissionToAIM",
+    //     data: {
+    //         riskType: !!!!!!!!!,
+    //         totalGrossBudget: !!!!!!!!!!,
+    //         proposedTermLength: $("#proposedTermLength").val(),
+    //         namedInsured: $('#namedInsured').val(),
+    //         coverageCodes: coverageCodes,
+    //         questionAnswerMap: JSON.stringify(autoSaveMap),
+    //         uwQuestionsMap: JSON.stringify(uwQuestionsMap),
+    //         uwQuestionsOrder: uwQuestionsOrder.join("&;&"),
+    //         jsonSerial: JSON.stringify(data),
+    //         BORrequested: BORrequested
+    //     }
+    // })
+    // .done(function(msg) {
+    //     //alert(msg);
+    //     //0620584,0620585
+    //     if (!msg.startsWith("Error")) {
+    //         newSubmissionConfirmParam = msg;
+    //         //console.log("UPLOADING FILES");
+    //         //ATTACH FILES
+    //         var bioFile = $('#bioFile').get(0).files[0];
+    //         var lossesFile = $('#lossesFile').get(0).files[0]
+    //         var pyroFile = $('#pyroFile').get(0).files[0];
+    //         var stuntsFile = $('#stuntsFile').get(0).files[0];
+    //         //var animalPDF = $('#animalPDF').get(0).files[0];
+    //         //var dronePDF = $('#dronePDF').get(0).files[0];
+    //         var doodFile = $('#doodFile').get(0).files[0];
+    //         var treatmentFile = $('#treatmentFile').get(0).files[0];
+    //         var budgetFile = $('#budgetFile').get(0).files[0];
+    //         var quoteIDs = msg;
+    //
+    //         if (bioFile || lossesFile || pyroFile || stuntsFile || doodFile || treatmentFile || budgetFile) {
+    //             $('.progress-bar').attr('aria-valuenow', "75").animate({
+    //                 width: "75%"
+    //             }, 2000);
+    //             var formData = new FormData();
+    //             formData.append('bioFile', bioFile);
+    //             formData.append('lossesFile', lossesFile);
+    //             formData.append('pyroFile', pyroFile);
+    //             formData.append('stuntsFile', stuntsFile);
+    //             //formData.append('animalPDF', stuntsFile);
+    //             //formData.append('dronePDF', stuntsFile);
+    //             formData.append('doodFile', doodFile);
+    //             formData.append('treatmentFile', treatmentFile);
+    //             formData.append('budgetFile', budgetFile);
+    //             formData.append('quoteIDs', quoteIDs);
+    //
+    //             $.ajax({
+    //                     method: "POST",
+    //                     url: "/portal/async/ajaxAttach",
+    //                     data: formData,
+    //                     cache: false,
+    //                     contentType: false,
+    //                     processData: false
+    //                 })
+    //                 .done(function(msg) {
+    //                     //console.log("Finished Uploading");
+    //                     $('.progress-bar').attr('aria-valuenow', "100").css("width", "100%");
+    //                     $('#progressBarModal').modal('hide');
+    //
+    //                     //CLEAR AUTOSAVE INFO
+    //                     autoSaveMap = {};
+    //                     Cookies.remove('autosaveData');
+    //
+    //                     //REDIRECT TO SAVE SUCCESSFUL PAGE
+    //                     window.location.href = "./../main/newSubmissionConfirm.gsp?submissionID=" + newSubmissionConfirmParam;
+    //
+    //                 });
+    //         } else {
+    //             //console.log ("REDIRECTING");
+    //             $('.progress-bar').attr('aria-valuenow', "100").animate({
+    //                 width: "100%"
+    //             }, 2000);
+    //             $('#progressBarModal').modal('hide');
+    //
+    //             //CLEAR AUTOSAVE INFO
+    //             autoSaveMap = {};
+    //             Cookies.remove('autosaveData');
+    //
+    //             //REDIRECT TO SAVE SUCCESSFUL PAGE
+    //             window.location.href = "./../main/newSubmissionConfirm.gsp?submissionID=" + newSubmissionConfirmParam;
+    //         }
+    //     } else {
+    //         $('#progressBarModal').modal('hide');
+    //         alert(msg)
+    //     }
+    //
+    //
+    // });
+}

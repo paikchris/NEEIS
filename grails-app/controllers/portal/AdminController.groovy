@@ -2,6 +2,8 @@ package portal
 
 import groovy.sql.Sql
 
+//TESTING SSHFS
+
 class AdminController {
     def dataSource_aim
     def beforeInterceptor = [action: this.&checkUser]
@@ -11,6 +13,7 @@ class AdminController {
     def checkUser() {
         log.info "CHECK USER"
         log.info params
+
         log.info session.user
 
         AuthController ac = new AuthController()

@@ -27,6 +27,8 @@ public  java.lang.Object specialEventVendor() { return null;}
 public  java.lang.Object entertainerForm() { return null;}
 public  java.lang.Object office() { return null;}
 public  java.lang.Object shellCorp() { return null;}
+public  java.lang.Object venueTenantUser() { return null;}
+public  java.lang.Object ancillaryEntertainmentRisk() { return null;}
 public  java.lang.Object otherForm() { return null;}
 public  java.lang.Object blanketFilmProduction() { return null;}
 public  java.lang.Object rate() { return null;}
