@@ -26,7 +26,7 @@ class FileTransferHelper {
         file.transferTo(fileDest)
     }
 
-    def saveBinaryFileToLocalPath(binaryFile, localPath, fileName){
+    def saveBinaryFileToLocalPath(binaryFile, localPath, fileName){ 
 //        def quoteID = jsonSerial.getAt("allQuoteIDs").split(",")[0].split(";")[0]
 //        def a = new XmlSlurper().parseText(response.text)
 //        def nodeToSerialize = a."**".find {it.name() == 'BinaryFile'}
@@ -347,4 +347,3 @@ class FileTransferHelper {
         return bytesArray
     }
 }
-

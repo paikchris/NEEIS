@@ -54,11 +54,34 @@ environments {
     }
     test {
         dataSource {
-            dbCreate = "update"
-            url = "jdbc:h2:mem:testDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
+            dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate', ''
+            url = "jdbc:mysql://localhost/neeisPortal?useUnicode=yes&characterEncoding=UTF-8"
+            username = "root"
+            password = "Perseverence!2"
+            properties {
+                validationQuery="select 1"
+                testWhileIdle=true
+                timeBetweenEvictionRunsMillis=60000
+            }
         }
         dataSource_aim{
-
+            dbCreate = "update"
+            url = "jdbc:sqlserver://74.100.162.203:1433;databaseName=Training"
+            driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
+            username = "web"
+            password = "jakePoos521"
+            logSql = true
+            properties {
+                maxActive = -1
+                minEvictableIdleTimeMillis=1000 * 60 * 30
+                timeBetweenEvictionRunsMillis=1000 * 60 * 30
+                numTestsPerEvictionRun=3
+                testOnBorrow=true
+                testWhileIdle=true
+                testOnReturn=true
+                validationQuery="SELECT 1"
+                jdbcInterceptors="ConnectionState;StatementCache(max=200)"
+            }
         }
     }
     production {

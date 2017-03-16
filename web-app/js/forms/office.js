@@ -82,10 +82,12 @@ $(document).ready(function () {
         if ($(this).attr("value") == "Yes") {
             $("#commercialGeneralLiabilityRequestedContainer").css('display', "");
             $("#commercialGeneralLiabilityRequestedExplain").css('display', "");
+            $(".tableCGL").addClass("showReviewTable");
         }
         if ($(this).attr("value") == "No") {
             $("#commercialGeneralLiabilityRequestedContainer").css('display', "none");
             $("#commercialGeneralLiabilityRequestedExplain").css('display', "none");
+            $(".tableCGL").removeClass("showReviewTable");
         }
     });
 
@@ -95,10 +97,12 @@ $(document).ready(function () {
         if ($(this).attr("value") == "Yes") {
             $("#workCompCoverageRequestedContainer").css('display', "");
             $("#workCompCoverageRequestedExplain").css('display', "");
+            $(".tableWC").addClass("showReviewTable");
         }
         if ($(this).attr("value") == "No") {
             $("#workCompCoverageRequestedContainer").css('display', "none");
             $("#workCompCoverageRequestedExplain").css('display', "none");
+            $(".tableWC").removeClass("showReviewTable");
         }
     });
 
@@ -108,10 +112,12 @@ $(document).ready(function () {
         if ($(this).attr("value") == "Yes") {
             $(".costRentedVehiclesContainer").css('display', "");
             $(".costRentedVehiclesExplain").css('display', "");
+            $(".tableNOAL").addClass("showReviewTable");
         }
         if ($(this).attr("value") == "No") {
             $(".costRentedVehiclesContainer").css('display', "none");
             $(".costRentedVehiclesExplain").css('display', "none");
+            $(".tableNOAL").removeClass("showReviewTable");
         }
     });
 
@@ -121,10 +127,12 @@ $(document).ready(function () {
         if ($(this).attr("value") == "Yes") {
             $("#umbrellaLimitRequestedContainer").css('display', "");
             $("#umbrellaLimitRequestedExplain").css('display', "");
+            $(".tableCUMB").addClass("showReviewTable");
         }
         if ($(this).attr("value") == "No") {
             $("#umbrellaLimitRequestedContainer").css('display', "none");
             $("#umbrellaLimitRequestedExplain").css('display', "none");
+            $(".tableCUMB").removeClass("showReviewTable");
         }
     });
 

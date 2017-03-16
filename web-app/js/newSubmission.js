@@ -2,63 +2,7 @@
  * Created by paikchris on 8/23/16.
  */
 
-var stateNameToAbbrevMAP = {
-    "": "",
-    "Alabama": "AL",
-    "Alaska": "AK",
-    "Arizona": "AZ",
-    "Arkansas": "AR",
-    "California": "CA",
-    "Colorado": "CO",
-    "Connecticut": "CT",
-    "Delaware": "DE",
-    "District of Columbia": "DC",
-    "Florida": "FL",
-    "Georgia": "GA",
-    "Hawaii": "HI",
-    "Idaho": "ID",
-    "Illinois": "IL",
-    "Indiana": "IN",
-    "Iowa": "IA",
-    "Kansas": "KS",
-    "Kentucky": "KY",
-    "Louisiana": "LA",
-    "Maine": "ME",
-    "Maryland": "MD",
-    "Massachusetts": "MA",
-    "Michigan": "MI",
-    "Minnesota": "MN",
-    "Mississippi": "MS",
-    "Missouri": "MO",
-    "Montana": "MT",
-    "Nebraska": "NE",
-    "Nevada": "NV",
-    "New Hampshire": "NH",
-    "New Jersey": "NJ",
-    "New Mexico": "NM",
-    "New York": "NY",
-    "North Carolina": "NC",
-    "North Dakota": "ND",
-    "Ohio": "OH",
-    "Oklahoma": "OK",
-    "Oregon": "OR",
-    "Pennsylvania": "PA",
-    "Rhode Island": "RI",
-    "South Carolina": "SC",
-    "South Dakota": "SD",
-    "Tennessee": "TN",
-    "Texas": "TX",
-    "Utah": "UT",
-    "Vermont": "VT",
-    "Virginia": "VA",
-    "Washington": "WA",
-    "West Virginia": "WV",
-    "Wisconsin": "WI",
-    "Wyoming": "WY",
-    "Guam": "GU",
-    "Puerto Rico'": "PR",
-    "Virgin Islands": "VI"
-}
+
 var autoSaveMap = {};
 var loadedAutoSaveMap;
 var currentStep;
@@ -67,210 +11,43 @@ var BORrequested = false;
 var uwQuestionsMap = {};
 var uwQuestionsOrder = [];
 
+function init(){
+    $('html,body').scrollTop(0);
+    var testingMode = false; //SET TO TRUE IF TESTING
+
+
+    //SAVE AND LOAD STUFF (newSubmissionUtils/progressSaveLoad.js)
+    showLoadButtonIfSavedSubmissionsExist();
+    setIntervalToAutoSave(10000);
+    setSubmissionToAutoSaveOnQuit(false);
+    initializeSubmissionSaveAndLoadButtons();
+    initializeAutoSaveLoadProgressButtons();
+
+    //INPUT VALIDATION STUFF (utils/formValidation.js)
+    initializeListnerForNoBlankRequiredFields();
+
+    //DATE FUNCTIONS SETUP (newSubmissionUtils/dateHelper.js)
+    initializeDateInputAndFunctions();
+    initializeBORFunctions();
+}
+
 $(document).ready(function() {
+    init();
     console.log("NEWSUBMISSION.JS LOADED");
-    //var submission = new Submission();
-    //alert(sub.product);
 
-    //CHECK IF SAVED SUBMISSIONS AVAILABLE
-    var savedSubmissions = Object.keys(Cookies.get()).filter(function(name) {
-        return name.indexOf("saveData_") > -1;
-    });
-    //console.log(savedSubmissions)
-    if (savedSubmissions.length > 0) {
-        $('#loadProgress').css('display', '');
-    } else {
-        $('#loadProgress').css('display', 'none');
-    }
-
-    setInterval(function() {
-        // method to be executed;
-        if ($("li.active").length > 0 &&
-            ($('#proposedEffectiveDate').val().length > 0 || $('#proposedExpirationDate').val().length > 0 || $('#totalBudgetConfirm').val().length > 1)) {
-            autoSaveFunction();
-        }
-    }, 10000);
-    $(window).on('beforeunload', function() {
-        if ($("li.active").children("a.riskOptionLink").html().trim().length > 0 &&
-            ($('#proposedEffectiveDate').val().length > 0 || $('#proposedExpirationDate').val().length > 0 || $('#totalBudgetConfirm').val().length > 1)) {
-            autoSaveFunction();
-        }
-    });
-    //if(Cookies.getJSON("autosaveData") == undefined){
-    //    //alert("undefined!")
-    //}
-    //else{
-    //    //alert("load!")
-    //    $('#loadSaveModal').modal('show');
-    //}
-
-    $(document).on('click', '#saveProgress', function() {
-        $('#loadingModal').modal('show')
-
-        saveProgress();
-        setTimeout(function() {
-            $('#loadingModal').modal('hide')
-        }, 2000);
-    });
-
-    $(document).on('click', '#loadProgress', function() {
-        savedSubmissions = Object.keys(Cookies.get()).filter(function(name) {
-            return name.indexOf("saveData_") > -1;
-        });
-        var savedSubmissionHtmlString = "";
-        savedSubmissions.forEach(function(name, i) {
-            console.log(i);
-            if (i < 10) {
-                savedSubmissionHtmlString = savedSubmissionHtmlString +
-                    " <a href='#' class='list-group-item' style='font-weight: 500'>" +
-                    "<i class='fa fa-file-text-o' aria-hidden='true'></i>  <span class='rowLoadName'> " + name + "</span>" +
-                    "</a>";
-            } else {
-
-            }
-        });
-        $('#savedSubmissionsContainer').html(savedSubmissionHtmlString)
-
-        $('#loadSaveModal').modal('show');
-    });
-
-    $(document).on('click', '.rowLoadName', function() {
-        $('#loadSaveModal').modal('hide');
-        var loadName = $(this).html().trim();
-        var loadMap = Cookies.getJSON(loadName);
-        loadSaveFunction(loadMap);
-    });
+    //WHEN THE STATE CHANGES IN STEP 3, UPDATE PREMIUMS FOR TAX
     $(document).on('change', '#stateMailing', function() {
-        //var riskCat = getRiskCategoryChosen();
         if (riskChosen.indexOf("Film Projects") > -1) {
             ratePremiums();
         }
     });
 
-    $(document).on('click', '#loadSaveOKButton', function() {
-        loadedAutoSaveMap = Cookies.getJSON("autosaveData");
-        loadSaveFunction(loadedAutoSaveMap);
-    });
-    $(document).on('click', '#loadSaveNOButton', function() {
-        autoSaveMap = {};
-        Cookies.remove('autosaveData');
-    });
-
-    //alert(loadedAutoSaveMap);
-
-    $('html,body').scrollTop(0);
-    var testingMode = false; //SET TO TRUE IF TESTING
-    //$(document).on('mouseenter', '.deductibleColumn', function (){
-    //
-    //    //console.log("Text has over-flowed");
-    //    var largestInnerWidth = 0;
-    //    $(this).find('span').each(function( index ) {
-    //        if($(this).innerWidth() > largestInnerWidth){
-    //            largestInnerWidth = $(this).innerWidth();
-    //        }
-    //    });
-    //    if (largestInnerWidth >  $(this).innerWidth()) {
-    //        //Text has over-flowed
-    //        //console.log("Text has over-flowed");
-    //        //$(this).css("height", "22px");
-    //        //$(this).css("height", "72px");
-    //        $(this).animate({
-    //            height:"72px"
-    //
-    //        }, 50, function() {
-    //            $(this).css("white-space", "normal");
-    //            $(this).css("height", "92px");
-    //
-    //        });
-    //
-    //    }
-    //});
-    //$(document).on('mouseleave', '.deductibleColumn', function (){
-    //
-    //    //console.log("Text has over-flowed");
-    //    if ($(this).find('span').innerWidth() <=  $(this).innerWidth()) {
-    //        $(this).animate({
-    //            height:"22px"
-    //
-    //        }, 300, function() {
-    //            $(this).css("height", "");
-    //            $(this).css("white-space", "nowrap");
-    //        });
-    //
-    //    }
-    //});
-
-    //$(".deductibleColumn").on({
-    //    mouseenter: function () {
-    //        //stuff to do on mouse enter
-    //       //console.log("Text has over-flowed");
-    //    },
-    //    mouseleave: function () {
-    //        //stuff to do on mouse leave
-    //    }
-    //});
-    $(document).on('change', ':input[required]:visible', function() {
-        //console.log($(this).val());
-        if ($(this).val().length > 0) {
-            $(this).closest(".form-group").removeClass("has-error");
-
-        } else {
-            //console.log("has error");
-            $(this).closest(".form-group").addClass("has-error");
-        }
-    });
-
+    //GOTO STEP 2 AFTER CLICKING ON RISKTYPE
     $(document).on('change', '.riskTypeDropdown', function() {
         $('#nextButtonStep1').trigger('click');
     });
-    $(document).on('focusout', ':input[required]:visible', function() {
-        //console.log($(this).val());
-        if ($(this).val().length > 0) {
-            if ($(this).attr("id") === "phoneNumber" && ($(this).val().trim() === "(___) ___-____")) {
-                $(this).closest(".form-group").addClass("has-error");
-            } else if ($(this).attr("id") === "stateMailing" && ($(this).val() === "invalid")) {
-                $(this).closest(".form-group").addClass("has-error");
-            } else {
-                //NO ERROR
-                $(this).closest(".form-group").removeClass("has-error");
-            }
 
-        } else {
-            $(this).closest(".form-group").addClass("has-error");
-        }
-    });
-
-    var riskMapString = $("#riskMap").text();
-    var coverageMapString = $("#coverageMap").text();
-    var marketCompanyMapString = $("#marketCompanyMap").text();
-    var riskCompanyMapString = $("#riskCompanyMap").text();
-    var riskMap = {}; //riskType : Category
-    var coverageMap = {}; //code:Description
-    var marketCompanyMap = {};
-    for (var i = 0; i < riskMapString.split(";&;").length; i++) {
-        riskMap[riskMapString.split(";&;")[i].split(":")[0]] = riskMapString.split(";&;")[i].split(":")[1]
-    }
-    for (var i = 0; i < coverageMapString.split(";").length; i++) {
-        coverageMap[coverageMapString.split(";")[i].split(":")[0]] = riskMapString.split(";")[i].split(":")[1]
-    }
-    for (var i = 0; i < marketCompanyMapString.split(";&;").length; i++) {
-        marketCompanyMap[marketCompanyMapString.split(";&;")[i].split(";&#;")[0]] = marketCompanyMapString.split(";&;")[i].split(";&#;")[1]
-    }
-
-
-    //DATE PICKER SETUP
-    var date_input = $('.datepicker'); //our date input has the name "date"
-    var container = $('#page-content-wrapper');
-    var options = {
-        format: 'mm/dd/yyyy',
-        container: container,
-        todayHighlight: true,
-        orientation: "auto top",
-        autoclose: true,
-    };
-    date_input.datepicker(options);
-
-    //TERM LENGTH CALCULATION
+    //SETUP ENTER KEY TO DISMISS ALERTMESSAGEMODAL
     $(document).keyup(function(e) {
         if (e.keyCode == 13) {
             if ($('#alertMessageModal').hasClass('in')) {
@@ -278,717 +55,31 @@ $(document).ready(function() {
             }
         }
     });
-    $('#proposedEffectiveDate, #proposedExpirationDate').change(function(e) {
-        //alert($('#proposedEffectiveDate').val() + " " + $('#proposedExpirationDate').val());
-        var riskChosen = getRiskTypeChosen();
-        var riskCategory = getRiskCategoryChosen();
-        var termLength;
-        var datesAreValid = false;
 
-        var today = new Date();
-        today.setHours(0, 0, 0, 0);
-        var mdyEffective = $('#proposedEffectiveDate').val().split('/');
-        var mdyEffectiveDateObject = new Date(mdyEffective[2], mdyEffective[0] - 1, mdyEffective[1]);
-
-
-        if ($(this).attr('id') === "proposedEffectiveDate") {
-
-            if (mdyEffectiveDateObject.getTime() < today.getTime()) {
-                //console.log(e);
-                //alert("]Effective Date must be a present or future date");
-                $('#alertMessageContent').html("Effective Date must be a present or future date");
-                $('#alertMessageModal').modal('show');
-                $(this).val(today.getMonth() + 1 + "/" + today.getDate() + "/" + today.getFullYear());
-                datesAreValid = false;
-            } else if (riskChosen === "Film Projects With Cast (No Work Comp)") {
-                var termLengthTemp;
-                var datesAreValidTemp = true;
-                var todayTemp = new Date();
-                todayTemp.setHours(0, 0, 0, 0);
-                var mdyEffectiveTemp = $('#proposedEffectiveDate').val().split('/');
-                var mdyEffectiveDateObjectTemp = new Date(mdyEffectiveTemp[2], mdyEffectiveTemp[0] - 1, mdyEffectiveTemp[1]);
-                var dayTemp = mdyEffectiveDateObjectTemp.getDate();
-                if (dayTemp < 10) {
-                    dayTemp = '0' + dayTemp;
-                }
-                var monthIndexTemp = mdyEffectiveDateObjectTemp.getMonth() + 1;
-                if (monthIndexTemp < 10) {
-                    monthIndexTemp = '0' + monthIndexTemp;
-                }
-                var yearTemp = mdyEffectiveDateObject.getFullYear();
-                yearTemp = mdyEffectiveDateObjectTemp.getFullYear() + 1;
-                $("#proposedExpirationDate").val((monthIndexTemp) + "/" + dayTemp + "/" + yearTemp);
-                $('#proposedTermLength').val(365 + " Days");
-            } else if (riskChosen.indexOf("Film Projects") > -1) {
-                //console.log("DO NOTHING")
-            } else if (riskCategory === "Special Events") {
-                var termLengthTemp;
-                var datesAreValidTemp = true;
-                var todayTemp = new Date();
-                todayTemp.setHours(0, 0, 0, 0);
-                var mdyEffectiveTemp = $('#proposedEffectiveDate').val().split('/');
-                var mdyEffectiveDateObjectTemp = new Date(mdyEffectiveTemp[2], mdyEffectiveTemp[0] - 1, mdyEffectiveTemp[1]);
-                mdyEffectiveDateObjectTemp.setDate(mdyEffectiveDateObjectTemp.getDate() + 5);
-                var dayTemp = mdyEffectiveDateObjectTemp.getDate();
-                if (dayTemp < 10) {
-                    dayTemp = '0' + dayTemp;
-                }
-                var monthIndexTemp = mdyEffectiveDateObjectTemp.getMonth() + 1;
-                if (monthIndexTemp < 10) {
-                    monthIndexTemp = '0' + monthIndexTemp;
-                }
-                var yearTemp = mdyEffectiveDateObject.getFullYear();
-                //yearTemp = mdyEffectiveDateObjectTemp.getFullYear() + 1;
-                $("#proposedExpirationDate").val((monthIndexTemp) + "/" + dayTemp + "/" + yearTemp);
-                $('#proposedTermLength').val(5 + " Days");
-            } else {
-                var termLengthTemp;
-                var datesAreValidTemp = true;
-                var todayTemp = new Date();
-                todayTemp.setHours(0, 0, 0, 0);
-                var mdyEffectiveTemp = $('#proposedEffectiveDate').val().split('/');
-                var mdyEffectiveDateObjectTemp = new Date(mdyEffectiveTemp[2], mdyEffectiveTemp[0] - 1, mdyEffectiveTemp[1]);
-                var dayTemp = mdyEffectiveDateObjectTemp.getDate();
-                if (dayTemp < 10) {
-                    dayTemp = '0' + dayTemp;
-                }
-                var monthIndexTemp = mdyEffectiveDateObjectTemp.getMonth() + 1;
-                if (monthIndexTemp < 10) {
-                    monthIndexTemp = '0' + monthIndexTemp;
-                }
-                var yearTemp = mdyEffectiveDateObject.getFullYear();
-                yearTemp = mdyEffectiveDateObjectTemp.getFullYear() + 1;
-                $("#proposedExpirationDate").val((monthIndexTemp) + "/" + dayTemp + "/" + yearTemp);
-                $('#proposedTermLength').val(365 + " Days");
-            }
-
-        }
-
-
-        if ($('#proposedEffectiveDate').val().length > 0 && $('#proposedExpirationDate').val().length > 0) {
-            var mdyEffective = $('#proposedEffectiveDate').val().split('/');
-            var mdyEffectiveDateObject = new Date(mdyEffective[2], mdyEffective[0] - 1, mdyEffective[1]);
-            var mdyExpiration = $('#proposedExpirationDate').val().split('/');
-            var mdyExpirationDateObject = new Date(mdyExpiration[2], mdyExpiration[0] - 1, mdyExpiration[1]);
-            if ((mdyEffective[2].length == 4 && mdyExpiration[2].length == 4)) { //ENSURE THE YEAR IS 4 DIGITS LONG
-
-
-
-                var days = Math.round((mdyExpirationDateObject - mdyEffectiveDateObject) / (1000 * 60 * 60 * 24));
-                //alert(days);
-                if (days == 1) {
-                    $('#proposedTermLength').val(days + " Day")
-                    datesAreValid = true;
-                } else if (days > 1) {
-                    $('#proposedTermLength').val(days + " Days")
-                    datesAreValid = true;
-                } else if (days < 1) {
-                    $('#alertMessageContent').html("Expiration Date must be after the Effective Date");
-                    $('#alertMessageModal').modal('show');
-                    $(this).val("");
-                    $('#proposedTermLength').val("");
-                    datesAreValid = false;
-                }
-                if (days > 365) {
-                    $('#alertMessageContent').html("Policy Term cannot exceed 1 year");
-                    $('#alertMessageModal').modal('show');
-                    $('#proposedExpirationDate').val("");
-                    $('#proposedTermLength').val("");
-                    datesAreValid = false;
-                }
-
-            } else {
-                $(this).val("");
-                $('#proposedTermLength').val("");
-                datesAreValid = false;
-            }
-
-        } else {
-            $('#proposedTermLength').val("");
-            datesAreValid = false;
-        }
-
-
-        if (riskChosen.indexOf("Film Projects") > -1) {
-            if (datesAreValid && $('#totalBudgetConfirm').val().trim().length > 0) {
-                //alert($('#totalBudgetConfirm').val());
-                $('#coverageOptionsReview').addClass("panel-primary");
-                $('#coverageOptionsReview').removeClass("panel-default");
-                $('#coverageOptionsReview').parent().css("color", "#1f1f1f");
-                $('#coverageOptionsTitle').css("color", "#fff");
-                $('#loadingModal').show();
-                if ($("li.active").length > 0) {
-                    getProductsForRisk();
-                }
-
-                $('#principalPhotographyDateStart').val($('#proposedEffectiveDate').val());
-                $('#principalPhotographyDateEnd').val($('#proposedExpirationDate').val());
-            } else {
-                $('#coverageOptionsReview').addClass("panel-default");
-                $('#coverageOptionsReview').removeClass("panel-primary");
-                $('#coverageOptionsReview').parent().css("color", "rgba(31, 31, 31, 0.35)");
-                $('#coverageOptionsTitle').css("color", "rgba(31, 31, 31, 0.35)");
-                $('#EPKGcoverage').prop("checked", false);
-                $('#EPKGcoverage').trigger('change');
-                $('#CPKCGLcoverage').prop("checked", false);
-                $('#CPKCGLcoverage').trigger('change');
-
-                clearProductChoices();
-
-            }
-        } else {
-
-            if (datesAreValid) {
-                //alert($('#totalBudgetConfirm').val());
-                $('#coverageOptionsReview').addClass("panel-primary");
-                $('#coverageOptionsReview').removeClass("panel-default");
-                $('#coverageOptionsReview').parent().css("color", "#1f1f1f");
-                $('#coverageOptionsTitle').css("color", "#fff");
-                $('#loadingModal').show();
-                if ($("li.active").length > 0) {
-                    getProductsForRisk();
-                }
-
-                $('#principalPhotographyDateStart').val($('#proposedEffectiveDate').val());
-                $('#principalPhotographyDateEnd').val($('#proposedExpirationDate').val());
-            } else {
-                $('#coverageOptionsReview').addClass("panel-default");
-                $('#coverageOptionsReview').removeClass("panel-primary");
-                $('#coverageOptionsReview').parent().css("color", "rgba(31, 31, 31, 0.35)");
-                $('#coverageOptionsTitle').css("color", "rgba(31, 31, 31, 0.35)");
-                $('#EPKGcoverage').prop("checked", false);
-                $('#EPKGcoverage').trigger('change');
-                $('#CPKCGLcoverage').prop("checked", false);
-                $('#CPKCGLcoverage').trigger('change');
-
-                clearProductChoices();
-
-            }
-
-        }
-
-        $('#CPKInputRadio').trigger("change");
-    });
-
-    $("#proposedTermLength").click(function() {
-        //var input = document.getElementById("test");
-        var string = $(this).val()
-        var count = 0;
-        for (var i = 0; i < $(this).val().length; i++) {
-            if (isNaN(string.charAt(i))) {
-                //console.log(string.charAt(i));
-                count = i;
-                break;
-            }
-        }
-        this.setSelectionRange(0, count - 1); // Highlights "Cup"
-        this.focus();
-    });
-
-    $("#proposedTermLength").change(function() {
-        var length = $(this).val().split(" ")[0];
-        if (isNaN(length)) {
-            $(this).val($(this).val().replace(/\D/g, '') + " Days");
-            if ($(this).val().split(" ")[0].length == 0) {
-                var mdyEffective = $('#proposedEffectiveDate').val().split('/');
-                var mdyEffectiveDateObject = new Date(mdyEffective[2], mdyEffective[0] - 1, mdyEffective[1]);
-                var newDate = new Date(mdyEffectiveDateObject.setTime(mdyEffectiveDateObject.getTime() + 1 * 86400000));
-
-
-                var day = newDate.getDate();
-
-                var monthIndex = newDate.getMonth() + 1;
-
-                if (day < 10) {
-                    day = '0' + day;
-                }
-                if (monthIndex < 10) {
-                    monthIndex = '0' + monthIndex;
-                }
-                var year = newDate.getFullYear();
-
-
-                $(this).val("1 Days");
-            }
-            $("#proposedExpirationDate").val((monthIndex) + "/" + day + "/" + year);
-            $("#proposedExpirationDate").trigger('change');
-        } else {
-            //console.log(length);
-            var today = new Date();
-            today.setHours(0, 0, 0, 0);
-            var mdyEffective = $('#proposedEffectiveDate').val().split('/');
-            var mdyEffectiveDateObject = new Date(mdyEffective[2], mdyEffective[0] - 1, mdyEffective[1]);
-            var newDate = new Date(mdyEffectiveDateObject.setTime(mdyEffectiveDateObject.getTime() + length * 86400000));
-
-
-            var day = newDate.getDate();
-
-            var monthIndex = newDate.getMonth() + 1;
-
-            if (day < 10) {
-                day = '0' + day;
-            }
-            if (monthIndex < 10) {
-                monthIndex = '0' + monthIndex;
-            }
-            var year = newDate.getFullYear();
-
-            $("#proposedExpirationDate").val((monthIndex) + "/" + day + "/" + year);
-            $(this).val(length + " Days");
-
-            if ($(this).val().split(" ")[0].length == 0) {
-                $(this).val("1 Days");
-
-                newDate = new Date(mdyEffectiveDateObject.setTime(mdyEffectiveDateObject.getTime() + 1 * 86400000));
-                $("#proposedExpirationDate").val((monthIndex) + "/" + day + "/" + year);
-
-            }
-            $("#proposedExpirationDate").trigger('change');
-        }
-    });
-
-
-    $('#addressTheSame').change(function() {
-        if ($('#addressTheSame').is(':checked')) {
-            var physicalAddressDiv = $("#locationDivContainer").children('.locationDiv').eq(0);
-            //alert($("input[name='streetNameMailing']").val());
-            //alert(physicalAddressDiv.html());
-            //alert($("#stateMailing").val());
-            physicalAddressDiv.find("input[name='streetName']").val($("input[name='streetNameMailing']").val());
-            physicalAddressDiv.find("input[name='city']").val($("input[name='cityMailing']").val());
-            physicalAddressDiv.find("select[name='state']").val($("#stateMailing").val());
-            physicalAddressDiv.find("input[name='zipCode']").val($("input[name='zipCodeMailing']").val());
-        } else {}
-    });
-    //////CHECKING NAME OF INSURED CALL BASED ON NAME AND ZIPCODE
-    //$("#namedInsured, #zipCodeMailing,  #zipCodePhysical").on('input', function() {
-    //    var checkName = $("#namedInsured").val();
-    //    var zipCodeMailing =$("#zipCodeMailing").val();
-    //    var zipCodePhysical = $("#zipCodePhysical").val();
-
-
-    //if(checkName.length >1 && (zipCodeMailing.length ==5)){
-    //   //alert("slkdf");
-    //    $.ajax({
-    //        method: "POST",
-    //        url: "/portal/main/checkNamedInsured",
-    //        data: {checkName: checkName, zipCodeMailing: zipCodeMailing, zipCodePhysical:zipCodePhysical}
-    //    })
-    //        .done(function (msg) {
-    //           //alert( "Data Saved: " + msg );
-    //
-    //            //MSG RETURNS THE NUMBER OF MATCHES IN NAMEDINSURED AND ZIPCODE
-    //           //console.log(msg);
-    //            if(parseInt(msg) > 0){ //if THERE IS AT LEAST ONE MATCH
-    //                $("#namedInsured").closest(".form-group").addClass("has-error");
-    //                $("#namedInsured").siblings(".glyphicon-remove").css("display","");
-    //
-    //                $("#namedInsured").closest(".form-group").removeClass("has-success");
-    //                $("#namedInsured").siblings(".glyphicon-ok").css("display","none");
-    //                $('#namedInsured').attr("data-original-title","Named Insured already exists");
-    //            }
-    //            else if(parseInt(msg) == 0){ //IF NAME IS GOOD AND UNIQUE
-    //
-    //                $("#namedInsured").closest(".form-group").removeClass("has-error");
-    //                $("#namedInsured").siblings(".glyphicon-remove").css("display", "none");
-    //
-    //                $("#namedInsured").closest(".form-group").addClass("has-success");
-    //                $("#namedInsured").siblings(".glyphicon-ok").css("display","");
-    //                $('#namedInsured').attr("data-original-title","Name is unique");
-    //            }
-    //        });
-    //}
-    //else{
-    //    $("#namedInsured").closest(".form-group").removeClass("has-success");
-    //    $("#namedInsured").siblings(".glyphicon-ok").css("display","none");
-    //
-    //    $("#namedInsured").closest(".form-group").removeClass("has-error");
-    //    $("#namedInsured").siblings(".glyphicon-remove").css("display", "none");
-    //    $('#namedInsured').attr("data-original-title","");
-    //}
-    //});
-    //
-    //$("#namedInsured").on('change', function() {
-    //   //console.log("UPPERCASING");
-    //   //console.log($(this).val());
-    //    var nameString = $(this).val();
-    //    //nameString = $(this).val().charAt(0).toUpperCase() + nameString.slice(1);
-    //
-    //    var words = nameString.split(" ");
-    //    var output = "";
-    //    var originalWord = "";
-    //    for (i = 0 ; i < words.length; i ++){
-    //        originalWord = words[i];
-    //        lowerWord = words[i].toLowerCase();
-    //        lowerWord = lowerWord.trim();
-    //        //console.log(lowerWord)
-    //        if(originalWord.slice(1,2) == originalWord.slice(1,2).toUpperCase() || originalWord.slice(2,3) == originalWord.slice(2,3).toUpperCase()){
-    //            //console.log(lowerWord.slice(1,2) + "-" + lowerWord)
-    //            capitalizedWord = originalWord.trim();
-    //        }
-    //        else{
-    //            capitalizedWord = lowerWord.slice(0,1).toUpperCase() + lowerWord.slice(1);
-    //        }
-    //
-    //        output += capitalizedWord;
-    //        if (i != words.length-1){
-    //            output+=" ";
-    //        }
-    //    }//for
-    //    output[output.length-1] = '';
-    //
-    //    $(this).val(output);
-    //   //console.log($(this).val());
-    //    $("#nameOfProductionCompany").val(output);
-    //    $("#nameOfProductionCompany").attr('placeholder', '');
-    //});
-
-    var matchNum = 0;
-    var matchingnamesArray = "";
-    $("#namedInsured, #zipCodeMailing, #googleAutoAddress").bind("change focusout", function() {
-        console.log($(this).attr('id'))
-        if ($(this).attr('id') === "namedInsured") {
-            capitalizeFirstLetters($(this));
-        }
-        var checkName = $("#namedInsured").val();
-        var zipCodeMailing = $("#zipCodeMailing").val();
-        var zipCodePhysical = $("#zipCodePhysical").val();
-        //alert(currentStep);
-        console.log(checkName.length + "," + zipCodeMailing.length + "," + currentStep)
-        if (currentStep === 3) {
-            if (checkName.length > 1 && (zipCodeMailing.length == 5)) {
-                $.ajax({
-                        method: "POST",
-                        url: "/portal/main/checkNamedInsured",
-                        data: {
-                            checkName: checkName,
-                            zipCodeMailing: zipCodeMailing,
-                            zipCodePhysical: zipCodePhysical
-                        }
-                    })
-                    .done(function(msg) {
-                        matchNum = 0;
-                        matchingnamesArray = "";
-                        //MSG RETURNS THE NUMBER OF MATCHES IN NAMEDINSURED AND ZIPCODE
-                        matchNum = msg.split("&;&")[0];
-                        matchingnamesArray = msg.split("&;&")[1].split("&,&");
-                        if (parseInt(matchNum) > 0) { //if THERE IS AT LEAST ONE MATCH
-                            namedInsuredConflict = true;
-                            //console.log("check show error")
-
-                            $("#namedInsured").closest(".form-group").addClass("has-error");
-                            $("#namedInsured").siblings(".glyphicon-remove").css("display", "");
-
-                            $("#namedInsured").closest(".form-group").removeClass("has-success");
-                            $("#namedInsured").siblings(".glyphicon-ok").css("display", "none");
-                            $("#namedInsured").siblings(".glyphicon-list-alt").css("display", "none");
-
-                            $('#namedInsured').attr("data-original-title", "Named Insured already exists");
-
-
-                            //fill resolve Named Insured Modal
-                            //alert($('#googleAutoAddress').val())
-                            $('#resolveNamedInsured').val($('#namedInsured').val())
-                            $('#resolveStreet').val($('#googleAutoAddress').val());
-                            $('#resolveCity').val($('#cityMailing').val());
-                            $('#resolveState').val($('#stateMailing').val());
-                            $('#resolveZip').val($('#zipCodeMailing').val());
-
-                            var htmlString = "";
-                            for (var i = 0; i < matchingnamesArray.length; i++) {
-                                if (matchingnamesArray[i].trim().length > 0) {
-                                    htmlString = htmlString + "<div class='row col-xs-12'><span class='col-xs-8' style='color:red'>" + matchingnamesArray[i] + "</span>" +
-                                        "<span class='col-xs-4' style='color:red'>Broker of Record Needed</span></div>";
-                                }
-
-                            }
-                            $('#matchingSubmissionsContainer').html(htmlString);
-
-                            if (currentStep == 3) {
-                                $('#checkNamedInsuredModal').modal({
-                                    backdrop: 'static',
-                                    keyboard: false
-                                });
-                                $("#resolveNamedInsured").trigger('change');
-                            }
-
-                        } else if (parseInt(matchNum) == 0) { //IF NAME IS GOOD AND UNIQUE
-                            //console.log("check no error")
-
-                            $("#namedInsured").closest(".form-group").removeClass("has-error");
-                            $("#namedInsured").siblings(".glyphicon-remove").css("display", "none");
-                            $("#namedInsured").siblings(".glyphicon-list-alt").css("display", "none");
-
-
-                            $("#namedInsured").closest(".form-group").addClass("has-success");
-                            $("#namedInsured").siblings(".glyphicon-ok").css("display", "");
-                            $('#namedInsured').attr("data-original-title", "Name is unique");
-                            BORrequested = false;
-                            $('#BORRequestNotification').css('display', "none");
-                            namedInsuredConflict = false;
-                        }
-                    });
-            } else {
-                console.log("check remove all")
-
-                $("#namedInsured").closest(".form-group").removeClass("has-success");
-                $("#namedInsured").siblings(".glyphicon-ok").css("display", "none");
-
-                $("#namedInsured").closest(".form-group").removeClass("has-error");
-                $("#namedInsured").siblings(".glyphicon-remove").css("display", "none");
-                $("#namedInsured").siblings(".glyphicon-list-alt").css("display", "none");
-
-                $('#namedInsured').attr("data-original-title", "");
-                BORrequested = false;
-                $('#BORRequestNotification').css('display', "none");
-                namedInsuredConflict = false;
-
-            }
-        }
-
-    });
-
-    $("#resolveNamedInsured, #resolveZip").bind("change focusout", function() {
-        var checkName = $("#resolveNamedInsured").val();
-        var resolveZip = $("#resolveZip").val();
-        //console.log(checkName.length + "," + resolveZip.length + "," + currentStep)
-
-        if (currentStep === 3) {
-            if (checkName.length > 1 && (resolveZip.length == 5)) {
-                $.ajax({
-                        method: "POST",
-                        url: "/portal/main/checkNamedInsured",
-                        data: {
-                            checkName: checkName,
-                            zipCodeMailing: resolveZip,
-                            zipCodePhysical: ""
-                        }
-                    })
-                    .done(function(msg) {
-                        namedInsuredConflict = true;
-                        matchNum = 0;
-                        matchingnamesArray = "";
-                        //MSG RETURNS THE NUMBER OF MATCHES IN NAMEDINSURED AND ZIPCODE
-                        matchNum = msg.split("&;&")[0];
-                        matchingnamesArray = msg.split("&;&")[1].split("&,&");
-                        if (parseInt(matchNum) > 0) { //if THERE IS AT LEAST ONE MATCH
-                            //console.log("resolve show error")
-                            $("#resolveNamedInsured").closest(".form-group").addClass("has-error");
-                            $("#resolveNamedInsured").siblings(".glyphicon-remove").css("display", "");
-
-                            $("#resolveNamedInsured").closest(".form-group").removeClass("has-success");
-                            $("#resolveNamedInsured").siblings(".glyphicon-ok").css("display", "none");
-                            $('#resolveNamedInsured').attr("data-original-title", "Named Insured already exists");
-
-                            var htmlString = "";
-                            for (var i = 0; i < matchingnamesArray.length; i++) {
-                                if (matchingnamesArray[i].trim().length > 0) {
-                                    htmlString = htmlString + "<div class='row col-xs-12'><span class='col-xs-8' style='color:red'>" + matchingnamesArray[i] + "</span>" +
-                                        "<span class='col-xs-4' style='color:red'>Broker of Record Needed</span></div>";
-                                }
-
-                            }
-                            $('#matchingSubmissionsContainer').html(htmlString);
-                            $('#conflictExistsDiv').css('display', '');
-                            document.getElementById("resolveConflictBOR").disabled = false;
-
-
-                        } else if (parseInt(matchNum) == 0) { //IF NAME IS GOOD AND UNIQUE
-                            //console.log("resolve no error")
-                            $("#resolveNamedInsured").closest(".form-group").removeClass("has-error");
-                            $("#resolveNamedInsured").siblings(".glyphicon-remove").css("display", "none");
-
-                            $("#resolveNamedInsured").closest(".form-group").addClass("has-success");
-                            $("#resolveNamedInsured").siblings(".glyphicon-ok").css("display", "");
-                            $('#resolveNamedInsured').attr("data-original-title", "Name is unique");
-
-                            $('#matchingSubmissionsContainer').html("");
-                            $('#conflictExistsDiv').css('display', 'none');
-                            BORrequested = false;
-                            $('#BORRequestNotification').css('display', "none");
-                            namedInsuredConflict = false;
-                            document.getElementById("resolveConflictBOR").disabled = true;
-
-                        }
-                    });
-            } else {
-                console.log("resolve remove all")
-                $("#resolveNamedInsured").closest(".form-group").removeClass("has-success");
-                $("#resolveNamedInsured").siblings(".glyphicon-ok").css("display", "none");
-
-                $("#resolveNamedInsured").closest(".form-group").removeClass("has-error");
-                $("#resolveNamedInsured").siblings(".glyphicon-remove").css("display", "none");
-                $('#resolveNamedInsured').attr("data-original-title", "");
-                BORrequested = false;
-                $('#BORRequestNotification').css('display', "none");
-                namedInsuredConflict = false;
-
-            }
-
-        }
-
-    });
-
-    $("#resolveConflictContinue").on("click", function() {
-        document.getElementById("resolveConflictBOR").disabled = true;
-        var checkName = $("#resolveNamedInsured").val();
-        var resolveZip = $("#resolveZip").val();
-        //console.log(checkName.length + "," + resolveZip.length + "," + currentStep)
-
-        if (checkName.length > 1 && (resolveZip.length == 5)) {
-            $.ajax({
-                    method: "POST",
-                    url: "/portal/main/checkNamedInsured",
-                    data: {
-                        checkName: checkName,
-                        zipCodeMailing: resolveZip,
-                        zipCodePhysical: ""
-                    }
-                })
-                .done(function(msg) {
-                    matchNum = 0;
-                    matchingnamesArray = "";
-                    //MSG RETURNS THE NUMBER OF MATCHES IN NAMEDINSURED AND ZIPCODE
-                    matchNum = msg.split("&;&")[0];
-                    matchingnamesArray = msg.split("&;&")[1].split("&,&");
-                    if (parseInt(msg) > 0) { //if THERE IS AT LEAST ONE MATCH
-                        //console.log("resolve show error")
-                        namedInsuredConflict = true;
-                        $("#resolveNamedInsured").closest(".form-group").addClass("has-error");
-                        $("#resolveNamedInsured").siblings(".glyphicon-remove").css("display", "");
-
-                        $("#resolveNamedInsured").closest(".form-group").removeClass("has-success");
-                        $("#resolveNamedInsured").siblings(".glyphicon-ok").css("display", "none");
-                        $('#resolveNamedInsured').attr("data-original-title", "Named Insured already exists");
-
-                        var htmlString = "";
-                        for (var i = 0; i < matchingnamesArray.length; i++) {
-                            if (matchingnamesArray[i].trim().length > 0) {
-                                htmlString = htmlString + "<div class='row col-xs-12'><span class='col-xs-8' style='color:red'>" + matchingnamesArray[i] + "</span>" +
-                                    "<span class='col-xs-4' style='color:red'>Broker of Record Needed</span></div>";
-                            }
-
-                        }
-                        $('#matchingSubmissionsContainer').html(htmlString);
-                        $('#conflictExistsDiv').css('display', '');
-
-
-                        $('#resolveNamedInsured').focus();
-
-                    } else if (parseInt(msg) == 0) { //IF NAME IS GOOD AND UNIQUE
-                        $("#resolveNamedInsured").closest(".form-group").removeClass("has-success");
-                        $("#resolveNamedInsured").siblings(".glyphicon-ok").css("display", "none");
-
-                        $("#resolveNamedInsured").closest(".form-group").removeClass("has-error");
-                        $("#resolveNamedInsured").siblings(".glyphicon-remove").css("display", "none");
-                        $('#resolveNamedInsured').attr("data-original-title", "");
-                        $('#namedInsured').val($("#resolveNamedInsured").val());
-                        $('#googleAutoAddress').val($("#resolveStreet").val());
-                        $('#cityMailing').val($("#resolveCity").val());
-                        $('#stateMailing').val($("#resolveState").val());
-                        $('#zipCodeMailing').val($("#resolveZip").val());
-                        $('#namedInsured').trigger('change');
-                        $('#checkNamedInsuredModal').modal('hide');
-                        BORrequested = false;
-                        $('#BORRequestNotification').css('display', "none");
-                        namedInsuredConflict = false;
-
-                    }
-                    document.getElementById("resolveConflictBOR").disabled = false;
-                });
-        }
-
-    });
-
-
-    $("#resolveConflictBOR").on("click", function() {
-        $("#namedInsured").closest(".form-group").removeClass("has-success");
-        $("#namedInsured").siblings(".glyphicon-ok").css("display", "none");
-
-        $("#namedInsured").closest(".form-group").removeClass("has-error");
-        $("#namedInsured").siblings(".glyphicon-remove").css("display", "none");
-        $('#namedInsured').attr("data-original-title", "");
-
-
-        $("#namedInsured").siblings(".glyphicon-list-alt").css("display", "");
-
-        $('#checkNamedInsuredModal').modal('hide');
-        $('#BORRequestNotification').css('display', "");
-        BORrequested = true;
-        namedInsuredConflict = false;
-    });
-
-    $("#ignoreConflictBOR").on("click", function() {
-        var result = prompt("Renewal BOR Bypass");
-        if (result === "password") {
-            $("#namedInsured").closest(".form-group").removeClass("has-success");
-            $("#namedInsured").siblings(".glyphicon-ok").css("display", "none");
-
-            $("#namedInsured").closest(".form-group").removeClass("has-error");
-            $("#namedInsured").siblings(".glyphicon-remove").css("display", "none");
-            $('#namedInsured').attr("data-original-title", "");
-
-
-            $("#namedInsured").siblings(".glyphicon-list-alt").css("display", "none");
-
-            $('#checkNamedInsuredModal').modal('hide');
-            BORrequested = false;
-            $('#BORRequestNotification').css('display', "none");
-            namedInsuredConflict = false;
-        }
-
-    });
-
-    //FILL COVERAGE SELECT OPTIONS
-    var coverageString = "<option value='invalid' selected='selected'>Please Select Coverage</option>";
-    for (var i = 0; i < coverageMapString.split(";").length; i++) {
-        coverageString = coverageString + "<option value='" +
-            coverageMapString.split(";")[i].split(":")[0] +
-            "'>" + coverageMapString.split(";")[i].split(":")[1] +
-            "</option>"
-    }
-    //alert(coverageString);
-    $("#coverageSelect").html(coverageString);
-
+    //RATE PREMIUMS WHEN COVERAGE CHECKBOX IS CLICKED
     $(document.body).on('change', '.coverageCheckbox', function() {
         if ($("#proposedTermLength").val().trim().length < 1) {
             alert("Please enter coverage dates.")
             if ($(this).is(':checked')) {
                 this.checked = false
-            } else {
+            }
+            else {
                 this.checked = false;
             }
-        } else {
+        }
+        else {
             //alert();
             if ($(this).is(':checked')) {
                 $(this).parent().parent().next().find('.productsSelect').css("display", "");
-            } else {
+            }
+            else {
                 $(this).parent().parent().next().find('.productsSelect').css("display", "none");
             }
 
         }
     });
 
-    //FILL COMPANY SELECT
-    var marketCompanyString = "<option value='invalid' selected='selected'>Please Select Market Company</option>";
-    for (var i = 0; i < marketCompanyMapString.split(";&;").length; i++) {
-        marketCompanyString = marketCompanyString + "<option value='" +
-            marketCompanyMapString.split(";&;")[i].split(";&#;")[0] +
-            "'>" + marketCompanyMapString.split(";&;")[i].split(";&#;")[1] +
-            "</option>"
-    }
-    $("#marketCompanySelect").html(marketCompanyString);
-
-    var riskCompanyString = "<option value='invalid' selected='selected'>Please Select Risk Company</option>";
-    for (var i = 0; i < riskCompanyMapString.split(";").length; i++) {
-        riskCompanyString = riskCompanyString + "<option value='" +
-            riskCompanyMapString.split(";")[i].split(",")[0] +
-            "'>" + riskCompanyMapString.split(";")[i].split(",")[1] +
-            "</option>"
-    }
-    $("#riskCompanySelect").html(riskCompanyString);
-
-    ///LOCATION ADD REMOVE BUTTONS
+    ///FILMING LOCATION ADD REMOVE BUTTONS
     $(document.body).on('click', '.addLocation', function() {
         var htmlString = "";
         var count = 0;
@@ -1006,13 +97,15 @@ $(document).ready(function() {
 
     });
 
+    //FILMING LOCATION ADD REMOVE BUTTONS
     $(document.body).on('click', '.removeLocation', function() {
         var htmlString = "";
         var count = 0;
         //alert($(this).closest('.locationDiv').find('h5').html())
         if ($(this).closest('.locationDiv').find('h5').html() === "Physical Address") {
 
-        } else {
+        }
+        else {
             $(this).closest('.locationDiv').remove();
             $('#locationDivContainer').children('.locationDiv').each(function() {
                 //alert($(this).html());
@@ -1021,7 +114,8 @@ $(document).ready(function() {
                 //alert(locationHeader);
                 if (locationHeader == "Physical Address") {
 
-                } else {
+                }
+                else {
                     $(this).find('h5').html("Location " + count);
                 }
 
@@ -1035,17 +129,60 @@ $(document).ready(function() {
 
     });
 
-
     //MASK PHONE NUMBER FORMAT
-    //
     $(document.body).on('focus', '.phoneNumberMask', function() {
-        //this.value = this.value.replace(/(\d{3})\-?(\d{3})\-?(\d{4})/,'$1-$2-$3');
-        //alert ("OK");
         $(".phoneNumberMask").mask("(999) 999-9999");
     });
 
+    //CLICK HANDLER FOR RISK CATEGORY CARDS
+    $('.card').click(function() {
+        if ($(this).hasClass("cardselected")) {
+            $(this).removeClass("cardselected");
+            $(this).addClass("card-unselected");
+            $(".drawer").removeClass("open");
+        }
+        else {
+            $('.cardselected').each(function() {
+                $(this).removeClass("cardselected");
+                $(this).addClass("card-unselected");
+
+            });
+            $(".drawer").removeClass("open");
 
 
+            $(this).addClass("cardselected");
+            $(this).removeClass("card-unselected");
+
+            $(this).parent().siblings(".drawerContainer").children(".drawer").addClass("open");
+        }
+
+    });
+
+    //CLICK HANDLER FOR SELECTING RISKTYPE
+    $('a.riskOptionLink').click(function() {
+        $('.riskTypeDropdown').css('display', "none");
+        $('a.riskOptionLink').parent().removeClass("active");
+        $('a.riskOptionLink').parent().addClass("inactive");
+        $(this).parent().addClass("active");
+        $(this).parent().removeClass("inactive");
+
+        if ($(this).hasClass("riskOptionDropDown")) {
+            $(this).find('select').css('display', "");
+        }
+        else {
+            setTimeout(
+                function() {
+                    $('#nextButtonStep1').trigger('click');
+                }, 200)
+
+        }
+        return false;
+
+    });
+
+    /////////////////////////////////////////////////////////
+    //FORM WIZARD CODE
+    /////////////////////////////////////////////////////////
     var navListItems = $('div.setup-panel div a'),
         allWells = $('.setup-content'),
         allNextBtn = $('.nextBtn'),
@@ -1068,7 +205,8 @@ $(document).ready(function() {
                 allWells.hide();
                 $target.show();
                 $target.find('input:eq(0)').focus();
-            } else {
+            }
+            else {
                 var valid = validateFields();
                 if (valid[0]) {
                     navListItems.removeClass('btn-primary').addClass('btn-default');
@@ -1083,10 +221,6 @@ $(document).ready(function() {
         }
         currentStep = parseInt($('.btn-primary').html());
         //console.log(currentStep)
-    });
-
-    $('#reviewSubmitButton').click(function(e) {
-        buildReview();
     });
 
     allNextBtn.click(function(e) {
@@ -1146,12 +280,14 @@ $(document).ready(function() {
                     //alert(riskCategory)
                     if (riskChosen === "Specific Film Projects Test") {
                         testingMode = true;
-                    } else if (riskChosen === "Film Projects Without Cast (With Work Comp)" || riskChosen === "Film Projects With Cast (With Work Comp)") {
+                    }
+                    else if (riskChosen === "Film Projects Without Cast (With Work Comp)" || riskChosen === "Film Projects With Cast (With Work Comp)") {
                         //window.location.href = "http://www.neeis.com/d/users/sign_in";
                         logIntoLegacyNeeis();
                         $('#loadingModal').hide();;
                         return false;
-                    } else if (riskChosen.indexOf("Film Projects") > -1) {
+                    }
+                    else if (riskChosen.indexOf("Film Projects") > -1) {
                         $('#totalBudgetConfirmGroup').css('display', '');
                         var finishedLoading1 = false;
                         var finishedLoading2 = false;
@@ -1181,7 +317,8 @@ $(document).ready(function() {
                             }
 
                         });
-                    } else if (riskCategory === "Entertainer") {
+                    }
+                    else if (riskCategory === "Entertainer") {
                         $('#premiumExpectedInputGroup').css('display', '');
                         // $('#howManyDaysIsTheEventGroup').css('display', '');
                         // $('#estimatedTotalAttendanceGroup').css('display', '');
@@ -1214,7 +351,8 @@ $(document).ready(function() {
                             }
                         });
                         //$('#totalBudgetConfirmGroup').css('display', 'none');
-                    } else if (riskCategory === "Special Events") {
+                    }
+                    else if (riskCategory === "Special Events") {
                         //alert(riskCategory)
                         $('#premiumExpectedInputGroup').css('display', '');
                         $('#howManyDaysIsTheEventGroup').css('display', '');
@@ -1258,7 +396,8 @@ $(document).ready(function() {
                             });
 
 
-                        } else {
+                        }
+                        else {
                             $("#insuredInfoInsert").load("./../forms/specialEventLiability #insuredInfo", function() {
                                 finishedLoading1 = true;
                                 if (finishedLoading1 && finishedLoading2 && finishedLoading3) {
@@ -1287,7 +426,8 @@ $(document).ready(function() {
                             });
                         }
                         //$('#totalBudgetConfirmGroup').css('display', 'none');
-                    } else if (riskCategory === "Office") {
+                    }
+                    else if (riskCategory === "Office") {
                         $('#premiumExpectedInputGroup').css('display', '');
                         // $('#howManyDaysIsTheEventGroup').css('display', '');
                         // $('#estimatedTotalAttendanceGroup').css('display', '');
@@ -1320,7 +460,8 @@ $(document).ready(function() {
                             }
                         });
                         //$('#totalBudgetConfirmGroup').css('display', 'none');
-                    } else if (riskCategory === "Shell Corporation") {
+                    }
+                    else if (riskCategory === "Shell Corporation") {
                         //alert(riskCategory)
                         $('#premiumExpectedInputGroup').css('display', '');
                         // $('#howManyDaysIsTheEventGroup').css('display', '');
@@ -1354,7 +495,8 @@ $(document).ready(function() {
                             }
                         });
                         //$('#totalBudgetConfirmGroup').css('display', 'none');
-                    } else if (riskCategory === "Venue / Tenant User") {
+                    }
+                    else if (riskCategory === "Venue / Tenant User") {
                         $('#premiumExpectedInputGroup').css('display', '');
                         $('#howManyDaysIsTheEventGroup').css('display', '');
                         $('#estimatedTotalAttendanceGroup').css('display', '');
@@ -1388,7 +530,8 @@ $(document).ready(function() {
                             }
                         });
                         //$('#totalBudgetConfirmGroup').css('display', 'none');
-                    } else if (riskCategory === "Ancillary Entertainment Risk") {
+                    }
+                    else if (riskCategory === "Ancillary Entertainment Risk") {
                         $('#premiumExpectedInputGroup').css('display', '');
                         // $('#howManyDaysIsTheEventGroup').css('display', '');
                         // $('#estimatedTotalAttendanceGroup').css('display', '');
@@ -1421,7 +564,8 @@ $(document).ready(function() {
                             }
                         });
                         //$('#totalBudgetConfirmGroup').css('display', 'none');
-                    } else if (riskChosen.indexOf("Comedian") > -1) {
+                    }
+                    else if (riskChosen.indexOf("Comedian") > -1) {
                         $('#premiumExpectedInputGroup').css('display', '');
                         $('#howManyDaysIsTheEventGroup').css('display', '');
                         $('#estimatedTotalAttendanceGroup').css('display', '');
@@ -1435,7 +579,8 @@ $(document).ready(function() {
                             head.appendChild(script);
                             $('#loadingModal').hide();
                         });
-                    } else {
+                    }
+                    else {
                         $('#premiumExpectedInputGroup').css('display', '');
                         $('#howManyDaysIsTheEventGroup').css('display', '');
                         $('#estimatedTotalAttendanceGroup').css('display', '');
@@ -1477,13 +622,15 @@ $(document).ready(function() {
                         });
                     }
                     getProductsForRisk()
-                } else {
+                }
+                else {
                     alert("Please select a risk option");
                     $('#loadingModal').hide();
                     return false;
                 }
 
-            } else if (e.target.id == "nextButtonStep2") {
+            }
+            else if (e.target.id == "nextButtonStep2") {
                 currentStep = 2;
                 if (riskChosen.indexOf("Film Projects") > -1) {
                     if (!($('#EPKGcoverage').is(':checked') || $('#CPKCGLcoverage').is(':checked'))) {
@@ -1498,33 +645,37 @@ $(document).ready(function() {
                     $('#principalPhotographyDateEnd').val($('#proposedExpirationDate').val());
                     $('#totalBudgetInput').val($('#totalBudgetConfirm').val());
                     $('#loadingModal').hide();
-                } else {
+                }
+                else {
                     $('#loadingModal').hide();
                 }
 
 
 
-            } else if (e.target.id == "nextButtonStep3") {
+            }
+            else if (e.target.id == "nextButtonStep3") {
                 if (namedInsuredConflict == true) {
                     $('#loadingModal').hide();
                     $('#alertMessageContent').html("Please resolve conflict.");
                     $('#alertMessageModal').modal('show');
                     return;
-                } else {
+                }
+                else {
                     currentStep = 3;
                     buildReview();
                     $('#loadingModal').hide();
                 }
 
                 $('#loadingModal').hide();
-            } else if (e.target.id == "nextButtonStep4") {
+            }
+            else if (e.target.id == "nextButtonStep4") {
                 currentStep = 4;
                 var validSubmission = true;
                 $('#progressBarModal').modal('show');
                 if (riskChosen.indexOf("Film Projects") > -1) {
                     var termLength = parseInt($("#proposedTermLength").val().split(" "));
                     var coverageCodes = "";
-                    $('#limitsDeductPremiumInsert .coverageCodeString').each(function() {
+                    $('#reviewLimitsDeducts .coverageCodeString').each(function() {
                         coverageCodes = coverageCodes + $(this).html() + ",";
                     });
                     coverageCodes = coverageCodes.replace(/,\s*$/, "");
@@ -1562,7 +713,8 @@ $(document).ready(function() {
                         }
                         EPKGRateInfo = $('#EPKG_RateInfo').html();
                         data["EPKGRateInfo"] = EPKGRateInfo;
-                    } else {
+                    }
+                    else {
                         if ($('#PIPChoiceInputRadio').is(':checked')) {
                             productID = productID + "PIP CHOI" + ";";
                             //pipChoiRateInfo = $('#PIPCHOI_RateInfo').html();
@@ -1602,12 +754,14 @@ $(document).ready(function() {
                         if (termLength > 30) {
                             if (riskChosen === "Film Projects Without Cast (No Work Comp)" || riskChosen === "Film Projects With Cast (No Work Comp)") {
                                 productID = productID + "BARCPKSF" + ";";
-                            } else if (riskChosen === "Annual Blanket Film Projects (DICE)") {
+                            }
+                            else if (riskChosen === "Annual Blanket Film Projects (DICE)") {
                                 productID = productID + "BARCPKGP" + ";";
                             }
 
 
-                        } else if (termLength <= 30) {
+                        }
+                        else if (termLength <= 30) {
                             productID = productID + "BARCPKGC" + ";";
                         }
                         CPKRateInfo = $('#CPK_RateInfo').html();
@@ -1619,11 +773,13 @@ $(document).ready(function() {
                         if (termLength > 30) {
                             if (riskChosen === "Film Projects Without Cast (No Work Comp)" || riskChosen === "Film Projects With Cast (No Work Comp)") {
                                 productID = productID + "BARCPKSF" + ";";
-                            } else if (riskChosen === "Annual Blanket Film Projects (DICE)") {
+                            }
+                            else if (riskChosen === "Annual Blanket Film Projects (DICE)") {
                                 productID = productID + "BARCPKGP" + ";";
                             }
 
-                        } else if (termLength <= 30) {
+                        }
+                        else if (termLength <= 30) {
                             productID = productID + "BARCPKGC" + ";";
                         }
                         CGLRateInfo = $('#CGL_RateInfo').html();
@@ -1638,15 +794,25 @@ $(document).ready(function() {
                     var EPKGdeductsString = "";
 
                     if ($('#EPKGcoverage').is(':checked')) {
-                        $('div#limitsDeductPremiumInsert div.EPKG_LOBRow').each(function() {
+                        $('div#reviewLimitsDeducts div.EPKG_LOBRow').each(function() {
                             if ($('#PIPChoiceInputRadio').is(':checked')) {
+                                if( $(this).find('.limitColumn').children().first().is('input') ){
+                                    epkgLOB = epkgLOB + $(this).find('.coverageColumn').children().first().html() + " ;&;" + $(this).find('.limitColumn').children().first().val() + " ;&;" +
+                                        $(this).find('.deductibleColumn').children().first().html() + ";&&;";
+                                    EPKGlimitsString = EPKGlimitsString + $(this).find('.limitColumn').children().first().val() + "\tEPKG:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+                                    EPKGdeductsString = EPKGdeductsString + $(this).find('.deductibleColumn').children().first().html() + "\tEPKG:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+                                    //console.log(EPKGlimitsString)
+                                }
+                                else{
+                                    epkgLOB = epkgLOB + $(this).find('.coverageColumn').children().first().html() + " ;&;" + $(this).find('.limitColumn').children().first().html() + " ;&;" +
+                                        $(this).find('.deductibleColumn').children().first().html() + ";&&;";
+                                    EPKGlimitsString = EPKGlimitsString + $(this).find('.limitColumn').children().first().html() + "\tEPKG:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+                                    EPKGdeductsString = EPKGdeductsString + $(this).find('.deductibleColumn').children().first().html() + "\tEPKG:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+                                    //console.log(EPKGlimitsString)
+                                }
 
-                                epkgLOB = epkgLOB + $(this).find('.coverageColumn').children().first().html() + " ;&;" + $(this).find('.limitColumn').children().first().val() + " ;&;" +
-                                    $(this).find('.deductibleColumn').children().first().html() + ";&&;";
-                                EPKGlimitsString = EPKGlimitsString + $(this).find('.limitColumn').children().first().val() + "\tEPKG:" + $(this).find('.coverageColumn').children().first().html() + "\n";
-                                EPKGdeductsString = EPKGdeductsString + $(this).find('.deductibleColumn').children().first().html() + "\tEPKG:" + $(this).find('.coverageColumn').children().first().html() + "\n";
-                                //console.log(EPKGlimitsString)
-                            } else {
+                            }
+                            else {
                                 if ($(this).find('.coverageColumn').children('span').length > 1) {
                                     var epkgLOBRowObject = $(this);
                                     var childCount = 0;
@@ -1661,7 +827,8 @@ $(document).ready(function() {
                                         childCount++;
 
                                     });
-                                } else {
+                                }
+                                else {
                                     epkgLOB = epkgLOB + $(this).find('.coverageColumn').children().first().html() + " ;&;" + $(this).find('.limitColumn').children().first().html() + " ;&;" +
                                         $(this).find('.deductibleColumn').children().first().html() + ";&&;";
                                     EPKGlimitsString = EPKGlimitsString + $(this).find('.limitColumn').children().first().html() + "\tEPKG:" + $(this).find('.coverageColumn').children().first().html() + "\n";
@@ -1679,7 +846,7 @@ $(document).ready(function() {
                     var CGLdeductsString = "";
                     if ($('#CPKCGLcoverage').is(':checked')) {
                         if ($('#CPKInputRadio').is(':checked')) {
-                            $('div#limitsDeductPremiumInsert div.CPK_LOBRow').each(function() {
+                            $('div#reviewLimitsDeducts div.CPK_LOBRow').each(function() {
                                 cpkLOB = cpkLOB + $(this).find('.coverageColumn').children().first().html() + " ;&;" + $(this).find('.limitColumn').children().first().html() + " ;&;" +
                                     $(this).find('.deductibleColumn').children().first().html() + ";&&;";
                                 CPKlimitsString = CPKlimitsString + $(this).find('.limitColumn').children().first().html() + "\tCPK:" + $(this).find('.coverageColumn').children().first().html() + "\n";
@@ -1688,15 +855,16 @@ $(document).ready(function() {
                             });
 
                             //ADD NOAL
-                            $('div#limitsDeductPremiumInsert div.NOAL_LOBRow').each(function() {
+                            $('div#reviewLimitsDeducts div.NOAL_LOBRow').each(function() {
                                 cpkLOB = cpkLOB + $(this).find('.coverageColumn').children().first().html() + " ;&;" + $(this).find('.limitColumn').children().first().html() + " ;&;" +
                                     $(this).find('.deductibleColumn').children().first().html() + ";&&;";
                                 CPKlimitsString = CPKlimitsString + $(this).find('.limitColumn').children().first().html() + "\tNOAL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
                                 CPKdeductsString = CPKdeductsString + $(this).find('.deductibleColumn').children().first().html() + "\tNOAL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
                             });
 
-                        } else if ($('#CGLInputRadio').is(':checked')) {
-                            $('div#limitsDeductPremiumInsert div.CGL_LOBRow').each(function() {
+                        }
+                        else if ($('#CGLInputRadio').is(':checked')) {
+                            $('div#reviewLimitsDeducts div.CGL_LOBRow').each(function() {
                                 cglLOB = cglLOB + $(this).find('.coverageColumn').children().first().html() + " ;&;" + $(this).find('.limitColumn').children().first().html() + " ;&;" +
                                     $(this).find('.deductibleColumn').children().first().html() + ";&&;";
                                 CPKlimitsString = CPKlimitsString + $(this).find('.limitColumn').children().first().html() + "\tCGL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
@@ -1716,7 +884,8 @@ $(document).ready(function() {
                         if ($(this).hasClass("TotalPremiumRow")) {
                             premSummary = premSummary + $(this).find('.lineOfBusinessSpan').html() + ";&;" + $(this).find('.totalPremiumSpan').html() + ";&&;";
 
-                        } else {
+                        }
+                        else {
                             premSummary = premSummary + $(this).find('.lineOfBusinessSpan').html() + ";&;" + $(this).find('.premiumSpan').html() + ";&&;";
                         }
                     });
@@ -1886,7 +1055,8 @@ $(document).ready(function() {
                                                 window.location.href = "./../main/newSubmissionConfirm.gsp?submissionID=" + newSubmissionConfirmParam;
 
                                             });
-                                    } else {
+                                    }
+                                    else {
                                         //console.log ("REDIRECTING");
                                         $('.progress-bar').attr('aria-valuenow', "100").animate({
                                             width: "100%"
@@ -1900,14 +1070,16 @@ $(document).ready(function() {
                                         //REDIRECT TO SAVE SUCCESSFUL PAGE
                                         window.location.href = "./../main/newSubmissionConfirm.gsp?submissionID=" + newSubmissionConfirmParam;
                                     }
-                                } else {
+                                }
+                                else {
                                     $('#progressBarModal').modal('hide');
                                     alert(msg)
                                 }
 
 
                             });
-                    } else {
+                    }
+                    else {
                         $('#progressBarModal').modal('hide');
                         alert("Error: Submission has errors");
 
@@ -1915,10 +1087,13 @@ $(document).ready(function() {
 
 
                     $('#loadingModal').hide();
-                } else {
+                }
+                else {
+                    //THE ACTIONS THAT WILL BE TAKEN AFTER THEY PUSH THE FINAL SUBMIT BUTTON
+                    //
                     // $('#progressBarModal').modal('show');
-
-                    var dataMap ={};
+                    $('#progressBarModal').modal('hide');
+                    var dataMap = {};
                     // $('#limitsDeductPremiumInsert .coverageCodeString').each(function() {
                     //     coverageCodes = coverageCodes + $(this).html() + ",";
                     // });
@@ -1930,45 +1105,102 @@ $(document).ready(function() {
                     dataMap['proposedTermLength'] = $("#proposedTermLength").val();
                     dataMap["uwQuestionsMap"] = JSON.stringify(uwQuestionsMap);
                     dataMap["uwQuestionsOrder"] = uwQuestionsOrder.join("&;&");
-                    dataMap['accountExec'] = "jason"; //DEFAULT TO JASON FOR NOW
-                    
-                    dataMap['productID'] = buildProductObject(dataMap, dataMap['proposedTermLength']); //return a string in the format ProductID;ProductID;
+                    dataMap['questionAnswerMap'] = JSON.stringify(autoSaveMap),
+                        dataMap['accountExec'] = "jason"; //DEFAULT TO JASON FOR NOW
 
-                    dataMap['limitsString'] = "";
-                    dataMap['deductsString'] = "";
-                    dataMap['premium'] = "";
-                    dataMap['premiumRaw'] = "";
-                    dataMap['stringLOB'] = "";
-                    dataMap['brokerFee'] = "";
+
+                    var premSummary = "";
+                    var productsArray = []
+                    $('#reviewPanelContainer .productID_pull').each(function() {
+                        var productObj = {}
+                        productObj["productID"] = $(this).html().trim();
+                        productObj["coveragedID"] = $(this).attr('data-cov');
+
+                        productObj["premium"] = $('.productTotalPremium.SPEVENTS').first().html().trim();
+
+                        productObj["limitsString"] = "";
+                        productObj["deductsString"] = "";
+                        productObj["stringLOB"] = "";
+
+                        $(".lobRow." + productObj["productID"] + "." + productObj["coveragedID"]).each(function() {
+                            var lim = $(this).find('.limit').html().trim();
+                            var ded = $(this).find('.deduct').html().trim();
+                            if (lim == null) {
+                                lim = "";
+                            }
+                            if (ded == null) {
+                                ded = "";
+                            }
+                            //limitsstring current format
+                            //"$400,000\tEPKG:Miscellaneous Rented Equipment\n$400,000\tEPKG:Extra Expense\n$400,000\tEPKG:Props, Sets &amp; Wardrobe\n$400,000\tEPKG:Third Party Prop Damage Liab\n",
+                            productObj["limitsString"] = productObj["limitsString"] + lim + "\t" + $(this).find('.lob').html().trim() + "\n"
+
+                            //deductsstring current format
+                            //"$2,500\tEPKG:Miscellaneous Rented Equipment\n$2,500\tEPKG:Extra Expense\n$2,500\tEPKG:Props, Sets &amp; Wardrobe\n$2,500\tEPKG:Third Party Prop Damage Liab\n",
+
+                            productObj["deductsString"] = productObj["deductsString"] + ded + "\t" + $(this).find('.lob').html().trim() + "\n"
+
+                            //stringLOB current format
+                            //Each Occurrence ;&;$1,000,000 ;&;Nil;&&;General Aggregate Limit ;&;$1,000,000 ;&;Nil;&&;Products &amp; Completed Operations ;&;$1,000,000 ;&;Nil;&&;Personal &amp;
+                            //Advertising Injury ;&;$1,000,000 ;&;Nil;&&;Fire Damage (Any One Fire) ;&;$100,000 ;&;Nil;&&;Blanket Additional Insured Endorsement ;&; ;&;Nil;&&;Non-Owned &amp;
+                            //Hired Auto Liability ;&;$1,000,000 ;&;;&&;",
+                            productObj["stringLOB"] = productObj["stringLOB"] + $(this).find('.lob').html().trim() + " ;&;" + lim + " ;&;" + ded + ";&&;"
+                        });
+
+                        //prem summary
+                        //current format "Entertainment Package;&;$1,188;&&;",
+                        productsArray.push(productObj);
+                    });
+                    // dataMap['productID'] = buildProductObject(dataMap, dataMap['proposedTermLength']); //return a string in the format ProductID;ProductID;
+                    dataMap['products'] = productsArray;
+                    dataMap['premiumAllLOBTotal'] = $('#premiumAllLOBTotal').html();
                     dataMap['statusID'] = "QO";
-                    dataMap['proposedEffectiveDate'] = "";
-                    dataMap['proposedExpirationDate'] = "";
-                    dataMap['totalBudgetConfirm'] = "";
-
-                    dataMap['namedInsured'] = $('#namedInsured');
-                    dataMap['streetNameMailing'] = $('#streetNameMailing');
-                    dataMap['cityMailing'] = $('#cityMailing');
-                    dataMap['stateMailing'] = $('#stateMailing');
-                    dataMap['zipCodeMailing'] = $('#zipCodeMailing');
-                    dataMap['phoneNumber'] = $('#phoneNumber');
-                    dataMap['FEINSSN'] = $('#FEINSSN');
-                    dataMap['NCCI'] = $('#NCCI');
-                    dataMap['SIC'] = $('#SIC');
-                    dataMap['website'] = $('#streetNameMailing');
-                    dataMap['streetNameMailing'] = $('#streetNameMailing');
-                    dataMap['streetNameMailing'] = $('#streetNameMailing');
-                    dataMap['streetNameMailing'] = $('#streetNameMailing');
-                    dataMap['streetNameMailing'] = $('#streetNameMailing');
+                    dataMap['proposedEffectiveDate'] = $('#proposedEffectiveDate').val()
+                    dataMap['proposedExpirationDate'] = $('#proposedExpirationDate').val()
+                    dataMap['totalBudgetConfirm'] = $("#totalBudgetConfirm").val().replace(/\$|,/g, '');
 
 
+                    dataMap['brokerFee'] = $("#brokerFeeInput").val()
+                    dataMap['namedInsured'] = $('#namedInsured').val();
+                    dataMap['streetNameMailing'] = $('#streetNameMailing').val();
+                    dataMap['cityMailing'] = $('#cityMailing').val();
+                    dataMap['stateMailing'] = $('#stateMailing').val();
+                    dataMap['zipCodeMailing'] = $('#zipCodeMailing').val();
+                    dataMap['phoneNumber'] = $('#phoneNumber').val();
+                    dataMap['FEINSSN'] = $('#FEINSSN').val();
+                    dataMap['NCCI'] = $('#NCCI').val();
+                    dataMap['SIC'] = $('#SIC').val();
+                    dataMap['website'] = $('#website').val();
+                    dataMap['BORrequested'] = BORrequested;
+
+                    var dataString = JSON.stringify(dataMap, null, 4);
+                    console.log(dataString);
 
 
-
+                    $.ajax({
+                            method: "POST",
+                            url: "/portal/Async/saveSubmissionToAIMv2",
+                            data: {
+                                dataMap: JSON.stringify(dataMap),
+                                riskType: riskChosen,
+                                proposedTermLength: $("#proposedTermLength").val(),
+                                namedInsured: $('#namedInsured').val(),
+                                coverageCodes: coverageCodes,
+                                questionAnswerMap: JSON.stringify(autoSaveMap),
+                                uwQuestionsMap: JSON.stringify(uwQuestionsMap),
+                                uwQuestionsOrder: uwQuestionsOrder.join("&;&"),
+                                BORrequested: BORrequested
+                            }
+                        })
+                        .done(function(msg) {
+                            alert(msg);
+                        });
 
 
                     //sendSubmissiontoAIM();
                 }
-            } else if (e.target.id == "testPDF") {
+            }
+            else if (e.target.id == "testPDF") {
                 $('#loadingModal').hide();
 
                 var $form = $('.form-control');
@@ -2029,7 +1261,8 @@ $(document).ready(function() {
                 scrollTop: 0
             }, 'fast');
 
-        } else {
+        }
+        else {
             if ($('#step-1').is(":visible")) {
                 $('#alertMessageContent').html("Please Select Risk Type");
                 $('#alertMessageModal').modal('show');
@@ -2037,25 +1270,29 @@ $(document).ready(function() {
                     $('html, body').animate({
                         scrollTop: ($('.drawer.open').first().offset().top) - 300
                     }, "fast");
-                } else {
+                }
+                else {
                     $('html, body').animate({
                         scrollTop: 0
                     }, "fast");
                 }
 
-            } else if ($('#step-2').is(":visible")) {
+            }
+            else if ($('#step-2').is(":visible")) {
                 $('#alertMessageContent').html("Please complete required fields.");
                 $('#alertMessageModal').modal('show');
                 $('html, body').animate({
                     scrollTop: ($(".has-error").first().offset().top) - 300
                 }, "fast");
-            } else if ($('#step-3').is(":visible")) {
+            }
+            else if ($('#step-3').is(":visible")) {
                 $('#alertMessageContent').html("Please complete required fields.");
                 $('#alertMessageModal').modal('show');
                 $('html, body').animate({
                     scrollTop: ($(".has-error").first().offset().top) - 300
                 }, "fast");
-            } else if ($('#step-4').is(":visible")) {
+            }
+            else if ($('#step-4').is(":visible")) {
                 $('#alertMessageContent').html("Please complete required fields.");
                 $('#alertMessageModal').modal('show');
                 $('html, body').animate({
@@ -2079,381 +1316,9 @@ $(document).ready(function() {
         prevStepWizard.removeAttr('disabled').trigger('click');
     });
 
+    //NEEDED TO SET THE PAGE TO STEP 1 AFTER WIZARD SETUP FOR SOME REASON
     $('div.setup-panel div a.btn-primary').trigger('click');
-
-
-
-    $('.card').click(function() {
-        if ($(this).hasClass("cardselected")) {
-            $(this).removeClass("cardselected");
-            $(this).addClass("card-unselected");
-            $(".drawer").removeClass("open");
-        } else {
-            $('.cardselected').each(function() {
-                $(this).removeClass("cardselected");
-                $(this).addClass("card-unselected");
-
-            });
-            $(".drawer").removeClass("open");
-
-
-            $(this).addClass("cardselected");
-            $(this).removeClass("card-unselected");
-
-            $(this).parent().siblings(".drawerContainer").children(".drawer").addClass("open");
-        }
-
-    });
-    $('a.riskOptionLink').click(function() {
-        $('.riskTypeDropdown').css('display', "none");
-        $('a.riskOptionLink').parent().removeClass("active");
-        $('a.riskOptionLink').parent().addClass("inactive");
-        $(this).parent().addClass("active");
-        $(this).parent().removeClass("inactive");
-
-        if ($(this).hasClass("riskOptionDropDown")) {
-            $(this).find('select').css('display', "");
-        } else {
-            setTimeout(
-                function() {
-                    $('#nextButtonStep1').trigger('click');
-                }, 200)
-
-        }
-        return false;
-
-    });
-
-    $("#riskCategorySelect").change(function() {
-        if ($(this).val() == "invalid") {
-            $("#riskTypeSelect").css("display", "none");
-            $("#riskTypeGroup").css("display", "none");
-        } else {
-            $("#riskTypeSelect").css("display", "");
-            $("#riskTypeGroup").css("display", "");
-            var category = $(this).val();
-            var htmlString = "";
-            for (var i = 0; i < riskMapString.split(";&;").length; i++) {
-                if (riskMapString.split(";&;")[i].split(":")[1] === category) {
-                    htmlString = htmlString + "<option class='riskTypeSelectOption' value='" +
-                        riskMapString.split(";&;")[i].split(":")[0] +
-                        "'>" + riskMapString.split(";&;")[i].split(":")[0] +
-                        "</option>"
-
-                }
-            }
-            $("#riskTypeSelect").html(htmlString);
-        }
-    });
-
-    $("#riskTypeSelect").change(function() {
-        if ($(this).val() == "invalid") {
-
-        } else if ($(this).val().trim() == "Film Projects Without Cast (No Work Comp)") {
-
-        }
-    });
-
-
-
-    //FINISH BUTTON CLICK
-    $("#submitSubmissionButton").click(function(e) {
-
-    });
-    //SUBMITTING FORM AND INFORMATION TO SERVER
-    $(".newEmpireFormInput").each(function(index) {
-        if ($(this).is(':checkbox')) {
-
-        } else if ($(this).is('input:text')) {
-
-        } else if ($(this).is(':radio')) {
-
-        } else if ($(this).is('select')) {} else if ($(this.is('textarea'))) {
-
-        }
-
-    });
-
-
-
-
 });
-
-function loadSaveFunction(loadMap) {
-    $('#progressBarHeader').html("Loading saved submission")
-    $('.progress-bar').attr('aria-valuenow', "0").css("width", "0%");
-    $('#progressBarModal').modal('show');
-    $('.progress-bar').attr('aria-valuenow', "75").animate({
-        width: "75%"
-    }, 3000);
-    var value;
-
-    $('a').each(function() {
-        if ($(this).html() === loadMap['riskChosen']) {
-
-            //alert("click " + $(this).html())
-            var domObject = $(this);
-            //console.log($(domObject).html())
-            $(domObject).trigger('click');
-        }
-    });
-
-    if (loadMap['proposedEffectiveDate'].length > 0) {
-        $('#proposedEffectiveDate').val(loadMap['proposedEffectiveDate']);
-        $("#proposedEffectiveDate").trigger("change");
-    }
-    if (loadMap['proposedExpirationDate'].length > 0) {
-        $('#proposedExpirationDate').val(loadMap['proposedExpirationDate']);
-        $("#proposedExpirationDate").trigger("change");
-    }
-    if (loadMap['proposedTermLength'].length > 0) {
-        $('#proposedTermLength').val(loadMap['proposedTermLength']);
-        //$("#proposedTermLength").trigger("change");
-    }
-    if (loadMap['totalBudgetConfirm'].length > 0) {
-
-        $('#totalBudgetConfirm').val(loadMap['totalBudgetConfirm']);
-        $("#totalBudgetConfirm").trigger("change");
-
-    }
-    setTimeout(function() {
-
-        //console.log("wait")
-        Object.keys(loadMap).forEach(function(key) {
-
-            value = loadMap[key];
-            //console.log("COOKIE VALUE = " + key + "-" + value);
-            var domObject = $('#' + key);
-            if ($(domObject).css("display") != "none") {
-                $(domObject).css('display', '');
-            }
-
-            if ($(domObject).is("select")) {
-                $(domObject).val(value);
-                //console.log("SELECT TYPE = " + domObject);
-                $(domObject).trigger("change");
-            } else if ($(domObject).is(':checkbox')) {
-                //console.log("CHECKBOX TYPE = " + domObject);
-                if (value === true) {
-                    $(domObject).prop("checked", true);
-
-                } else {
-                    $(domObject).prop("checked", false);
-                }
-                $(domObject).trigger("change");
-
-            } else if ($(domObject).is(':radio')) {
-                //console.log("RADIO TYPE = " + domObject);
-                if (value === true) {
-                    $(domObject).prop("checked", true);
-                } else {
-                    //$(domObject).prop("checked", false);
-                }
-                $(domObject).trigger("change");
-
-            } else {
-                //console.log("ELSE TYPE = " + domObject);
-                $(domObject).val(value);
-                $(domObject).trigger("change");
-
-            }
-
-        });
-
-        if (loadMap['proposedEffectiveDate'].length == 0) {
-            $('#proposedEffectiveDate').val("");
-            //$("#proposedEffectiveDate").trigger("change");
-        }
-        if (loadMap['proposedExpirationDate'].length == 0) {
-            $('#proposedExpirationDate').val("");
-            //$("#proposedExpirationDate").trigger("change");
-        }
-
-        $('.progress-bar').attr('aria-valuenow', "100").css("width", "100%");
-        $('#progressBarModal').modal('hide');
-    }, 2000);
-
-
-
-
-
-
-    //
-
-}
-
-function autoSaveFunction() {
-    //$( "*").each(function () {
-    //    autoSaveMap[$(this).attr('id')] = $(this).val();
-    //    //alert(autoSaveMap);
-    //
-    //});
-    //console.log("AUTOSAVING")
-    autoSaveMap['riskChosen'] = getRiskTypeChosen();
-
-    //ALL VISIBLE INPUTS
-    $("input, select").each(function() {
-        if ($(this).css("display") != "none") {
-            if ($(this).is("select")) {
-                autoSaveMap[$(this).attr('id')] = $(this).val();
-            } else if ($(this).is(':checkbox')) {
-                if ($(this).is(":checked")) {
-                    //alert($(this).val());
-                    autoSaveMap[$(this).attr('id')] = true;
-                }
-            } else if ($(this).is(':radio')) {
-                if ($(this).is(":checked")) {
-                    //alert($(this).val());
-                    autoSaveMap[$(this).attr('id')] = true;
-                }
-            } else if ($(this).is(':file')) {
-
-            } else {
-                autoSaveMap[$(this).attr('id')] = $(this).val();
-            }
-
-        }
-    });
-    //console.log(JSON.stringify(autoSaveMap))
-    Cookies.set("autosaveData", JSON.stringify(autoSaveMap), {
-        expires: 7
-    });
-}
-
-function saveProgress() {
-    autoSaveMap['riskChosen'] = getRiskTypeChosen();
-
-    //ALL VISIBLE INPUTS
-    $("input, select").each(function() {
-        if ($(this).css("display") != "none") {
-            if ($(this).is("select")) {
-                autoSaveMap[$(this).attr('id')] = $(this).val();
-            } else if ($(this).is(':checkbox')) {
-                if ($(this).is(":checked")) {
-                    //alert($(this).val());
-                    autoSaveMap[$(this).attr('id')] = true;
-                }
-            } else if ($(this).is(':radio')) {
-                if ($(this).is(":checked")) {
-                    //alert($(this).val());
-                    autoSaveMap[$(this).attr('id')] = true;
-                }
-            } else if ($(this).is(':file')) {
-
-            } else {
-                autoSaveMap[$(this).attr('id')] = $(this).val();
-            }
-
-        }
-    });
-    var test = Object.keys(Cookies.get()).filter(function(name) {
-        return name.indexOf("saveData_") > -1;
-    });
-    console.log(test);
-
-    Cookies.set("saveData_" + autoSaveMap['riskChosen'] + "_" + moment().format('MM/DD/YY HH:mm'), JSON.stringify(autoSaveMap), {
-        expires: 3
-    });
-}
-
-//////////////////////////
-// This example displays an address form, using the autocomplete feature
-// of the Google Places API to help users fill in the information.
-// This example requires the Places library. Include the libraries=places
-// parameter when you first load the API. For example:
-// <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
-
-var placeSearch, autocomplete;
-var componentForm = {
-    googleAutoAddress: 'short_name',
-    googleAutoAddress: 'long_name',
-    cityMailing: 'long_name',
-    stateMailing: 'short_name',
-    zipCodeMailing: 'short_name'
-};
-
-function initAutocomplete() {
-    // Create the autocomplete object, restricting the search to geographical
-    // location types.
-    autocomplete = new google.maps.places.Autocomplete(
-        /** @type {!HTMLInputElement} */
-        (document.getElementById('googleAutoAddress')), {
-            types: ['geocode']
-        });
-
-    // When the user selects an address from the dropdown, populate the address
-    // fields in the form.
-    autocomplete.addListener('place_changed', fillInAddress);
-}
-
-function fillInAddress() {
-    // Get the place details from the autocomplete object.
-    //console.log("FILLING IN ADDRESS");
-    var place = autocomplete.getPlace();
-
-    for (var component in componentForm) {
-
-        document.getElementById(component).value = '';
-        document.getElementById(component).disabled = false;
-    }
-
-    // Get each component of the address from the place details
-    // and fill the corresponding field on the form.
-    for (var i = 0; i < place.address_components.length; i++) {
-        var addressType = place.address_components[i].types[0];
-        //alert(addressType);
-        if (addressType === "street_number") {
-            document.getElementById('googleAutoAddress').value = place.address_components[i]['short_name'];
-        } else if (addressType === "route") {
-            var temp = document.getElementById('googleAutoAddress').value
-            document.getElementById('googleAutoAddress').value = temp + " " + place.address_components[i]['long_name'];
-        } else if (addressType === "locality") {
-            document.getElementById('cityMailing').value = place.address_components[i]['long_name'];
-
-            $("#cityMailing").attr('placeholder', "");
-        } else if (addressType === "administrative_area_level_1") {
-            //document.getElementById('stateMailing').value = place.address_components[i]['long_name'];
-            var val = stateNameToAbbrevMAP[place.address_components[i]['long_name']];
-            var sel = document.getElementById('stateMailing');
-            var opts = sel.options;
-            for (var opt, j = 0; opt = opts[j]; j++) {
-                if (opt.value == val) {
-                    sel.selectedIndex = j;
-                    break;
-                }
-            }
-            $("#stateMailing").trigger('change');
-        } else if (addressType === "postal_code") {
-
-            document.getElementById('zipCodeMailing').value = place.address_components[i]['long_name'];
-            $("#zipCodeMailing").attr('placeholder', "");
-            $("#namedInsured").trigger('change');
-
-        }
-        //if (componentForm[addressType]) {
-        //    var val = place.address_components[i][componentForm[addressType]];
-        //    document.getElementById(addressType).value = val;
-        //}
-    }
-}
-
-// Bias the autocomplete object to the user's geographical location,
-// as supplied by the browser's 'navigator.geolocation' object.
-function geolocate() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            var geolocation = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            };
-            var circle = new google.maps.Circle({
-                center: geolocation,
-                radius: position.coords.accuracy
-            });
-            autocomplete.setBounds(circle.getBounds());
-        });
-    }
-}
 
 function getFormData($form) {
     var unindexed_array = $form.serializeArray();
@@ -2462,7 +1327,6 @@ function getFormData($form) {
     $.map(unindexed_array, function(n, i) {
         indexed_array[n['name']] = n['value'];
     });
-
     return indexed_array;
 }
 
@@ -2527,159 +1391,6 @@ function testingModeFill() {
 
 }
 
-function getProductsForRisk() {
-
-    var riskChosen = getRiskTypeChosen();
-
-    if (riskChosen.indexOf("Film Projects") > -1 && $("#proposedTermLength").val().length > 0) {
-        $.ajax({
-                method: "POST",
-                url: "/portal/Async/getProductsForCoverage",
-                data: {
-                    riskType: riskChosen,
-                    totalGrossBudget: $("#totalBudgetConfirm").val().replace(/\$|,/g, ''),
-                    proposedTermLength: $("#proposedTermLength").val()
-                }
-            })
-            .done(function(msg) {
-                //alert(msg);
-
-                clearProductChoices();
-                var coverageAndProductsArray = msg.split("&nextCoverage&");
-                //alert(coverageAndProductsArray);
-                var htmlString = "";
-                for (var i = 0; i < coverageAndProductsArray.length; i++) {
-                    //alert(coverageAndProductsArray[i]);
-                    if (coverageAndProductsArray[i].length > 0) {
-                        var coverageDetails = coverageAndProductsArray[i].split("&;&")[0];
-                        var coverageID = coverageDetails.split("&,&")[0];
-                        var coverageName = coverageDetails.split("&,&")[1];
-                        //console.log(coverageID + "-" + coverageName + "-" + coverageDetails);
-
-                        var productsArray = coverageAndProductsArray[i].split("&;&")[1];
-                        //console.log("PROD ARRAY: " + productsArray);
-
-                        if (coverageID === "EPKG" &&
-                            (riskChosen === "Film Projects Without Cast (No Work Comp)" ||
-                                riskChosen === "Film Projects With Cast (No Work Comp)" ||
-                                riskChosen === "Specific Film Projects Test")) {
-
-                            ///////////////////////////// Film Projects With Cast (No Work Comp)
-                            if (riskChosen === "Film Projects With Cast (No Work Comp)") {
-                                $('#EPKGProductsDiv').css("display", "none");
-                                $('#EPKGoptions').css("margin-top", "-20px");
-                            } else {
-                                $('#EPKGProductsDiv').css("display", "");
-                                $('#EPKGoptions').css("margin-top", "0px");
-                            }
-                            /////////////////////////////
-
-                            if (productsArray.indexOf("PIP CHOI") > -1) {
-                                $('#PIPChoiceInput').css("display", "");
-
-                                if ($('#EPKGcoverage').is(':checked')) {
-                                    $('#PIPChoiceInputRadio').prop("checked", true);
-                                    $('#pipChoiceSelections').css("display", "");
-                                    $('.PIPCHOIOption').prop("checked", true);
-                                }
-                            } else {
-                                $('#PIPChoiceInputRadio').prop("checked", false);
-
-
-                            }
-
-                            if (productsArray.indexOf("PIP 1") > -1) {
-                                $('#PIP1Input').css("display", "");
-                            } else {
-                                $('#PIP1InputRadio').prop("checked", false);
-                            }
-
-                            if (productsArray.indexOf("PIP 2") > -1) {
-                                $('#PIP2Input').css("display", "");
-                            } else {
-                                $('#PIP2InputRadio').prop("checked", false);
-                            }
-
-                            if (productsArray.indexOf("PIP 3") > -1) {
-                                $('#PIP3Input').css("display", "");
-                            } else {
-                                $('#PIP3InputRadio').prop("checked", false);
-                            }
-
-                            if (productsArray.indexOf("PIP 4") > -1) {
-                                $('#PIP4Input').css("display", "");
-                            } else {
-                                $('#PIP4InputRadio').prop("checked", false);
-                            }
-
-                            if (productsArray.indexOf("PIP 5") > -1) {
-                                //alert("PIP5 HERE")
-                                $('#PIP5Input').css("display", "");
-                                //$('.PIP5Options').css("display", "");
-                                if ($('#EPKGcoverage').is(':checked')) {
-                                    $('#PIP5InputRadio').prop("checked", true);
-                                    $(".PIP5Options").css('display', "");
-                                    $('.PIPCHOIOption').prop("checked", false);
-                                }
-                            } else {
-                                $('#PIP5InputRadio').prop("checked", false);
-                                $('#EPKGCIVIL100AdditionalCoverage').prop("checked", false);
-                                $('#EPKGCIVIL500AdditionalCoverage').prop("checked", false);
-                                $('.additionalCoverageCheckboxPIP5').prop("checked", false);
-                            }
-
-                            if ($("input[name='EPKGRadio']:checked").length > 0) {
-                                if ($('#EPKGNOHAAdditionalCoverage').is(':checked')) {
-                                    $('#EPKGNOHAAdditionalCoverage').prop("checked", true);
-                                }
-                            } else {
-                                $('#EPKGNOHAAdditionalCoverage').prop("checked", false);
-                            }
-
-                            if ($('#EPKGcoverage').is(':checked')) {
-                                $('#EPKGoptions').css("display", "");
-
-                                if (riskChosen === "Film Projects With Cast (No Work Comp)") {
-                                    $("#EPKGNOHAOption").css("display", "none");
-                                } else {
-                                    $("#EPKGNOHAOption").css("display", "");
-                                }
-                            }
-                            //
-                        } else if (coverageID === "DICE" &&
-                            (riskChosen === "Film Projects Without Cast (No Work Comp)" ||
-                                riskChosen === "Film Projects With Cast (No Work Comp)" ||
-                                riskChosen === "Specific Film Projects Test")) {
-                            $('.EPKGDiv').css("display", "none");
-                            $('.CPKDiv').css("display", "none");
-                            $('#DICEOptions').css("display", "");
-                            $("#EPKGoptions").css("display", "none");
-                        } else if (coverageID === "SPECIFICFILMPROD" &&
-                            (riskChosen === "Film Projects Without Cast (No Work Comp)" ||
-                                riskChosen === "Film Projects With Cast (No Work Comp)" ||
-                                riskChosen === "Specific Film Projects Test")) {
-                            $('#SPECIFICOptions').css("display", "");
-                        }
-
-                    }
-                }
-
-                //console.log("CALL FROM GETPRODUCTS FOR RISK")
-                ratePremiums($('#totalBudgetConfirm'));
-
-            });
-        $('#limitsDeductPremiumInsert').html("");
-        $('#premDistributionInsert').html("");
-        $("#termsInsert").html("");
-        $("#endorseInsert").html("");
-        $('#loadingModal').hide();
-        $('#coverageOptionsReview').css("display", "");
-    } else {
-        $('#loadingModal').hide();
-    }
-
-}
-
 function clearProductChoices() {
 
     $('.EPKGDiv').css("display", "");
@@ -2697,257 +1408,6 @@ function clearProductChoices() {
     $('#SPECIFICOptions').css("display", "none");
 }
 
-function capitalizeFirstLetters(thisInput) {
-    var nameString = $(thisInput).val();
-    //nameString = $(this).val().charAt(0).toUpperCase() + nameString.slice(1);
-
-    var words = nameString.split(" ");
-    var output = "";
-    var originalWord = "";
-    for (i = 0; i < words.length; i++) {
-        originalWord = words[i];
-        lowerWord = words[i].toLowerCase();
-        lowerWord = lowerWord.trim();
-        //console.log(lowerWord)
-        if (originalWord.slice(1, 2) == originalWord.slice(1, 2).toUpperCase() || originalWord.slice(2, 3) == originalWord.slice(2, 3).toUpperCase()) {
-            //console.log(lowerWord.slice(1,2) + "-" + lowerWord)
-            capitalizedWord = originalWord.trim();
-        } else {
-            capitalizedWord = lowerWord.slice(0, 1).toUpperCase() + lowerWord.slice(1);
-        }
-
-        output += capitalizedWord;
-        if (i != words.length - 1) {
-            output += " ";
-        }
-    } //for
-    output[output.length - 1] = '';
-
-    $(thisInput).val(output);
-    //console.log($(this).val());
-    $("#nameOfProductionCompany").val(output);
-    $("#nameOfProductionCompany").attr('placeholder', '');
-}
-
-function formatMoney(value) {
-    //console.log("value=" + value);
-    if (isNaN(parseFloat(value))) {
-        if (value.substring(0, 1) === "\$") {
-            value = value.replace("$", "");
-            value = ("$" + value + "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-            return value + "";
-        } else {
-            return value + "";
-        }
-    } else {
-        if (("" + value).indexOf("%") > -1) {
-            return value + "";
-        } else {
-            var floatValue = parseFloat(value);
-            floatValue = Math.ceil(floatValue)
-            return ("$" + floatValue + "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
-    }
-}
-
-function formatTaxAndFee(value) {
-    if (isNaN(parseFloat(value))) {
-        if (value.substring(0, 1) === "\$") {
-            value = value.replace("$", "");
-            value = ("$" + value + "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-            return value + "";
-        } else {
-            return value + "";
-        }
-    } else {
-        if (("" + value).indexOf("%") > -1) {
-            return value + "";
-        } else {
-            var floatValue = parseFloat(value);
-            floatValue = floatValue.toFixed(2);
-            return ("$" + floatValue + "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
-    }
-}
-
-function getTaxInfo() {
-    var date = new Date();
-    var day = date.getDate();
-    var monthIndex = date.getMonth();
-    var year = date.getFullYear();
-    var taxState = "CA"
-    if ($('#stateMailing').val() === "invalid") {
-        taxState = "CA"
-    } else {
-        taxState = $('#stateMailing').val();
-    }
-    //console.log("TAX State = " + taxState)
-    $.ajax({
-            method: "POST",
-            url: "/portal/Async/getTaxInfo",
-            data: {
-                riskType: "",
-                state: taxState,
-                date: monthIndex + 1 + "/" + day + "/" + year
-            }
-        })
-        .done(function(msg) {
-            //alert(msg);
-
-            var totalPremium = 0.0;
-            $('.premiumSpan').each(function() {
-
-                if ($.isNumeric($(this).html())) {
-                    totalPremium = totalPremium + parseFloat($(this).html());
-                } else if ($(this).html().substring(0, 1) === "\$") {
-                    var v = $(this).html();
-                    v = v.replace("$", "");
-                    v = v.replace(/,/g, "");
-                    //console.log("PREMIUM LINE ===== " + v);
-                    //v = ("$"+v+"").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                    totalPremium = totalPremium + parseFloat(v);
-                }
-            });
-
-            var taxResponseArray = msg.split("&;;&");
-            var htmlString = "";
-            taxResponseArray.forEach(function(item, index) {
-                if (item.split("&,&").length > 1) {
-                    htmlString = htmlString + "<div class='row " + item.split("&,&")[0] + "TaxRow' style= ''" + ">" +
-                        "<div class='col-xs-4'>" +
-                        "<span class='taxDescriptionSpan'>" + item.split("&,&")[1] + "(" + item.split("&,&")[2] + ")</span>" +
-                        "</div>" +
-                        "<div class='col-xs-3'>" +
-                        "<span class='taxSpan'>" + formatTaxAndFee(totalPremium * parseFloat(item.split("&,&")[2])) + "</span>" +
-                        "</div>" +
-                        "<div class='col-xs-3'>" +
-                        "<span class=''>" + "" + "</span>" +
-                        "</div>" +
-                        "</div>";
-                }
-
-            });
-
-            var policyFeeTotal = 0;
-            if ($('#EPKGcoverage').is(':checked')) {
-                policyFeeTotal = policyFeeTotal + 15;
-            }
-            if ($('#CPKCGLcoverage').is(':checked')) {
-                policyFeeTotal = policyFeeTotal + 15;
-            }
-
-            htmlString = htmlString + "<div class='row " + "PolicyFee" + "TaxRow' style= ''" + ">" +
-                "<div class='col-xs-4'>" +
-                "<span class='taxDescriptionSpan'>Policy Fee</span>" +
-                "</div>" +
-                "<div class='col-xs-3'>" +
-                "<span class='taxSpan'>$" + policyFeeTotal + ".00</span>" +
-                "</div>" +
-                "<div class='col-xs-3'>" +
-                "<span class=''>" + "" + "</span>" +
-                "</div>" +
-                "</div>";
-            //
-            //alert(htmlString);
-            //console.log("TAXING === ")
-            $("#taxRows").html(htmlString);
-            totalUpPremiumAndTax();
-
-
-
-
-
-        });
-}
-
-function validateFields() {
-    var valid = true;
-    var message = "";
-
-    //VALIDATE REQUIRED FIELDS
-    $(':input[required]:visible').each(function(index) {
-        if ($(this).val().length == 0) {
-            valid = false;
-            message = message + "Please complete all required fields\n"
-            $(this).closest(".form-group").addClass("has-error");
-        } else {
-            $(this).closest(".form-group").removeClass("has-error");
-        }
-    });
-
-    //VALIDATE DROPDOWNS
-    $('select[required]:visible').each(function(index) {
-        if ($(this).val() == 'invalid') {
-            valid = false;
-            message = message + "Please complete all required fields (Select)\n"
-            $(this).closest(".form-group").addClass("has-error");
-        } else {
-            $(this).closest(".form-group").removeClass("has-error");
-        }
-    });
-
-    //VALIDATE CHECKBOXES
-    $('.checkboxGroupRequired:visible').each(function(index) {
-        if ($(this).find('input:checked').length == 0) {
-            valid = false
-            message = message + "Please complete all required fields (Checkbox)\n"
-            $(this).closest(".form-group").addClass("has-error");
-        } else {
-            $(this).closest(".form-group").removeClass("has-error");
-        }
-    });
-
-    //VALIDATE DATES
-    $('.datepicker:visible').each(function() {
-        if ($(this).val().split('/').length != 3) {
-            valid = false;
-            message = message + "Please enter dates in MM/DD/YY format \n"
-            $(this).closest(".form-group").addClass("has-error");
-        } else {
-            $(this).closest(".form-group").removeClass("has-error");
-        }
-        if ($(this).val().split('/')[0].length != 2) {
-            valid = false;
-            message = message + "Please enter dates in MM/DD/YY format (day)\n"
-            $(this).closest(".form-group").addClass("has-error");
-        } else {
-            $(this).closest(".form-group").removeClass("has-error");
-        }
-        if ($(this).val().split('/')[1].length != 2) {
-            valid = false;
-            message = message + "Please enter dates in MM/DD/YY format (month)\n"
-            $(this).closest(".form-group").addClass("has-error");
-        } else {
-            $(this).closest(".form-group").removeClass("has-error");
-        }
-        if ($(this).val().split('/')[2].length != 4) {
-            //alert($(this).val().split('/')[2].length)
-            valid = false;
-            message = message + "Please enter dates in MM/DD/YY format (year)\n"
-            $(this).closest(".form-group").addClass("has-error");
-        } else {
-            $(this).closest(".form-group").removeClass("has-error");
-        }
-    });
-
-    //VALIDATE EMAIL
-    $('#namedInsuredEmail:visible').each(function() {
-        //console.log(ValidateEmail($(this).val()));
-        if (!ValidateEmail($(this).val())) {
-            valid = false;
-            message = message + "Not a valid email  \n"
-            $(this).closest(".form-group").addClass("has-error");
-        } else {
-            $(this).closest(".form-group").removeClass("has-error");
-        }
-    });
-
-
-    console.log("Error: " + message);
-    return [valid, message];
-}
-
-
 function getRiskTypeChosen() {
     //console.log("getting risk type")
     var riskString = "";
@@ -2955,7 +1415,8 @@ function getRiskTypeChosen() {
         if ($("li.active").children("a.riskOptionLink").hasClass('riskOptionDropDown')) {
             //console.log($("li.active").children("a.riskOptionLink").find('.riskTypeDropdown').val());
             riskString = $("li.active").children("a.riskOptionLink").find('.riskTypeDropdown').val()
-        } else {
+        }
+        else {
             riskString = $("li.active").children("a.riskOptionLink").html().trim();
         }
     }
@@ -3002,25 +1463,45 @@ function buildReview() {
     $("#reviewNumberYearsExperience").html($("#numberOfYearsOfExperience").val());
     $("#reviewPriorLosses").html($("#listOfPriorLosses").val());
 
+    //FOR PIPCHOICE ONLY
     var limitValueArray = [];
     $("#limitsDeductPremiumInsert").find('.limitColumn').each(function() {
         if ($(this).find('input').length) {
             limitValueArray.push($(this).find('input').val());
         }
     });
-    var htmlString = $("#limitsDeductPremiumInsert").html();
-    var object = $('<div/>').html(htmlString).contents();
-    object.find('.limitColumn').each(function(index) {
+
+    // var htmlString = $("#limitsDeductPremiumInsert").html();
+    // var object = $('<div/>').html(htmlString).contents();
+    // object.find('.limitColumn').each(function(index) {
+    //     if ($(this).find('input').length) {
+    //         $(this).html("<span class='limit'>" + limitValueArray[index] + "<span>");
+    //     }
+    // });
+
+    var newHtmlString = "";
+    $(".showReviewTable").each(function() {
+        newHtmlString = newHtmlString + $(this).wrap('<p/>').parent().html();
+
+
+    });
+    var newObject = $('<div/>').html(newHtmlString).contents();
+    newObject.find('.limitColumn').each(function(index) {
         if ($(this).find('input').length) {
-            $(this).html("<span>" + limitValueArray[index] + "<span>");
+            $(this).html("<span class='limit'>" + limitValueArray[index] + "<span>");
         }
     });
-    $("#reviewLimitsDeducts").html(object);
 
+    $("#reviewLimitsDeducts").html(newObject);
+    var premString = "";
+    $('.premDistributionInsert').each(function() {
+        premString = premString + $(this).html();
+    });
     var str = $("<div />").append($('#premDistributionInsert').clone()).html();
     str = str + $("<div />").append($('.TaxHeaderRow').clone()[0]).html();
     str = str + $("<div />").append($('#taxRows').clone()[0]).html();
     str = str + $("<div />").append($('.TotalPremiumRow').clone()[0]).html();
+    str = str + premString;
     $("#reviewPremDistribution").html(str);
     $("#reviewTerms").html($("#termsInsert").html());
     //$("#reviewSubject").html($("#subjectInsert").html());
@@ -3037,7 +1518,8 @@ function buildReview() {
                 var answer = "";
                 if ($(this).find(":selected").text().length > 0) {
                     answer = $(this).find(":selected").text()
-                } else {
+                }
+                else {
                     answer = blankAnswer;
                 }
                 reviewString = reviewString + "<div class='row'>" +
@@ -3054,7 +1536,8 @@ function buildReview() {
                 uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
                 uwQuestionsOrder.push($(this).attr("data-reviewName"));
 
-            } else if ($(this).is(':checkbox') && $(this).attr("data-reviewName")) {
+            }
+            else if ($(this).is(':checkbox') && $(this).attr("data-reviewName")) {
                 // the input field is not a select
                 //alert($(this).attr("data-reviewName") + " - " + checkboxesReviewed + " - " +  checkboxesReviewed.indexOf($(this).attr("data-reviewName")));
                 if (checkboxesReviewed.indexOf($(this).attr("data-reviewName")) == -1) {
@@ -3078,7 +1561,8 @@ function buildReview() {
 
                     if (checkboxesCheckedString.length > 0) {
                         answer = checkboxesCheckedString;
-                    } else {
+                    }
+                    else {
                         //answer = blankAnswer;
                         answer = "None";
                     }
@@ -3095,15 +1579,18 @@ function buildReview() {
                     //STORE IN UW QUESTIONS
                     uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
                     uwQuestionsOrder.push($(this).attr("data-reviewName"));
-                } else {
+                }
+                else {
 
                 }
 
-            } else if ($(this).is(':radio') && $(this).attr("data-reviewName")) {
+            }
+            else if ($(this).is(':radio') && $(this).attr("data-reviewName")) {
                 var answer = "";
                 if ($("input:radio[name='" + $(this).attr('name') + "']:checked").val().length > 0) {
                     answer = $("input:radio[name='" + $(this).attr('name') + "']:checked").val();
-                } else {
+                }
+                else {
                     answer = blankAnswer;
                     //answer = "None";
                 }
@@ -3121,7 +1608,8 @@ function buildReview() {
                 //STORE IN UW QUESTIONS
                 uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
                 uwQuestionsOrder.push($(this).attr("data-reviewName"));
-            } else if ($(this).attr("id") === "numberOfCastMembers") {
+            }
+            else if ($(this).attr("id") === "numberOfCastMembers") {
                 var answer = "";
                 $("#castMemberDetailContainer").find('.row').each(function() {
                     if ($(this).css("display") != "none") {
@@ -3150,11 +1638,13 @@ function buildReview() {
                 //STORE IN UW QUESTIONS
                 uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
                 uwQuestionsOrder.push($(this).attr("data-reviewName"));
-            } else {
+            }
+            else {
                 var answer = "";
                 if ($(this).val().length > 0) {
                     answer = $(this).val()
-                } else {
+                }
+                else {
                     answer = blankAnswer;
                 }
 
@@ -3187,26 +1677,34 @@ function buildReview() {
         var file = this.files[0];
         if (file === undefined) {
 
-        } else {
+        }
+        else {
             var ext = $(this).val().split('.').pop().toLowerCase();
 
             //alert('Only .zip, .doc, .docx, .xlsx, .xls, .pdf are permitted');
             var iconFilePath = "";
             if (ext == "zip") {
                 iconFilePath = "zipIcon.png"
-            } else if (ext == "doc") {
+            }
+            else if (ext == "doc") {
                 iconFilePath = "docIcon.png"
-            } else if (ext == "docx") {
+            }
+            else if (ext == "docx") {
                 iconFilePath = "docxIcon.png"
-            } else if (ext == "xls") {
+            }
+            else if (ext == "xls") {
                 iconFilePath = "xlsIcon.png"
-            } else if (ext == "xlsx") {
+            }
+            else if (ext == "xlsx") {
                 iconFilePath = "xlsxIcon.png"
-            } else if (ext == "pdf") {
+            }
+            else if (ext == "pdf") {
                 iconFilePath = "pdfIcon.png"
-            } else if (ext == "txt") {
+            }
+            else if (ext == "txt") {
                 iconFilePath = "txtIcon.png"
-            } else {
+            }
+            else {
                 iconFilePath = "fileIcon.png"
             }
 
@@ -3227,21 +1725,6 @@ function buildReview() {
 
     $('#reviewAttachedFilesInsert').html(filesInsert);
 }
-
-function saveSubmissionToAim() {
-
-}
-
-function ValidateEmail(email) {
-    console.log(email)
-    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(email);
-}
-
-function validateEntryIntoAIM() {
-
-}
-
 
 function Submission() {
     var submission = this;
@@ -3277,7 +1760,6 @@ function Submission() {
     this.website;
 
 
-    //Product
     this.productsArray = [];
     $(document).on('change', ":input[data-object='product']", function() {
         submission.productsArray = []

@@ -19,11 +19,13 @@ import org.apache.commons.net.ftp.FTPClient
 import org.apache.commons.net.ftp.FTP;
 import sun.misc.BASE64Decoder;
 import portal.Utils.FileTransferHelper;
+import portal.Utils.TestDataHelper;
 
 class AsyncController {
     def dataSource_aim
     AIMSQL aimDAO = new AIMSQL();
     Intelledox intelledoxHelper = new Intelledox();
+    TestDataHelper testDataHelper = new TestDataHelper();
 
     def timeZone = TimeZone.getTimeZone('PST')
     def dateFormat = 'yyyy-MM-dd HH:mm:ss.SSS'
@@ -2452,7 +2454,7 @@ class AsyncController {
                         else{
                             if(termLength <= 60){
                                 tempLimitsMap["Blanket Additional Insured Endorsement"] = "";
-                                tempDeductsMap["Blanket Additional Insured Endorsement"] = "Nil";
+                                tempDeductsMap["Blanket Additional Insured Endorsement"] = "";
                             }
                             if (termLength <= 30) {
                                 rate = 0.319
@@ -2887,9 +2889,65 @@ class AsyncController {
     }
     */
 
+    def saveSubmissionToAIMv2() {
+      log.info "SAVING SUBMISSION TO AIMSQLV2"
+      log.info params
+      def dataMap = new JsonSlurper().parseText(params.dataMap)
+      def quoteID ="";
+
+      try {
+          def quoteIDCoverages = aimDAO.saveNewSubmissionv2(dataMap, dataSource_aim, session.user)
+          log.info "QuoteID: " + quoteIDCoverages
+          quoteID = quoteIDCoverages;
+          //0620584;EPKG,0620585;CPK
+        //   def submitGroupID = ""
+        //   quoteIDCoverages.split(",").each{
+        //       submitGroupID = submitGroupID + it.split(";")[0] + ","
+        //   }
+        //   if (submitGroupID.endsWith(",")) {
+        //       submitGroupID = submitGroupID.substring(0, submitGroupID.length() - 1);
+        //   }
+
+          //
+        //   def now = new Date()
+        //   def timestamp = now.format(dateFormat, timeZone)
+          //
+        //   log.info jsonParams.getAt("namedInsured")
+          //
+        //   Submissions s;
+          //
+        //   quoteIDCoverages.split(",").each{
+        //       quoteID = quoteID + it.split(";")[0] + ","
+          //
+        //       s = new portal.Submissions(submittedBy: session.user.email, aimQuoteID: it.split(";")[0], namedInsured: jsonParams.getAt("namedInsured"), submitDate: timestamp,
+        //               coverages: it.split(";")[1], statusCode: "QO", underwriter: accountExec+"@neeis.com", questionAnswerMap: params.questionAnswerMap,
+        //               uwQuestionMap:uwQuestionsMap, uwQuestionsOrder:uwQuestionsOrder, submitGroupID: submitGroupID)
+        //       s.save(flush: true, failOnError: true)
+        //   }
+          //
+        //   log.info "REDIRECTING"
+        //   if (quoteID.endsWith(",")) {
+        //       quoteID = quoteID.substring(0, quoteID.length() - 1);
+        //   }
+      }
+      catch (Exception e) {
+          StringWriter sw = new StringWriter();
+          e.printStackTrace(new PrintWriter(sw));
+          String exceptionAsString = sw.toString();
+          log.info("Error Details - " + exceptionAsString)
+          quoteID = "Error Details - " + e
+      }
+
+      render quoteID
+    }
+
+
     def saveSubmissionToAIM() {
         log.info "SAVING SUBMISSION TO AIMSQL"
         log.info params
+
+        //GATHERING TEST DATA
+        def testDataRecord = testDataHelper.saveParams("savingSubmissionToAIM", JsonOutput.prettyPrint(params.jsonSerial))
 
         log.info "UNDERWRITER QUESTIONS ORDER"
         log.info params.uwQuestionsOrder
@@ -2900,8 +2958,6 @@ class AsyncController {
         def uwQuestionsMap = new JsonSlurper().parseText(params.uwQuestionsMap)
 
         log.info uwQuestionsMap
-//        log.info JsonOutput.prettyPrint(uwQuestionsMap)
-//        log.info params.uwQuestionsMap["Name Of Production Company"]
         log.info JsonOutput.prettyPrint(params.jsonSerial)
         def jsonParams = new JsonSlurper().parseText(params.jsonSerial)
         def quoteID ="";
@@ -2960,7 +3016,10 @@ class AsyncController {
         }
 
 
-
+        //GATHERING TEST DATA
+        testDataRecord.endStatus = "Success"
+        testDataRecord.quoteID = "quoteID"
+        testDataRecord.save(flush: true, failOnError: true)
 
         render quoteID
 //        redirect(controller: 'main', action: 'newSubmissionConfirm', params: [quoteID: quoteID])

@@ -218,89 +218,6 @@
 
         <div class="col-xs-6">
 
-            %{--HIRED AND NON-OWNED AUTO LIABILITY REQUESTED Y/N--}%
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <br>
-                    <label>Hired and Non-Owned Auto Liability Limits Requested?</label><br>
-                    <input type="radio" name="autoLiability" class="showReview" value="Yes"
-                           data-reviewname="Hired and Non-Owned Auto Liability Limits Requested?"
-                           id="autoLiabilityYes_RadioButton"> Yes
-                    <input type="radio" name="autoLiability" class="" value="No"
-                           data-reviewname="Hired and Non-Owned Auto Liability Limits Requested?"
-                           id="autoLiabilityNo_RadioButton" checked="checked"> No
-                </div>
-            </div>
-
-            %{--HIRED AND NON-OWNED AUTO LIABILITY CONTAINER / TABLE / ADDITIONAL QUESTIONS--}%
-            <div class="costRentedVehiclesContainer" style="display:none">
-
-                %{--WHAT IS COST OF HIRE OF RENTED VEHICLES--}%
-                <div class="col-xs-12">
-                    <div class="form-group">
-                        <label for="costOfRentedVehicles">What is Cost of Hire of Rented Vehicles?</label>
-                        <input type="text" id="costVehicles" class="costVehicles showReview form-control"
-                               name="costVehicles"
-                               data-reviewname="What is Cost of Hire of Rented Vehicles" placeholder="$USD">
-                    </div>
-                </div>
-
-                %{--DO YOU REQUIRE OWNED SCHEDULED AUTO COVERAGE Y/N--}%
-                <div class="col-xs-12">
-                    <div class="form-group">
-                        <label>Do you require Owned Scheduled Auto Coverage?</label><br>
-                        <input type="radio" name="requireOwnedAutoCoverage" class="showReview" value="Yes"
-                               data-reviewname="Do you require Owned Scheduled Auto Coverage??"
-                               id="requireOwnedAutoCoverageYes_RadioButton"> Yes
-                        <input type="radio" name="requireOwnedAutoCoverage" class="" value="No"
-                               data-reviewname="Do you require Owned Scheduled Auto Coverage??"
-                               id="requireOwnedAutoCoverageNo_RadioButton" checked="checked"> No
-                    </div>
-                </div>
-
-                %{--TABLE HIRED AND NON-OWNED AUTO LIABILITY --}%
-                <div class="col-xs-12 coverageCodeRow showReviewTable">
-                    <div class="col-xs-9 ">
-                        <strong class="coverageCodeString"
-                                style="font-size:13px">Hired / Non-Owned Auto</strong>
-                    </div>
-
-                    <div class="col-xs-3 ">
-                        <strong>Limits</strong>
-                    </div>
-
-                    <div class="col-xs-12 Auto_LOBRow" style="background-color: rgba(38, 80, 159, 0.13)">
-                        <div class="col-xs-9 coverageColumn">
-                            <span>NOAL: Hired Auto Liability - CSL</span>
-                        </div>
-
-                        <div class="col-xs-3 limitColumn">
-                            <span>$1,000,000</span>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12 WC_LOBRow">
-                        <div class="col-xs-9 coverageColumn">
-                            <span>NOAPD: Hired Auto Physical Damage</span>
-                        </div>
-
-                        <div class="col-xs-3 limitColumn">
-                            <span>ACV Unlimited</span>
-                        </div>
-                    </div>
-                    <br>
-
-                    <div class="col-xs-12"
-                         style="border-top: 1px solid rgba(0, 0, 0, 0.19); border-bottom: 1px solid rgba(0, 0, 0, 0.19)">
-                        <div class="col-xs-10 "><strong style="font-size:13px"></strong>
-                        </div>
-                    </div>
-
-                </div>
-                %{--TABLE HIRED AND NON-OWNED AUTO LIABILITY --}%
-            </div>
-            <br>
-
             %{--WORK COMP COVERAGE REQUESTED Y/N--}%
             <div class="col-xs-12">
                 <div class="form-group">
@@ -378,7 +295,7 @@
                 </div>
 
                 %{--PRIOR LOSSES--}%
-                <div class="form-group col-xs-12 row">
+                <div class="form-group col-xs-12">
                     <div class="row">
                         <div class="col-xs-12">
                             <label for="listOfPriorLosses">List and Describe all Prior Losses (Or Enter "None")</label>
@@ -423,54 +340,197 @@
                 <br>
 
                 %{--TABLE WORK COMP--}%
+                <div class="row tableWC" id="workCompProduct">
+                    <div class="col-xs-6 ">
+                        <strong class="coverageCodeString" style="font-size:13px">Work Comp</strong>
+                        <span class="productID_pull" data-cov="WC" style="display:none">SPEVENTS</span>
+                    </div>
+
+                    <div class="col-xs-2 ">
+                        <span>-</span>
+                    </div>
+
+                    <div class="col-xs-2 ">
+                        <span>-</span>
+                    </div>
+
+                    <div class="col-xs-2 ">
+                        <span>-</span>
+                    </div>
+
+                    <div class="row lobRow SPEVENTS WC" style="background-color: rgba(38, 80, 159, 0.13)">
+                        <div class="col-xs-6 coverageColumn" style="padding-right:20px">
+                            <span class="lob">Bodily Injury by Accident (each)</span>
+                        </div>
+
+                        <div class="col-xs-2 limitColumn">
+                            <span class="limit">$1,000,000</span>
+                        </div>
+
+                        <div class="col-xs-2 premiumColumn">
+                            <span class="premium"></span>
+                        </div>
+
+                        <div class="col-xs-2 deductibleColumn">
+                            <span class="deductible"></span>
+                        </div>
+                    </div>
+
+                    <div class="row lobRow SPEVENTS WC">
+                        <div class="col-xs-6 coverageColumn" style="">
+                            <span class="lob">Bodily Injury by Disease (policy limit)</span>
+                        </div>
+
+                        <div class="col-xs-2 limitColumn">
+                            <span class="limit">$1,000,000</span>
+                        </div>
+
+                        <div class="col-xs-2 premiumColumn">
+                            <span class="premium"></span>
+                        </div>
+
+                        <div class="col-xs-2 deductibleColumn">
+                            <span class="deductible"></span>
+                        </div>
+                    </div>
+
+                    <div class="row lobRow SPEVENTS WC" style="background-color: rgba(38, 80, 159, 0.13)">
+                        <div class="col-xs-6 coverageColumn">
+                            <span class="lob">Bodily Injury by Disease (each employee)</span>
+                        </div>
+
+                        <div class="col-xs-2 limitColumn">
+                            <span class="limit">$1,000,000</span>
+                        </div>
+
+                        <div class="col-xs-2 premiumColumn">
+                            <span class="premium"></span>
+                        </div>
+
+                        <div class="col-xs-2 deductibleColumn">
+                            <span class="deductible"></span>
+                        </div>
+                    </div>
+
+                    <div class="row" style="border-top: 1px solid rgba(0, 0, 0, 0.19);">
+                        <div class="col-xs-10 "><strong style="font-size:13px"></strong>
+                        </div>
+                    </div>
+                </div>
+                %{--TABLE WORK COMP--}%
+                <br>
+
+            </div>
+            <br>
+
+            %{--HIRED AND NON-OWNED AUTO LIABILITY REQUESTED Y/N--}%
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <br>
+                    <label>Hired and Non-Owned Auto Liability Limits Requested?</label><br>
+                    <input type="radio" name="autoLiability" class="showReview" value="Yes"
+                           data-reviewname="Hired and Non-Owned Auto Liability Limits Requested?"
+                           id="autoLiabilityYes_RadioButton"> Yes
+                    <input type="radio" name="autoLiability" class="" value="No"
+                           data-reviewname="Hired and Non-Owned Auto Liability Limits Requested?"
+                           id="autoLiabilityNo_RadioButton" checked="checked"> No
+                </div>
+            </div>
+
+            %{--HIRED AND NON-OWNED AUTO LIABILITY CONTAINER / TABLE / ADDITIONAL QUESTIONS--}%
+            <div class="costRentedVehiclesContainer" style="display:none">
+
+                %{--WHAT IS COST OF HIRE OF RENTED VEHICLES--}%
                 <div class="col-xs-12">
-                    <div class="col-xs-9 ">
-                        <strong class="coverageCodeString">Work Comp</strong>
+                    <div class="form-group">
+                        <label for="costOfRentedVehicles">What is Cost of Hire of Rented Vehicles?</label>
+                        <input type="text" id="costVehicles" class="costVehicles showReview form-control"
+                               name="costVehicles"
+                               data-reviewname="What is Cost of Hire of Rented Vehicles" placeholder="$USD">
+                    </div>
+                </div>
+
+                %{--DO YOU REQUIRE OWNED SCHEDULED AUTO COVERAGE Y/N--}%
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label>Do you require Owned Scheduled Auto Coverage?</label><br>
+                        <input type="radio" name="requireOwnedAutoCoverage" class="showReview" value="Yes"
+                               data-reviewname="Do you require Owned Scheduled Auto Coverage??"
+                               id="requireOwnedAutoCoverageYes_RadioButton"> Yes
+                        <input type="radio" name="requireOwnedAutoCoverage" class="" value="No"
+                               data-reviewname="Do you require Owned Scheduled Auto Coverage??"
+                               id="requireOwnedAutoCoverageNo_RadioButton" checked="checked"> No
+                    </div>
+                </div>
+
+                %{--TABLE HIRED AND NON-OWNED AUTO LIABILITY --}%
+                <div class="row tableNOAL" id="hiredNonOwnedAutoProduct">
+                    <div class="col-xs-6 ">
+                        <strong class="coverageCodeString" style="font-size:13px">Hired / Non-Owned Auto</strong>
+                        <span class="productID_pull" data-cov="NOAL" style="display:none">SPEVENTS</span>
                     </div>
 
-                    <div class="col-xs-3 ">
-                        <strong>Limits</strong>
+                    <div class="col-xs-2">
+                        <span>-</span>
                     </div>
 
-                    <div class="col-xs-12 WC_LOBRow" style="background-color: rgba(38, 80, 159, 0.13)">
-                        <div class="col-xs-9 coverageColumn" style="padding-right:20px">
-                            <span>WC: Bodily Injury by Accident (each)</span>
+                    <div class="col-xs-2">
+                        <span>-</span>
+                    </div>
+
+                    <div class="col-xs-2">
+                        <span>-</span>
+                    </div>
+
+                    <div class="row lobRow SPEVENTS NOAL"
+                         style="background-color: rgba(38, 80, 159, 0.13)">
+                        <div class="col-xs-6 coverageColumn">
+                            <span class="lob">Hired Auto Liability - CSL</span>
                         </div>
 
-                        <div class="col-xs-3 limitColumn">
-                            <span>$1,000,000</span>
+                        <div class="col-xs-2 limitColumn">
+                            <span class="limit">$1,000,000</span>
+                        </div>
+
+                        <div class="col-xs-2 premiumColumn">
+                            <span class="premium"></span>
+                        </div>
+
+                        <div class="col-xs-2 deductibleColumn">
+                            <span class="deductible"></span>
                         </div>
                     </div>
 
-                    <div class="col-xs-12 WC_LOBRow">
-                        <div class="col-xs-9 coverageColumn" style="">
-                            <span>WC: Bodily Injury by Disease (policy limit)</span>
+                    <div class="row lobRow SPEVENTS NOAL">
+                        <div class="col-xs-6 coverageColumn">
+                            <span class="lob">Hired Auto Physical Damage</span>
                         </div>
 
-                        <div class="col-xs-3 limitColumn"><span>$1,000,000</span>
+                        <div class="col-xs-2 limitColumn">
+                            <span class="limit">ACV Unlimited</span>
+                        </div>
+
+                        <div class="col-xs-2 premiumColumn">
+                            <span class="premium"></span>
+                        </div>
+
+                        <div class="col-xs-2 deductibleColumn">
+                            <span class="deductible"></span>
                         </div>
                     </div>
-
-                    <div class="col-xs-12 WC_LOBRow" style="background-color: rgba(38, 80, 159, 0.13)">
-                        <div class="col-xs-9 coverageColumn">
-                            <span>WC: Bodily Injury by Disease (each employee)</span>
-                        </div>
-
-                        <div class="col-xs-3 limitColumn">
-                            <span>$1,000,000</span>
-                        </div>
-                    </div>
+                    <br>
 
                     <div class="col-xs-12"
                          style="border-top: 1px solid rgba(0, 0, 0, 0.19); border-bottom: 1px solid rgba(0, 0, 0, 0.19)">
                         <div class="col-xs-10 "><strong style="font-size:13px"></strong>
                         </div>
                     </div>
-                    <br>
+
                 </div>
+                %{--TABLE HIRED AND NON-OWNED AUTO LIABILITY --}%
             </div>
             <br>
-
+            
             %{--COVERAGE FOR IN SERVANT REQUIRE Y/N--}%
             <div class="col-xs-12">
                 <div class="form-group">
@@ -571,12 +631,20 @@
                 </div>
 
                 <div class="col-xs-6">
-                    <div class="col-xs-10">
-                        <label class="control-label"><u>Coverage:</u></label>
+                    <div class="col-xs-6">
+                        <label class="control-label"><u>Coverages:</u></label>
                     </div>
 
                     <div class="col-xs-2">
                         <label class="control-label"><u>Limits:</u></label>
+                    </div>
+
+                    <div class="col-xs-2">
+                        <label class="control-label"><u>Premiums:</u></label>
+                    </div>
+
+                    <div class="col-xs-2">
+                        <label class="control-label"><u>Deductibles:</u></label>
                     </div>
                 </div>
             </div>
@@ -795,68 +863,133 @@
 
                     %{--TABLE CGL--}%
                     <div id="commercialGeneralLiabilityRequestedContainer" style="display:none">
-                        <div class="row coverageCodeRow showReviewTable">
-                            <div class="col-xs-10 ">
+                        <div class="row tableCGL" id="commercialGeneralLiabilityProduct">
+                            <div class="col-xs-6 ">
                                 <strong class="coverageCodeString"
                                         style="font-size:13px">Commercial General Liability</strong>
+                                <span class="productID_pull" data-cov="CGL" style="display:none">SPEVENTS</span>
                             </div>
 
-                            <div class="col-xs-2 ">
-                                <span'>-</span'>
+                            <div class="col-xs-2">
+                                <span>-</span>
                             </div>
 
-                            <div class="row CGL_LOBRow" style="background-color: rgba(38, 80, 159, 0.13)">
-                                <div class="col-xs-10 coverageColumn" style="padding-left:20px">
-                                    <span>CGL: General Aggregate Limit</span>
-                                </div>
-
-                                <div class="col-xs-2 limitColumn"><span>$1,000,000</span>
-                                </div>
+                            <div class="col-xs-2">
+                                <span>-</span>
                             </div>
 
-                            <div class="row CGL_LOBRow">
-                                <div class="col-xs-10 coverageColumn"
-                                     style="padding-left:20px"><span>CGL: Products & Completed Operations Agg Limit</span>
-                                </div>
-
-                                <div class="col-xs-2 limitColumn"><span>$1,000,000</span>
-                                </div>
+                            <div class="col-xs-2">
+                                <span>-</span>
                             </div>
 
-                            <div class="row CGL_LOBRow" style="background-color: rgba(38, 80, 159, 0.13)">
-                                <div
-                                        class="col-xs-10 coverageColumn"
-                                        style="padding-left:20px"><span>CGL: Personal & Advertising Injury (Any One Person or Organization)</span>
+                            <div class="row lobRow SPEVENTS CGL"
+                                 style="background-color: rgba(38, 80, 159, 0.13)">
+                                <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                    <span class="lob">General Aggregate Limit</span>
                                 </div>
 
-                                <div class="col-xs-2 limitColumn"><span>$1,000,000</span>
-                                </div>
-                            </div>
-
-                            <div class="row CGL_LOBRow">
-                                <div class="col-xs-10 coverageColumn"
-                                     style="padding-left:20px"><span>CGL: Each Occurrence Limit</span>
+                                <div class="col-xs-2 limitColumn">
+                                    <span class="limit">$2,000,000</span>
                                 </div>
 
-                                <div class="col-xs-2 limitColumn"><span>$1,000,000</span>
+                                <div class="col-xs-2 premiumColumn">
+                                    <span class="premium"></span>
+                                </div>
+
+                                <div class="col-xs-2 deductibleColumn">
+                                    <span class="deductible"></span>
                                 </div>
                             </div>
 
-                            <div class="row CGL_LOBRow" style="background-color: rgba(38, 80, 159, 0.13)">
-                                <div class="col-xs-10 coverageColumn"
-                                     style="padding-left:20px"><span>CGL: Damage to Premises Rented to You Limit</span>
+                            <div class="row lobRow SPEVENTS CGL">
+                                <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                    <span class="lob">Products & Completed Operations Agg Limit</span>
                                 </div>
 
-                                <div class="col-xs-2 limitColumn"><span>$100,000</span>
+                                <div class="col-xs-2 limitColumn">
+                                    <span class="limit">$1,000,000</span>
+                                </div>
+
+                                <div class="col-xs-2 premiumColumn">
+                                    <span class="premium"></span>
+                                </div>
+
+                                <div class="col-xs-2 deductibleColumn">
+                                    <span class="deductible"></span>
                                 </div>
                             </div>
 
-                            <div class="row CGL_LOBRow">
-                                <div class="col-xs-10 coverageColumn"
-                                     style="padding-left:20px"><span>CGL: Medical Payments</span>
+                            <div class="row lobRow SPEVENTS CGL"
+                                 style="background-color: rgba(38, 80, 159, 0.13)">
+                                <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                    <span class="lob">Personal & Advertising Injury (Any one person or organization)</span>
                                 </div>
 
-                                <div class="col-xs-2 limitColumn"><span>$5,000</span>
+                                <div class="col-xs-2 limitColumn">
+                                    <span class="limit">$1,000,000</span>
+                                </div>
+
+                                <div class="col-xs-2 premiumColumn">
+                                    <span class="premium"></span>
+                                </div>
+
+                                <div class="col-xs-2 deductibleColumn">
+                                    <span class="deductible"></span>
+                                </div>
+                            </div>
+
+                            <div class="row lobRow SPEVENTS CGL">
+                                <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                    <span class="lob">Each Occurrence Limit</span>
+                                </div>
+
+                                <div class="col-xs-2 limitColumn">
+                                    <span class="limit">$1,000,000</span>
+                                </div>
+
+                                <div class="col-xs-2 premiumColumn">
+                                    <span class="premium"></span>
+                                </div>
+
+                                <div class="col-xs-2 deductibleColumn">
+                                    <span class="deductible"></span>
+                                </div>
+                            </div>
+
+                            <div class="row lobRow SPEVENTS CGL"
+                                 style="background-color: rgba(38, 80, 159, 0.13)">
+                                <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                    <span class="lob">Damage to Premises Rented to You Limit</span>
+                                </div>
+
+                                <div class="col-xs-2 limitColumn">
+                                    <span class="limit">$100,000</span>
+                                </div>
+
+                                <div class="col-xs-2 premiumColumn">
+                                    <span class="premium"></span>
+                                </div>
+
+                                <div class="col-xs-2 deductibleColumn">
+                                    <span class="deductible"></span>
+                                </div>
+                            </div>
+
+                            <div class="row lobRow SPEVENTS CGL">
+                                <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                    <span class="lob">Medical Payments</span>
+                                </div>
+
+                                <div class="col-xs-2 limitColumn">
+                                    <span class="limit">Excluded</span>
+                                </div>
+
+                                <div class="col-xs-2 premiumColumn">
+                                    <span class="premium"></span>
+                                </div>
+
+                                <div class="col-xs-2 deductibleColumn">
+                                    <span class="deductible"></span>
                                 </div>
                             </div>
 
@@ -871,60 +1004,111 @@
 
                     %{--TABLE UMBRELLA--}%
                     <div id="umbrellaLimitRequestedContainer" style="display:none">
-                        <div class="row coverageCodeRow showReviewTable">
-                            <div class="col-xs-10">
+                        <div class="row tablCUMB" id="umbrellaProduct">
+                            <div class="col-xs-6">
                                 <strong class="coverageCodeString" style="font-size:13px">Umbrella</strong>
+                                <span class="productID_pull" data-cov="CUMB" style="display:none">SPEVENTS</span>
                             </div>
 
                             <div class="col-xs-2 ">
                                 <span'>-</span'>
                             </div>
 
-                            <div class="row Umbrella_LOBRow" style="background-color: rgba(38, 80, 159, 0.13)">
-                                <div class="col-xs-10 coverageColumn" style="padding-left:20px">
-                                    <span>CUMB: Each Occurrence Limit (Liability Coverage)</span>
+                            <div class="col-xs-2 ">
+                                <span'>-</span'>
+                            </div>
+
+                            <div class="col-xs-2 ">
+                                <span'>-</span'>
+                            </div>
+
+                            <div class="row lobRow SPEVENTS CUMB" style="background-color: rgba(38, 80, 159, 0.13)">
+                                <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                    <span class="lob">Each Occurrence Limit (Liability Coverage)</span>
                                 </div>
 
                                 <div class="col-xs-2 limitColumn">
-                                    <span>$1,000,000</span>
+                                    <span class="limit">$1,000,000</span>
+                                </div>
+
+                                <div class="col-xs-2 premiumColumn">
+                                    <span class="premium"></span>
+                                </div>
+
+                                <div class="col-xs-2 deductibleColumn">
+                                    <span class="deductible"></span>
                                 </div>
                             </div>
 
-                            <div class="row Umbrella_LOBRow">
-                                <div class="col-xs-10 coverageColumn"
-                                     style="padding-left:20px"><span>CUMB: Personal & Advertising Injury Limit (Any one person or organization)</span>
+                            <div class="row lobRow SPEVENTS CUMB">
+                                <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                    <span class="lob">Personal & Advertising Injury Limit (Any one person or organization)</span>
                                 </div>
 
                                 <div class="col-xs-2 limitColumn">
-                                    <span>$1,000,000</span>
+                                    <span class="limit">$1,000,000</span>
+                                </div>
+
+                                <div class="col-xs-2 premiumColumn">
+                                    <span class="premium"></span>
+                                </div>
+
+                                <div class="col-xs-2 deductibleColumn">
+                                    <span class="deductible"></span>
                                 </div>
                             </div>
 
-                            <div class="row Umbrella_LOBRow" style="background-color: rgba(38, 80, 159, 0.13)">
-                                <div class="col-xs-10 coverageColumn" style="padding-left:20px">
-                                    <span>CUMB: Aggregate Limit (Liability Coverage) (except with respect to covered autos)</span>
-                                </div>
-
-                                <div class="col-xs-2 limitColumn"><span>$1,000,000</span></div>
-                            </div>
-
-                            <div class="row Umbrella_LOBRow">
-                                <div class="col-xs-10 coverageColumn" style="padding-left:20px">
-                                    <span>CUMB: Covered Auto Aggregate Limit</span>
+                            <div class="row lobRow SPEVENTS CUMB" style="background-color: rgba(38, 80, 159, 0.13)">
+                                <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                    <span class="lob">Aggregate Limit (Liability Coverage) (except with respect to covered autos)</span>
                                 </div>
 
                                 <div class="col-xs-2 limitColumn">
-                                    <span>$1,000,000</span>
+                                    <span class="limit">$1,000,000</span>
+                                </div>
+
+                                <div class="col-xs-2 premiumColumn">
+                                    <span class="premium"></span>
+                                </div>
+
+                                <div class="col-xs-2 deductibleColumn">
+                                    <span class="deductible"></span>
                                 </div>
                             </div>
 
-                            <div class="row Umbrella_LOBRow" style="background-color: rgba(38, 80, 159, 0.13)">
-                                <div class="col-xs-10 coverageColumn" style="padding-left:20px">
-                                    <span>CUMB: Self-Insured Retention</span>
+                            <div class="row lobRow SPEVENTS CUMB">
+                                <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                    <span class="lob">Covered Auto Aggregate Limit</span>
                                 </div>
 
                                 <div class="col-xs-2 limitColumn">
-                                    <span>nil</span>
+                                    <span class="limit">$1,000,000</span>
+                                </div>
+
+                                <div class="col-xs-2 premiumColumn">
+                                    <span class="premium"></span>
+                                </div>
+
+                                <div class="col-xs-2 deductibleColumn">
+                                    <span class="deductible"></span>
+                                </div>
+                            </div>
+
+                            <div class="row lobRow SPEVENTS CUMB" style="background-color: rgba(38, 80, 159, 0.13)">
+                                <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                    <span class="lob">Self-Insured Retention</span>
+                                </div>
+
+                                <div class="col-xs-2 limitColumn">
+                                    <span class="limit">nil</span>
+                                </div>
+
+                                <div class="col-xs-2 premiumColumn">
+                                    <span class="premium"></span>
+                                </div>
+
+                                <div class="col-xs-2 deductibleColumn">
+                                    <span class="deductible"></span>
                                 </div>
                             </div>
 
@@ -935,7 +1119,8 @@
                         </div>
                     </div>
                     %{--TABLE UMBRELLA--}%
-
+                    <br>
+                    <br>
                     %{--Premiums--}%
                     <div class="row" id="premiumDistDivContainer">
                         <div class="col-xs-12">
@@ -943,15 +1128,15 @@
 
                             %{--HEADER--}%
                             <div class="row">
-                                <div class="col-xs-8">
+                                <div class="col-xs-4">
                                     <u>Line Of Business</u>
                                 </div>
 
-                                <div class="col-xs-2">
+                                <div class="col-xs-3">
                                     <u>Premium</u>
                                 </div>
 
-                                <div class="col-xs-2">
+                                <div class="col-xs-3">
                                     <u>Agent %</u>
                                 </div>
                             </div>
@@ -960,40 +1145,37 @@
                             <div class="premDistributionInsert">
                                 <div id="commercialGeneralLiabilityPremiumContainer">
                                     <div class="row" style="background-color: rgba(38, 80, 159, 0.13)">
-                                        <div class="col-xs-8">
-                                            <span class="eventLineOfBusinessSpan"
+                                        <div class="col-xs-4">
+                                            <span class="lineOfBusinessSpan"
                                                   id="commercialGeneralLiabilityPremiumName">Commercial General Liability</span>
                                         </div>
 
-                                        <div class="col-xs-2">
-                                            <span class="eventPremiumSpan"
-                                                  id="commercialGeneralLiabilityPremiumCost"></span>
+                                        <div class="col-xs-3">
+                                            <span class="premiumSpan effectsTotal" id="commercialGeneralLiabilityPremiumCost"></span>
                                         </div>
 
-                                        <div class="col-xs-2">
-                                            <span class="eventAgentPercentSpan">-</span>
+                                        <div class="col-xs-3">
+                                            <span class="agentPercentSpan">-</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-
                             %{--POLICY FEE LIMITS--}%
                             <div class="premDistributionInsert">
                                 <div class="policyFeeContainer">
                                     <div class="row" style="background-color: rgba(38, 80, 159, 0.13)">
-                                        <div class="col-xs-8">
-                                            <span class="eventLineOfBusinessSpan"
-                                                  id="policyFeePremiumName">Policy Fee</span>
+                                        <div class="col-xs-4">
+                                            <span class="lineOfBusinessSpan" id="policyFeePremiumName">Policy Fee</span>
                                         </div>
 
-                                        <div class="col-xs-2">
-                                            <span class="eventPremiumSpan effectsTotalPremium"
+                                        <div class="col-xs-3">
+                                            <span class="premiumSpan effectsTotal"
                                                   id="policyFeePremiumCost"></span>
                                         </div>
 
-                                        <div class="col-xs-2">
-                                            <span class="eventAgentPercentSpan">-</span>
+                                        <div class="col-xs-3">
+                                            <span class="agentPercentSpan">-</span>
                                         </div>
                                     </div>
                                 </div>
@@ -1003,19 +1185,19 @@
                             <div class="premDistributionInsert">
                                 <div class="totalSaleContainer">
                                     <div class="row">
-                                        <div class="col-xs-8">
+                                        <div class="col-xs-4">
                                             <strong>
-                                                <span class="eventLineOfBusinessSpan"
-                                                      id="totalSalePremiumName">Total:</span>
+                                                <span class="lineOfBusinessSpan" id="totalSalePremiumName">Total:</span>
                                             </strong>
                                         </div>
 
-                                        <div class="col-xs-2">
-                                            <span class="" id="totalSalePremiumCost"></span>
+                                        <div class="col-xs-3">
+                                            <span class="premiumSpan productTotalPremium SPEVENTS"
+                                                  id="totalSalePremiumCost"></span>
                                         </div>
 
-                                        <div class="col-xs-2">
-                                            <span class="totalSalePercentSpan"></span>
+                                        <div class="col-xs-3">
+                                            <span class=" agentPercentSpan totalSalePercentSpan"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1025,17 +1207,17 @@
                             <div class="premDistributionInsert">
                                 <div id="brokerFeePremiumContainer" style="display:none">
                                     <div class="row">
-                                        <div class="col-xs-8">
-                                            <span class="eventLineOfBusinessSpan"
-                                                  id="brokerFeePremiumName">Broker Fee</span>
+                                        <div class="col-xs-4">
+                                            <span class="lineOfBusinessSpan" id="brokerFeePremiumName">Broker Fee</span>
                                         </div>
 
-                                        <div class="col-xs-2">
-                                            <span class="brokerFeePremiumCost" id="brokerFeePremiumCost"></span>
+                                        <div class="col-xs-3">
+                                            <span class="premiumSpan brokerFeePremiumCost"
+                                                  id="brokerFeePremiumCost"></span>
                                         </div>
 
-                                        <div class="col-xs-2">
-                                            <span class="eventAgentPercentSpan">-</span>
+                                        <div class="col-xs-3">
+                                            <span class="agentPercentSpan">-</span>
                                         </div>
                                     </div>
                                 </div>

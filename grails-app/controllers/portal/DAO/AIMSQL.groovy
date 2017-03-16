@@ -887,6 +887,191 @@ class AIMSQL {
       return allQuoteIDs
 }
 */
+    def saveNewSubmissionv2(dataMap, dataSource_aim, user){
+        log.info "AIMDAO SAVE"
+        Sql aimsql = new Sql(dataSource_aim)
+        def insuredID = 0;
+        def productID = it;
+
+        def now = new Date()
+        def timestamp = now.format(dateFormat, timeZone)
+
+
+        aimsql.withTransaction {
+
+            //GET INSURED ID FROM KEYFIELD TABLE
+            aimsql.call("{call dbo.GetKeyField(${Sql.INTEGER}, 'ReferenceID')}") { num ->
+                log.info "InsuredID $num"
+                insuredID = num
+            }
+
+
+            //SAVE NEW INSURED IN AIM
+            def insuredMap = [InsuredID:"'${insuredID}'",
+                       NamedInsured: "'${dataMap.getAt("namedInsured")replaceAll("'","''")}'",
+                       NameType: "'B'",
+                       DBAName: "'${dataMap.getAt("namedInsured").replaceAll("'","''")}'",
+                       Prefix: 'NULL',
+                       First_Name: 'NULL',
+                       Last_Name: 'NULL',
+                       Middle_Name: 'NULL',
+                       Suffix: 'NULL',
+                       CombinedName: 'NULL',
+                       Address1: "'${dataMap.getAt("streetNameMailing")}'",
+                       Address2: 'NULL',
+                       City: "'${dataMap.getAt("cityMailing")}'",
+                       State: "'${dataMap.getAt("stateMailing")}'",
+                       Zip: "'${dataMap.getAt("zipCodeMailing")}'",
+                       AddressID: 'NULL',
+                       ProducerID: "'${user.company}'",
+                       AcctExec: "'${accountExecName}'",
+                       AcctAsst: 'NULL',
+                       CSR: 'NULL',
+                       Entity: 'NULL',
+                       FormMakerName: 'NULL',
+                       DirectBillFlag: "'N'",
+                       MailAddress1: "'${dataMap.getAt("streetNameMailing")}'",
+                       MailAddress2: 'NULL',
+                       MailCity: "'${dataMap.getAt("cityMailing")}'",
+                       MailState: "'${dataMap.getAt("stateMailing")}'",
+                       MailZip: "'${dataMap.getAt("zipCodeMailing")}'",
+                       ContactName: "'${dataMap.getAt("namedInsured").replaceAll("'","''")}'",
+                       Phone: "'${dataMap.getAt("phoneNumber")}'",
+                       Fax: 'NULL',
+                       EMail: "'${dataMap.getAt("namedInsuredEmail")}'",
+                       DateOfBirth: 'NULL',
+                       SSN: "'${dataMap.getAt("FEINSSN")}'",
+                       PhoneExt: 'NULL',
+                       WorkPhone: 'NULL',
+                       AcctExecID: "'${accountExec}'",
+                       AcuityKey: 'NULL',
+                       DateAdded: "'${timestamp}'",
+                       VehicleCount: 'NULL',
+                       BusinessStructureID: "'${businessStructureID[dataMap.getAt("businessStructure")]}'",
+                       NCCI: "'${dataMap.getAt("NCCI")}'",
+                       Employees: 'NULL',
+                       Payroll: 'NULL',
+                       SicID: "'${dataMap.getAt("SIC")}'",
+                       Attention: "'${user.firstName} ${user.lastName}'",
+                       ContactID: "'${user.aimContactID}'",
+                       ClaimCount: 'NULL',
+                       PolicyCount: 'NULL',
+                       TeamID: "'TeamID'",
+                       InsuredKey_PK: "'${insuredID}'",
+                       GroupKey_FK: "'3941'", //COMMERCIAL WHOLESALE
+                       FlagProspect: "'N'",
+                       FlagAssigned: 'NULL',
+                       MembershipTypeID: 'NULL',
+                       ParentKey_FK: 'NULL',
+                       License: 'NULL',
+                       CareOfKey_FK: 'NULL',
+                       Website: "'${dataMap.getAt("website")}'",
+                       SLA: 'NULL',
+                       Exempt: 'NULL',
+                       RackleyClientKey_FK: 'NULL',
+                       MapToID: 'NULL',
+                       Notes: 'NULL',
+                       Country: "'US'",
+                       FileNo: 'NULL',
+                       DateConverted: 'NULL',
+                       UserDefinedStr1: 'NULL',
+                       UserDefinedStr2: 'NULL',
+                       UserDefinedStr3: 'NULL',
+                       UserDefinedStr4: 'NULL',
+                       UserDefinedDate1: 'NULL',
+                       UserDefinedValue1: 'NULL',
+                       CountryID: 'NULL',
+                       ParentInsuredName : 'NULL'
+            ]
+            aimsql.execute "insert into Insured (InsuredID, NamedInsured, NameType, DBAName, Prefix, First_Name, Last_Name,\n" +
+                    "                Middle_Name, Suffix, CombinedName, Address1, Address2, City, State,\n" +
+                    "                Zip, AddressID, ProducerID, AcctExec, AcctAsst, CSR, Entity, FormMakerName,\n" +
+                    "                DirectBillFlag, MailAddress1, MailAddress2, MailCity, MailState, MailZip,\n" +
+                    "                ContactName, Phone, Fax, EMail, DateOfBirth, SSN, PhoneExt, WorkPhone,\n" +
+                    "                AcctExecID, AcuityKey, DateAdded, VehicleCount, BusinessStructureID,\n" +
+                    "                NCCI, Employees, Payroll, SicID, Attention, ContactID, ClaimCount, PolicyCount,\n" +
+                    "                TeamID, InsuredKey_PK, GroupKey_FK, FlagProspect, FlagAssigned, MembershipTypeID,\n" +
+                    "                ParentKey_FK, License, CareOfKey_FK, Website, SLA, Exempt, RackleyClientKey_FK,\n" +
+                    "                MapToID, Notes, Country, FileNo, DateConverted, UserDefinedStr1, UserDefinedStr2,\n" +
+                    "                UserDefinedStr3, UserDefinedStr4, UserDefinedDate1, UserDefinedValue1,\n" +
+                    "                CountryID, ParentInsuredName) values " +
+                    "($insuredMap.InsuredID, $insuredMap.NamedInsured, $insuredMap.NameType, $insuredMap.DBAName, $insuredMap.Prefix, $insuredMap.First_Name, $insuredMap.Last_Name, $insuredMap.Middle_Name, " +
+                    "$insuredMap.Suffix, $insuredMap.CombinedName, $insuredMap.Address1, $insuredMap.Address2, $insuredMap.City, $insuredMap.State, $insuredMap.Zip, $insuredMap.AddressID, $insuredMap.ProducerID, $insuredMap.AcctExec, " +
+                    "$insuredMap.AcctAsst, $insuredMap.CSR, $insuredMap.Entity, $insuredMap.FormMakerName, $insuredMap.DirectBillFlag, $insuredMap.MailAddress1, $insuredMap.MailAddress2, $insuredMap.MailCity, $insuredMap.MailState, " +
+                    "$insuredMap.MailZip, $insuredMap.ContactName, $insuredMap.Phone, $insuredMap.Fax, $insuredMap.EMail, $insuredMap.DateOfBirth, $insuredMap.SSN, $insuredMap.PhoneExt, $insuredMap.WorkPhone, $insuredMap.AcctExecID, " +
+                    "$insuredMap.AcuityKey, $insuredMap.DateAdded, $insuredMap.VehicleCount, $insuredMap.BusinessStructureID, $insuredMap.NCCI, $insuredMap.Employees, $insuredMap.Payroll, $insuredMap.SicID, $insuredMap.Attention, " +
+                    "$insuredMap.ContactID, $insuredMap.ClaimCount, $insuredMap.PolicyCount, $insuredMap.TeamID, $insuredMap.InsuredKey_PK, $insuredMap.GroupKey_FK, $insuredMap.FlagProspect, $insuredMap.FlagAssigned, " +
+                    "$insuredMap.MembershipTypeID, $insuredMap.ParentKey_FK, $insuredMap.License, $insuredMap.CareOfKey_FK, $insuredMap.Website, $insuredMap.SLA, $insuredMap.Exempt, $insuredMap.RackleyClientKey_FK, $insuredMap.MapToID, " +
+                    "$insuredMap.Notes, $insuredMap.Country, $insuredMap.FileNo, $insuredMap.DateConverted, $insuredMap.UserDefinedStr1, $insuredMap.UserDefinedStr2, $insuredMap.UserDefinedStr3, $insuredMap.UserDefinedStr4, " +
+                    "$insuredMap.UserDefinedDate1, $insuredMap.UserDefinedValue1, $insuredMap.CountryID, $insuredMap.ParentInsuredName)"
+
+
+
+            def referenceID = 0;
+            def submitGroupID;
+            def productIndex = 0;
+            //LOOP THROUGH DIFFERENT PRODUCTS AND INSERT EACH AS A SUBMISSION IN AIM
+            testjson.getAt("products").each{
+                log.info it
+                productID = it.productID
+                productIndex = productIndex + 1;
+
+                //GET REFERENCE ID FOR SUBMISSION
+                aimsql.call("{call dbo.GetKeyField(${Sql.INTEGER}, 'ReferenceID')}") { num ->
+                    log.info "ReferenceID $num"
+                    referenceID = num
+                }
+                //GET QUOTE ID
+                aimsql.call("{call dbo.GetSubmitNumber(${Sql.VARCHAR})}") { num ->
+                    log.info "Quote ID $num"
+                    quoteID = num
+                }
+                //IF THIS IS THE FIRST PRODUCT SET IT AS THE GROUP ID
+                if(productIndex == 1){
+                    submitGroupID = quoteID
+                }
+
+
+                def productMap = [:]
+
+                def productLimits = "";
+                def productDeduct = "";
+                def productSubject = "";
+                def productEndorse = "";
+                def productLobDistrib = "";
+                def productCompanyID = ""
+
+
+                def premium = it.getAt("premium").replaceAll('[$,]', '')
+                def premiumRaw = it.getAt("premium");
+                def stringLOB = it.getAt("stringLOB")
+                def limitsString = StringUtils.chomp(it.getAt("limitsString").trim());
+                def deductsString = StringUtils.chomp(it.getAt("deductsString").trim());
+                def coverageID = it.getAt("coverageID");
+
+                it['productLobDistribSched']  = productID + "\t" + premiumRaw + "\t-"
+                it['productLobDistrib'] = productID + "\t" + premium + "\t-\t-\t\n"
+                it['productRateInfo'] = "";//TODO MUST FIX
+
+                it['companyName'] = "";
+                it['companyNAIC'] = "";
+
+                log.info "Quote ID: " + quoteID
+
+
+                /////////SAVE VERSION
+                def proposedTermLength = dataMap.getAt("proposedTermLength").split(" ")[0].toInteger();
+
+
+
+
+            }
+
+
+
+        }
+
+    }
 
 
     def saveNewSubmission(policyFormJSON, dataSource_aim, user, underwriter, uwQuestionsMap, uwQuestionsOrder){

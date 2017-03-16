@@ -26,6 +26,8 @@ public  portal.DAO.AIMSQL getAimDAO() { return (portal.DAO.AIMSQL)null;}
 public  void setAimDAO(portal.DAO.AIMSQL value) { }
 public  portal.DAO.Intelledox getIntelledoxHelper() { return (portal.DAO.Intelledox)null;}
 public  void setIntelledoxHelper(portal.DAO.Intelledox value) { }
+public  portal.Utils.TestDataHelper getTestDataHelper() { return (portal.Utils.TestDataHelper)null;}
+public  void setTestDataHelper(portal.Utils.TestDataHelper value) { }
 public  java.lang.Object getTimeZone() { return null;}
 public  void setTimeZone(java.lang.Object value) { }
 public  java.lang.Object getDateFormat() { return null;}
@@ -46,6 +48,7 @@ public  java.lang.Object ajaxAttach() { return null;}
 public  java.lang.Object newRatePremiums() { return null;}
 public  java.lang.Object ratePremiums() { return null;}
 public  java.lang.Object calcPIP3Deductibles(java.lang.Object totalBudget) { return null;}
+public  java.lang.Object saveSubmissionToAIMv2() { return null;}
 public  java.lang.Object saveSubmissionToAIM() { return null;}
 public  java.lang.Object getTaxInfo() { return null;}
 public  java.lang.Object searchSubmissions() { return null;}

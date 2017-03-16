@@ -21,17 +21,20 @@ $(document).ready(function() {
 
     if ($("li.active").length > 0) {
         riskChosen = getRiskTypeChosen();
-    } else {
+    }
+    else {
         riskChosen = reviewRiskChosen; //FROM REVIEW SUBMISSION MODAL
     }
 
     if (riskChosen === "Film Projects Without Cast (No Work Comp)") {
         riskHasCast = false;
         riskHasWC = false;
-    } else if (riskChosen === "Film Projects Without Cast (With Work Comp)") {
+    }
+    else if (riskChosen === "Film Projects Without Cast (With Work Comp)") {
         riskHasCast = false;
         riskHasWC = true;
-    } else if (riskChosen === "Film Projects With Cast (No Work Comp)") {
+    }
+    else if (riskChosen === "Film Projects With Cast (No Work Comp)") {
         riskHasCast = true;
         riskHasWC = false;
         $('#EPKGCASTOption').css("display", "");
@@ -39,7 +42,8 @@ $(document).ready(function() {
         $(document.body).on('change', '#EPKGCASTEssentialAdditionalCoverage', function() {
             if ($("#EPKGCASTEssentialAdditionalCoverage").is(':checked')) {
                 $('#castEssentialDiv').css("display", "");
-            } else {
+            }
+            else {
                 $('#castEssentialDiv').css("display", "none");
                 $("#castEssentialInput").prop("checked", false);
             }
@@ -50,7 +54,8 @@ $(document).ready(function() {
         $('.physicalAddressHabUnits').parent().remove();
         $('.physicalAddressCommSqFt').parent().remove();
         $('.interestSelect').parent().remove();
-    } else if (riskChosen === "Film Projects With Cast (With Work Comp)") {
+    }
+    else if (riskChosen === "Film Projects With Cast (With Work Comp)") {
         riskHasCast = true;
         riskHasWC = true;
     }
@@ -77,7 +82,8 @@ $(document).ready(function() {
         $('.castMemberName').css('display', '');
         $('.castMemberAge').css('display', '');
         $('.castMemberRole').css('display', '');
-    } else {
+    }
+    else {
         $('#questionListPriorFilmProjects').css('display', 'none');
         $('#listOfPriorFilms').css('display', 'none');
 
@@ -112,7 +118,8 @@ $(document).ready(function() {
         $('#questionSourceFinancing').css('display', '');
         $('#sourceOfFinancing').css('display', '');
         $('#questionCompletionBondRequired').css('display', '');
-    } else {
+    }
+    else {
         $('#workCompCoverageRequested').css('display', 'none');
         $('#statesOfHire').css('display', 'none');
         $('#statesOfHireAndPayroll').css('display', 'none');
@@ -126,7 +133,8 @@ $(document).ready(function() {
     $(document.body).on('change', '#tvSeriesCheckBox', function() {
         if ($("#tvSeriesCheckBox").is(':checked')) {
             $('#specFilmNumEpisodesText').css("display", "");
-        } else {
+        }
+        else {
             $('#specFilmNumEpisodesText').css("display", "none");
         }
     });
@@ -134,7 +142,8 @@ $(document).ready(function() {
     $(document.body).on('change', '#showFilmLocationsCheckbox', function() {
         if ($("#showFilmLocationsCheckbox").is(':checked')) {
             $('#filmingLocationInfo').css("display", "");
-        } else {
+        }
+        else {
             $('#filmingLocationInfo').css("display", "none");
         }
     });
@@ -181,7 +190,8 @@ $(document).ready(function() {
                         "</div>";
                     finalString = finalString + htmlString;
                 }
-            } else {
+            }
+            else {
                 alert("Please enter only up to 10 cast members.")
                 $(this).val("10");
                 for (var i = 0; i < 10; i++) {
@@ -210,7 +220,8 @@ $(document).ready(function() {
             }
 
             $('#castMemberDetailContainer').html(finalString);
-        } else {
+        }
+        else {
             $(this).val("");
         }
 
@@ -230,14 +241,16 @@ $(document).ready(function() {
             $('#pyrotechnicsAttachContainer').css("display", "none");
 
             //$('#noneOfAboveWords').css("display", "none");
-        } else {
+        }
+        else {
             $("#productionInvolvesNoneAbove").prop("checked", false);
             //$('#noneOfAboveWords').css("display", "");
         }
 
         if ($("#showFilmLocationsCheckbox").is(':checked')) {
             $('#filmingLocationInfo').css("display", "");
-        } else {
+        }
+        else {
             $('#filmingLocationInfo').css("display", "none");
         }
     });
@@ -256,7 +269,8 @@ $(document).ready(function() {
     $(document.body).on('change', '#otherProductionType', function() {
         if ($("#otherProductionType").is(':checked')) {
             $('#specFilmOtherDescribe').css("display", "");
-        } else {
+        }
+        else {
             $('#specFilmOtherDescribe').css("display", "none");
         }
     });
@@ -264,7 +278,8 @@ $(document).ready(function() {
     $(document.body).on('change', '#pyrotechnicsCheckbox', function() {
         if ($("#pyrotechnicsCheckbox").is(':checked')) {
             $('#pyrotechnicsAttachContainer').css("display", "");
-        } else {
+        }
+        else {
             $('#pyrotechnicsAttachContainer').css("display", "none");
         }
     });
@@ -273,7 +288,8 @@ $(document).ready(function() {
             $('#stuntsHazardousActivitiesAttachContainer').css("display", "");
             $('#stuntCoordinatorName').css("display", "");
             $('#participantsSigningWaivers').css("display", "");
-        } else {
+        }
+        else {
             $('#stuntsHazardousActivitiesAttachContainer').css("display", "none");
             $('#stuntCoordinatorName').css("display", "none");
             $('#participantsSigningWaivers').css("display", "none");
@@ -334,7 +350,8 @@ $(document).ready(function() {
             htmlString = htmlString + "<span id='castInsuranceDisclaimer' style='font-size: 9px;padding-left: 9px;font-weight: 300;'> *Cast Insurance is covered </span>";
             $(".coverageCodeString:first").html(htmlString);
             //$("#castInsuranceInfo").html("Cast Insurance is covered");
-        } else {
+        }
+        else {
             $("#castInsuranceRequiredContainer").css("display", "none");
             var htmlString = $(".coverageCodeString:first").html().split("<")[0];
             htmlString = htmlString + "<span id='castInsuranceDisclaimer' style='font-size: 9px;padding-left: 9px;font-weight: 300;'> *Cast Insurance is NOT covered </span>";
@@ -391,14 +408,16 @@ $(document).ready(function() {
                 $('#alertMessageContent').html("Photography Begin Date must be a present or future date");
                 $('#alertMessageModal').modal('show');
                 $(this).val($('#proposedEffectiveDate').val());
-            } else {
+            }
+            else {
                 $('#alertMessageContent').html("Photography Begin Date cannot be before Effective Date");
                 $('#alertMessageModal').modal('show');
                 $(this).val($('#proposedEffectiveDate').val());
 
             }
             datesAreValid = false;
-        } else if (mdyExpirationDateObject.getTime() > mdyProposedExpirationDateObject.getTime()) {
+        }
+        else if (mdyExpirationDateObject.getTime() > mdyProposedExpirationDateObject.getTime()) {
             $('#alertMessageContent').html("Photography End Date cannot be after Expiration Date");
             $('#alertMessageModal').modal('show');
             $(this).val($('#proposedExpirationDate').val());
@@ -475,12 +494,14 @@ $(document).ready(function() {
     $(document.body).on('click', '.removeCastMember', function() {
         var htmlString = "";
         var count = 0;
-        if ($(this).closest('.castMember').find('h5').html() === "Cast Member #1") {} else {
+        if ($(this).closest('.castMember').find('h5').html() === "Cast Member #1") {}
+        else {
             $(this).closest('.castMember').remove();
             $('#castMemberInfo').children('.castMember').each(function() {
                 count++
                 var castMemberHeader = $(this).find('h5').html();
-                if (castMemberHeader == "Cast Member #1") {} else {
+                if (castMemberHeader == "Cast Member #1") {}
+                else {
                     $(this).find('h5').html("Cast Member # " + count);
                 }
             });
@@ -506,12 +527,14 @@ $(document).ready(function() {
     $(document.body).on('click', '.removeFilmLocation', function() {
         var htmlString = "";
         var count = 0;
-        if ($(this).closest('.locationFilm').find('h5').html() === "Filming Location #1") {} else {
+        if ($(this).closest('.locationFilm').find('h5').html() === "Filming Location #1") {}
+        else {
             $(this).closest('.locationFilm').remove();
             $('#filmingLocationInfo').find('.locationFilm').each(function() {
                 count++
                 var filmingLocationHeader = $(this).find('h5').html();
-                if (filmingLocationHeader == "Filming Location #1") {} else {
+                if (filmingLocationHeader == "Filming Location #1") {}
+                else {
                     $(this).find('h5').html("Filming Location # " + count);
                 }
             });
@@ -522,7 +545,8 @@ $(document).ready(function() {
         //alert($('#PIP3InputRadio').is(':checked'));
         if ($("li.active").length > 0) {
             riskChosen = getRiskTypeChosen();
-        } else {
+        }
+        else {
             riskChosen = reviewRiskChosen; //FROM REVIEW SUBMISSION MODAL
         }
         $("#EPKGoptions").css("display", "");
@@ -531,7 +555,8 @@ $(document).ready(function() {
         if (riskChosen === "Film Projects With Cast (No Work Comp)") {
             $("#EPKGNOHAOption").css("display", "none");
             $("#EPKGCASTEssentialOption").css("display", "");
-        } else {
+        }
+        else {
             $("#EPKGNOHAOption").css("display", "");
             $("#EPKGCASTEssentialOption").css("display", "none");
         }
@@ -546,7 +571,8 @@ $(document).ready(function() {
                 $('#EPKGCIVIL100AdditionalCoverage').prop("checked", false);
                 $('#EPKGCIVIL500AdditionalCoverage').prop("checked", false);
                 $('.additionalCoverageCheckboxPIP5').prop("checked", false);
-            } else if ($('#PIP5InputRadio').is(':checked') == true) {
+            }
+            else if ($('#PIP5InputRadio').is(':checked') == true) {
                 $("#EPKGoptions").css("display", "");
                 $('.PIP5Options').css("display", "");
                 $("#EPKGNOHAOption").css("display", "none");
@@ -562,7 +588,8 @@ $(document).ready(function() {
             $('#PIPChoice_Props').prop("checked", true);
             $('#PIPChoice_ThirdParty').prop("checked", true);
 
-        } else {
+        }
+        else {
             $('#pipChoiceSelections').css('display', 'none');
             $('#PIPChoice_ExtraExpense').prop("checked", false);
             $('#PIPChoice_MiscRented').prop("checked", false);
@@ -594,11 +621,15 @@ $(document).ready(function() {
                 $('#proposedTermLength').val(365 + " Days");
                 $("#CPKCGLcoverage").trigger('change');
 
-            } else if ($('#PIP1InputRadio').is(':checked') || $('#PIP2InputRadio').is(':checked')) {
+            }
+            else if ($('#PIP1InputRadio').is(':checked') || $('#PIP2InputRadio').is(':checked')) {
                 var dat = new Date(mdyEffectiveDateObject.valueOf());
                 dat.setDate(dat.getDate() + 60);
                 day = dat.getDate();
                 monthIndex = dat.getMonth() + 1;
+                if (monthIndex < 10) {
+                    monthIndex = '0' + monthIndex;
+                }
                 year = dat.getFullYear();
                 $("#proposedExpirationDate").val((monthIndex) + "/" + day + "/" + year);
                 $('#proposedTermLength').val(60 + " Days");
@@ -609,7 +640,8 @@ $(document).ready(function() {
                 $("#EPKGoptions").css("display", "");
                 $("#EPKGNOHAOption").css("display", "none");
 
-            } else {
+            }
+            else {
                 $("#EPKGoptions").css("display", "");
                 $("#EPKGNOHAOption").css("display", "");
             }
@@ -617,7 +649,8 @@ $(document).ready(function() {
             $('#EPKGNOHAAdditionalCoverage').prop("checked", false);
 
 
-        } else if ($('#PIP5InputRadio').is(':checked')) {
+        }
+        else if ($('#PIP5InputRadio').is(':checked')) {
             $("#EPKGoptions").css("display", "");
             $('.PIP5Options').css("display", "");
             $("#EPKGNOHAOption").css("display", "none");
@@ -639,7 +672,8 @@ $(document).ready(function() {
                 //$('#EPKGCASTEssentialOption').css("display","");
 
 
-            } else {
+            }
+            else {
                 //$('#EPKGCASTAdditionalCoverage').prop("checked", false);
                 $("FILMWITHCASTNOWCOptions").css("display", "none");
                 //$('#EPKGCASTEssentialOption').css("display","none");
@@ -649,12 +683,14 @@ $(document).ready(function() {
                 $('#PIPChoiceInputRadio').prop("checked", true);
                 $('#PIPChoiceInputRadio').trigger("change");
 
-            } else {
+            }
+            else {
                 $('#PIP5InputRadio').prop("checked", true);
                 $('#PIP5InputRadio').trigger("change");
             }
             $("#EPKGoptions").css("display", "");
-        } else {
+        }
+        else {
             $('#PIP1InputRadio').prop("checked", false);
             $('#PIP2InputRadio').prop("checked", false);
             $('#PIP3InputRadio').prop("checked", false);
@@ -679,7 +715,8 @@ $(document).ready(function() {
             if ($('#CPKInputRadio').is(':checked')) {
                 $("#costOfHireDiv").css("display", "");
                 $("#costOfHireInput").val("$");
-            } else {
+            }
+            else {
                 $("#costOfHireDiv").css("display", "none");
                 $("#costOfHireInput").val("$");
             }
@@ -688,7 +725,8 @@ $(document).ready(function() {
             if (termLength <= 60) {
                 $("#BAIAdditionalCoverage").parent().css("display", "none");
                 $("#BAIAdditionalCoverage").prop("checked", false);
-            } else {
+            }
+            else {
                 $("#BAIAdditionalCoverage").parent().css("display", "");
                 $("#BAIAdditionalCoverage").prop("checked", false);
             }
@@ -704,7 +742,8 @@ $(document).ready(function() {
                 $("#WOSAdditionalCoverage").prop("checked", false);
                 $("#MEDAdditionalCoverage").prop("checked", false);
                 $("#AGGAdditionalCoverage").prop("checked", false);
-            } else {
+            }
+            else {
 
                 $("#EAIAdditionalCoverage").parent().css("display", "");
                 $("#WOSAdditionalCoverage").parent().css("display", "");
@@ -733,7 +772,8 @@ $(document).ready(function() {
             if (termLength <= 60) {
                 $("#BAIAdditionalCoverage").parent().css("display", "none");
                 $("#BAIAdditionalCoverage").prop("checked", false);
-            } else {
+            }
+            else {
                 $("#BAIAdditionalCoverage").parent().css("display", "");
                 $("#BAIAdditionalCoverage").prop("checked", false);
             }
@@ -747,7 +787,8 @@ $(document).ready(function() {
                 $("#WOSAdditionalCoverage").prop("checked", false);
                 $("#MEDAdditionalCoverage").prop("checked", false);
                 $("#AGGAdditionalCoverage").prop("checked", false);
-            } else {
+            }
+            else {
                 $("#EAIAdditionalCoverage").parent().css("display", "");
                 $("#WOSAdditionalCoverage").parent().css("display", "");
                 $("#MEDAdditionalCoverage").parent().css("display", "");
@@ -758,7 +799,8 @@ $(document).ready(function() {
                 $("#MEDAdditionalCoverage").prop("checked", false);
                 $("#AGGAdditionalCoverage").prop("checked", false);
             }
-        } else {
+        }
+        else {
             $('#CPKInputRadio').prop("checked", false);
             $('#CGLInputRadio').prop("checked", false);
             $('.additionalCoverageCheckboxCPKCGL').prop("checked", false);
@@ -805,26 +847,34 @@ $(document).ready(function() {
         if ($.inArray(ext, ['zip', 'doc', 'docx', 'xlsx', 'xls', 'pdf', 'txt']) == -1) {
             alert('Only .zip, .doc, .docx, .xlsx, .xls, .pdf, .txt are permitted');
             $(this).val('');
-        } else {
+        }
+        else {
             //alert(name);
 
             //alert('Only .zip, .doc, .docx, .xlsx, .xls, .pdf are permitted');
             var iconFilePath = "";
             if (ext == "zip") {
                 iconFilePath = "zipIcon.png"
-            } else if (ext == "doc") {
+            }
+            else if (ext == "doc") {
                 iconFilePath = "docIcon.png"
-            } else if (ext == "docx") {
+            }
+            else if (ext == "docx") {
                 iconFilePath = "docxIcon.png"
-            } else if (ext == "xls") {
+            }
+            else if (ext == "xls") {
                 iconFilePath = "xlsIcon.png"
-            } else if (ext == "xlsx") {
+            }
+            else if (ext == "xlsx") {
                 iconFilePath = "xlsxIcon.png"
-            } else if (ext == "pdf") {
+            }
+            else if (ext == "pdf") {
                 iconFilePath = "pdfIcon.png"
-            } else if (ext == "txt") {
+            }
+            else if (ext == "txt") {
                 iconFilePath = "txtIcon.png"
-            } else {
+            }
+            else {
                 iconFilePath = "fileIcon.png"
             }
 
@@ -890,7 +940,8 @@ $(document).ready(function() {
             //pipChoiceThird = formatMoney(tempLimit);
             //pipChoiceNOHA = formatMoney(tempLimit);
             getProductsForRisk();
-        } else {
+        }
+        else {
             $('#coverageOptionsReview').addClass("panel-default");
             $('#coverageOptionsReview').removeClass("panel-primary");
             $('#coverageOptionsReview').parent().css("color", "rgba(31, 31, 31, 0.35)");
@@ -923,7 +974,8 @@ $(document).ready(function() {
 
         if ($('#EPKGCIVIL100AdditionalCoverage').is(':checked')) {
             currentChecked = $('#EPKGCIVIL100AdditionalCoverage').attr('id');
-        } else if ($('#EPKGCIVIL500AdditionalCoverage').is(':checked')) {
+        }
+        else if ($('#EPKGCIVIL500AdditionalCoverage').is(':checked')) {
             currentChecked = $('#EPKGCIVIL500AdditionalCoverage').attr('id');
         }
     });
@@ -938,16 +990,19 @@ $(document).ready(function() {
                 if ($('#EPKGcoverage').is(':checked')) {
                     if ($('#PIPChoiceInputRadio').is(':checked')) {
 
-                    } else {
+                    }
+                    else {
                         if (termLength >= 365) {
                             $('.AnnualOptions').css("display", "");
-                        } else {
+                        }
+                        else {
                             $('.AnnualOptions').css("display", "none");
                         }
                     }
 
 
-                } else {
+                }
+                else {
 
                 }
 
@@ -1013,19 +1068,23 @@ $(document).ready(function() {
             rate = extraRate;
             minPremium = extraMP;
             maxLimit = 1000000;
-        } else if (coverageLine.indexOf("Third Party Prop Damage Liab") > -1) {
+        }
+        else if (coverageLine.indexOf("Third Party Prop Damage Liab") > -1) {
             rate = thirdRate;
             minPremium = thirdMP;
             maxLimit = 1000000;
-        } else if (coverageLine.indexOf("Props, Sets") > -1) {
+        }
+        else if (coverageLine.indexOf("Props, Sets") > -1) {
             rate = propsRate;
             minPremium = propsMP;
             maxLimit = 1000000;
-        } else if (coverageLine.indexOf("Miscellaneous Rented Equipment") > -1) {
+        }
+        else if (coverageLine.indexOf("Miscellaneous Rented Equipment") > -1) {
             rate = miscRate;
             minPremium = miscMP;
             maxLimit = 1000000;
-        } else if (coverageLine.indexOf("Cast Insurance") > -1) {
+        }
+        else if (coverageLine.indexOf("Cast Insurance") > -1) {
             rate = 1.1;
             minPremium = 100;
             maxLimit = 1000000;
@@ -1044,10 +1103,12 @@ $(document).ready(function() {
             //console.log("LIMIT AMOUNT1 === " + limitAmount)
             //console.log("RATE AMOUNT1 === " + rate)
             premium = (limitAmount * rate) / 100;
-        } else {
+        }
+        else {
             if (termLength <= 30) {
                 premium = ((((limitAmount * rate) / 365) * termLength) * 10);
-            } else {
+            }
+            else {
                 premium = limitAmount * rate;
             }
         }
@@ -1065,9 +1126,11 @@ $(document).ready(function() {
         var deductAmount = 0;
         if (limitAmount <= 250000) {
             deductAmount = 2500;
-        } else if (limitAmount > 250000 && limitAmount <= 500000) {
+        }
+        else if (limitAmount > 250000 && limitAmount <= 500000) {
             deductAmount = 2500;
-        } else if (limitAmount > 500000) {
+        }
+        else if (limitAmount > 500000) {
             deductAmount = 2500;
         }
         $(this).parent().siblings(".deductibleColumn").find(".PIPCHOIDeductLine").html(formatMoney(deductAmount));
@@ -1098,12 +1161,14 @@ $(document).ready(function() {
                 if ($('#totalBudgetConfirm').val().length > 0) {
                     pipchoiceLimits = pipchoiceLimits + decoded + "&;&" + $('#totalBudgetConfirm').val() + "&;;&";
                     $(this).val($('#totalBudgetConfirm').val());
-                } else {
+                }
+                else {
                     pipchoiceLimits = pipchoiceLimits + decoded + "&;&" + 0 + "&;;&";
                     $(this).val("0");
                 }
 
-            } else {
+            }
+            else {
                 pipchoiceLimits = pipchoiceLimits + decoded + "&;&" + $(this).val() + "&;;&";
             }
 
@@ -1111,17 +1176,23 @@ $(document).ready(function() {
 
             if (decoded === "Miscellaneous Rented Equipment") {
                 pipChoiceMisc = $(this).val();
-            } else if (decoded === "Extra Expense") {
+            }
+            else if (decoded === "Extra Expense") {
                 pipChoiceExtra = $(this).val();
-            } else if (decoded === "Props, Sets & Wardrobe") {
+            }
+            else if (decoded === "Props, Sets & Wardrobe") {
                 pipChoiceProps = $(this).val();
-            } else if (decoded === "Third Party Prop Damage Liab") {
+            }
+            else if (decoded === "Third Party Prop Damage Liab") {
                 pipChoiceThird = $(this).val();
-            } else if (decoded === "Hired Auto Physical Damage") {
+            }
+            else if (decoded === "Hired Auto Physical Damage") {
                 pipChoiceNOHA = $(this).val();
-            } else if (decoded === "Cast Insurance") {
+            }
+            else if (decoded === "Cast Insurance") {
                 pipChoiceCast = $(this).val();
-            } else if (decoded === "Cast Essential") {
+            }
+            else if (decoded === "Cast Essential") {
                 pipChoiceCastEssential = $(this).val();
             }
         });
@@ -1173,7 +1244,8 @@ function ratePremiums(thisObj) {
     var val = $(thisObj).val();
     if ($("li.active").length > 0) {
         riskChosen = getRiskTypeChosen();
-    } else if (thisObj === "runRatesButton") {
+    }
+    else if (thisObj === "runRatesButton") {
         riskChosen = reviewRiskChosen; //FROM REVIEW SUBMISSION MODAL]
         $('#rateContainer :input').each(function() {
             rateMap["" + $(this).attr('id')] = $(this).val();
@@ -1221,7 +1293,8 @@ function ratePremiums(thisObj) {
                 additionalProducts = additionalProducts + $(this).attr("id") + ":" + $(this).attr("id") + ",";
             }
         });
-    } else {
+    }
+    else {
         $(".coverageRadioButton").each(function(index) {
             if ($(this).is(':checked')) {
                 productsSelected = productsSelected + $(this).attr('class').replace("coverageRadioButton ", "") + ":" + $(this).val() + ",";
@@ -1276,7 +1349,8 @@ function ratePremiums(thisObj) {
             pipchoiceLimits = pipchoiceLimits + decoded + "&;&" + 0 + "&;;&";
             $(this).val("0");
             //$(this).val($('#totalBudgetConfirm').val());
-        } else {
+        }
+        else {
             pipchoiceLimits = pipchoiceLimits + decoded + "&;&" + $(this).val() + "&;;&";
         }
 
@@ -1290,17 +1364,23 @@ function ratePremiums(thisObj) {
 
         if (decoded === "Miscellaneous Rented Equipment") {
             pipChoiceMisc = $(this).val();
-        } else if (decoded === "Extra Expense") {
+        }
+        else if (decoded === "Extra Expense") {
             pipChoiceExtra = $(this).val();
-        } else if (decoded === "Props, Sets & Wardrobe") {
+        }
+        else if (decoded === "Props, Sets & Wardrobe") {
             pipChoiceProps = $(this).val();
-        } else if (decoded === "Third Party Prop Damage Liab") {
+        }
+        else if (decoded === "Third Party Prop Damage Liab") {
             pipChoiceThird = $(this).val();
-        } else if (decoded === "Hired Auto Physical Damage") {
+        }
+        else if (decoded === "Hired Auto Physical Damage") {
             pipChoiceNOHA = $(this).val();
-        } else if (decoded === "Cast Insurance") {
+        }
+        else if (decoded === "Cast Insurance") {
             pipChoiceCast = $(this).val();
-        } else if (decoded === "Cast Essential") {
+        }
+        else if (decoded === "Cast Essential") {
             pipChoiceCastEssential = $(this).val();
         }
     });
@@ -1365,19 +1445,24 @@ function ratePremiums(thisObj) {
                             if (responseJSON.coverages[i].productCode === "PIP CHOI") {
                                 $('#PIPCHOIRatesRow').css('display', '')
 
-                            } else if (responseJSON.coverages[i].productCode === "PIP 1") {
+                            }
+                            else if (responseJSON.coverages[i].productCode === "PIP 1") {
 
                                 $('#PIP1RatesRow').css('display', '')
-                            } else if (responseJSON.coverages[i].productCode === "PIP 2") {
+                            }
+                            else if (responseJSON.coverages[i].productCode === "PIP 2") {
 
                                 $('#PIP2RatesRow').css('display', '')
-                            } else if (responseJSON.coverages[i].productCode === "PIP 3") {
+                            }
+                            else if (responseJSON.coverages[i].productCode === "PIP 3") {
 
                                 $('#PIP3RatesRow').css('display', '')
-                            } else if (responseJSON.coverages[i].productCode === "PIP 4") {
+                            }
+                            else if (responseJSON.coverages[i].productCode === "PIP 4") {
 
                                 $('#PIP4RatesRow').css('display', '')
-                            } else if (responseJSON.coverages[i].productCode === "PIP 4") {
+                            }
+                            else if (responseJSON.coverages[i].productCode === "PIP 4") {
 
                                 $('#PIP5RatesRow').css('display', '')
                             }
@@ -1487,9 +1572,13 @@ function ratePremiums(thisObj) {
                             "<span'>" + "-" + "</span>" +
                             "</div>" +
                             "</div>";
-                    } else if (responseJSON.coverages[i].coverageCode === "EPKG") {
+                    }
+                    else if (responseJSON.coverages[i].coverageCode === "EPKG") {
                         if (responseJSON.coverages[i].productCode === "PIP CHOI") {
                             limitDeductibleString = limitDeductibleString + "<strong class='coverageCodeString' style='font-size:13px'>" + "EPKG" + "</strong>";
+                            limitDeductibleString = limitDeductibleString +
+                                "<span class='productID_pull' id='" + responseJSON.coverages[i].productCode.replace(/ /g, "") + "' data-cov='" + responseJSON.coverages[i].coverageCode + "' style='display:none'>" + responseJSON.coverages[i].productCode + "</span>";
+
                             limitDeductibleString = limitDeductibleString + "</div>" +
                                 "<div class='col-xs-2 ' >" +
                                 "<span style='font-size:9px;'>" + "*Max $1,000,000" + "</span>" +
@@ -1501,8 +1590,11 @@ function ratePremiums(thisObj) {
                                 "<span>" + "-" + "</span>" +
                                 "</div>" +
                                 "</div>";
-                        } else if (responseJSON.coverages[i].productCode === "PIP 1") {
+                        }
+                        else if (responseJSON.coverages[i].productCode === "PIP 1") {
                             limitDeductibleString = limitDeductibleString + "<strong class='coverageCodeString' style='font-size:13px'>" + "EPKG" + "</strong>";
+                            limitDeductibleString = limitDeductibleString +
+                                "<span class='productID_pull' id='" + responseJSON.coverages[i].productCode.replace(/ /g, "") + "' data-cov='" + responseJSON.coverages[i].coverageCode + "' style='display:none'>" + responseJSON.coverages[i].productCode + "</span>";
                             limitDeductibleString = limitDeductibleString + "</div>" +
                                 "<div class='col-xs-2 ' >" +
                                 "<span style='font-size:9px;'>" + "" + "</span>" +
@@ -1514,8 +1606,11 @@ function ratePremiums(thisObj) {
                                 "<span>" + "-" + "</span>" +
                                 "</div>" +
                                 "</div>";
-                        } else {
+                        }
+                        else {
                             limitDeductibleString = limitDeductibleString + "<strong class='coverageCodeString' style='font-size:13px'>" + responseJSON.coverages[i].coverageCode + "</strong>";
+                            limitDeductibleString = limitDeductibleString +
+                                "<span class='productID_pull' id='" + responseJSON.coverages[i].productCode.replace(/ /g, "") + "' data-cov='" + responseJSON.coverages[i].coverageCode + "' style='display:none'>" + responseJSON.coverages[i].productCode + "</span>";
                             limitDeductibleString = limitDeductibleString + "</div>" +
                                 "<div class='col-xs-2 ' >" +
                                 "<span'>" + "-" + "</span>" +
@@ -1529,8 +1624,11 @@ function ratePremiums(thisObj) {
                                 "</div>";
                         }
 
-                    } else if (responseJSON.coverages[i].coverageCode === "CPK") {
+                    }
+                    else if (responseJSON.coverages[i].coverageCode === "CPK") {
                         limitDeductibleString = limitDeductibleString + "<strong class='coverageCodeString' style='font-size:13px'>" + "CGL" + "</strong>";
+                        limitDeductibleString = limitDeductibleString +
+                            "<span class='productID_pull' id='" + responseJSON.coverages[i].productCode.replace(/ /g, "") + "' data-cov='" + responseJSON.coverages[i].coverageCode + "' style='display:none'>" + responseJSON.coverages[i].productCode + "</span>";
                         limitDeductibleString = limitDeductibleString + "</div>" +
                             "<div class='col-xs-2 ' >" +
                             "<span>" + "-" + "</span>" +
@@ -1542,8 +1640,11 @@ function ratePremiums(thisObj) {
                             "<span>" + "-" + "</span>" +
                             "</div>" +
                             "</div>";
-                    } else {
+                    }
+                    else {
                         limitDeductibleString = limitDeductibleString + "<strong class='coverageCodeString' style='font-size:13px'>" + responseJSON.coverages[i].coverageCode + "</strong>";
+                        limitDeductibleString = limitDeductibleString +
+                            "<span class='productID_pull' id='" + responseJSON.coverages[i].productCode.replace(/ /g, "") + "' data-cov='" + responseJSON.coverages[i].coverageCode + "' style='display:none'>" + responseJSON.coverages[i].productCode + "</span>";
                         limitDeductibleString = limitDeductibleString + "</div>" +
                             "<div class='col-xs-2 ' >" +
                             "<span'>" + "-" + "</span>" +
@@ -1677,7 +1778,8 @@ function ratePremiums(thisObj) {
                             limitLines.splice(limitLines.indexOf("Hired Auto Physical Damage"), 1);
                             limitLines.push("Hired Auto Physical Damage");
                         }
-                    } else if (responseJSON.coverages[i].coverageCode === "CPK" || responseJSON.coverages[i].coverageCode === "CGL") {
+                    }
+                    else if (responseJSON.coverages[i].coverageCode === "CPK" || responseJSON.coverages[i].coverageCode === "CGL") {
                         if (limitLines.indexOf("Each Occurrence") > -1) {
                             limitLines.splice(limitLines.indexOf("Each Occurrence"), 1);
                             limitLines.push("Each Occurrence");
@@ -1741,16 +1843,21 @@ function ratePremiums(thisObj) {
                         if (responseJSON.coverages[i].premiums[key]) {
                             premiumForCoverageLine = responseJSON.coverages[i].premiums[key][1];
                             //console.log("Premium: " + premiumForCoverageLine);
-                        } else {
+                        }
+                        else {
                             premiumForCoverageLine = "undefined";
                         }
 
-                        limitDeductibleString = limitDeductibleString + "<div class='row " + responseJSON.coverages[i].coverageCode + "_LOBRow'";
+                        limitDeductibleString = limitDeductibleString + "<div class='row lobRow " +
+                            responseJSON.coverages[i].productCode.replace(/ /g, "_") + " " +
+                            responseJSON.coverages[i].coverageCode + " " +
+                            responseJSON.coverages[i].coverageCode + "_LOBRow'";
                         if (index % 2 == 0) {
                             if (key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
                                     responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")) {
                                 limitDeductibleString = limitDeductibleString + " style= 'background-color: rgba(38, 80, 159, 0.13); height:44px'";
-                            } else {
+                            }
+                            else {
                                 limitDeductibleString = limitDeductibleString + " style= 'background-color: rgba(38, 80, 159, 0.13)'";
                             }
 
@@ -1763,15 +1870,18 @@ function ratePremiums(thisObj) {
                             limitDeductibleString = limitDeductibleString + "<span>" + key + "</span>" + "<br><span>Non-Owned Auto Physical Damage</span>" +
                                 "</div>" +
                                 "<div class='col-xs-2 limitColumn'>";
-                        } else if (key === "INC:Non-Owned Auto Physical Damage") {
+                        }
+                        else if (key === "INC:Non-Owned Auto Physical Damage") {
                             limitDeductibleString = limitDeductibleString + "<span>" + key.split(":")[1] + "</span>" +
                                 "</div>" +
                                 "<div class='col-xs-2 limitColumn' style='line-height: 1.3'>";
-                        } else if (key === "Cast Essential") {
+                        }
+                        else if (key === "Cast Essential") {
                             limitDeductibleString = limitDeductibleString + "<span>" + key + "</span>" +
                                 "</div>" +
                                 "<div class='col-xs-2 limitColumn' style='line-height: 1.3'>";
-                        } else {
+                        }
+                        else {
                             limitDeductibleString = limitDeductibleString + "<span>" + key + "</span>" +
                                 "</div>" +
                                 "<div class='col-xs-2 limitColumn'>";
@@ -1781,26 +1891,33 @@ function ratePremiums(thisObj) {
 
                         if (responseJSON.coverages[i].productCode === "PIP CHOI") {
                             if (key === "Hired Auto Physical Damage") {
-                                limitDeductibleString = limitDeductibleString + "<span>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
-                            } else if (key === "Cast Essential") {
-                                limitDeductibleString = limitDeductibleString + "<span style='font-size:9px'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
-                            } else {
-                                limitDeductibleString = limitDeductibleString + "<input class='form-control PIPCHOILimitsInput " + key.replace(/\s+/g, '').replace(/[^a-zA-Z-]/g, '') + "' type='text' placeholder = '$' name='numBuildings' " +
+                                limitDeductibleString = limitDeductibleString + "<span class='limit'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
+                            }
+                            else if (key === "Cast Essential") {
+                                limitDeductibleString = limitDeductibleString + "<span class='limit' style='font-size:9px'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
+                            }
+                            else {
+                                limitDeductibleString = limitDeductibleString + "<input class='form-control limit PIPCHOILimitsInput " + key.replace(/\s+/g, '').replace(/[^a-zA-Z-]/g, '') + "' type='text' placeholder = '$' name='numBuildings' " +
                                     "style='font-size: 12px;padding: 2px;margin-top: 3px; margin-bottom:3px; height: 20px;'/>";
                             }
 
-                        } else if (key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
+                        }
+                        else if (key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
                                 responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")) {
-                            limitDeductibleString = limitDeductibleString + "<span>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span> <br><span></span>";
-                        } else if (responseJSON.coverages[i].coverageCode === "NOAL" && CPKincluded) {
-                            limitDeductibleString = limitDeductibleString + "<span>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
-                        } else {
+                            limitDeductibleString = limitDeductibleString + "<span class='limit'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span> <br><span></span>";
+                        }
+                        else if (responseJSON.coverages[i].coverageCode === "NOAL" && CPKincluded) {
+                            limitDeductibleString = limitDeductibleString + "<span class='limit'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
+                        }
+                        else {
                             if (key === "Cast Essential") {
-                                limitDeductibleString = limitDeductibleString + "<span style='font-size:11px'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
-                            } else if (key === "INC:Non-Owned Auto Physical Damage") {
-                                limitDeductibleString = limitDeductibleString + "<span style='font-size:11px;'>" + formatMoney(responseJSON.coverages[i].limits[key].split(":")[0]) + "</span>";
-                            } else {
-                                limitDeductibleString = limitDeductibleString + "<span>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
+                                limitDeductibleString = limitDeductibleString + "<span class='limit' style='font-size:11px'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
+                            }
+                            else if (key === "INC:Non-Owned Auto Physical Damage") {
+                                limitDeductibleString = limitDeductibleString + "<span class='limit' style='font-size:11px;'>" + formatMoney(responseJSON.coverages[i].limits[key].split(":")[0]) + "</span>";
+                            }
+                            else {
+                                limitDeductibleString = limitDeductibleString + "<span class='limit'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
                             }
 
                         }
@@ -1814,32 +1931,36 @@ function ratePremiums(thisObj) {
                         if (key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
                                 responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")) {
                             limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 premiumColumn'>" +
-                                "<span class='" + responseJSON.coverages[i].productCode.replace(/ /g, '') + "PremiumLine' >" + formatMoney(premiumForCoverageLine) + "</span> <br><span></span>" +
+                                "<span class='premium " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "PremiumLine' >" + formatMoney(premiumForCoverageLine) + "</span> <br><span></span>" +
                                 "</div>";
-                        } else if (key === "Cast Essential") {
+                        }
+                        else if (key === "Cast Essential") {
                             limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 premiumColumn' style=''>" +
-                                "<span class='" + responseJSON.coverages[i].productCode.replace(/ /g, '') + "PremiumLine' >" + formatMoney(premiumForCoverageLine) + "</span>" +
+                                "<span class='premium " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "PremiumLine' >" + formatMoney(premiumForCoverageLine) + "</span>" +
                                 "</div>";
-                        } else {
+                        }
+                        else {
                             limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 premiumColumn'>" +
-                                "<span class='" + responseJSON.coverages[i].productCode.replace(/ /g, '') + "PremiumLine' >" + formatMoney(premiumForCoverageLine) + "</span>" +
+                                "<span class='premium " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "PremiumLine' >" + formatMoney(premiumForCoverageLine) + "</span>" +
                                 "</div>";
                         }
 
                         if (key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
                                 responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")) {
                             limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 deductibleColumn'>" +
-                                "<span class='" + responseJSON.coverages[i].productCode.replace(/ /g, '') + "DeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles[key]) +
+                                "<span class='deductible " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "DeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles[key]) +
                                 "</span><br>" +
-                                "<span class='NOHADeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles["Non-Owned Auto Physical Damage"]) +
+                                "<span class='deductible NOHADeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles["Non-Owned Auto Physical Damage"]) +
                                 "</span>";
-                        } else if (key === "Cast Essential") {
+                        }
+                        else if (key === "Cast Essential") {
                             limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 deductibleColumn' style=''>" +
-                                "<span class='" + responseJSON.coverages[i].productCode.replace(/ /g, '') + "DeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles[key]) +
+                                "<span class='deductible " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "DeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles[key]) +
                                 "</span>";
-                        } else {
+                        }
+                        else {
                             limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 deductibleColumn'>" +
-                                "<span class='" + responseJSON.coverages[i].productCode.replace(/ /g, '') + "DeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles[key]) +
+                                "<span class='deductible " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "DeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles[key]) +
                                 "</span>";
                         }
                         limitDeductibleString = limitDeductibleString + "</div>" +
@@ -1853,7 +1974,8 @@ function ratePremiums(thisObj) {
                         "<span'>" + "-" + "</span>" +
                         "</div>" +
                         "<div class='col-xs-2 ' >" +
-                        "<strong style='font-size:13px' id='" + responseJSON.coverages[i].productCode.replace(/ /g, '') + "PremiumTotal'>" + formatMoney(responseJSON.coverages[i].productTotalPremium) + "</strong>" +
+                        "<strong style='font-size:13px' class='" + responseJSON.coverages[i].productCode.replace(/ /g, '_') + " productTotalPremium" +
+                        "' id='" + responseJSON.coverages[i].productCode.replace(/ /g, '') + "PremiumTotal'>" + formatMoney(responseJSON.coverages[i].productTotalPremium) + "</strong>" +
                         "</div>" +
                         "<div class='col-xs-2 ' >" +
                         "<span'>" + "-" + "</span>" +
@@ -1990,7 +2112,8 @@ function ratePremiums(thisObj) {
 
             });
 
-    } else {
+    }
+    else {
         //alert("clear all");
         $("#limitsDeductPremiumInsert").html("");
         $("#premDistributionInsert").html("");
@@ -2034,7 +2157,8 @@ function totalUpPremiumAndTax() {
         //console.log("TOTALING === " + $(this).html())
         if ($.isNumeric($(this).html())) {
             totalPremium = totalPremium + parseFloat($(this).html());
-        } else if ($(this).html().substring(0, 1) === "\$") {
+        }
+        else if ($(this).html().substring(0, 1) === "\$") {
             var v = $(this).html();
             v = v.replace("$", "");
             v = v.replace(/,/g, "");
@@ -2057,7 +2181,8 @@ function buildProductIDArray(data, termLength) {
         }
         EPKGRateInfo = $('#EPKG_RateInfo').html();
         data["EPKGRateInfo"] = EPKGRateInfo;
-    } else {
+    }
+    else {
         if ($('#PIPChoiceInputRadio').is(':checked')) {
             productID = productID + "PIP CHOI" + ";";
             //pipChoiRateInfo = $('#PIPCHOI_RateInfo').html();
@@ -2097,12 +2222,14 @@ function buildProductIDArray(data, termLength) {
         if (termLength > 30) {
             if (riskChosen === "Film Projects Without Cast (No Work Comp)" || riskChosen === "Film Projects With Cast (No Work Comp)") {
                 productID = productID + "BARCPKSF" + ";";
-            } else if (riskChosen === "Annual Blanket Film Projects (DICE)") {
+            }
+            else if (riskChosen === "Annual Blanket Film Projects (DICE)") {
                 productID = productID + "BARCPKGP" + ";";
             }
 
 
-        } else if (termLength <= 30) {
+        }
+        else if (termLength <= 30) {
             productID = productID + "BARCPKGC" + ";";
         }
         CPKRateInfo = $('#CPK_RateInfo').html();
@@ -2114,11 +2241,13 @@ function buildProductIDArray(data, termLength) {
         if (termLength > 30) {
             if (riskChosen === "Film Projects Without Cast (No Work Comp)" || riskChosen === "Film Projects With Cast (No Work Comp)") {
                 productID = productID + "BARCPKSF" + ";";
-            } else if (riskChosen === "Annual Blanket Film Projects (DICE)") {
+            }
+            else if (riskChosen === "Annual Blanket Film Projects (DICE)") {
                 productID = productID + "BARCPKGP" + ";";
             }
 
-        } else if (termLength <= 30) {
+        }
+        else if (termLength <= 30) {
             productID = productID + "BARCPKGC" + ";";
         }
         CGLRateInfo = $('#CGL_RateInfo').html();

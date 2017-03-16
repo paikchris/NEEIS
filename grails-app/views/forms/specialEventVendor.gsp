@@ -21,7 +21,8 @@
             %{--PRINCIPAL PHONE--}%
             <div class="form-group col-xs-12 row">
                 <label for="principalContactPhone">Principal Contact Phone Number</label>
-                <input type="text" class="form-control showReview phoneNumberMask" name="PrincipalPhone" id="principalPhone"
+                <input type="text" class="form-control showReview phoneNumberMask" name="PrincipalPhone"
+                       id="principalPhone"
                        data-reviewName="Principal Phone"
                        placeholder="Principal Phone"/>
             </div>
@@ -37,7 +38,8 @@
             %{--INSURED CONTACT PHONE--}%
             <div class="form-group col-xs-12 row">
                 <label for="InsuredContactPhoneNumber">Insured Contact Person's Phone Number</label>
-                <input type="text" class="form-control showReview phoneNumberMask" name="insuredContactPhone" id="insuredContactPhone"
+                <input type="text" class="form-control showReview phoneNumberMask" name="insuredContactPhone"
+                       id="insuredContactPhone"
                        data-reviewName="Insured Contact Phone Number"
                        placeholder="Phone Number"/>
             </div>
@@ -87,7 +89,8 @@
                         <form enctype="multipart/form-data">
                             <div class="fileUpload btn btn-primary">
                                 <span>Attach File</span>
-                                <input name="experienceFile" type="file" class="file" id="experienceFile" style="width:120px"/>
+                                <input name="experienceFile" type="file" class="file" id="experienceFile"
+                                       style="width:120px"/>
                             </div>
                         </form>
                     </div>
@@ -260,7 +263,8 @@
                     <div class="col-xs-12">
                         <div class="form-group">
                             <label for="costOfRentedVehicles">What is Cost of Hire of Rented Vehicles?</label>
-                            <input type="text" id="costVehicles" class="costVehicles showReview form-control" name="costVehicles"
+                            <input type="text" id="costVehicles" class="costVehicles showReview form-control"
+                                   name="costVehicles"
                                    data-reviewname="What is Cost of Hire of Rented Vehicles" placeholder="$USD">
                         </div>
                     </div>
@@ -278,33 +282,60 @@
                         </div>
                     </div>
 
+
                     %{--TABLE HIRED AND NON-OWNED AUTO LIABILITY --}%
-                    <div class="col-xs-12 coverageCodeRow showReviewTable">
-                        <div class="col-xs-9 ">
+                    <div class="row tableNOAL" id="hiredNonOwnedAutoProduct">
+                        <div class="col-xs-6 ">
                             <strong class="coverageCodeString" style="font-size:13px">Hired / Non-Owned Auto</strong>
+                            <span class="productID_pull" data-cov="NOAL" style="display:none">SPEVENTS</span>
                         </div>
 
-                        <div class="col-xs-3 ">
-                            <strong>Limits</strong>
+                        <div class="col-xs-2">
+                            <span>-</span>
                         </div>
 
-                        <div class="col-xs-12 Auto_LOBRow" style="background-color: rgba(38, 80, 159, 0.13)">
-                            <div class="col-xs-9 coverageColumn">
-                                <span>NOAL: Hired Auto Liability - CSL</span>
+                        <div class="col-xs-2">
+                            <span>-</span>
+                        </div>
+
+                        <div class="col-xs-2">
+                            <span>-</span>
+                        </div>
+
+                        <div class="row lobRow SPEVENTS NOAL"
+                             style="background-color: rgba(38, 80, 159, 0.13)">
+                            <div class="col-xs-6 coverageColumn">
+                                <span class="lob">Hired Auto Liability - CSL</span>
                             </div>
 
-                            <div class="col-xs-3 limitColumn">
-                                <span>$1,000,000</span>
+                            <div class="col-xs-2 limitColumn">
+                                <span class="limit">$1,000,000</span>
+                            </div>
+
+                            <div class="col-xs-2 premiumColumn">
+                                <span class="premium"></span>
+                            </div>
+
+                            <div class="col-xs-2 deductibleColumn">
+                                <span class="deductible"></span>
                             </div>
                         </div>
 
-                        <div class="col-xs-12 WC_LOBRow">
-                            <div class="col-xs-9 coverageColumn">
-                                <span>NOAPD: Hired Auto Physical Damage</span>
+                        <div class="row lobRow SPEVENTS NOAL">
+                            <div class="col-xs-6 coverageColumn">
+                                <span class="lob">Hired Auto Physical Damage</span>
                             </div>
 
-                            <div class="col-xs-3 limitColumn">
-                                <span>ACV Unlimited</span>
+                            <div class="col-xs-2 limitColumn">
+                                <span class="limit">ACV Unlimited</span>
+                            </div>
+
+                            <div class="col-xs-2 premiumColumn">
+                                <span class="premium"></span>
+                            </div>
+
+                            <div class="col-xs-2 deductibleColumn">
+                                <span class="deductible"></span>
                             </div>
                         </div>
                         <br>
@@ -372,12 +403,14 @@
                     </p>
 
                     %{--CONTAINER // ATTACHMENT FOR STUNTS OR HAZARDS--}%
-                    <div class="row" id="stuntsHazardousActivitiesAttachContainer" style="margin-bottom: 20px; display:none">
+                    <div class="row" id="stuntsHazardousActivitiesAttachContainer"
+                         style="margin-bottom: 20px; display:none">
                         <div class="col-xs-3" style="margin-left:20px">
                             <form enctype="multipart/form-data">
                                 <div class="fileUpload btn btn-primary">
                                     <span>Attach File</span>
-                                    <input name="stuntsFile" type="file" class="file" id="stuntsFile" style="width:120px"/>
+                                    <input name="stuntsFile" type="file" class="file" id="stuntsFile"
+                                           style="width:120px"/>
                                 </div>
                             </form>
                         </div>
@@ -488,7 +521,6 @@
                     </div>
                 </div>
 
-
             </div>
         </div>
     </div>
@@ -507,12 +539,20 @@
                 </div>
 
                 <div class="col-xs-6">
-                    <div class="col-xs-10">
-                        <label class="control-label"><u>Coverage:</u></label>
+                    <div class="col-xs-6">
+                        <label class="control-label"><u>Coverages:</u></label>
                     </div>
 
                     <div class="col-xs-2">
                         <label class="control-label"><u>Limits:</u></label>
+                    </div>
+
+                    <div class="col-xs-2">
+                        <label class="control-label"><u>Premiums:</u></label>
+                    </div>
+
+                    <div class="col-xs-2">
+                        <label class="control-label"><u>Deductibles:</u></label>
                     </div>
                 </div>
             </div>
@@ -521,301 +561,365 @@
             <div class="row">
                 <div class="col-xs-6">
 
-                %{--COMMERCIAL GENERAL LIABILITY REQUESTED Y/N--}%
-                <div class="col-xs-12">
-                    <div class="form-group">
-                        <label>Commercial General Liability Limits Requested?</label><br>
-                        <input type="radio" name="commercialGeneralLiabilityRequested?"
-                               class="showReview"
-                               value="Yes"
-                               data-reviewName="Commercial General Liability Limits Requested?"
-                               id="commercialGeneralLiabilityRequestedYes_RadioButton"> Yes
-                        <input type="radio" name="commercialGeneralLiabilityRequested?"
-                               class=""
-                               value="No"
-                               data-reviewName="Commercial General Liability Limits Requested?"
-                               id="commercialGeneralLiabilityRequestedNo_RadioButton"
-                               checked="checked"> No
-                    </div>
-                </div>
-
-                %{--UMBRELLA REQUESTED Y/N--}%
-                <div class="col-xs-12">
-                    <div class="form-group">
-                        <label>Umbrella Limit Requested?</label><br>
-                        <input type="radio" name="umbrellaLimitRequested"
-                               class="showReview"
-                               value="Yes"
-                               data-reviewName="Umbrella Limit Requested?"
-                               id="umbrellaLimitRequestedYes_RadioButton"> Yes
-                        <input type="radio" name="umbrellaLimitRequested"
-                               class=""
-                               value="No"
-                               data-reviewName="Umbrella Limit Requested?"
-                               id="umbrellaLimitRequestedNo_RadioButton"
-                               checked="checked"> No
-                    </div>
-                </div>
-
-                %{--BLANKET REQUESTED Y/N--}%
-                <div class="col-xs-12">
-                    <div class="form-group">
-                        <label>Blanket Additional Insured Requested?</label><br>
-                        <input type="radio" name="blanketInsured"
-                               class="showReview"
-                               value="Yes"
-                               data-reviewName="Blanket Additional Insured Requested?"
-                               id="blanketInsuredYes_RadioButton"> Yes
-                        <input type="radio" name="blanketInsured"
-                               class=""
-                               value="No"
-                               data-reviewName="Blanket Additional Insured Requested?"
-                               id="blanketInsuredNo_RadioButton"
-                               checked="checked"> No
-                    </div>
-                </div>
-
-                %{--WAIVER OF SUBROGATION REQUESTED Y/N--}%
-                <div class="col-xs-12">
-                    <div class="form-group">
-                        <label>Waiver of Subrogation Requested?</label><br>
-                        <input type="radio" name="waiverSubrogation"
-                               class="showReview"
-                               value="Yes"
-                               data-reviewName="Waiver of Subrogation Requested?"
-                               id="waiverSubrogationYes_RadioButton"> Yes
-                        <input type="radio" name="waiverSubrogation"
-                               class=""
-                               value="No"
-                               data-reviewName="Waiver of Subrogation Requested?"
-                               id="waiverSubrogationNo_RadioButton"
-                               checked="checked"> No
-                    </div>
-                </div>
-
-                %{--ALCOHOL REQUESTED Y/N--}%
-                <div class="col-xs-12">
-                    <div class="form-group">
-                        <label>Will alcohol be served?</label><br>
-                        <input type="radio" name="willAlcoholBeServed"
-                               class="showReview"
-                               value="Yes"
-                               data-reviewName="Will alcohol be served?"
-                               id="alcoholYes_RadioButton"> Yes
-                        <input type="radio" name="willAlcoholBeServed"
-                               class=""
-                               value="No"
-                               data-reviewName="Will alcohol be served?"
-                               id="alcoholNo_RadioButton"
-                               checked="checked"> No
-                    </div>
-                </div>
-
-                %{--ALCOHOL CONTAINER / ADDITION QUESTION--}%
-                <div class="alcoholSaleContainer" style="display:none">
-
-                    %{--WHAT IS THE ESTIMATED TOTAL SALES RECEIPTS--}%
-                    <div class="col-xs-12">
-                        <div class="form-group effectsTotalPremium">
-                            <label for="estimatedTotalSalesReceipts">What is the Estimated Total Sales Receipts?</label>
-                            <input type="text" id="alcoholSales" class="alcoholSales showReview form-control"
-                                   name="alcoholSales"
-                                   data-reviewName="What is the Estimated Total Sales Receipts?"
-                                   placeholder="$USD"/>
-                        </div>
-                    </div>
-                </div>
-
-                %{--EQUIPMENT COVERAGE REQUESTED Y/N--}%
-                <div class="col-xs-12">
-                    <div class="form-group">
-                        <label>Misc Equipment Coverage Requested?</label><br>
-                        <input type="radio" name="equipmentOwnedRented"
-                               class="showReview"
-                               value="Yes"
-                               data-reviewName="Misc Equipment Coverage Requested?"
-                               id="equipmentOwnedRentedYes_RadioButton"> Yes
-                        <input type="radio" name="equipmentOwnedRented"
-                               class=""
-                               value="No"
-                               data-reviewName="Misc Equipment Coverage Requested?"
-                               id="equipmentOwnedRentedNo_RadioButton"
-                               checked="checked"> No
-                    </div>
-                </div>
-
-                %{--EQUIPMENT CONTAINER / ADDITIONAL QUESTIONS--}%
-                <div id="equipmentOwnedRentedContainer" style="display:none">
-
-                    %{--EQUIPMENT OWNED OR RENTED Y/N--}%
+                    %{--COMMERCIAL GENERAL LIABILITY REQUESTED Y/N--}%
                     <div class="col-xs-12">
                         <div class="form-group">
-                            <input type="radio" name="equipmentOR"
+                            <label>Commercial General Liability Limits Requested?</label><br>
+                            <input type="radio" name="commercialGeneralLiabilityRequested?"
                                    class="showReview"
                                    value="Yes"
-                                   data-reviewName="Misc Equipment Owned or Rented?"
-                                   id="equipmentOwnRentYes_RadioButton"> Owned
-                            <input type="radio" name="equipmentOR"
+                                   data-reviewName="Commercial General Liability Limits Requested?"
+                                   id="commercialGeneralLiabilityRequestedYes_RadioButton"> Yes
+                            <input type="radio" name="commercialGeneralLiabilityRequested?"
                                    class=""
                                    value="No"
-                                   data-reviewName="Misc Equipment Owned or Rented?"
-                                   id="equipmentOwnRentNo_RadioButton"
-                                   checked="checked"> Rented
+                                   data-reviewName="Commercial General Liability Limits Requested?"
+                                   id="commercialGeneralLiabilityRequestedNo_RadioButton"
+                                   checked="checked"> No
                         </div>
                     </div>
 
-                    %{--WHAT EQUIPMENT LIMIT IS REQUESTED?--}%
+                    %{--UMBRELLA REQUESTED Y/N--}%
                     <div class="col-xs-12">
                         <div class="form-group">
-                            <label for="equipmentLimitRequested">What Equipment Limit is Requested?</label>
-                            <input type="text" id="equipmentLimit" class="equipmentLimit showReview form-control" name="name"
-                                   data-reviewName="What Equipment Limit is Requested?"
-                                   placeholder="$USD"/>
+                            <label>Umbrella Limit Requested?</label><br>
+                            <input type="radio" name="umbrellaLimitRequested"
+                                   class="showReview"
+                                   value="Yes"
+                                   data-reviewName="Umbrella Limit Requested?"
+                                   id="umbrellaLimitRequestedYes_RadioButton"> Yes
+                            <input type="radio" name="umbrellaLimitRequested"
+                                   class=""
+                                   value="No"
+                                   data-reviewName="Umbrella Limit Requested?"
+                                   id="umbrellaLimitRequestedNo_RadioButton"
+                                   checked="checked"> No
                         </div>
                     </div>
 
-                    %{--PROVIDE EQUIPMENT SCHEDULE IF ANY ONE ITEM EXCEEDS 10,000 IN VALUE--}%
+                    %{--BLANKET REQUESTED Y/N--}%
                     <div class="col-xs-12">
                         <div class="form-group">
-                            <label for="equipmentSchedule">Provide Equipment Schedule if any one item exceeds $10,000 in value</label>
-                            <input type="text" id="equipmentSchedule" class="showReview form-control"
-                                   name="name" data-reviewName="Provide Equipment Schedule if any one item exceeds $10,000 in value"
-                                   placeholder="Equipment schedule"/>
+                            <label>Blanket Additional Insured Requested?</label><br>
+                            <input type="radio" name="blanketInsured"
+                                   class="showReview"
+                                   value="Yes"
+                                   data-reviewName="Blanket Additional Insured Requested?"
+                                   id="blanketInsuredYes_RadioButton"> Yes
+                            <input type="radio" name="blanketInsured"
+                                   class=""
+                                   value="No"
+                                   data-reviewName="Blanket Additional Insured Requested?"
+                                   id="blanketInsuredNo_RadioButton"
+                                   checked="checked"> No
                         </div>
                     </div>
 
-                    %{--WHERE IS EQUIPMENT KEPT WHEN NOT IN USE--}%
+                    %{--WAIVER OF SUBROGATION REQUESTED Y/N--}%
                     <div class="col-xs-12">
                         <div class="form-group">
-                            <label for="equipmentLocation">Where is equipment kept when not in use?</label>
-                            <input type="text" id="equipmentLocation" class="showReview form-control"
-                                   name="name" data-reviewName="Where is equipment kept when not in use?"
-                                   placeholder="Location of equipment"/>
+                            <label>Waiver of Subrogation Requested?</label><br>
+                            <input type="radio" name="waiverSubrogation"
+                                   class="showReview"
+                                   value="Yes"
+                                   data-reviewName="Waiver of Subrogation Requested?"
+                                   id="waiverSubrogationYes_RadioButton"> Yes
+                            <input type="radio" name="waiverSubrogation"
+                                   class=""
+                                   value="No"
+                                   data-reviewName="Waiver of Subrogation Requested?"
+                                   id="waiverSubrogationNo_RadioButton"
+                                   checked="checked"> No
                         </div>
                     </div>
 
-                    %{--PROVIDE SECURITY MEASURES AGAINST THEFT, LOSS, AND DAMAGE TO EQUIPMENT--}%
+                    %{--ALCOHOL REQUESTED Y/N--}%
                     <div class="col-xs-12">
                         <div class="form-group">
-                            <label for="equipmentSecurityMeasures">Provide security measures against theft, loss, and damage to equipment</label>
-                            <input type="text" id="equipmentSecurity" class="showReview form-control"
-                                   name="name"
-                                   data-reviewName="Security Measures against theft, loss, and damage"
-                                   placeholder="Equipment security measures"/>
+                            <label>Will alcohol be served?</label><br>
+                            <input type="radio" name="willAlcoholBeServed"
+                                   class="showReview"
+                                   value="Yes"
+                                   data-reviewName="Will alcohol be served?"
+                                   id="alcoholYes_RadioButton"> Yes
+                            <input type="radio" name="willAlcoholBeServed"
+                                   class=""
+                                   value="No"
+                                   data-reviewName="Will alcohol be served?"
+                                   id="alcoholNo_RadioButton"
+                                   checked="checked"> No
                         </div>
                     </div>
 
-                    %{--WHAT METHOD OF INVENTORY DO YOU USE? PLEASE DESCRIBE PROCEDURES AND HOW OFTEN--}%
-                    <div class="col-xs-12">
-                        <div class="form-group">
-                            <label for="equipmentInventoryAndProcedures">What method of inventory do you use? Please describe procedures and how often</label>
-                            <input type="text" id="equipmentInventory" class="showReview form-control"
-                                   name="name" data-reviewName="Method of Inventory"
-                                   placeholder="equipment inventory and procedures"/>
+                    %{--ALCOHOL CONTAINER / ADDITION QUESTION--}%
+                    <div class="alcoholSaleContainer" style="display:none">
+
+                        %{--WHAT IS THE ESTIMATED TOTAL SALES RECEIPTS--}%
+                        <div class="col-xs-12">
+                            <div class="form-group effectsTotalPremium">
+                                <label for="estimatedTotalSalesReceipts">What is the Estimated Total Sales Receipts?</label>
+                                <input type="text" id="alcoholSales" class="alcoholSales showReview form-control"
+                                       name="alcoholSales"
+                                       data-reviewName="What is the Estimated Total Sales Receipts?"
+                                       placeholder="$USD"/>
+                            </div>
                         </div>
                     </div>
+
+                    %{--EQUIPMENT COVERAGE REQUESTED Y/N--}%
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label>Misc Equipment Coverage Requested?</label><br>
+                            <input type="radio" name="equipmentOwnedRented"
+                                   class="showReview"
+                                   value="Yes"
+                                   data-reviewName="Misc Equipment Coverage Requested?"
+                                   id="equipmentOwnedRentedYes_RadioButton"> Yes
+                            <input type="radio" name="equipmentOwnedRented"
+                                   class=""
+                                   value="No"
+                                   data-reviewName="Misc Equipment Coverage Requested?"
+                                   id="equipmentOwnedRentedNo_RadioButton"
+                                   checked="checked"> No
+                        </div>
+                    </div>
+
+                    %{--EQUIPMENT CONTAINER / ADDITIONAL QUESTIONS--}%
+                    <div id="equipmentOwnedRentedContainer" style="display:none">
+
+                        %{--EQUIPMENT OWNED OR RENTED Y/N--}%
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <input type="radio" name="equipmentOR"
+                                       class="showReview"
+                                       value="Yes"
+                                       data-reviewName="Misc Equipment Owned or Rented?"
+                                       id="equipmentOwnRentYes_RadioButton"> Owned
+                                <input type="radio" name="equipmentOR"
+                                       class=""
+                                       value="No"
+                                       data-reviewName="Misc Equipment Owned or Rented?"
+                                       id="equipmentOwnRentNo_RadioButton"
+                                       checked="checked"> Rented
+                            </div>
+                        </div>
+
+                        %{--WHAT EQUIPMENT LIMIT IS REQUESTED?--}%
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label for="equipmentLimitRequested">What Equipment Limit is Requested?</label>
+                                <input type="text" id="equipmentLimit" class="equipmentLimit showReview form-control"
+                                       name="name"
+                                       data-reviewName="What Equipment Limit is Requested?"
+                                       placeholder="$USD"/>
+                            </div>
+                        </div>
+
+                        %{--PROVIDE EQUIPMENT SCHEDULE IF ANY ONE ITEM EXCEEDS 10,000 IN VALUE--}%
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label for="equipmentSchedule">Provide Equipment Schedule if any one item exceeds $10,000 in value</label>
+                                <input type="text" id="equipmentSchedule" class="showReview form-control"
+                                       name="name"
+                                       data-reviewName="Provide Equipment Schedule if any one item exceeds $10,000 in value"
+                                       placeholder="Equipment schedule"/>
+                            </div>
+                        </div>
+
+                        %{--WHERE IS EQUIPMENT KEPT WHEN NOT IN USE--}%
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label for="equipmentLocation">Where is equipment kept when not in use?</label>
+                                <input type="text" id="equipmentLocation" class="showReview form-control"
+                                       name="name" data-reviewName="Where is equipment kept when not in use?"
+                                       placeholder="Location of equipment"/>
+                            </div>
+                        </div>
+
+                        %{--PROVIDE SECURITY MEASURES AGAINST THEFT, LOSS, AND DAMAGE TO EQUIPMENT--}%
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label for="equipmentSecurityMeasures">Provide security measures against theft, loss, and damage to equipment</label>
+                                <input type="text" id="equipmentSecurity" class="showReview form-control"
+                                       name="name"
+                                       data-reviewName="Security Measures against theft, loss, and damage"
+                                       placeholder="Equipment security measures"/>
+                            </div>
+                        </div>
+
+                        %{--WHAT METHOD OF INVENTORY DO YOU USE? PLEASE DESCRIBE PROCEDURES AND HOW OFTEN--}%
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label for="equipmentInventoryAndProcedures">What method of inventory do you use? Please describe procedures and how often</label>
+                                <input type="text" id="equipmentInventory" class="showReview form-control"
+                                       name="name" data-reviewName="Method of Inventory"
+                                       placeholder="equipment inventory and procedures"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    %{--RESPONSIBLE FOR PREMISES Y/N--}%
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label>Are you contractually responsible for Premises?</label><br>
+                            <input type="radio" name="premisesResponsible"
+                                   class="showReview"
+                                   value="Yes"
+                                   data-reviewName="Are you contractually responsible for Premises?"
+                                   id="premisesYes_RadioButton"> Yes
+                            <input type="radio" name="premisesResponsible"
+                                   class=""
+                                   value="No"
+                                   data-reviewName="Are you contractually responsible for Premises?"
+                                   id="premisesNo_RadioButton"
+                                   checked="checked"> No
+                        </div>
+                    </div>
+
+                    %{--BROKER FEE--}%
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label class="control-label">Broker Fee</label>
+                            <input class="form-control effectsTotalPremium brokerFeeInput" id="brokerFeeInput"
+                                   type="text"
+                                   placeholder="$USD"
+                                   name="brokerFee"/>
+                        </div>
+                    </div>
+
                 </div>
-
-                %{--RESPONSIBLE FOR PREMISES Y/N--}%
-                <div class="col-xs-12">
-                    <div class="form-group">
-                        <label>Are you contractually responsible for Premises?</label><br>
-                        <input type="radio" name="premisesResponsible"
-                               class="showReview"
-                               value="Yes"
-                               data-reviewName="Are you contractually responsible for Premises?"
-                               id="premisesYes_RadioButton"> Yes
-                        <input type="radio" name="premisesResponsible"
-                               class=""
-                               value="No"
-                               data-reviewName="Are you contractually responsible for Premises?"
-                               id="premisesNo_RadioButton"
-                               checked="checked"> No
-                    </div>
-                </div>
-
-                %{--BROKER FEE--}%
-                <div class="col-xs-12">
-                    <div class="form-group">
-                        <label class="control-label">Broker Fee</label>
-                        <input class="form-control effectsTotalPremium brokerFeeInput" id="brokerFeeInput" type="text"
-                               placeholder="$USD"
-                               name="brokerFee"/>
-                    </div>
-                </div>
-
-            </div>
 
                 <div class="col-xs-6">
 
                     %{--TABLE CGL--}%
                     <div id="commercialGeneralLiabilityRequestedContainer" style="display:none">
-                        <div id="limitsDeductPremiumInsert">
-                            <div class="row coverageCodeRow showReviewTable">
-                                <div class="col-xs-10 ">
-                                    <strong class="coverageCodeString" style="font-size:13px">Commercial General Liability</strong></div>
-
-                            <div class="col-xs-2 ">
-                                <span'>-</span'>
+                        <div class="row tableCGL" id="commercialGeneralLiabilityProduct">
+                            <div class="col-xs-6 ">
+                                <strong class="coverageCodeString"
+                                        style="font-size:13px">Commercial General Liability</strong>
+                                <span class="productID_pull" data-cov="CGL" style="display:none">SPEVENTS</span>
                             </div>
 
-                            <div class="row CGL_LOBRow" style="background-color: rgba(38, 80, 159, 0.13)">
-                                <div class="col-xs-10 coverageColumn" style="padding-left:20px">
-                                    <span>CGL: General Aggregate Limit</span>
+                            <div class="col-xs-2">
+                                <span>-</span>
+                            </div>
+
+                            <div class="col-xs-2">
+                                <span>-</span>
+                            </div>
+
+                            <div class="col-xs-2">
+                                <span>-</span>
+                            </div>
+
+                            <div class="row lobRow SPEVENTS CGL"
+                                 style="background-color: rgba(38, 80, 159, 0.13)">
+                                <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                    <span class="lob">General Aggregate Limit</span>
                                 </div>
 
                                 <div class="col-xs-2 limitColumn">
-                                    <span>$1,000,000</span>
+                                    <span class="limit">$2,000,000</span>
+                                </div>
+
+                                <div class="col-xs-2 premiumColumn">
+                                    <span class="premium"></span>
+                                </div>
+
+                                <div class="col-xs-2 deductibleColumn">
+                                    <span class="deductible"></span>
                                 </div>
                             </div>
 
-                            <div class="row CGL_LOBRow">
-                                <div class="col-xs-10 coverageColumn" style="padding-left:20px">
-                                    <span>CGL: Products & Completed Operations Agg Limit</span>
+                            <div class="row lobRow SPEVENTS CGL">
+                                <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                    <span class="lob">Products & Completed Operations Agg Limit</span>
                                 </div>
 
                                 <div class="col-xs-2 limitColumn">
-                                    <span>$1,000,000</span>
+                                    <span class="limit">$1,000,000</span>
+                                </div>
+
+                                <div class="col-xs-2 premiumColumn">
+                                    <span class="premium"></span>
+                                </div>
+
+                                <div class="col-xs-2 deductibleColumn">
+                                    <span class="deductible"></span>
                                 </div>
                             </div>
 
-                            <div class="row CGL_LOBRow" style="background-color: rgba(38, 80, 159, 0.13)">
-                                <div class="col-xs-10 coverageColumn" style="padding-left:20px">
-                                    <span>CGL: Personal & Advertising Injury (Any One Person or Organization)</span>
+                            <div class="row lobRow SPEVENTS CGL"
+                                 style="background-color: rgba(38, 80, 159, 0.13)">
+                                <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                    <span class="lob">Personal & Advertising Injury (Any one person or organization)</span>
                                 </div>
 
                                 <div class="col-xs-2 limitColumn">
-                                    <span>$1,000,000</span>
+                                    <span class="limit">$1,000,000</span>
+                                </div>
+
+                                <div class="col-xs-2 premiumColumn">
+                                    <span class="premium"></span>
+                                </div>
+
+                                <div class="col-xs-2 deductibleColumn">
+                                    <span class="deductible"></span>
                                 </div>
                             </div>
 
-                            <div class="row CGL_LOBRow">
-                                <div class="col-xs-10 coverageColumn" style="padding-left:20px">
-                                    <span>CGL: Each Occurrence Limit</span>
+                            <div class="row lobRow SPEVENTS CGL">
+                                <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                    <span class="lob">Each Occurrence Limit</span>
                                 </div>
 
                                 <div class="col-xs-2 limitColumn">
-                                    <span>$1,000,000</span>
+                                    <span class="limit">$1,000,000</span>
+                                </div>
+
+                                <div class="col-xs-2 premiumColumn">
+                                    <span class="premium"></span>
+                                </div>
+
+                                <div class="col-xs-2 deductibleColumn">
+                                    <span class="deductible"></span>
                                 </div>
                             </div>
 
-                            <div class="row CGL_LOBRow" style="background-color: rgba(38, 80, 159, 0.13)">
-                                <div class="col-xs-10 coverageColumn" style="padding-left:20px">
-                                    <span>CGL: Damage to Premises Rented to You Limit</span>
+                            <div class="row lobRow SPEVENTS CGL"
+                                 style="background-color: rgba(38, 80, 159, 0.13)">
+                                <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                    <span class="lob">Damage to Premises Rented to You Limit</span>
                                 </div>
 
                                 <div class="col-xs-2 limitColumn">
-                                    <span>$100,000</span>
+                                    <span class="limit">$100,000</span>
+                                </div>
+
+                                <div class="col-xs-2 premiumColumn">
+                                    <span class="premium"></span>
+                                </div>
+
+                                <div class="col-xs-2 deductibleColumn">
+                                    <span class="deductible"></span>
                                 </div>
                             </div>
 
-                            <div class="row CGL_LOBRow">
-                                <div class="col-xs-10 coverageColumn" style="padding-left:20px">
-                                    <span>CGL: Medical Payments</span>
+                            <div class="row lobRow SPEVENTS CGL">
+                                <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                    <span class="lob">Medical Payments</span>
                                 </div>
 
                                 <div class="col-xs-2 limitColumn">
-                                    <span>Excluded</span>
+                                    <span class="limit">Excluded</span>
+                                </div>
+
+                                <div class="col-xs-2 premiumColumn">
+                                    <span class="premium"></span>
+                                </div>
+
+                                <div class="col-xs-2 deductibleColumn">
+                                    <span class="deductible"></span>
                                 </div>
                             </div>
 
@@ -823,7 +927,6 @@
                                 <div class="col-xs-10 "><strong style="font-size:13px"></strong>
                                 </div>
                             </div>
-                        </div>
                         </div>
                     </div>
                     %{--TABLE CGL--}%
@@ -831,60 +934,111 @@
 
                     %{--TABLE UMBRELLA--}%
                     <div id="umbrellaLimitRequestedContainer" style="display:none">
-                        <div class="row coverageCodeRow showReviewTable">
-                            <div class="col-xs-10 ">
+                        <div class="row tablCUMB" id="umbrellaProduct">
+                            <div class="col-xs-6">
                                 <strong class="coverageCodeString" style="font-size:13px">Umbrella</strong>
+                                <span class="productID_pull" data-cov="CUMB" style="display:none">SPEVENTS</span>
                             </div>
 
-                            <div class="col-xs-2 "><span'>-</span'></div>
+                            <div class="col-xs-2 ">
+                                <span'>-</span'>
+                            </div>
 
-                            <div class="row Umbrella_LOBRow" style="background-color: rgba(38, 80, 159, 0.13)">
-                                <div class="col-xs-10 coverageColumn" style="padding-left:20px">
-                                    <span>CUMB: Each Occurrence Limit (Liability Coverage)</span>
+                            <div class="col-xs-2 ">
+                                <span'>-</span'>
+                            </div>
+
+                            <div class="col-xs-2 ">
+                                <span'>-</span'>
+                            </div>
+
+                            <div class="row lobRow SPEVENTS CUMB" style="background-color: rgba(38, 80, 159, 0.13)">
+                                <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                    <span class="lob">Each Occurrence Limit (Liability Coverage)</span>
                                 </div>
 
                                 <div class="col-xs-2 limitColumn">
-                                    <span>$1,000,000</span>
+                                    <span class="limit">$1,000,000</span>
+                                </div>
+
+                                <div class="col-xs-2 premiumColumn">
+                                    <span class="premium"></span>
+                                </div>
+
+                                <div class="col-xs-2 deductibleColumn">
+                                    <span class="deductible"></span>
                                 </div>
                             </div>
 
-                            <div class="row Umbrella_LOBRow">
-                                <div class="col-xs-10 coverageColumn" style="padding-left:20px">
-                                    <span>CUMB: Personal & Advertising Injury Limit (Any one person or organization)</span>
+                            <div class="row lobRow SPEVENTS CUMB">
+                                <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                    <span class="lob">Personal & Advertising Injury Limit (Any one person or organization)</span>
                                 </div>
 
                                 <div class="col-xs-2 limitColumn">
-                                    <span>$1,000,000</span>
+                                    <span class="limit">$1,000,000</span>
+                                </div>
+
+                                <div class="col-xs-2 premiumColumn">
+                                    <span class="premium"></span>
+                                </div>
+
+                                <div class="col-xs-2 deductibleColumn">
+                                    <span class="deductible"></span>
                                 </div>
                             </div>
 
-                            <div class="row Umbrella_LOBRow" style="background-color: rgba(38, 80, 159, 0.13)">
-                                <div class="col-xs-10 coverageColumn" style="padding-left:20px">
-                                    <span>CUMB: Aggregate Limit (Liability Coverage) (except with respect to covered autos)</span>
+                            <div class="row lobRow SPEVENTS CUMB" style="background-color: rgba(38, 80, 159, 0.13)">
+                                <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                    <span class="lob">Aggregate Limit (Liability Coverage) (except with respect to covered autos)</span>
                                 </div>
 
                                 <div class="col-xs-2 limitColumn">
-                                    <span>$1,000,000</span>
+                                    <span class="limit">$1,000,000</span>
+                                </div>
+
+                                <div class="col-xs-2 premiumColumn">
+                                    <span class="premium"></span>
+                                </div>
+
+                                <div class="col-xs-2 deductibleColumn">
+                                    <span class="deductible"></span>
                                 </div>
                             </div>
 
-                            <div class="row Umbrella_LOBRow">
-                                <div class="col-xs-10 coverageColumn" style="padding-left:20px">
-                                    <span>CUMB: Covered Auto Aggregate Limit</span>
+                            <div class="row lobRow SPEVENTS CUMB">
+                                <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                    <span class="lob">Covered Auto Aggregate Limit</span>
                                 </div>
 
                                 <div class="col-xs-2 limitColumn">
-                                    <span>$1,000,000</span>
+                                    <span class="limit">$1,000,000</span>
+                                </div>
+
+                                <div class="col-xs-2 premiumColumn">
+                                    <span class="premium"></span>
+                                </div>
+
+                                <div class="col-xs-2 deductibleColumn">
+                                    <span class="deductible"></span>
                                 </div>
                             </div>
 
-                            <div class="row Umbrella_LOBRow" style="background-color: rgba(38, 80, 159, 0.13)">
-                                <div class="col-xs-10 coverageColumn" style="padding-left:20px">
-                                    <span>CUMB: Self-Insured Retention</span>
+                            <div class="row lobRow SPEVENTS CUMB" style="background-color: rgba(38, 80, 159, 0.13)">
+                                <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                    <span class="lob">Self-Insured Retention</span>
                                 </div>
 
                                 <div class="col-xs-2 limitColumn">
-                                    <span>nil</span>
+                                    <span class="limit">nil</span>
+                                </div>
+
+                                <div class="col-xs-2 premiumColumn">
+                                    <span class="premium"></span>
+                                </div>
+
+                                <div class="col-xs-2 deductibleColumn">
+                                    <span class="deductible"></span>
                                 </div>
                             </div>
 
@@ -893,7 +1047,7 @@
                                 </div>
                             </div>
                         </div>
-                        </div>
+                    </div>
                     %{--TABLE UMBRELLA--}%
 
                     %{--Premiums--}%
@@ -903,33 +1057,34 @@
 
                             %{--HEADER--}%
                             <div class="row">
-                                <div class="col-xs-8">
+                                <div class="col-xs-4">
                                     <u>Line Of Business</u>
                                 </div>
 
-                                <div class="col-xs-2">
+                                <div class="col-xs-3">
                                     <u>Premium</u>
                                 </div>
 
-                                <div class="col-xs-2">
+                                <div class="col-xs-3">
                                     <u>Agent %</u>
                                 </div>
                             </div>
 
-                            %{--COMMERCIAL GENERAL LIABILITY LIMITS--}%
+                            %{--COMMERCIAL GENERAL LIMITS--}%
                             <div class="premDistributionInsert">
                                 <div id="commercialGeneralLiabilityPremiumContainer">
                                     <div class="row" style="background-color: rgba(38, 80, 159, 0.13)">
-                                        <div class="col-xs-8">
-                                            <span class="eventLineOfBusinessSpan" id="commercialGeneralLiabilityPremiumName">Commercial General Liability</span>
+                                        <div class="col-xs-4">
+                                            <span class="lineOfBusinessSpan"
+                                                  id="commercialGeneralLiabilityPremiumName">Commercial General Liability</span>
                                         </div>
 
-                                        <div class="col-xs-2">
-                                            <span class="eventPremiumSpan" id="commercialGeneralLiabilityPremiumCost"></span>
+                                        <div class="col-xs-3">
+                                            <span class="premiumSpan effectsTotal" id="commercialGeneralLiabilityPremiumCost"></span>
                                         </div>
 
-                                        <div class="col-xs-2">
-                                            <span class="eventAgentPercentSpan">-</span>
+                                        <div class="col-xs-3">
+                                            <span class="agentPercentSpan">-</span>
                                         </div>
                                     </div>
                                 </div>
@@ -939,16 +1094,18 @@
                             <div class="premDistributionInsert">
                                 <div class="alcoholSaleContainer" style="display:none">
                                     <div class="row">
-                                        <div class="col-xs-8">
-                                            <span class="eventLineOfBusinessSpan" id="alcoholSalePremiumName">Liquor Liability</span>
+                                        <div class="col-xs-4">
+                                            <span class="lineOfBusinessSpan"
+                                                  id="alcoholSalePremiumName">Liquor Liability</span>
                                         </div>
 
-                                        <div class="col-xs-2">
-                                            <span class="eventPremiumSpan" id="alcoholSalePremiumCost"></span>
+                                        <div class="col-xs-3">
+                                            <span class="premiumSpan effectsTotal"
+                                                  id="alcoholSalePremiumCost"></span>
                                         </div>
 
-                                        <div class="col-xs-2">
-                                            <span class="eventAgentPercentSpan">-</span>
+                                        <div class="col-xs-3">
+                                            <span class="agentPercentSpan">-</span>
                                         </div>
                                     </div>
                                 </div>
@@ -958,16 +1115,17 @@
                             <div class="premDistributionInsert">
                                 <div class="policyFeeContainer">
                                     <div class="row" style="background-color: rgba(38, 80, 159, 0.13)">
-                                        <div class="col-xs-8">
-                                            <span class="eventLineOfBusinessSpan" id="policyFeePremiumName">Policy Fee</span>
+                                        <div class="col-xs-4">
+                                            <span class="lineOfBusinessSpan" id="policyFeePremiumName">Policy Fee</span>
                                         </div>
 
-                                        <div class="col-xs-2">
-                                            <span class="eventPremiumSpan effectsTotalPremium" id="policyFeePremiumCost"></span>
+                                        <div class="col-xs-3">
+                                            <span class="premiumSpan effectsTotal"
+                                                  id="policyFeePremiumCost"></span>
                                         </div>
 
-                                        <div class="col-xs-2">
-                                            <span class="policyFeePercentSpan">-</span>
+                                        <div class="col-xs-3">
+                                            <span class="agentPercentSpan">-</span>
                                         </div>
                                     </div>
                                 </div>
@@ -977,18 +1135,19 @@
                             <div class="premDistributionInsert">
                                 <div class="totalSaleContainer">
                                     <div class="row">
-                                        <div class="col-xs-8">
+                                        <div class="col-xs-4">
                                             <strong>
-                                                <span class="eventLineOfBusinessSpan" id="totalSalePremiumName">Total:</span>
+                                                <span class="lineOfBusinessSpan" id="totalSalePremiumName">Total:</span>
                                             </strong>
                                         </div>
 
-                                        <div class="col-xs-2">
-                                            <span class="" id="totalSalePremiumCost"></span>
+                                        <div class="col-xs-3">
+                                            <span class="premiumSpan productTotalPremium SPEVENTS"
+                                                  id="totalSalePremiumCost"></span>
                                         </div>
 
-                                        <div class="col-xs-2">
-                                            <span class="totalSalePercentSpan"></span>
+                                        <div class="col-xs-3">
+                                            <span class=" agentPercentSpan totalSalePercentSpan"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -998,16 +1157,17 @@
                             <div class="premDistributionInsert">
                                 <div id="brokerFeePremiumContainer" style="display:none">
                                     <div class="row">
-                                        <div class="col-xs-8">
-                                            <span class="eventLineOfBusinessSpan" id="brokerFeePremiumName">Broker Fee</span>
+                                        <div class="col-xs-4">
+                                            <span class="lineOfBusinessSpan" id="brokerFeePremiumName">Broker Fee</span>
                                         </div>
 
-                                        <div class="col-xs-2">
-                                            <span class="brokerFeePremiumCost" id="brokerFeePremiumCost"></span>
+                                        <div class="col-xs-3">
+                                            <span class="premiumSpan brokerFeePremiumCost"
+                                                  id="brokerFeePremiumCost"></span>
                                         </div>
 
-                                        <div class="col-xs-2">
-                                            <span class="eventAgentPercentSpan">-</span>
+                                        <div class="col-xs-3">
+                                            <span class="agentPercentSpan">-</span>
                                         </div>
                                     </div>
                                 </div>
@@ -1016,9 +1176,9 @@
                         </div>
                     </div>
                     %{--Premium--}%
-
-                </div>
+                    
                 </div>
             </div>
         </div>
     </div>
+</div>

@@ -784,7 +784,7 @@
                 </div>
             </div>
         </div>
-        
+
 
 
         <div class="row col-xs-12">
@@ -1362,7 +1362,7 @@
 
             </div>
 
-            <div id="limitsDeductPremiumInsert">
+            <div class="showReviewTable" id="limitsDeductPremiumInsert">
                 <div class="row">
                     <div class="col-xs-6 coverageColumn">
                         <span>-</span>

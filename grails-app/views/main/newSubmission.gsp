@@ -5,6 +5,18 @@
     <meta name="layout" content="main">
     <link rel="stylesheet" href="${resource(dir: 'css', file: 'newSubmission.css')}" type="text/css">
     <script src="${resource(dir: 'js', file: "newSubmission.js?ts=" + new Date().getTime())}" async></script>
+    <script src="${resource(dir: 'js', file: "/newSubmissionUtils/progressSaveLoad.js?ts=" + new Date().getTime())}" async></script>
+    <script src="${resource(dir: 'js', file: "/newSubmissionUtils/formValidation.js?ts=" + new Date().getTime())}" async></script>
+    <script src="${resource(dir: 'js', file: "/newSubmissionUtils/dateHelper.js?ts=" + new Date().getTime())}" async></script>
+    <script src="${resource(dir: 'js', file: "/newSubmissionUtils/BORHelper.js?ts=" + new Date().getTime())}" async></script>
+    <script src="${resource(dir: 'js', file: "/newSubmissionUtils/googleAddressHelper.js?ts=" + new Date().getTime())}" async></script>
+    <script src="${resource(dir: 'js', file: "/newSubmissionUtils/AIMHelper.js?ts=" + new Date().getTime())}" async></script>
+    <script src="${resource(dir: 'js', file: "/utils/stringUtils.js?ts=" + new Date().getTime())}" async></script>
+
+
+
+
+
     <script src="${resource(dir: 'js', file: 'jquery.maskMoney.min.js')}" async></script>
 </head>
 <body>
@@ -254,7 +266,7 @@
                                                     <option value="Wagon / Hayrides Walking / Hiking Tour">Wagon / Hayrides Walking / Hiking Tour</option>
                                                     <option value="Weddings and Wedding Receptions Yodeler">Weddings and Wedding Receptions Yodeler</option>
                                                     <option value="Wine Tasting">Wine Tasting</option>
-                                                    
+
                                                 </select>
                                             </div>
 
@@ -831,49 +843,6 @@
 
                     </div>
                 </div>
-
-
-
-
-                %{--<div class="row">--}%
-
-                %{--<div class="col-xs-4"></div>--}%
-                %{--<div class="col-xs-4">--}%
-                %{--<br><br>--}%
-                %{--<div class="form-group ">--}%
-                %{--<label class="control-label" style="text-align: center">Risk Type Category</label>--}%
-                %{--<h4 style="text-align: center;">Risk Type Category</h4>--}%
-                %{--<p>--}%
-                %{--<select class="form-control newEmpireFormInput" name="riskCategory" id="riskCategorySelect">--}%
-                %{--<option value="invalid" selected="selected">Please Select Risk Category</option>--}%
-                %{--<g:each status="i" var="r" in="${riskCategories}">--}%
-
-                %{--<option value="${r}">${r}</option>--}%
-
-
-                %{--</g:each>--}%
-                %{--</select>--}%
-                %{--</p>--}%
-                %{--</div>--}%
-
-                %{--<div class="form-group" id="riskTypeGroup" style="display: none;">--}%
-                %{--<label class="control-label">Risk Type</label>--}%
-                %{--<h4 style="text-align: center;">Sub Risk Type</h4>--}%
-                %{--<p>--}%
-                %{--<select class="form-control" id="riskTypeSelect" name="subRiskType" style="display: none;">--}%
-                %{--<option value="invalid" selected="selected">Please Select Risk Type</option>--}%
-                %{--</select>--}%
-                %{--</p>--}%
-                %{--</div>--}%
-                %{--<br>--}%
-                %{--</div>--}%
-                %{--<div class="col-xs-4"></div>--}%
-                %{--</div>--}%
-
-
-
-
-
 
 
                 <div class="col-xs-12">
