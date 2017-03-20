@@ -1,7 +1,5 @@
 function getProductsForRisk() {
-
     var riskChosen = getRiskTypeChosen();
-
     if (riskChosen.indexOf("Film Projects") > -1 && $("#proposedTermLength").val().length > 0) {
         $.ajax({
                 method: "POST",
@@ -163,6 +161,42 @@ function getProductsForRisk() {
 
 }
 
+function getProductsForRiskV2(){
+    var dataMap = {};
+    dataMap.duration = parseInt($("#proposedTermLength").val().split(" ")[0]);
+    dataMap.risk = getRiskTypeChosen();
+    dataMap.budget = parseInt($("#totalBudgetConfirm").val().replace(/\$|,/g, ''));
+
+
+    $.ajax({
+        method: "POST",
+        url: "/portal/Async/getProductsForCoverageV2",
+        data: {
+            riskType: getRiskTypeChosen(),
+            totalGrossBudget: $("#totalBudgetConfirm").val().replace(/\$|,/g, ''),
+            proposedTermLength: $("#proposedTermLength").val(),
+            dataMap: JSON.stringify(dataMap)
+        }
+    })
+    .done(function(msg) {
+        // $('#productChoicesDiv').html("");
+        $('#loadingModal').modal('hide');
+        var coverageAndProductsJSON = JSON.parse(msg); 
+        var htmlString = "";
+
+
+        for (var i = 0; i < coverageAndProductsJSON.length; i++) {
+            var coverageID = coverageAndProductsJSON[i].id
+            htmlString = htmlString +
+            "<div class='form-group col-xs-12 " + coverageID + "Div'>" +
+                "<p><input type='checkbox' class='coverageInput' name='coverage' id='" + coverageID + "coverage'> Entertainment Package</p>" +
+            "</div>";
+        }
+
+
+
+    });
+}
 
 function getTaxInfo() {
     var date = new Date();
@@ -254,4 +288,306 @@ function getTaxInfo() {
 
 
         });
+}
+
+
+function getSubmissionMap() {
+
+    var submissionMap = {
+        totalBudgetConfirm: $("#totalBudgetConfirm").val(),
+        namedInsured: $('#namedInsured').val(),
+        streetNameMailing: $('#googleAutoAddress').val(),
+        cityMailing: $('#cityMailing').val(),
+        stateMailing: $('#stateMailing').val(),
+        zipCodeMailing: $('#zipCodeMailing').val(),
+        userCompany: $('#userDetails-company').html(),
+        accountExec: "jason",
+        accountExecName: "Jason DeBolt",
+        phoneNumber: $('#phoneNumber').val(),
+        namedInsuredEmail: $('#namedInsuredEmail').val(),
+        FEINSSN: $('#FEINSSN').val(),
+        businessStructure: $('#businessStructureSelect').val(),
+        NCCI: $('#NCCI').val(),
+        SIC: $('#SIC').val(),
+        attention: $('#userDetails-firstName').html() + " " + $('#userDetails-lastName').html(),
+        aimContactID: $('#userDetails-aimContactID').html(),
+        website: $('#website').val(),
+        proposedTermLength: parseInt($("#proposedTermLength").val().split(" ")),
+        proposedEffectiveDate: $("#proposedEffectiveDate").val(),
+        proposedExpirationDate: $("#proposedExpirationDate").val(),
+        coverageCodes: "",
+        numberProductions: $("#numberProductions").val(),
+        riskChosen: getRiskTypeChosen(),
+        riskCategory: getRiskCategoryChosen(),
+        premiumAllLOBTotal: $('#premiumAllLOBTotal').html(),
+        filmingLocation: $('#filmingLocation').html(),
+        productID: []
+    };
+
+    submissionMap.coverageCodes = "";
+    $('#reviewLimitsDeducts .coverageCodeString').each(function() {
+        submissionMap.coverageCodes = submissionMap.coverageCodes + $(this).html() + ",";
+    });
+    submissionMap.coverageCodes = submissionMap.coverageCodes.replace(/,\s*$/, "");
+
+
+    var productArray = [];
+
+    //EPKG PRODUCT
+    if (submissionMap.riskChosen === "Film Projects With Cast (No Work Comp)") {
+        if ($('#EPKGcoverage').is(':checked')) {
+            productArray.push("EPKG37");
+        }
+        submissionMap.EPKGRateInfo = $('#EPKG_RateInfo').html();
+    }
+    else {
+        if ($('#PIPChoiceInputRadio').is(':checked')) {
+            productArray.push("PIP CHOI");
+        }
+        if ($('#PIP1InputRadio').is(':checked')) {
+            productArray.push("PIP 1");
+        }
+        if ($('#PIP2InputRadio').is(':checked')) {
+            productArray.push("PIP 2");
+        }
+        if ($('#PIP3InputRadio').is(':checked')) {
+            productArray.push("PIP 3");
+        }
+        if ($('#PIP4InputRadio').is(':checked')) {
+            productArray.push("PIP 4");
+        }
+        if ($('#PIP5InputRadio').is(':checked')) {
+            productArray.push("PIP 5");
+        }
+        submissionMap.EPKGRateInfo = $('#EPKG_RateInfo').html();
+    }
+
+    if ($('#CPKInputRadio').is(':checked')) {
+        if (submissionMap.proposedTermLength > 30) {
+            productArray.push("BARCPKSF");
+        }
+        else if (submissionMap.proposedTermLength <= 30) {
+            productArray.push("BARCPKGC");
+        }
+        submissionMap.CPKRateInfo = $('#CPK_RateInfo').html() + $('#NOAL_RateInfo').html();
+
+    }
+    if ($('#CGLInputRadio').is(':checked')) {
+        if (submissionMap.proposedTermLength > 30) {
+            if (submissionMap.riskChosen === "Film Projects Without Cast (No Work Comp)" || submissionMap.riskChosen === "Film Projects With Cast (No Work Comp)") {
+                productArray.push("BARCPKSF");
+            }
+        }
+        else if (submissionMap.proposedTermLength <= 30) {
+            productArray.push("BARCPKGC");
+        }
+        submissionMap.CGLRateInfo = $('#CGL_RateInfo').html();
+    }
+    if (productArray.length === 0) {
+        validSubmission = false;
+    }
+    submissionMap.productID = productArray;
+
+    //Get LOB Limits Deductibles Premiums
+    var EPKGlimitsString = "";
+    var EPKGdeductsString = "";
+    submissionMap.epkgLOB = "";
+    submissionMap.cpkLOB = "";
+    submissionMap.cglLOB = "";
+    if ($('#EPKGcoverage').is(':checked')) {
+        $('div#reviewLimitsDeducts div.EPKG_LOBRow').each(function() {
+            if ($('#PIPChoiceInputRadio').is(':checked')) {
+                if ($(this).find('.limitColumn').children().first().is('input')) {
+                    submissionMap.epkgLOB = submissionMap.epkgLOB + $(this).find('.coverageColumn').children().first().html() + " \t" + $(this).find('.limitColumn').children().first().val() + " \t" +
+                        $(this).find('.deductibleColumn').children().first().html() + "\n";
+                    submissionMap.EPKGlimitsString = submissionMap.EPKGlimitsString + $(this).find('.limitColumn').children().first().val() + "\tEPKG:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+                    submissionMap.EPKGdeductsString = submissionMap.EPKGdeductsString + $(this).find('.deductibleColumn').children().first().html() + "\tEPKG:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+                    //console.log(EPKGlimitsString)
+                }
+                else {
+                    submissionMap.epkgLOB = submissionMap.epkgLOB + $(this).find('.coverageColumn').children().first().html() + " \t" + $(this).find('.limitColumn').children().first().html() + " \t" +
+                        $(this).find('.deductibleColumn').children().first().html() + "\n";
+                    submissionMap.EPKGlimitsString = submissionMap.EPKGlimitsString + $(this).find('.limitColumn').children().first().html() + "\tEPKG:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+                    submissionMap.EPKGdeductsString = submissionMap.EPKGdeductsString + $(this).find('.deductibleColumn').children().first().html() + "\tEPKG:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+                    //console.log(EPKGlimitsString)
+                }
+
+            }
+            else {
+                if ($(this).find('.coverageColumn').children('span').length > 1) {
+                    var epkgLOBRowObject = $(this);
+                    var childCount = 0;
+                    $(this).find('.coverageColumn').children('span').each(function() {
+                        submissionMap.epkgLOB = submissionMap.epkgLOB + $(this).html() + " \t" + $(epkgLOBRowObject).find('.limitColumn').children('span').eq(childCount).html() + " \t" +
+                            $(epkgLOBRowObject).find('.deductibleColumn').children('span').eq(childCount).html() + "\n";
+
+                        submissionMap.EPKGlimitsString = submissionMap.EPKGlimitsString + $(epkgLOBRowObject).find('.limitColumn').children('span').eq(childCount).html() + "\tEPKG:" +
+                            $(epkgLOBRowObject).find('.coverageColumn').children('span').eq(childCount).html() + "\n";
+                        submissionMap.EPKGdeductsString = submissionMap.EPKGdeductsString + $(epkgLOBRowObject).find('.deductibleColumn').children('span').eq(childCount).html() + "\tEPKG:" +
+                            $(epkgLOBRowObject).find('.coverageColumn').children('span').eq(childCount).html() + "\n";
+                        childCount++;
+                    });
+                }
+                else {
+                    submissionMap.epkgLOB = submissionMap.epkgLOB + $(this).find('.coverageColumn').children().first().html() + " \t" + $(this).find('.limitColumn').children().first().html() + " \t" +
+                        $(this).find('.deductibleColumn').children().first().html() + "\n";
+                    submissionMap.EPKGlimitsString = submissionMap.EPKGlimitsString + $(this).find('.limitColumn').children().first().html() + "\tEPKG:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+                    submissionMap.EPKGdeductsString = submissionMap.EPKGdeductsString + $(this).find('.deductibleColumn').children().first().html() + "\tEPKG:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+
+                }
+
+            }
+        });
+    }
+
+    var CPKlimitsString = "";
+    var CPKdeductsString = "";
+    var CGLlimitsString = "";
+    var CGLdeductsString = "";
+    if ($('#CPKCGLcoverage').is(':checked')) {
+        if ($('#CPKInputRadio').is(':checked')) {
+            $('div#reviewLimitsDeducts div.CPK_LOBRow').each(function() {
+                submissionMap.cpkLOB = submissionMap.cpkLOB + $(this).find('.coverageColumn').children().first().html() + " \t" + $(this).find('.limitColumn').children().first().html() + " \t" +
+                    $(this).find('.deductibleColumn').children().first().html() + "\n";
+                submissionMap.CPKlimitsString = submissionMap.CPKlimitsString + $(this).find('.limitColumn').children().first().html() + "\tCPK:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+                submissionMap.CPKdeductsString = submissionMap.CPKdeductsString + $(this).find('.deductibleColumn').children().first().html() + "\tCPK:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+
+            });
+
+            //ADD NOAL
+            $('div#reviewLimitsDeducts div.NOAL_LOBRow').each(function() {
+                submissionMap.cpkLOB = submissionMap.cpkLOB + $(this).find('.coverageColumn').children().first().html() + " \t" + $(this).find('.limitColumn').children().first().html() + " \t" +
+                    $(this).find('.deductibleColumn').children().first().html() + "\n";
+                submissionMap.CPKlimitsString = submissionMap.CPKlimitsString + $(this).find('.limitColumn').children().first().html() + "\tNOAL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+                submissionMap.CPKdeductsString = submissionMap.CPKdeductsString + $(this).find('.deductibleColumn').children().first().html() + "\tNOAL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+            });
+
+        }
+        else if ($('#CGLInputRadio').is(':checked')) {
+            $('div#reviewLimitsDeducts div.CGL_LOBRow').each(function() {
+                submissionMap.cglLOB = submissionMap.cglLOB + $(this).find('.coverageColumn').children().first().html() + " \t" + $(this).find('.limitColumn').children().first().html() + " \t" +
+                    $(this).find('.deductibleColumn').children().first().html() + "\n";
+                submissionMap.CPKlimitsString = submissionMap.CPKlimitsString + $(this).find('.limitColumn').children().first().html() + "\tCGL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+                submissionMap.CPKdeductsString = submissionMap.CPKdeductsString + $(this).find('.deductibleColumn').children().first().html() + "\tCGL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+
+            });
+        }
+
+
+
+
+    }
+
+    submissionMap.premSummary = "";
+    submissionMap.premSummary = submissionMap.premSummary + "Premium Distribution" + "\t" + "" + "\n";
+    $('#coverageOptionsReview div#premDistributionInsert div.row').each(function() {
+        if ($(this).hasClass("TotalPremiumRow")) {
+            submissionMap.premSummary = submissionMap.premSummary + $(this).find('.lineOfBusinessSpan').html() + "\t" + $(this).find('.totalPremiumSpan').html() + "\n";
+
+        }
+        else {
+            submissionMap.premSummary = submissionMap.premSummary + $(this).find('.lineOfBusinessSpan').html() + "\t" + $(this).find('.premiumSpan').html() + "\n";
+        }
+    });
+    if ($('.taxDescriptionSpan').length) {
+        submissionMap.premSummary = submissionMap.premSummary + "Taxes and Fees" + "\t" + "" + "\n";
+        $('#coverageOptionsReview div#taxRows div.row').each(function() {
+            submissionMap.premSummary = submissionMap.premSummary + $(this).find('.taxDescriptionSpan').html() + "\t" + $(this).find('.taxSpan').html() + "\n";
+        });
+    }
+    if ($('#brokerFeeInput').length && $('#brokerFeeInput').val().length > 0) {
+        submissionMap.premSummary = submissionMap.premSummary + "Broker Fee" + "\t" + $('#brokerFeeInput').val() + ".00\n";
+    }
+    submissionMap.premSummary = submissionMap.premSummary + "Policy Fee" + "\t" + "\$20.00" + "\n";
+
+
+
+
+    submissionMap.termsInsert = $('#termsInsert').html();
+    submissionMap.endorseInsert = $('#endorseInsert').html();
+    submissionMap.maxCostOneProduction = $('#maxCostOneProduction').val();
+
+    submissionMap.productionType = "";
+    //console.log("STEP 1 ============")
+    $('input[data-reviewName="Type of Production"]').each(function() {
+        //console.log("STEP 2 =========" + $(this).val());
+        if ($(this).is(":checked")) {
+            //alert($(this).val());
+            submissionMap.productionType = submissionMap.productionType + $(this).val() + ", ";
+        }
+    });
+    submissionMap.productionType = submissionMap.productionType.replace(/,\s*$/, "");
+
+    submissionMap.productionInvolves = "";
+    $('input[data-reviewName="Special Hazards Declared"]').each(function() {
+        if ($(this).is(":checked")) {
+            //alert($(this).val());
+            submissionMap.productionInvolves = submissionMap.productionInvolves + $(this).val() + ", ";
+        }
+    });
+    submissionMap.productionInvolves = submissionMap.productionInvolves.replace(/,\s*$/, "");
+
+    if ($('#EPKGPremiumLOBTotal').length) {
+        submissionMap.EPKGPremium = $('#EPKGPremiumLOBTotal').html();
+    }
+    if ($('#CGLPremiumLOBTotal').length) {
+        submissionMap.CGLPremium = $('#CGLPremiumLOBTotal').html();
+    }
+    if ($('#CPKPremiumLOBTotal').length) {
+        submissionMap.CPKPremium = $('#CPKPremiumLOBTotal').html();
+        submissionMap.CPKPremiumOnly = $('#BARCPKGCPremiumTotal').html();
+        submissionMap.NOALPremiumOnly = $('#NOAL01PremiumTotal').html();
+        submissionMap.NOALcostOfHire = $('#costOfHireInput').val();
+    }
+    submissionMap.brokerFee = $('#brokerFeeInput').val();
+
+    if (BORrequested) {
+        submissionMap.statusID = "BOR";
+    }
+    submissionMap.statusID = "QO";
+
+    return submissionMap;
+}
+
+function validateSubmission(dataMap){
+    var valid = true;
+
+    //BASIC VALIDATION, NOT EMPTY VALUES
+    for (var key in dataMap) {
+        if (typeof dataMap[key] === 'string' || dataMap[key] instanceof String){ //if it's a string
+            if(dataMap[key] === undefined || dataMap[key] === null){
+                valid = key + " is missing";
+            }
+        }
+        else{
+            if(dataMap[key]){ // exists
+
+            }
+            else{ //does not exist
+                valid = key + " is missing";
+            }
+        }
+    }
+
+    //NECESSARY FIELDS
+    if(dataMap.coverageCodes.length === 0){
+        valid = "coverage code is " + dataMap.coverageCodes;
+    }
+
+
+
+    if(dataMap.productID === undefined || dataMap.productID === null){
+        valid = "productID is " + dataMap.productID;
+    }
+
+
+    if(dataMap.premSummary.length === 0){
+        valid = "productID is " + dataMap.premSummary;
+    }
+
+
+
+
+
+    return valid;
 }

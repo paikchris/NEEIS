@@ -39,9 +39,8 @@ function resetNewSubmission(done){
     fixture = $('#fixtureToBeTested');
 }
 
-xdescribe('Testing /main/NewSubmission.gsp Step 1 basic functions', function() {
+describe('Testing /main/NewSubmission.gsp Step 1 basic functions', function() {
     jasmine.getFixtures().fixturesPath = 'http://104.236.23.128:8080/portal/test/jasmine/spec/fixtures/javascripts';
-
 
     beforeAll(function (done) {
         resetNewSubmission(done);
@@ -51,7 +50,7 @@ xdescribe('Testing /main/NewSubmission.gsp Step 1 basic functions', function() {
         expect('#step-1').toBeInDOM();
     });
 
-    it('All Risk Types Loading from database', function(done) {
+    xit('All Risk Types Loading from database', function(done) {
         $.ajax({
             method: "POST",
             url: "/portal/Async/getAllRiskTypesForCategory",
@@ -316,8 +315,6 @@ describe('Testing Film Projects Without Cast (No Work Comp)', function() {
         checkCondition();
     });
 
-
-
     it('Proposed Expiration, clicking next months date prints next months date', function(done) {
         //Check Drawer can be clicked
         var d = new Date();
@@ -489,7 +486,46 @@ describe('Testing Film Projects Without Cast (No Work Comp)', function() {
                 checkCondition();
 
             });
-            it('Change PIPChoice Limits and check premiums', function(done) {
+            it('Change Misc Equip Limits and check premiums', function(done) {
+                //Wait till animation Finishes
+                var POLL_TIME = 10;
+                var endTime = new Date().getTime() + 1000;
+                var checkCondition = function() {
+                    if (new Date().getTime() <= endTime) {
+                        setTimeout(checkCondition, POLL_TIME);
+                    } else {
+                        $('.PIPCHOILimitsInput.MiscellaneousRentedEquipment').val('')
+                        $('.MiscellaneousRentedEquipment').bind('autotyped', function(){
+                            expect($('.PIPCHOILimitsInput.MiscellaneousRentedEquipment').val()).toEqual('$50,000');
+                            expect($('.PIPCHOILimitsInput.MiscellaneousRentedEquipment').closest('.EPKG_LOBRow').find('.PIPCHOIPremiumLine').html().trim()).toEqual('$206');
+                            done();
+                        }).autotype("50000", {delay: 10});
+
+                    }
+                };
+                checkCondition();
+            });
+            it('Change Extra Expense Limits and check premiums', function(done) {
+                //Wait till animation Finishes
+                var POLL_TIME = 10;
+                var endTime = new Date().getTime() + 1000;
+                var checkCondition = function() {
+                    if (new Date().getTime() <= endTime) {
+                        setTimeout(checkCondition, POLL_TIME);
+                    } else {
+                        $('.PIPCHOILimitsInput.ExtraExpense').val('')
+                        $('.ExtraExpense').bind('autotyped', function(){
+                            expect($('.PIPCHOILimitsInput.ExtraExpense').val()).toEqual('$500,000');
+                            expect($('.PIPCHOILimitsInput.ExtraExpense').closest('.EPKG_LOBRow').find('.PIPCHOIPremiumLine').html().trim()).toEqual('$411');
+
+                            done();
+                        }).autotype("500000", {delay: 10});
+
+                    }
+                };
+                checkCondition();
+            });
+            xit('Change PIPChoice Limits and check premiums', function(done) {
                 //Wait till animation Finishes
                 var POLL_TIME = 10;
                 var endTime = new Date().getTime() + 1000;
@@ -529,7 +565,7 @@ describe('Testing Film Projects Without Cast (No Work Comp)', function() {
                 };
                 checkCondition();
             });
-            it('Select NOHA, Recheck all data', function(done) {
+            xit('Select NOHA, Recheck all data', function(done) {
                 spyOnEvent('#EPKGNOHAAdditionalCoverage', 'click');
                 $('#EPKGNOHAAdditionalCoverage').trigger('click');
                 expect('click').toHaveBeenTriggeredOn('#EPKGNOHAAdditionalCoverage');
@@ -569,7 +605,7 @@ describe('Testing Film Projects Without Cast (No Work Comp)', function() {
                 checkCondition();
             });
         });
-        describe('PIP1 Testing', function() {
+        xdescribe('PIP1 Testing', function() {
             it('Check PIP 1 limits, Premiums, and deductibles (No Options/No Auto)', function(done) {
                 spyOnEvent('#PIP1InputRadio', 'click');
                 $('#PIP1InputRadio').trigger('click');
@@ -682,7 +718,7 @@ describe('Testing Film Projects Without Cast (No Work Comp)', function() {
             });
         });
 
-        describe('PIP2 Testing', function() {
+        xdescribe('PIP2 Testing', function() {
             it('Check PIP 2 limits, Premiums, and deductibles', function(done) {
                 spyOnEvent('#PIP2InputRadio', 'click');
                 $('#PIP2InputRadio').trigger('click');
@@ -804,7 +840,7 @@ describe('Testing Film Projects Without Cast (No Work Comp)', function() {
             });
         });
 
-        describe('PIP3 Testing', function() {
+        xdescribe('PIP3 Testing', function() {
             it('Check PIP 3 limits, Premiums, and deductibles', function(done) {
                 //console.log('PIP3 TESTING')
                 spyOnEvent('#PIP3InputRadio', 'click');
@@ -867,7 +903,7 @@ describe('Testing Film Projects Without Cast (No Work Comp)', function() {
             });
         });
 
-        describe('PIP4 Testing', function() {
+        xdescribe('PIP4 Testing', function() {
             it('Change Total Budget to $400,000, type 400000 into Total Budget and is formatted as $400,000', function(done) {
                 $('#totalBudgetConfirm').val('');
                 spyOnEvent('#totalBudgetConfirm', 'click');
@@ -969,7 +1005,7 @@ describe('Testing Film Projects Without Cast (No Work Comp)', function() {
             });
         });
 
-        describe('PIP5 Testing', function() {
+        xdescribe('PIP5 Testing', function() {
             it('Change Total Budget to $700,000, type 700000 into Total Budget and is formatted as $700,000', function(done) {
                 $('#totalBudgetConfirm').val('');
                 spyOnEvent('#totalBudgetConfirm', 'click');
@@ -1073,20 +1109,8 @@ describe('Testing Film Projects Without Cast (No Work Comp)', function() {
 
     });
 
-
-    //it('Click next to Step 3', function() {
-    //
-    //    expect($('#EPKGcoverage')).toBeChecked();
-    //    spyOnEvent('#nextButtonStep2', 'click');
-    //    $('#nextButtonStep2').trigger('click');
-    //    expect('click').toHaveBeenTriggeredOn('#nextButtonStep2');
-    //});
-
-
-
-
     afterAll(function () {
-        //$('#fixtureToBeTested').remove();
+        $('#fixtureToBeTested').remove();
     });
 
 

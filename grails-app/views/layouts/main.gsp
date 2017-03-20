@@ -227,6 +227,11 @@
 					<a href="#" class="dropdown-toggle" style="padding-left: 2px" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
 						${user.firstName} ${user.lastName}
 						<span id="userDetails-email" style="display:none">${user.email}</span>
+						<span id="userDetails-company" style="display:none">${user.company}</span>
+						<span id="userDetails-firstName" style="display:none">${user.firstName}</span>
+						<span id="userDetails-lastName" style="display:none">${user.lastName}</span>
+						<span id="userDetails-aimContactID" style="display:none">${user.aimContactID}</span>
+
 						<span class="caret"></span>
 					</a>
 					<ul class="dropdown-menu">

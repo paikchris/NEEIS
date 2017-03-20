@@ -28,6 +28,8 @@ public  portal.DAO.Intelledox getIntelledoxHelper() { return (portal.DAO.Intelle
 public  void setIntelledoxHelper(portal.DAO.Intelledox value) { }
 public  portal.Utils.TestDataHelper getTestDataHelper() { return (portal.Utils.TestDataHelper)null;}
 public  void setTestDataHelper(portal.Utils.TestDataHelper value) { }
+public  portal.Utils.ProductHelper getProductHelper() { return (portal.Utils.ProductHelper)null;}
+public  void setProductHelper(portal.Utils.ProductHelper value) { }
 public  java.lang.Object getTimeZone() { return null;}
 public  void setTimeZone(java.lang.Object value) { }
 public  java.lang.Object getDateFormat() { return null;}
@@ -38,6 +40,7 @@ public  java.lang.Object getAjaxDownloadAttachment() { return null;}
 public  void setAjaxDownloadAttachment(java.lang.Object value) { }
 public  java.lang.Object getDownloadCert() { return null;}
 public  void setDownloadCert(java.lang.Object value) { }
+public  java.lang.Object getProductsForCoverageV2() { return null;}
 public  java.lang.Object getProductsForCoverage() { return null;}
 public  java.lang.Object getLimitsDeductibles() { return null;}
 public  java.lang.Object getAvailableCoveragesForRiskType() { return null;}
@@ -50,6 +53,7 @@ public  java.lang.Object ratePremiums() { return null;}
 public  java.lang.Object calcPIP3Deductibles(java.lang.Object totalBudget) { return null;}
 public  java.lang.Object saveSubmissionToAIMv2() { return null;}
 public  java.lang.Object saveSubmissionToAIM() { return null;}
+public  java.lang.Object getProductInfo() { return null;}
 public  java.lang.Object getTaxInfo() { return null;}
 public  java.lang.Object searchSubmissions() { return null;}
 public  java.lang.Object checkAgencyID() { return null;}

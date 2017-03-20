@@ -494,12 +494,12 @@
             <div id="equipmentOwnedRentedContainer" style="display:none">
             <div class="col-xs-12">
                 <div class="form-group">
-                    <input type="radio" name="equipmentOwned"
+                    <input type="radio" name="equipmentOwnedRadio"
                            class=""
                            value="owned"
                            id="equipmentOwned"
                            style="display: none;"> Owned
-                    <input type="radio" name="equipmentRented"
+                    <input type="radio" name="equipmentOwnedRadio"
                            class=""
                            value="rented"
                            id="equipmentRented"
@@ -962,7 +962,7 @@
         <div class="col-xs-12">
             <div class="form-group">
                 <label for="numberOfFilms">Number of Productions Per Year </label>
-                <input type="text" class="form-control" name="numberProductions" placeholder="#" id="numberProductions"/>
+                <input type="number" min="0" class="form-control" name="numberProductions" placeholder="0" id="numberProductions"/>
             </div>
         </div>
 
@@ -1080,7 +1080,7 @@
 
 
 <div id="coverageCheckboxesDiv">
-    <div class='col-xs-4' style="margin-top: 5px;">
+    <div class='col-xs-4' id="productChoicesDiv" style="margin-top: 5px;">
         <div class='form-group col-xs-12 EPKGDiv'>
             <p><input type='checkbox' class='coverageInput' name='coverage' id='EPKGcoverage'/> Entertainment Package
             </p>

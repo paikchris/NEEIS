@@ -25,6 +25,9 @@ class MainController {
     def SpecRunner(){
         [user: session.user]
     }
+    def johntest(){
+        [user: session.user]
+    }
 
     def resetp(){
         log.info("PASSWORD RESET PAGE")
@@ -416,7 +419,7 @@ class MainController {
     }
 
     def syncProductsFromAIM(){
-        
+
     }
     def submissions(){
         log.info ("MY SUBMISSION")

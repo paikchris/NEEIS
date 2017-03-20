@@ -18,6 +18,14 @@ class Intelledox {
         log.info "INTELLEDOX"
         log.info "JSON ==== " + jsonSerial
 
+        jsonSerial.keySet().each{
+            log.info it
+            if(jsonSerial[it] && jsonSerial[it] instanceof String){
+                log.info jsonSerial[it] + " -> " +  XmlUtil.escapeXml(jsonSerial[it])
+                jsonSerial[it] = XmlUtil.escapeXml(jsonSerial[it])
+            }
+        }
+
         FileTransferHelper fileHelper = new FileTransferHelper();
 
         def totalPolicyFee = 0;
@@ -98,26 +106,26 @@ soapXML = soapXML + """"
         soapXML = soapXML + """
 \t<premiumSummaryTable>""";
 
-        if(jsonSerial.getAt("premSummary").split(";&&;").size() > 0) {
+        if(jsonSerial.getAt("premSummary").split("\n").size() > 0) {
             log.info("PREM SUMMARY");
-            jsonSerial.getAt("premSummary").split(";&&;").each{
+            jsonSerial.getAt("premSummary").split("\n").each{
                 log.info("PREM SUMMARY" + it);
                 if(it.length() > 0){
-                    if(it.split(";&;")[0] == "Taxes and Fees" || it.split(";&;")[0] == "Premium Distribution"){
+                    if(it.split("\t")[0] == "Taxes and Fees" || it.split("\t")[0] == "Premium Distribution"){
                         soapXML = soapXML + """
-\t\t<premiumSummary package="${it.split(";&;")[0]}">
+\t\t<premiumSummary package="${it.split("\t")[0]}">
 
 \t\t\t<cost>  </cost>
 \t\t</premiumSummary>"""
                     }
-                    else if(it.split(";&;")[0] == "Policy Fee") {
+                    else if(it.split("\t")[0] == "Policy Fee") {
 
                     }
                     else {
                         soapXML = soapXML + """
-\t\t<premiumSummary package="   ${it.split(";&;")[0]}">
+\t\t<premiumSummary package="   ${it.split("\t")[0]}">
 
-\t\t\t<cost>${it.split(";&;")[1]} </cost>
+\t\t\t<cost>${it.split("\t")[1]} </cost>
 \t\t</premiumSummary>"""
                     }
 
@@ -155,12 +163,12 @@ soapXML = soapXML + """"
 \t<CPKTable>
 \t\t<CPKROW>
 \t""";
-            jsonSerial.getAt("cpkLOB").split(";&&;").each{
+            jsonSerial.getAt("cpkLOB").split("\n").each{
                 if(it.length() > 0){
                     soapXML = soapXML + """
-\t\t<CPK packageCPK="${it.split(";&;")[0]}">
-\t\t\t<limitCPK> ${it.split(";&;")[1]} </limitCPK>
-\t\t\t<deductibleCPK> ${it.split(";&;").size() >=3 ? it.split(";&;")[2] : ""} </deductibleCPK>
+\t\t<CPK packageCPK="${it.split("\t")[0]}">
+\t\t\t<limitCPK> ${it.split("\t")[1]} </limitCPK>
+\t\t\t<deductibleCPK> ${it.split("\t").size() >=3 ? it.split("\t")[2] : ""} </deductibleCPK>
 \t\t</CPK>
 \t"""
                 }
@@ -179,12 +187,12 @@ soapXML = soapXML + """"
 \t<CPKTable>
 \t\t<CPKROW>
 \t""";
-            jsonSerial.getAt("cglLOB").split(";&&;").each{
+            jsonSerial.getAt("cglLOB").split("\n").each{
                 if(it.length() > 0){
                     soapXML = soapXML + """
-\t\t<CPK packageCPK="${it.split(";&;")[0]}">
-\t\t\t<limitCPK> ${it.split(";&;")[1]} </limitCPK>
-\t\t\t<deductibleCPK> ${it.split(";&;").size() >=3 ? it.split(";&;")[2] : ""} </deductibleCPK>
+\t\t<CPK packageCPK="${it.split("\t")[0]}">
+\t\t\t<limitCPK> ${it.split("\t")[1]} </limitCPK>
+\t\t\t<deductibleCPK> ${it.split("\t").size() >=3 ? it.split("\t")[2] : ""} </deductibleCPK>
 \t\t</CPK>
 \t"""
                 }
@@ -205,13 +213,13 @@ soapXML = soapXML + """"
 \t<EPKTable>
 \t\t<EPKROW>
 \t""";
-            jsonSerial.getAt("epkgLOB").split(";&&;").each{
+            jsonSerial.getAt("epkgLOB").split("\n").each{
                 if(it.length() > 0){
                     soapXML = soapXML + """
 
-\t\t<EPK packageEPK="${it.split(";&;")[0]}">
-\t\t\t<limitEPK> ${it.split(";&;")[1]} </limitEPK>
-\t\t\t<deductibleEPK> ${it.split(";&;").size() >=3 ? it.split(";&;")[2] : ""} </deductibleEPK>
+\t\t<EPK packageEPK="${it.split("\t")[0]}">
+\t\t\t<limitEPK> ${it.split("\t")[1]} </limitEPK>
+\t\t\t<deductibleEPK> ${it.split("\t").size() >=3 ? it.split("\t")[2] : ""} </deductibleEPK>
 \t\t</EPK>
 \t"""
                 }

@@ -1,117 +1,303 @@
-// VARIABLES FOR SPECIAL EVENTS RATING
-// VARIABLES FOR SPECIAL EVENTS RATING
 var riskChosen;
-var classOne = 0.25
-var classTwo = 0.35
-var classThree = 0.50
 var attendance
-var totalPremium
-var totalPremium5Below
-var totalPremium6Above
 var rate
 var eventDays
 var minimumPremium
-var brokerFee
-
-// TOTAL SALES
-var totalSale
-var commercialTotal
-var alcoholTotal
-
-// MINIMUM PREMIUMS UP TO 5 DAYS
-var minimum5Premium100Class1 = 175
-var minimum5Premium100Class2 = 250
-var minimum5Premium100Class3 = 325
-
-var minimum5Premium500Class1 = 225
-var minimum5Premium500Class2 = 325
-var minimum5Premium500Class3 = 400
-
-var minimum5Premium1500Class1 = 325
-var minimum5Premium1500Class2 = 425
-var minimum5Premium1500Class3 = 525
-
-var minimum5Premium3000Class1 = 450
-var minimum5Premium3000Class2 = 550
-var minimum5Premium3000Class3 = 650
-
-var minimum5Premium5000Class1 = 575
-var minimum5Premium5000Class2 = 675
-var minimum5Premium5000Class3 = 775
-
-var minimum5Premium5001Class1 = 700
-var minimum5Premium5001Class2 = 800
-var minimum5Premium5001Class3 = 900
-// MINIMUM PREMIUMS UP TO 5 DAYS
-
-// MINIMUM PREMIUMS 6 DAYS AND MORE
-var minimum6Premium10Class1 = 250
-var minimum6Premium10Class2 = 250
-var minimum6Premium10Class3 = 325
-
-var minimum6Premium20Class1 = 500
-var minimum6Premium20Class2 = 500
-var minimum6Premium20Class3 = 500
-
-var minimum6Premium31Class1 = 750
-var minimum6Premium31Class2 = 750
-var minimum6Premium31Class3 = 750
-
-var minimum6Premium45Class1 = 800
-var minimum6Premium45Class2 = 800
-var minimum6Premium45Class3 = 800
-
-var minimum6Premium60Class1 = 850
-var minimum6Premium60Class2 = 850
-var minimum6Premium60Class3 = 850
-
-var minimum6Premium75Class1 = 900
-var minimum6Premium75Class2 = 900
-var minimum6Premium75Class3 = 900
-
-var minimum6Premium90Class1 = 950
-var minimum6Premium90Class2 = 950
-var minimum6Premium90Class3 = 950
-// MINIMUM PREMIUM 6 DAYS AND MORE
-
-// ALCOHOL PREMIUMS
-// $25,000 and below
-var liquorMinimum8Below25000 = 100
-var liquorMinimum12Below25000 = 375
-var liquorMinimum14Below25000 = 550
-var liquorMinimum15Below25000 = 750
-var liquorMinimum50Below25000 = 1000
-
-// 25,000 and above
-var liquorMinimum8Above25000 = 100
-var liquorMinimum12Above25000 = 750
-var liquorMinimum14Above25000 = 800
-var liquorMinimum15Above25000 = 900
-var liquorMinimum50Above25000 = 2500
-
-
 var liquorRate
-var liquorRatePremium
-var liquorSale
-var liquorTotalPremium
-var liquorMinimumPremium
-var liquorTotalPremiumBelow25000
-var liquorTotalPremiumAbove25000
-// VARIABLES FOR SPECIAL EVENTS RATING
-// VARIABLES FOR SPECIAL EVENTS RATING
-
-
-// ALCOHOL PREMIUMS
+var CGLPremium
+var brokerPremium
+var liquorPremium
+var totalPremiumTotal
+// RATES BASED OFF RISK TYPE
+var classOne = 0.25
+var classTwo = 0.35
+var classThree = 0.50
+// RATES BASED OFF RISK TYPE
 
 $(document).ready(function () {
-// alert("more bananananas")
-    if ($("li.active").length > 0) {
-        riskChosen = getRiskTypeChosen();
-    }
-    else {
-        alert("bananas")
-    }
+// RATE BASED OFF RISK TYPE
+    var riskRate
     console.log(riskChosen)
+    rate = riskTypeRate(riskRate);
+
+
+
+// MONEY FORMAT
+    inputMoneyFormat();
+// PHONE NUMBER FORMAT
+    $(document.body).on('focus', '.phoneNumberMask' ,function(){
+        $(".phoneNumberMask").mask("(999) 999-9999");
+    });
+
+
+
+// TOTAL PREMIUM COST !@#
+
+// STATE RATE SELECT
+    $("#selectState").change(function () {
+        var state = this.value;
+        liquorRate = setStateRate(state);
+        alert ("LIQUOR RATE:" + liquorRate)
+    });
+// COMMERCIAL GENERAL LIABILITY PREMIUM
+    $(document.body).on('change', "#estimatedTotalAttendance,#howManyDaysIsTheEvent", function () {
+        var totalPremiumCGL
+        CGLPremium = getCGLPremium(totalPremiumCGL)
+        $("#commercialGeneralLiabilityPremiumCost").html("$" + CGLPremium);
+    });
+// ALCOHOL PREMIUM
+    $(document.body).on('change', "#alcoholSales", function () {
+        var totalPremiumLiquor
+        liquorPremium = getLiquorPremium(totalPremiumLiquor)
+        $("#alcoholSalePremiumCost").html("$" + liquorPremium);
+    });
+// POLICY PREMIUM
+    $(document.body).on('change', "#estimatedTotalAttendance,#howManyDaysIsTheEvent", function () {
+        var policyFee = 25
+        $("#policyFeePremiumCost").html("$" + policyFee);
+    });
+// TOTAL SALES
+    $(document.body).on('change', ".effectsTotalPremium", function () {
+        var premium
+        totalPremiumTotal = getTotalPremium(premium)
+        $("#totalSalePremiumCost").html("$" + totalPremiumTotal);
+    });
+// BROKER PREMIUM
+    $(document.body).on('change', "#brokerFeeInput", function () {
+        var brokerFeeTotal
+        brokerPremium = getBrokerPremium(brokerFeeTotal)
+        $("#brokerFeePremiumCost").html("$" + brokerPremium);
+    });
+
+// TOTAL PREMIUM COST !@#
+
+
+
+// YES NO CHECK BOX HIDDEN QUESTIONS / TABLES
+
+// CGL TABLE
+    $(document.body).on('change', 'input[name="commercialGeneralLiabilityRequested?"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#commercialGeneralLiabilityRequestedContainer").css('display', "");
+            $("#commercialGeneralLiabilityRequestedExplain").css('display', "");
+            $(".tableCGL").addClass("showReviewTable");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#commercialGeneralLiabilityRequestedContainer").css('display', "none");
+            $("#commercialGeneralLiabilityRequestedExplain").css('display', "none");
+            $(".tableCGL").removeClass("showReviewTable");
+        }
+    });
+// WORK COMP TABLE / ADDITIONAL HIDDEN QUESTIONS
+    $(document.body).on('change', 'input[name="workCompCoverageRequested?"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#workCompCoverageRequestedContainer").css('display', "");
+            $("#workCompCoverageRequestedExplain").css('display', "");
+            $(".tableWC").addClass("showReviewTable");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#workCompCoverageRequestedContainer").css('display', "none");
+            $("#workCompCoverageRequestedExplain").css('display', "none");
+            $(".tableWC").removeClass("showReviewTable");
+        }
+    });
+// AUTO LIABILITY TABLE / ADDITIONAL HIDDEN QUESTIONS
+    $(document.body).on('change', 'input[name="autoLiability"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $(".costRentedVehiclesContainer").css('display', "");
+            $(".costRentedVehiclesExplain").css('display', "");
+            $(".tableNOAL").addClass("showReviewTable");
+        }
+        if ($(this).attr("value") == "No") {
+            $(".costRentedVehiclesContainer").css('display', "none");
+            $(".costRentedVehiclesExplain").css('display', "none");
+            $(".tableNOAL").removeClass("showReviewTable");
+        }
+    });
+// UMBRELLA TABLE
+    $(document.body).on('change', 'input[name="umbrellaLimitRequested"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#umbrellaLimitRequestedContainer").css('display', "");
+            $("#umbrellaLimitRequestedExplain").css('display', "");
+            $(".tableCUMB").addClass("showReviewTable");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#umbrellaLimitRequestedContainer").css('display', "none");
+            $("#umbrellaLimitRequestedExplain").css('display', "none");
+            $(".tableCUMB").removeClass("showReviewTable");
+        }
+    });
+// ALCOHOL TABLE / ADDITIONAL HIDDEN QUESTION / PREMIUMS
+    $(document.body).on('change', 'input[name="willAlcoholBeServed"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $(".alcoholSaleContainer").css('display', "");
+            $(".alcoholSaleExplain").css('display', "");
+        }
+        if ($(this).attr("value") == "No") {
+            $(".alcoholSaleContainer").css('display', "none");
+            $(".alcoholSaleExplain").css('display', "none");
+        }
+    });
+// EQUIPMENT TABLE / ADDITIONAL HIDDEN QUESTIONS
+    $(document.body).on('change', 'input[name="equipmentOwnedRented"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#equipmentOwnedRentedContainer").css('display', "");
+            $("#equipmentOwnedRentedExplain").css('display', "");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#equipmentOwnedRentedContainer").css('display', "none");
+            $("#equipmentOwnedRentedExplain").css('display', "none");
+        }
+    });
+// OVERNIGHT EVENTS ADDITIONAL HIDDEN QUESTIONS
+    $(document.body).on('change', 'input[name="overnight"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#overnightContainer").css('display', "");
+            $("#overnightExplain").css('display', "");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#overnightContainer").css('display', "none");
+            $("#overnightExplain").css('display', "none");
+        }
+    });
+// PYRO ADDITIONAL HIDDEN QUESTIONS
+    $(document.body).on('change', '#pyrotechnicsCheckbox' ,function(){
+        if($("#pyrotechnicsCheckbox").is(':checked')) {
+            $('#pyrotechnicsAttachContainer').css("display", "");
+        }
+        else{
+            $('#pyrotechnicsAttachContainer').css("display", "none");
+        }
+    });
+// STUNTS HAZARDOUS EVENTS ADDITIONAL HIDDEN QUESTIONS
+    $(document.body).on('change', '#stuntsHazardousCheckbox' ,function(){
+        if($("#stuntsHazardousCheckbox").is(':checked')) {
+            $('#stuntsHazardousActivitiesAttachContainer').css("display", "");
+            $('#stuntCoordinatorName').css("display", "");
+            $('#participantsSigningWaivers').css("display", "");
+        }
+        else{
+            $('#stuntsHazardousActivitiesAttachContainer').css("display", "none");
+            $('#stuntCoordinatorName').css("display", "none");
+            $('#participantsSigningWaivers').css("display", "none");
+
+        }
+    });
+// INSURANCE BEEN CANCELLED ADDITIONAL HIDDEN QUESTIONS
+    $(document.body).on('change', 'input[name="insuranceCancelled"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#insuranceCancelledContainer").css('display', "");
+            $("#insuranceCancelledExplain").css('display', "");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#insuranceCancelledContainer").css('display', "none");
+            $("#insuranceCancelledExplain").css('display', "none");
+        }
+    });
+// BROKER FEE HIDDEN PREMIUM
+    $(document.body).on('change', '.brokerFeeInput', function () {
+        //alert();
+        var brokerFeeCostTemp = $(".brokerFeeInput").val()
+        var brokerFeeCost = brokerFeeCostTemp.replace('$','').replace(',', '')
+        var brokerFeeCostValue = parseFloat(brokerFeeCost)
+
+        if (brokerFeeCostValue > 0){
+            $("#brokerFeePremiumContainer").css('display', "");
+            $("#brokerFeePremiumExplain").css('display', "");
+        }
+        else if (brokerFeeCostValue <= 0){
+            $("#brokerFeePremiumContainer").css('display', "none");
+            $("#brokerFeePremiumExplain").css('display', "none");
+        }
+    });
+
+// YES NO CHECK BOX HIDDEN QUESTIONS / TABLES
+
+
+
+});
+
+
+
+// FUNCTIONS
+function setStateRate(state){
+    var lrate = 0;
+    if (state ==  "DE" ||
+        state ==   "KS" ||
+        state ==   "MD" ||
+        state ==   "NV" ||
+        state ==   "SD" ||
+        state ==   "VA") {
+        lrate = 8
+    }
+    else if (state == "AR" ||
+        state ==   "CA" ||
+        state ==   "CO" ||
+        state ==   "FL" ||
+        state ==   "GA" ||
+        state ==   "ID" ||
+        state ==   "IL" ||
+        state ==   "KY" ||
+        state ==   "LA" ||
+        state ==   "ME" ||
+        state ==   "MN" ||
+        state ==   "MS" ||
+        state ==   "MO" ||
+        state ==   "NE" ||
+        state ==   "NJ" ||
+        state ==   "OH" ||
+        state ==   "OR" ||
+        state ==   "TN") {
+        lrate = 12
+    }
+    else if (state ==  "AZ" ||
+        state ==   "IN" ||
+        state ==   "MA" ||
+        state ==   "MI" ||
+        state ==   "MT" ||
+        state ==   "NM" ||
+        state ==   "NY" ||
+        state ==   "NC" ||
+        state ==   "ND" ||
+        state ==   "OK" ||
+        state ==   "RI" ||
+        state ==   "SC" ||
+        state ==   "TX" ||
+        state ==   "UT" ||
+        state ==   "WA") {
+        lrate = 14
+    }
+    else if (state ==  "DC" ||
+        state ==   "IA" ||
+        state ==   "PA" ||
+        state ==   "WV") {
+        lrate = 15
+    }
+    else if (state ==  "AL" ||
+        state ==   "VT") {
+        lrate = 50
+    }
+    else if (state ==  "AK" ||
+        state ==   "CT" ||
+        state ==   "NH" ||
+        state ==   "HI") {
+        alert ("NOT ELIGIBLE STATE")
+    }
+
+    return lrate;
+
+
+}
+function riskTypeRate(riskRate) {
+    var riskClass
 
     if (riskChosen === "Anniversary Parties" ||
         riskChosen === "Antique Shows" ||
@@ -158,8 +344,8 @@ $(document).ready(function () {
         riskChosen === "Voter Registration" ||
         riskChosen === "Weddings and Wedding Receptions Yodeler"
     ) {
-        rate = classOne;
-        // alert(rate)
+        riskClass = classOne;
+        alert(riskClass)
     }
     else if (riskChosen === "Bingo Games" ||
         riskChosen === "Card Games - Blackjack Card Games - Poker" ||
@@ -184,8 +370,8 @@ $(document).ready(function () {
         riskChosen === "Social Receptions - Outdoors Trade Shows - Outdoors Union Meetings" ||
         riskChosen === "Video Game Contests"
     ) {
-        rate = classTwo;
-        // alert(rate)
+        riskClass = classTwo;
+        alert(riskClass)
     }
     else if (riskChosen === "Amateur Rodeo and Roping Events" ||
         riskChosen === "Baseball - Amateur Basketball - Amateur" ||
@@ -222,853 +408,672 @@ $(document).ready(function () {
         riskChosen === "Wagon / Hayrides Walking / Hiking Tour" ||
         riskChosen === "Wine Tasting"
     ) {
-        rate = classThree;
-        // alert(rate)
+        riskClass = classThree;
+        alert(riskClass)
     }
+    return riskClass;
+}
+function inputMoneyFormat() {
+// MONEY FORMAT
+    $('.alcoholSales').maskMoney({prefix: '$', precision: "0"});
+    $('.equipmentLimit').maskMoney({prefix: '$', precision: "0"});
+    $('.brokerFeeInput').maskMoney({prefix: '$', precision: "0"});
+    $('.costVehicles').maskMoney({prefix: '$', precision: "0"});
+    $('.totalReceipts').maskMoney({prefix: '$', precision: "0"});
+    $('.totalPayroll').maskMoney({prefix: '$', precision: "0"});
+};
+function getCGLPremium(totalPremiumCGL) {
+    var totalPremium
+    var totalPremium5Below
+    var totalPremium6Above
 
-    // MONEY FORMAT
-    $('.alcoholSales').maskMoney({prefix:'$', precision:"0"});
-    $('.equipmentLimit').maskMoney({prefix:'$', precision:"0"});
-    $('.brokerFeeInput').maskMoney({prefix:'$', precision:"0"});
-    $('.costVehicles').maskMoney({prefix:'$', precision:"0"});
-    $('.totalReceipts').maskMoney({prefix:'$', precision:"0"});
-    $('.totalPayroll').maskMoney({prefix:'$', precision:"0"});
+// MINIMUM PREMIUMS UP TO 5 DAYS
+    var minimum5Premium100Class1 = 175
+    var minimum5Premium100Class2 = 250
+    var minimum5Premium100Class3 = 325
 
-// TOTAL PREMIUM COST !@#
+    var minimum5Premium500Class1 = 225
+    var minimum5Premium500Class2 = 325
+    var minimum5Premium500Class3 = 400
 
-// STATE SELECT
-    $("#selectState").change(function () {
-        var state = this.value;
-    // });
-    // $(document.body).on('change', 'input[name="selectState"]', function () {
-    //     alert(state)
-        if (state ==  "DE" ||
-            state ==   "KS" ||
-            state ==   "MD" ||
-            state ==   "NV" ||
-            state ==   "SD" ||
-            state ==   "VA") {
-            liquorRate = 8
-        }
-        else if (state == "AR" ||
-            state ==   "CA" ||
-            state ==   "CO" ||
-            state ==   "FL" ||
-            state ==   "GA" ||
-            state ==   "ID" ||
-            state ==   "IL" ||
-            state ==   "KY" ||
-            state ==   "LA" ||
-            state ==   "ME" ||
-            state ==   "MN" ||
-            state ==   "MS" ||
-            state ==   "MO" ||
-            state ==   "NE" ||
-            state ==   "NJ" ||
-            state ==   "OH" ||
-            state ==   "OR" ||
-            state ==   "TN") {
-            liquorRate = 12
-        }
-        else if (state ==  "AZ" ||
-            state ==   "IN" ||
-            state ==   "MA" ||
-            state ==   "MI" ||
-            state ==   "MT" ||
-            state ==   "NM" ||
-            state ==   "NY" ||
-            state ==   "NC" ||
-            state ==   "ND" ||
-            state ==   "OK" ||
-            state ==   "RI" ||
-            state ==   "SC" ||
-            state ==   "TX" ||
-            state ==   "UT" ||
-            state ==   "WA") {
-            liquorRate = 14
-        }
-        else if (state ==  "DC" ||
-            state ==   "IA" ||
-            state ==   "PA" ||
-            state ==   "WV") {
-            liquorRate = 15
-        }
-        else if (state ==  "AL" ||
-            state ==   "VT") {
-            liquorRate = 50
-        }
-        else if (state ==  "AK" ||
-            state ==   "CT" ||
-            state ==   "NH" ||
-            state ==   "HI") {
-            alert ("NOT ELIGIBLE STATE")
-        }
-        // alert ("LIQUOR RATE:" + liquorRate)
-    });
+    var minimum5Premium1500Class1 = 325
+    var minimum5Premium1500Class2 = 425
+    var minimum5Premium1500Class3 = 525
 
-// COMMERCIAL GENERAL LIABILITY FEE
-    $(document.body).on('change', "#estimatedTotalAttendance,#howManyDaysIsTheEvent", function () {
-        attendance = $("#estimatedTotalAttendance").val()
-        // alert(attendance)
-        eventDays = $("#howManyDaysIsTheEvent").val()
-        // alert (eventDays)
-        if (attendance.length > 0 && eventDays.length > 0) {
-            var attendanceValue = parseFloat(attendance)
-            var eventDaysValue = parseFloat(eventDays)
-            var rateValue = parseFloat(rate)
-            // alert (attendanceValue)
-            // alert (eventDaysValue)
-            // alert (rateValue)
-            if (eventDaysValue < 6) {
+    var minimum5Premium3000Class1 = 450
+    var minimum5Premium3000Class2 = 550
+    var minimum5Premium3000Class3 = 650
 
-                totalPremium5Below = attendanceValue * rateValue
-                // alert("First: " + totalPremium5Below)
-                if (attendanceValue >= 1 && attendanceValue <= 100) {
-                    if (rate = classOne) {
-                        minimumPremium = minimum5Premium100Class1
-                        // alert("SECOND minimum5Prem" + minimum5Premium100Class1)
-                        // alert("second: " + totalPremium5Below)
-                        if (minimumPremium < totalPremium5Below) {
-                            totalPremium = totalPremium5Below
-                        }
-                        else if (minimumPremium > totalPremium5Below) {
-                            totalPremium = minimumPremium
-                            // alert("THIRD totalPrem" + totalPremium)
-                            // alert ("FORTH minimumPre"+ minimumPremium)
-                        }
-                    }
-                    else if (rate = classTwo) {
-                        minimumPremium = minimum5Premium100Class2
-                        if (minimumPremium < totalPremium5Below) {
-                            totalPremium = totalPremium5Below
-                        }
-                        else if (minimumPremium > totalPremium5Below) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                    else if (rate = classThree) {
-                        minimumPremium = minimum5Premium100Class3
-                        if (minimumPremium < totalPremium5Below) {
-                            totalPremium = totalPremium5Below
-                        }
-                        else if (minimumPremium > totalPremium5Below) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                }
+    var minimum5Premium5000Class1 = 575
+    var minimum5Premium5000Class2 = 675
+    var minimum5Premium5000Class3 = 775
 
-                else if (attendanceValue >= 101 && attendanceValue <= 500) {
-                    if (rate = classOne) {
-                        minimumPremium = minimum5Premium500Class1
-                        if (minimumPremium < totalPremium5Below) {
-                            totalPremium = totalPremium5Below
-                        }
-                        else if (minimumPremium > totalPremium5Below) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                    else if (rate = classTwo) {
-                        minimumPremium = minimum5Premium500Class2
-                        if (minimumPremium < totalPremium5Below) {
-                            totalPremium = totalPremium5Below
-                        }
-                        else if (minimumPremium > totalPremium5Below) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                    else if (rate = classThree) {
-                        minimumPremium = minimum5Premium500Class3
-                        if (minimumPremium < totalPremium5Below) {
-                            totalPremium = totalPremium5Below
-                        }
-                        else if (minimumPremium > totalPremium5Below) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                }
-                else if (attendanceValue >= 501 && attendanceValue <= 1500) {
-                    if (rate = classOne) {
-                        minimumPremium = minimum5Premium1500Class1
-                        if (minimumPremium < totalPremium5Below) {
-                            totalPremium = totalPremium5Below
-                        }
-                        else if (minimumPremium > totalPremium5Below) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                    else if (rate = classTwo) {
-                        minimumPremium = minimum5Premium1500Class2
-                        if (minimumPremium < totalPremium5Below) {
-                            totalPremium = totalPremium5Below
-                        }
-                        else if (minimumPremium > totalPremium5Below) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                    else if (rate = classThree) {
-                        minimumPremium = minimum5Premium1500Class3
-                        if (minimumPremium < totalPremium5Below) {
-                            totalPremium = totalPremium5Below
-                        }
-                        else if (minimumPremium > totalPremium5Below) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                }
-                else if (attendanceValue >= 1501 && attendanceValue <= 3000) {
-                    if (rate = classOne) {
-                        minimumPremium = minimum5Premium3000Class1
-                        if (minimumPremium < totalPremium5Below) {
-                            totalPremium = totalPremium5Below
-                        }
-                        else if (minimumPremium > totalPremium5Below) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                    else if (rate = classTwo) {
-                        minimumPremium = minimum5Premium3000Class2
-                        if (minimumPremium < totalPremium5Below) {
-                            totalPremium = totalPremium5Below
-                        }
-                        else if (minimumPremium > totalPremium5Below) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                    else if (rate = classThree) {
-                        minimumPremium = minimum5Premium3000Class3
-                        if (minimumPremium < totalPremium5Below) {
-                            totalPremium = totalPremium5Below
-                        }
-                        else if (minimumPremium > totalPremium5Below) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                }
-                else if (attendanceValue >= 3001 && attendanceValue <= 5000) {
-                    if (rate = classOne) {
-                        minimumPremium = minimum5Premium5000Class1
-                        if (minimumPremium < totalPremium5Below) {
-                            totalPremium = totalPremium5Below
-                        }
-                        else if (minimumPremium > totalPremium5Below) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                    else if (rate = classTwo) {
-                        minimumPremium = minimum5Premium5000Class2
-                        if (minimumPremium < totalPremium5Below) {
-                            totalPremium = totalPremium5Below
-                        }
-                        else if (minimumPremium > totalPremium5Below) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                    else if (rate = classThree) {
-                        minimumPremium = minimum5Premium5000Class3
-                        if (minimumPremium < totalPremium5Below) {
-                            totalPremium = totalPremium5Below
-                        }
-                        else if (minimumPremium > totalPremium5Below) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                }
-                else if (attendanceValue >= 5001) {
-                    if (rate = classOne) {
-                        minimumPremium = minimum5Premium5001Class1
-                        if (minimumPremium < totalPremium5Below) {
-                            totalPremium = totalPremium5Below
-                        }
-                        else if (minimumPremium > totalPremium5Below) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                    else if (rate = classTwo) {
-                        minimumPremium = minimum5Premium5001Class2
-                        if (minimumPremium < totalPremium5Below) {
-                            totalPremium = totalPremium5Below
-                        }
-                        else if (minimumPremium > totalPremium5Below) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                    else if (rate = classThree) {
-                        minimumPremium = minimum5Premium5001Class3
-                        if (minimumPremium < totalPremium5Below) {
-                            totalPremium = totalPremium5Below
-                        }
-                        else if (minimumPremium > totalPremium5Below) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                }
+    var minimum5Premium5001Class1 = 700
+    var minimum5Premium5001Class2 = 800
+    var minimum5Premium5001Class3 = 900
+// MINIMUM PREMIUMS UP TO 5 DAYS
 
-            }
+// MINIMUM PREMIUMS 6 DAYS AND MORE
+    var minimum6Premium10Class1 = 250
+    var minimum6Premium10Class2 = 250
+    var minimum6Premium10Class3 = 325
 
-            else if (eventDaysValue > 5) {
-                totalPremium6Above = eventDaysValue * rateValue
+    var minimum6Premium20Class1 = 500
+    var minimum6Premium20Class2 = 500
+    var minimum6Premium20Class3 = 500
 
-                if (eventDaysValue >= 6 && eventDaysValue <= 10) {
-                    if (rate = classOne) {
-                        minimumPremium = minimum6Premium10Class1
-                        if (minimumPremium < totalPremium6Above) {
-                            totalPremium = totalPremium6Above
-                        }
-                        else if (minimumPremium > totalPremium6Above) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                    else if (rate = classTwo) {
-                        minimumPremium = minimum6Premium10Class2
-                        if (minimumPremium < totalPremium6Above) {
-                            totalPremium = totalPremium6Above
-                        }
-                        else if (minimumPremium > totalPremium6Above) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                    else if (rate = classThree) {
-                        minimumPremium = minimum6Premium10Class3
-                        if (minimumPremium < totalPremium6Above) {
-                            totalPremium = totalPremium6Above
-                        }
-                        else if (minimumPremium > totalPremium6Above) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                }
-                else if (eventDaysValue >= 11 && eventDaysValue <= 20) {
-                    if (rate = classOne) {
-                        minimumPremium = minimum6Premium20Class1
-                        if (minimumPremium < totalPremium6Above) {
-                            totalPremium = totalPremium6Above
-                        }
-                        else if (minimumPremium > totalPremium6Above) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                    else if (rate = classTwo) {
-                        minimumPremium = minimum6Premium20Class2
-                        if (minimumPremium < totalPremium6Above) {
-                            totalPremium = totalPremium6Above
-                        }
-                        else if (minimumPremium > totalPremium6Above) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                    else if (rate = classThree) {
-                        minimumPremium = minimum6Premium20Class3
-                        if (minimumPremium < totalPremium6Above) {
-                            totalPremium = totalPremium6Above
-                        }
-                        else if (minimumPremium > totalPremium6Above) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                }
-                else if (eventDaysValue >= 21 && eventDaysValue <= 31) {
-                    if (rate = classOne) {
-                        minimumPremium = minimum6Premium31Class1
-                        if (minimumPremium < totalPremium6Above) {
-                            totalPremium = totalPremium6Above
-                        }
-                        else if (minimumPremium > totalPremium6Above) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                    else if (rate = classTwo) {
-                        minimumPremium = minimum6Premium31Class2
-                        if (minimumPremium < totalPremium6Above) {
-                            totalPremium = totalPremium6Above
-                        }
-                        else if (minimumPremium > totalPremium6Above) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                    else if (rate = classThree) {
-                        minimumPremium = minimum6Premium31Class3
-                        if (minimumPremium < totalPremium6Above) {
-                            totalPremium = totalPremium6Above
-                        }
-                        else if (minimumPremium > totalPremium6Above) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                }
-                else if (eventDaysValue >= 32 && eventDaysValue <= 45) {
-                    if (rate = classOne) {
-                        minimumPremium = minimum6Premium45Class1
-                        if (minimumPremium < totalPremium6Above) {
-                            totalPremium = totalPremium6Above
-                        }
-                        else if (minimumPremium > totalPremium6Above) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                    else if (rate = classTwo) {
-                        minimumPremium = minimum6Premium45Class2
-                        if (minimumPremium < totalPremium6Above) {
-                            totalPremium = totalPremium6Above
-                        }
-                        else if (minimumPremium > totalPremium6Above) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                    else if (rate = classThree) {
-                        minimumPremium = minimum6Premium45Class3
-                        if (minimumPremium < totalPremium6Above) {
-                            totalPremium = totalPremium6Above
-                        }
-                        else if (minimumPremium > totalPremium6Above) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                }
+    var minimum6Premium31Class1 = 750
+    var minimum6Premium31Class2 = 750
+    var minimum6Premium31Class3 = 750
 
-                else if (eventDaysValue >= 46 && eventDaysValue <= 60) {
-                    if (rate = classOne) {
-                        minimumPremium = minimum6Premium60Class1
-                        if (minimumPremium < totalPremium6Above) {
-                            totalPremium = totalPremium6Above
-                        }
-                        else if (minimumPremium > totalPremium6Above) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                    else if (rate = classTwo) {
-                        minimumPremium = minimum6Premium60Class2
-                        if (minimumPremium < totalPremium6Above) {
-                            totalPremium = totalPremium6Above
-                        }
-                        else if (minimumPremium > totalPremium6Above) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                    else if (rate = classThree) {
-                        minimumPremium = minimum6Premium60Class3
-                        if (minimumPremium < totalPremium6Above) {
-                            totalPremium = totalPremium6Above
-                        }
-                        else if (minimumPremium > totalPremium6Above) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                }
+    var minimum6Premium45Class1 = 800
+    var minimum6Premium45Class2 = 800
+    var minimum6Premium45Class3 = 800
 
-                else if (eventDaysValue >= 61 && eventDaysValue <= 75) {
-                    if (rate = classOne) {
-                        minimumPremium = minimum6Premium75Class1
-                        if (minimumPremium < totalPremium6Above) {
-                            totalPremium = totalPremium6Above
-                        }
-                        else if (minimumPremium > totalPremium6Above) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                    else if (rate = classTwo) {
-                        minimumPremium = minimum6Premium75Class2
-                        if (minimumPremium < totalPremium6Above) {
-                            totalPremium = totalPremium6Above
-                        }
-                        else if (minimumPremium > totalPremium6Above) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                    else if (rate = classThree) {
-                        minimumPremium = minimum6Premium75Class3
-                        if (minimumPremium < totalPremium6Above) {
-                            totalPremium = totalPremium6Above
-                        }
-                        else if (minimumPremium > totalPremium6Above) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                }
+    var minimum6Premium60Class1 = 850
+    var minimum6Premium60Class2 = 850
+    var minimum6Premium60Class3 = 850
 
-                else if (eventDaysValue >= 76 && eventDaysValue <= 90) {
-                    if (rate = classOne) {
-                        minimumPremium = minimum6Premium90Class1
-                        if (minimumPremium < totalPremium6Above) {
-                            totalPremium = totalPremium6Above
-                        }
-                        else if (minimumPremium > totalPremium6Above) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                    else if (rate = classTwo) {
-                        minimumPremium = minimum6Premium90Class2
-                        if (minimumPremium < totalPremium6Above) {
-                            totalPremium = totalPremium6Above
-                        }
-                        else if (minimumPremium > totalPremium6Above) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                    else if (rate = classThree) {
-                        minimumPremium = minimum6Premium90Class3
-                        if (minimumPremium < totalPremium6Above) {
-                            totalPremium = totalPremium6Above
-                        }
-                        else if (minimumPremium > totalPremium6Above) {
-                            totalPremium = minimumPremium
-                        }
-                    }
-                }
-            }
-            $("#commercialGeneralLiabilityPremiumCost").html("$" + totalPremium);
-        }
-        // alert("LAST: " + totalPremium)
+    var minimum6Premium75Class1 = 900
+    var minimum6Premium75Class2 = 900
+    var minimum6Premium75Class3 = 900
+
+    var minimum6Premium90Class1 = 950
+    var minimum6Premium90Class2 = 950
+    var minimum6Premium90Class3 = 950
+// MINIMUM PREMIUM 6 DAYS AND MORE
 
 
 
-
-    });
-
-// BROKER FEE
-    $(document.body).on('change', "#brokerFeeInput", function () {
-        brokerFee = $("#brokerFeeInput").val()
-        // alert(attendance)
-
-        brokerFee = brokerFee.replace('$','')
-
-        if (brokerFee.length > 0) {
-            var brokerFeeValue = parseFloat(brokerFee)
-        }
-        $("#brokerFeePremiumCost").html("$" + brokerFee);
-
-    });
-
-// POLICY FEE
-    $(document.body).on('change', "#estimatedTotalAttendance,#howManyDaysIsTheEvent", function () {
-            var policyFee = 25
-        $("#policyFeePremiumCost").html("$" + policyFee);
-        });
-
-// ALCOHOL FEE
-    $(document.body).on('change', "#alcoholSales", function () {
-
-        var tempLiquorSale = $("#alcoholSales").val()
-        eventDays = $("#howManyDaysIsTheEvent").val()
-        attendance = $("#estimatedTotalAttendance").val()
-
-        // alert("Step2" + liquorSale) removes $ from val
-        liquorSale = tempLiquorSale.replace('$','').replace(',', '')
-        // alert (liquorSale)
-
-        var liquorSaleValue = parseFloat(liquorSale)
-        var eventDaysValue = parseFloat(eventDays)
+    attendance = $("#estimatedTotalAttendance").val()
+    eventDays = $("#howManyDaysIsTheEvent").val()
+    if (attendance.length > 0 && eventDays.length > 0) {
         var attendanceValue = parseFloat(attendance)
+        var eventDaysValue = parseFloat(eventDays)
+        var rateValue = parseFloat(rate)
 
-        alert("liquorSaleValue" + liquorSaleValue)
-        alert("eventDatsValue" + eventDaysValue)
-        alert ("LiqourRate" + liquorRate)
+        if (eventDaysValue <= 5) {
 
-        if (liquorSaleValue > 0 && liquorSaleValue < 25000 && eventDaysValue > 0 && eventDaysValue <= 5) {
-
-            if (liquorRate == 8) {
-                liquorRatePremium = liquorRate * liquorSaleValue / 1000
-                liquorMinimumPremium = liquorMinimum8Below25000
-                if (liquorMinimumPremium < liquorRatePremium) {
-                    liquorTotalPremium = liquorRatePremium
+            totalPremium5Below = attendanceValue * rateValue
+            // alert("First: " + totalPremium5Below)
+            if (attendanceValue >= 1 && attendanceValue <= 100) {
+                if (rate = classOne) {
+                    minimumPremium = minimum5Premium100Class1
+                    // alert("SECOND minimum5Prem" + minimum5Premium100Class1)
+                    // alert("second: " + totalPremium5Below)
+                    if (minimumPremium < totalPremium5Below) {
+                        totalPremium = totalPremium5Below
+                    }
+                    else if (minimumPremium > totalPremium5Below) {
+                        totalPremium = minimumPremium
+                        // alert("THIRD totalPrem" + totalPremium)
+                        // alert ("FORTH minimumPre"+ minimumPremium)
+                    }
                 }
-                else if (liquorMinimumPremium > liquorRatePremium) {
-                    liquorTotalPremium = liquorMinimumPremium
+                else if (rate = classTwo) {
+                    minimumPremium = minimum5Premium100Class2
+                    if (minimumPremium < totalPremium5Below) {
+                        totalPremium = totalPremium5Below
+                    }
+                    else if (minimumPremium > totalPremium5Below) {
+                        totalPremium = minimumPremium
+                    }
+                }
+                else if (rate = classThree) {
+                    minimumPremium = minimum5Premium100Class3
+                    if (minimumPremium < totalPremium5Below) {
+                        totalPremium = totalPremium5Below
+                    }
+                    else if (minimumPremium > totalPremium5Below) {
+                        totalPremium = minimumPremium
+                    }
+                }
+            }
+            else if (attendanceValue >= 101 && attendanceValue <= 500) {
+                if (rate = classOne) {
+                    minimumPremium = minimum5Premium500Class1
+                    if (minimumPremium < totalPremium5Below) {
+                        totalPremium = totalPremium5Below
+                    }
+                    else if (minimumPremium > totalPremium5Below) {
+                        totalPremium = minimumPremium
+                    }
+                }
+                else if (rate = classTwo) {
+                    minimumPremium = minimum5Premium500Class2
+                    if (minimumPremium < totalPremium5Below) {
+                        totalPremium = totalPremium5Below
+                    }
+                    else if (minimumPremium > totalPremium5Below) {
+                        totalPremium = minimumPremium
+                    }
+                }
+                else if (rate = classThree) {
+                    minimumPremium = minimum5Premium500Class3
+                    if (minimumPremium < totalPremium5Below) {
+                        totalPremium = totalPremium5Below
+                    }
+                    else if (minimumPremium > totalPremium5Below) {
+                        totalPremium = minimumPremium
+                    }
+                }
+            }
+            else if (attendanceValue >= 501 && attendanceValue <= 1500) {
+                if (rate = classOne) {
+                    minimumPremium = minimum5Premium1500Class1
+                    if (minimumPremium < totalPremium5Below) {
+                        totalPremium = totalPremium5Below
+                    }
+                    else if (minimumPremium > totalPremium5Below) {
+                        totalPremium = minimumPremium
+                    }
+                }
+                else if (rate = classTwo) {
+                    minimumPremium = minimum5Premium1500Class2
+                    if (minimumPremium < totalPremium5Below) {
+                        totalPremium = totalPremium5Below
+                    }
+                    else if (minimumPremium > totalPremium5Below) {
+                        totalPremium = minimumPremium
+                    }
+                }
+                else if (rate = classThree) {
+                    minimumPremium = minimum5Premium1500Class3
+                    if (minimumPremium < totalPremium5Below) {
+                        totalPremium = totalPremium5Below
+                    }
+                    else if (minimumPremium > totalPremium5Below) {
+                        totalPremium = minimumPremium
+                    }
+                }
+            }
+            else if (attendanceValue >= 1501 && attendanceValue <= 3000) {
+                if (rate = classOne) {
+                    minimumPremium = minimum5Premium3000Class1
+                    if (minimumPremium < totalPremium5Below) {
+                        totalPremium = totalPremium5Below
+                    }
+                    else if (minimumPremium > totalPremium5Below) {
+                        totalPremium = minimumPremium
+                    }
+                }
+                else if (rate = classTwo) {
+                    minimumPremium = minimum5Premium3000Class2
+                    if (minimumPremium < totalPremium5Below) {
+                        totalPremium = totalPremium5Below
+                    }
+                    else if (minimumPremium > totalPremium5Below) {
+                        totalPremium = minimumPremium
+                    }
+                }
+                else if (rate = classThree) {
+                    minimumPremium = minimum5Premium3000Class3
+                    if (minimumPremium < totalPremium5Below) {
+                        totalPremium = totalPremium5Below
+                    }
+                    else if (minimumPremium > totalPremium5Below) {
+                        totalPremium = minimumPremium
+                    }
+                }
+            }
+            else if (attendanceValue >= 3001 && attendanceValue <= 5000) {
+                if (rate = classOne) {
+                    minimumPremium = minimum5Premium5000Class1
+                    if (minimumPremium < totalPremium5Below) {
+                        totalPremium = totalPremium5Below
+                    }
+                    else if (minimumPremium > totalPremium5Below) {
+                        totalPremium = minimumPremium
+                    }
+                }
+                else if (rate = classTwo) {
+                    minimumPremium = minimum5Premium5000Class2
+                    if (minimumPremium < totalPremium5Below) {
+                        totalPremium = totalPremium5Below
+                    }
+                    else if (minimumPremium > totalPremium5Below) {
+                        totalPremium = minimumPremium
+                    }
+                }
+                else if (rate = classThree) {
+                    minimumPremium = minimum5Premium5000Class3
+                    if (minimumPremium < totalPremium5Below) {
+                        totalPremium = totalPremium5Below
+                    }
+                    else if (minimumPremium > totalPremium5Below) {
+                        totalPremium = minimumPremium
+                    }
+                }
+            }
+            else if (attendanceValue >= 5001) {
+                if (rate = classOne) {
+                    minimumPremium = minimum5Premium5001Class1
+                    if (minimumPremium < totalPremium5Below) {
+                        totalPremium = totalPremium5Below
+                    }
+                    else if (minimumPremium > totalPremium5Below) {
+                        totalPremium = minimumPremium
+                    }
+                }
+                else if (rate = classTwo) {
+                    minimumPremium = minimum5Premium5001Class2
+                    if (minimumPremium < totalPremium5Below) {
+                        totalPremium = totalPremium5Below
+                    }
+                    else if (minimumPremium > totalPremium5Below) {
+                        totalPremium = minimumPremium
+                    }
+                }
+                else if (rate = classThree) {
+                    minimumPremium = minimum5Premium5001Class3
+                    if (minimumPremium < totalPremium5Below) {
+                        totalPremium = totalPremium5Below
+                    }
+                    else if (minimumPremium > totalPremium5Below) {
+                        totalPremium = minimumPremium
+                    }
                 }
             }
 
-            else if (liquorRate == 12) {
+        }
+        else if (eventDaysValue > 5) {
+            totalPremium6Above = eventDaysValue * rateValue
 
-                // alert ("LIQUORRATE" + liquorRate)
-                // alert ("LIQUORSALEVALUE" + liquorSaleValue)
-
-                liquorRatePremium = liquorRate * liquorSaleValue / 1000
-                liquorMinimumPremium = liquorMinimum12Below25000
-
-                // alert ("LIQUORPREMIUM" + liquorRatePremium)
-
-                if (liquorMinimumPremium < liquorRatePremium) {
-                    liquorTotalPremium = liquorRatePremium
+            if (eventDaysValue >= 6 && eventDaysValue <= 10) {
+                if (rate = classOne) {
+                    minimumPremium = minimum6Premium10Class1
+                    if (minimumPremium < totalPremium6Above) {
+                        totalPremium = totalPremium6Above
+                    }
+                    else if (minimumPremium > totalPremium6Above) {
+                        totalPremium = minimumPremium
+                    }
                 }
-                else if (liquorMinimumPremium > liquorRatePremium) {
-                    liquorTotalPremium = liquorMinimumPremium
+                else if (rate = classTwo) {
+                    minimumPremium = minimum6Premium10Class2
+                    if (minimumPremium < totalPremium6Above) {
+                        totalPremium = totalPremium6Above
+                    }
+                    else if (minimumPremium > totalPremium6Above) {
+                        totalPremium = minimumPremium
+                    }
+                }
+                else if (rate = classThree) {
+                    minimumPremium = minimum6Premium10Class3
+                    if (minimumPremium < totalPremium6Above) {
+                        totalPremium = totalPremium6Above
+                    }
+                    else if (minimumPremium > totalPremium6Above) {
+                        totalPremium = minimumPremium
+                    }
                 }
             }
-            else if (liquorRate == 14) {
-                liquorRatePremium = liquorRate * liquorSaleValue / 1000
-                liquorMinimumPremium = liquorMinimum14Below25000
-                if (liquorMinimumPremium < liquorRatePremium) {
-                    liquorTotalPremium = liquorRatePremium
+            else if (eventDaysValue >= 11 && eventDaysValue <= 20) {
+                if (rate = classOne) {
+                    minimumPremium = minimum6Premium20Class1
+                    if (minimumPremium < totalPremium6Above) {
+                        totalPremium = totalPremium6Above
+                    }
+                    else if (minimumPremium > totalPremium6Above) {
+                        totalPremium = minimumPremium
+                    }
                 }
-                else if (liquorMinimumPremium > liquorRatePremium) {
-                    liquorTotalPremium = liquorMinimumPremium
+                else if (rate = classTwo) {
+                    minimumPremium = minimum6Premium20Class2
+                    if (minimumPremium < totalPremium6Above) {
+                        totalPremium = totalPremium6Above
+                    }
+                    else if (minimumPremium > totalPremium6Above) {
+                        totalPremium = minimumPremium
+                    }
+                }
+                else if (rate = classThree) {
+                    minimumPremium = minimum6Premium20Class3
+                    if (minimumPremium < totalPremium6Above) {
+                        totalPremium = totalPremium6Above
+                    }
+                    else if (minimumPremium > totalPremium6Above) {
+                        totalPremium = minimumPremium
+                    }
                 }
             }
-            else if (liquorRate == 15) {
-                liquorRatePremium = liquorRate * liquorSaleValue / 1000
-                liquorMinimumPremium = liquorMinimum15Below25000
-                if (liquorMinimumPremium < liquorRatePremium) {
-                    liquorTotalPremium = liquorRatePremium
+            else if (eventDaysValue >= 21 && eventDaysValue <= 31) {
+                if (rate = classOne) {
+                    minimumPremium = minimum6Premium31Class1
+                    if (minimumPremium < totalPremium6Above) {
+                        totalPremium = totalPremium6Above
+                    }
+                    else if (minimumPremium > totalPremium6Above) {
+                        totalPremium = minimumPremium
+                    }
                 }
-                else if (liquorMinimumPremium > liquorRatePremium) {
-                    liquorTotalPremium = liquorMinimumPremium
+                else if (rate = classTwo) {
+                    minimumPremium = minimum6Premium31Class2
+                    if (minimumPremium < totalPremium6Above) {
+                        totalPremium = totalPremium6Above
+                    }
+                    else if (minimumPremium > totalPremium6Above) {
+                        totalPremium = minimumPremium
+                    }
+                }
+                else if (rate = classThree) {
+                    minimumPremium = minimum6Premium31Class3
+                    if (minimumPremium < totalPremium6Above) {
+                        totalPremium = totalPremium6Above
+                    }
+                    else if (minimumPremium > totalPremium6Above) {
+                        totalPremium = minimumPremium
+                    }
                 }
             }
-            else if (liquorRate == 50) {
-                liquorRatePremium = liquorRate * liquorSaleValue / 1000
-                liquorMinimumPremium = liquorMinimum50Below25000
-                if (liquorMinimumPremium < liquorRatePremium) {
-                    liquorTotalPremium = liquorRatePremium
+            else if (eventDaysValue >= 32 && eventDaysValue <= 45) {
+                if (rate = classOne) {
+                    minimumPremium = minimum6Premium45Class1
+                    if (minimumPremium < totalPremium6Above) {
+                        totalPremium = totalPremium6Above
+                    }
+                    else if (minimumPremium > totalPremium6Above) {
+                        totalPremium = minimumPremium
+                    }
                 }
-                else if (liquorMinimumPremium > liquorRatePremium) {
-                    liquorTotalPremium = liquorMinimumPremium
+                else if (rate = classTwo) {
+                    minimumPremium = minimum6Premium45Class2
+                    if (minimumPremium < totalPremium6Above) {
+                        totalPremium = totalPremium6Above
+                    }
+                    else if (minimumPremium > totalPremium6Above) {
+                        totalPremium = minimumPremium
+                    }
+                }
+                else if (rate = classThree) {
+                    minimumPremium = minimum6Premium45Class3
+                    if (minimumPremium < totalPremium6Above) {
+                        totalPremium = totalPremium6Above
+                    }
+                    else if (minimumPremium > totalPremium6Above) {
+                        totalPremium = minimumPremium
+                    }
+                }
+            }
+
+            else if (eventDaysValue >= 46 && eventDaysValue <= 60) {
+                if (rate = classOne) {
+                    minimumPremium = minimum6Premium60Class1
+                    if (minimumPremium < totalPremium6Above) {
+                        totalPremium = totalPremium6Above
+                    }
+                    else if (minimumPremium > totalPremium6Above) {
+                        totalPremium = minimumPremium
+                    }
+                }
+                else if (rate = classTwo) {
+                    minimumPremium = minimum6Premium60Class2
+                    if (minimumPremium < totalPremium6Above) {
+                        totalPremium = totalPremium6Above
+                    }
+                    else if (minimumPremium > totalPremium6Above) {
+                        totalPremium = minimumPremium
+                    }
+                }
+                else if (rate = classThree) {
+                    minimumPremium = minimum6Premium60Class3
+                    if (minimumPremium < totalPremium6Above) {
+                        totalPremium = totalPremium6Above
+                    }
+                    else if (minimumPremium > totalPremium6Above) {
+                        totalPremium = minimumPremium
+                    }
+                }
+            }
+
+            else if (eventDaysValue >= 61 && eventDaysValue <= 75) {
+                if (rate = classOne) {
+                    minimumPremium = minimum6Premium75Class1
+                    if (minimumPremium < totalPremium6Above) {
+                        totalPremium = totalPremium6Above
+                    }
+                    else if (minimumPremium > totalPremium6Above) {
+                        totalPremium = minimumPremium
+                    }
+                }
+                else if (rate = classTwo) {
+                    minimumPremium = minimum6Premium75Class2
+                    if (minimumPremium < totalPremium6Above) {
+                        totalPremium = totalPremium6Above
+                    }
+                    else if (minimumPremium > totalPremium6Above) {
+                        totalPremium = minimumPremium
+                    }
+                }
+                else if (rate = classThree) {
+                    minimumPremium = minimum6Premium75Class3
+                    if (minimumPremium < totalPremium6Above) {
+                        totalPremium = totalPremium6Above
+                    }
+                    else if (minimumPremium > totalPremium6Above) {
+                        totalPremium = minimumPremium
+                    }
+                }
+            }
+
+            else if (eventDaysValue >= 76 && eventDaysValue <= 90) {
+                if (rate = classOne) {
+                    minimumPremium = minimum6Premium90Class1
+                    if (minimumPremium < totalPremium6Above) {
+                        totalPremium = totalPremium6Above
+                    }
+                    else if (minimumPremium > totalPremium6Above) {
+                        totalPremium = minimumPremium
+                    }
+                }
+                else if (rate = classTwo) {
+                    minimumPremium = minimum6Premium90Class2
+                    if (minimumPremium < totalPremium6Above) {
+                        totalPremium = totalPremium6Above
+                    }
+                    else if (minimumPremium > totalPremium6Above) {
+                        totalPremium = minimumPremium
+                    }
+                }
+                else if (rate = classThree) {
+                    minimumPremium = minimum6Premium90Class3
+                    if (minimumPremium < totalPremium6Above) {
+                        totalPremium = totalPremium6Above
+                    }
+                    else if (minimumPremium > totalPremium6Above) {
+                        totalPremium = minimumPremium
+                    }
                 }
             }
         }
-        else if (liquorSaleValue > 0 && eventDaysValue > 0) {
+        return totalPremium;
+    }
+}
+function getBrokerPremium(brokerFeeTotal) {
+    var brokerFee
 
-            if (liquorRate == 8) {
-                liquorRatePremium = liquorRate * liquorSaleValue / 1000
-                liquorMinimumPremium = liquorMinimum8Above25000
-                if (liquorMinimumPremium < liquorRatePremium) {
-                    liquorTotalPremium = liquorRatePremium
-                }
-                else if (liquorMinimumPremium > liquorRatePremium) {
-                    liquorTotalPremium = liquorMinimumPremium
-                }
-            }
+    brokerFee = $("#brokerFeeInput").val()
+    brokerFee = brokerFee.replace('$', '')
+    if (brokerFee.length > 0) {
+        var brokerFeeValue = parseFloat(brokerFee)
+    }
+    return brokerFeeValue
+}
+function getLiquorPremium(totalPremiumLiquor){
 
-            else if (liquorRate == 12) {
-                liquorRatePremium = liquorRate * liquorSaleValue / 1000
-                liquorMinimumPremium = liquorMinimum12Above25000
-                if (liquorMinimumPremium < liquorRatePremium) {
-                    liquorTotalPremium = liquorRatePremium
-                }
-                else if (liquorMinimumPremium > liquorRatePremium) {
-                    liquorTotalPremium = liquorMinimumPremium
-                }
+// ALCOHOL PREMIUMS
+// $25,000 and below
+    var liquorMinimum8Below25000 = 100
+    var liquorMinimum12Below25000 = 375
+    var liquorMinimum14Below25000 = 550
+    var liquorMinimum15Below25000 = 750
+    var liquorMinimum50Below25000 = 1000
+
+// 25,000 and above
+    var liquorMinimum8Above25000 = 100
+    var liquorMinimum12Above25000 = 750
+    var liquorMinimum14Above25000 = 800
+    var liquorMinimum15Above25000 = 900
+    var liquorMinimum50Above25000 = 2500
+
+    var liquorRatePremium
+    var liquorSale
+    var liquorTotalPremium
+    var liquorMinimumPremium
+    var liquorTotalPremiumBelow25000
+    var liquorTotalPremiumAbove25000
+// ALCOHOL PREMIUMS
+
+
+    var tempLiquorSale = $("#alcoholSales").val()
+    eventDays = $("#howManyDaysIsTheEvent").val()
+    attendance = $("#estimatedTotalAttendance").val()
+
+    // alert("Step2" + liquorSale) removes $ from val
+    liquorSale = tempLiquorSale.replace('$','').replace(',', '')
+    // alert (liquorSale)
+
+    var liquorSaleValue = parseFloat(liquorSale)
+    var eventDaysValue = parseFloat(eventDays)
+    var attendanceValue = parseFloat(attendance)
+
+    alert("liquorSaleValue" + liquorSaleValue)
+    alert("eventDatsValue" + eventDaysValue)
+    alert ("LiqourRate" + liquorRate)
+
+    if (liquorSaleValue > 0 && liquorSaleValue < 25000 && eventDaysValue > 0 && eventDaysValue <= 5) {
+
+        if (liquorRate == 8) {
+            liquorRatePremium = liquorRate * liquorSaleValue / 1000
+            liquorMinimumPremium = liquorMinimum8Below25000
+            if (liquorMinimumPremium < liquorRatePremium) {
+                liquorTotalPremium = liquorRatePremium
             }
-            else if (liquorRate == 14) {
-                liquorRatePremium = liquorRate * liquorSaleValue / 1000
-                liquorMinimumPremium = liquorMinimum14Above25000
-                if (liquorMinimumPremium < liquorRatePremium) {
-                    liquorTotalPremium = liquorRatePremium
-                }
-                else if (liquorMinimumPremium > liquorRatePremium) {
-                    liquorTotalPremium = liquorMinimumPremium
-                }
+            else if (liquorMinimumPremium > liquorRatePremium) {
+                liquorTotalPremium = liquorMinimumPremium
             }
-            else if (liquorRate == 15) {
-                liquorRatePremium = liquorRate * liquorSaleValue / 1000
-                liquorMinimumPremium = liquorMinimum15Above25000
-                if (liquorMinimumPremium < liquorRatePremium) {
-                    liquorTotalPremium = liquorRatePremium
-                }
-                else if (liquorMinimumPremium > liquorRatePremium) {
-                    liquorTotalPremium = liquorMinimumPremium
-                }
-            }
-            else if (liquorRate == 50) {
-                liquorRatePremium = liquorRate * liquorSaleValue / 1000
-                liquorMinimumPremium = liquorMinimum50Above25000
-                if (liquorMinimumPremium < liquorRatePremium) {
-                    liquorTotalPremium = liquorRatePremium
-                }
-                else if (liquorMinimumPremium > liquorRatePremium) {
-                    liquorTotalPremium = liquorMinimumPremium
-                }
-            }
-            alert("5Step" + liquorMinimumPremium)
-            alert("6Step" + liquorRatePremium)
-            alert("7Step" + liquorTotalPremium)
-            $("#alcoholSalePremiumCost").html("$" + liquorTotalPremium);
         }
+
+        else if (liquorRate == 12) {
+
+            // alert ("LIQUORRATE" + liquorRate)
+            // alert ("LIQUORSALEVALUE" + liquorSaleValue)
+
+            liquorRatePremium = liquorRate * liquorSaleValue / 1000
+            liquorMinimumPremium = liquorMinimum12Below25000
+
+            // alert ("LIQUORPREMIUM" + liquorRatePremium)
+
+            if (liquorMinimumPremium < liquorRatePremium) {
+                liquorTotalPremium = liquorRatePremium
+            }
+            else if (liquorMinimumPremium > liquorRatePremium) {
+                liquorTotalPremium = liquorMinimumPremium
+            }
+        }
+        else if (liquorRate == 14) {
+            liquorRatePremium = liquorRate * liquorSaleValue / 1000
+            liquorMinimumPremium = liquorMinimum14Below25000
+            if (liquorMinimumPremium < liquorRatePremium) {
+                liquorTotalPremium = liquorRatePremium
+            }
+            else if (liquorMinimumPremium > liquorRatePremium) {
+                liquorTotalPremium = liquorMinimumPremium
+            }
+        }
+        else if (liquorRate == 15) {
+            liquorRatePremium = liquorRate * liquorSaleValue / 1000
+            liquorMinimumPremium = liquorMinimum15Below25000
+            if (liquorMinimumPremium < liquorRatePremium) {
+                liquorTotalPremium = liquorRatePremium
+            }
+            else if (liquorMinimumPremium > liquorRatePremium) {
+                liquorTotalPremium = liquorMinimumPremium
+            }
+        }
+        else if (liquorRate == 50) {
+            liquorRatePremium = liquorRate * liquorSaleValue / 1000
+            liquorMinimumPremium = liquorMinimum50Below25000
+            if (liquorMinimumPremium < liquorRatePremium) {
+                liquorTotalPremium = liquorRatePremium
+            }
+            else if (liquorMinimumPremium > liquorRatePremium) {
+                liquorTotalPremium = liquorMinimumPremium
+            }
+        }
+    }
+    else if (liquorSaleValue > 0 && eventDaysValue > 0) {
+
+        if (liquorRate == 8) {
+            liquorRatePremium = liquorRate * liquorSaleValue / 1000
+            liquorMinimumPremium = liquorMinimum8Above25000
+            if (liquorMinimumPremium < liquorRatePremium) {
+                liquorTotalPremium = liquorRatePremium
+            }
+            else if (liquorMinimumPremium > liquorRatePremium) {
+                liquorTotalPremium = liquorMinimumPremium
+            }
+        }
+
+        else if (liquorRate == 12) {
+            liquorRatePremium = liquorRate * liquorSaleValue / 1000
+            liquorMinimumPremium = liquorMinimum12Above25000
+            if (liquorMinimumPremium < liquorRatePremium) {
+                liquorTotalPremium = liquorRatePremium
+            }
+            else if (liquorMinimumPremium > liquorRatePremium) {
+                liquorTotalPremium = liquorMinimumPremium
+            }
+        }
+        else if (liquorRate == 14) {
+            liquorRatePremium = liquorRate * liquorSaleValue / 1000
+            liquorMinimumPremium = liquorMinimum14Above25000
+            if (liquorMinimumPremium < liquorRatePremium) {
+                liquorTotalPremium = liquorRatePremium
+            }
+            else if (liquorMinimumPremium > liquorRatePremium) {
+                liquorTotalPremium = liquorMinimumPremium
+            }
+        }
+        else if (liquorRate == 15) {
+            liquorRatePremium = liquorRate * liquorSaleValue / 1000
+            liquorMinimumPremium = liquorMinimum15Above25000
+            if (liquorMinimumPremium < liquorRatePremium) {
+                liquorTotalPremium = liquorRatePremium
+            }
+            else if (liquorMinimumPremium > liquorRatePremium) {
+                liquorTotalPremium = liquorMinimumPremium
+            }
+        }
+        else if (liquorRate == 50) {
+            liquorRatePremium = liquorRate * liquorSaleValue / 1000
+            liquorMinimumPremium = liquorMinimum50Above25000
+            if (liquorMinimumPremium < liquorRatePremium) {
+                liquorTotalPremium = liquorRatePremium
+            }
+            else if (liquorMinimumPremium > liquorRatePremium) {
+                liquorTotalPremium = liquorMinimumPremium
+            }
+        }
+        alert("5Step" + liquorMinimumPremium)
+        alert("6Step" + liquorRatePremium)
+        alert("7Step" + liquorTotalPremium)
         $("#alcoholSalePremiumCost").html("$" + liquorTotalPremium);
-    });
+    }
+    return liquorTotalPremium
+}
+function getTotalPremium(premium){
 
-// TOTAL SALES
-    $(document.body).on('change', ".effectsTotalPremium", function () {
-        totalPremium = 0;
+    totalPremium = 0;
 
-        $(".effectsTotal").each(function() {
-            if($(this).html().length > 0 ){
-                var tempVal = parseFloat($(this).html().replace('$',''));
-                // var totalPremiumValue = parseFloat $(this)
-                totalPremium = totalPremium + tempVal
-                // alert (totalPremium)
-            }
-
-        });
-        $("#totalSalePremiumCost").html("$" + totalPremium);
-        // alert (totalPremium)
+    $(".effectsTotal").each(function() {
+        if($(this).html().length > 0 ){
+            var tempVal = parseFloat($(this).html().replace('$',''));
+            // var totalPremiumValue = parseFloat $(this)
+            totalPremium = totalPremium + tempVal
+            // alert (totalPremium)
+        }
 
     });
-
-// TOTAL PREMIUM COST !@#
-
-
-
-
-// CGL TABLE
-    $(document.body).on('change', 'input[name="commercialGeneralLiabilityRequested?"]', function () {
-        //alert();
-        if ($(this).attr("value") == "Yes") {
-            $("#commercialGeneralLiabilityRequestedContainer").css('display', "");
-            $("#commercialGeneralLiabilityRequestedExplain").css('display', "");
-            $(".tableCGL").addClass("showReviewTable");
-        }
-        if ($(this).attr("value") == "No") {
-            $("#commercialGeneralLiabilityRequestedContainer").css('display', "none");
-            $("#commercialGeneralLiabilityRequestedExplain").css('display', "none");
-            $(".tableCGL").removeClass("showReviewTable");
-        }
-    });
-
-// WORK COMP TABLE / ADDITIONAL HIDDEN QUESTIONS
-    $(document.body).on('change', 'input[name="workCompCoverageRequested?"]', function () {
-        //alert();
-        if ($(this).attr("value") == "Yes") {
-            $("#workCompCoverageRequestedContainer").css('display', "");
-            $("#workCompCoverageRequestedExplain").css('display', "");
-            $(".tableWC").addClass("showReviewTable");
-        }
-        if ($(this).attr("value") == "No") {
-            $("#workCompCoverageRequestedContainer").css('display', "none");
-            $("#workCompCoverageRequestedExplain").css('display', "none");
-            $(".tableWC").removeClass("showReviewTable");
-        }
-    });
-
-// AUTO LIABILITY TABLE / ADDITIONAL HIDDEN QUESTIONS
-    $(document.body).on('change', 'input[name="autoLiability"]', function () {
-        //alert();
-        if ($(this).attr("value") == "Yes") {
-            $(".costRentedVehiclesContainer").css('display', "");
-            $(".costRentedVehiclesExplain").css('display', "");
-            $(".tableNOAL").addClass("showReviewTable");
-        }
-        if ($(this).attr("value") == "No") {
-            $(".costRentedVehiclesContainer").css('display', "none");
-            $(".costRentedVehiclesExplain").css('display', "none");
-            $(".tableNOAL").removeClass("showReviewTable");
-        }
-    });
-
-// UMBRELLA TABLE
-    $(document.body).on('change', 'input[name="umbrellaLimitRequested"]', function () {
-        //alert();
-        if ($(this).attr("value") == "Yes") {
-            $("#umbrellaLimitRequestedContainer").css('display', "");
-            $("#umbrellaLimitRequestedExplain").css('display', "");
-            $(".tableCUMB").addClass("showReviewTable");
-        }
-        if ($(this).attr("value") == "No") {
-            $("#umbrellaLimitRequestedContainer").css('display', "none");
-            $("#umbrellaLimitRequestedExplain").css('display', "none");
-            $(".tableCUMB").removeClass("showReviewTable");
-        }
-    });
-
-// ALCOHOL TABLE / ADDITIONAL HIDDEN QUESTION / PREMIUMS
-    $(document.body).on('change', 'input[name="willAlcoholBeServed"]', function () {
-        //alert();
-        if ($(this).attr("value") == "Yes") {
-            $(".alcoholSaleContainer").css('display', "");
-            $(".alcoholSaleExplain").css('display', "");
-        }
-        if ($(this).attr("value") == "No") {
-            $(".alcoholSaleContainer").css('display', "none");
-            $(".alcoholSaleExplain").css('display', "none");
-        }
-    });
-
-// EQUIPMENT TABLE / ADDITIONAL HIDDEN QUESTIONS
-    $(document.body).on('change', 'input[name="equipmentOwnedRented"]', function () {
-        //alert();
-        if ($(this).attr("value") == "Yes") {
-            $("#equipmentOwnedRentedContainer").css('display', "");
-            $("#equipmentOwnedRentedExplain").css('display', "");
-        }
-        if ($(this).attr("value") == "No") {
-            $("#equipmentOwnedRentedContainer").css('display', "none");
-            $("#equipmentOwnedRentedExplain").css('display', "none");
-        }
-    });
-
-// OVERNIGHT EVENTS ADDITIONAL HIDDEN QUESTIONS
-    $(document.body).on('change', 'input[name="overnight"]', function () {
-        //alert();
-        if ($(this).attr("value") == "Yes") {
-            $("#overnightContainer").css('display', "");
-            $("#overnightExplain").css('display', "");
-        }
-        if ($(this).attr("value") == "No") {
-            $("#overnightContainer").css('display', "none");
-            $("#overnightExplain").css('display', "none");
-        }
-    });
-
-// PYRO ADDITIONAL HIDDEN QUESTIONS
-    $(document.body).on('change', '#pyrotechnicsCheckbox' ,function(){
-        if($("#pyrotechnicsCheckbox").is(':checked')) {
-            $('#pyrotechnicsAttachContainer').css("display", "");
-        }
-        else{
-            $('#pyrotechnicsAttachContainer').css("display", "none");
-        }
-    });
-
-// STUNTS HAZARDOUS EVENTS ADDITIONAL HIDDEN QUESTIONS
-    $(document.body).on('change', '#stuntsHazardousCheckbox' ,function(){
-        if($("#stuntsHazardousCheckbox").is(':checked')) {
-            $('#stuntsHazardousActivitiesAttachContainer').css("display", "");
-            $('#stuntCoordinatorName').css("display", "");
-            $('#participantsSigningWaivers').css("display", "");
-        }
-        else{
-            $('#stuntsHazardousActivitiesAttachContainer').css("display", "none");
-            $('#stuntCoordinatorName').css("display", "none");
-            $('#participantsSigningWaivers').css("display", "none");
-
-        }
-    });
-
-// INSURANCE BEEN CANCELLED ADDITIONAL HIDDEN QUESTIONS
-    $(document.body).on('change', 'input[name="insuranceCancelled"]', function () {
-        //alert();
-        if ($(this).attr("value") == "Yes") {
-            $("#insuranceCancelledContainer").css('display', "");
-            $("#insuranceCancelledExplain").css('display', "");
-        }
-        if ($(this).attr("value") == "No") {
-            $("#insuranceCancelledContainer").css('display', "none");
-            $("#insuranceCancelledExplain").css('display', "none");
-        }
-    });
-
-// PHONE NUMBER FORMAT
-    $(document.body).on('focus', '.phoneNumberMask' ,function(){
-        //this.value = this.value.replace(/(\d{3})\-?(\d{3})\-?(\d{4})/,'$1-$2-$3');
-        //alert ("OK");
-        $(".phoneNumberMask").mask("(999) 999-9999");
-    });
-
-// BROKER FEE HIDDEN PREMIUM
-    $(document.body).on('change', '.brokerFeeInput', function () {
-        //alert();
-        var brokerFeeCostTemp = $(".brokerFeeInput").val()
-        var brokerFeeCost = brokerFeeCostTemp.replace('$','').replace(',', '')
-        var brokerFeeCostValue = parseFloat(brokerFeeCost)
-
-        if (brokerFeeCostValue > 0){
-            $("#brokerFeePremiumContainer").css('display', "");
-            $("#brokerFeePremiumExplain").css('display', "");
-        }
-        else if (brokerFeeCostValue <= 0){
-            $("#brokerFeePremiumContainer").css('display', "none");
-            $("#brokerFeePremiumExplain").css('display', "none");
-        }
-    });
-
-
-})
-;
+    return totalPremium
+}

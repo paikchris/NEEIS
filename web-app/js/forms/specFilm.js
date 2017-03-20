@@ -902,7 +902,7 @@ $(document).ready(function() {
             $('#coverageOptionsReview').removeClass("panel-default");
             $('#coverageOptionsReview').parent().css("color", "#1f1f1f");
             $('#coverageOptionsTitle').css("color", "#fff");
-            $('#loadingModal').show();
+            // $('#loadingModal').modal('show');
             //console.log($("li.active").html());
             //if ($("li.active").length > 0) {
             //    getProductsForRisk();

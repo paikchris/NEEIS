@@ -36,15 +36,27 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css" />
 
 
+    <script src="${resource(dir: 'js/newSubmissionUtils/', file: 'AIMHelper.js')}" ></script>
+    <script src="${resource(dir: 'js/newSubmissionUtils/', file: 'BORHelper.js')}" ></script>
+    <script src="${resource(dir: 'js/newSubmissionUtils/', file: 'dateHelper.js')}" ></script>
+    <script src="${resource(dir: 'js/newSubmissionUtils/', file: 'formValidation.js')}" ></script>
+    <script src="${resource(dir: 'js/newSubmissionUtils/', file: 'googleAddressHelper.js')}" ></script>
+    <script src="${resource(dir: 'js/newSubmissionUtils/', file: 'progressSaveLoad.js')}" ></script>
+    <script src="${resource(dir: 'js/utils/', file: 'stringUtils.js')}" ></script>
+    <script src="${resource(dir: 'js/utils/', file: 'randomGenerator.js')}" ></script>
+    <script src="${resource(dir: 'js/utils/', file: 'fileHelper.js')}" ></script>
+
+
+
     <!-- include source files here... -->
-    %{--<script src="${resource(dir: 'test/jasmine/', file: 'src/Player.js')}"></script>--}%
-    %{--<script src="${resource(dir: 'test/jasmine/', file: 'src/Song.js')}"></script>--}%
-    %{--<script src="${resource(dir: 'js', file: 'newSubmission.js')}"></script>--}%
-    %{--<script src="${resource(dir: 'js/forms', file: 'specFilm.js')}"></script>--}%
+    <script src="${resource(dir: 'test/jasmine/', file: 'utils/testHelper.js'+"?ts=" + new Date().getTime())}"></script>
+        <!-- <script src="${resource(dir: 'js', file: "newSubmission.js?ts=" + new Date().getTime())}" async></script> -->
+
 
     <!-- include spec files here... -->
-    <script src="${resource(dir: 'test/jasmine/', file: 'spec/NewSubmission.js'+"?ts=" + new Date().getTime())}"></script>
-    %{--<script src="${resource(dir: 'test/jasmine/', file: 'spec/PlayerSpec.js')}"></script>--}%
+    <script src="${resource(dir: 'test/jasmine/', file: 'spec/SubmissionProcess.js'+"?ts=" + new Date().getTime())}"></script>
+
+    <!-- <script src="${resource(dir: 'test/jasmine/', file: 'spec/UINewSubmissionSpec.js'+"?ts=" + new Date().getTime())}"></script> -->
 
 </head>
 

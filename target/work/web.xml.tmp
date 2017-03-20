@@ -63,8 +63,7 @@
     </servlet-mapping>
 
     <session-config>
-        <!-- 30 minutes -->
-        <session-timeout>30</session-timeout>
+        <session-timeout>120</session-timeout>
     </session-config>
 
     <welcome-file-list>

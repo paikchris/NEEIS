@@ -8,7 +8,11 @@ function initializeBORFunctions(){
       $("#namedInsured, #zipCodeMailing, #googleAutoAddress").bind("change focusout", function() {
           console.log($(this).attr('id'))
           if ($(this).attr('id') === "namedInsured") {
-              capitalizeFirstLetters($(this));
+              var originalName = $(this).val();
+              var formattedName = capitalizeFirstLetters(originalName);
+              $(this).val( formattedName );
+              $("#nameOfProductionCompany").val(formattedName);
+              $("#nameOfProductionCompany").attr('placeholder', '');
           }
           var checkName = $("#namedInsured").val();
           var zipCodeMailing = $("#zipCodeMailing").val();

@@ -1,8 +1,16 @@
-function capitalizeFirstLetters(thisInput) {
-    var nameString = $(thisInput).val();
-    //nameString = $(this).val().charAt(0).toUpperCase() + nameString.slice(1);
 
-    var words = nameString.split(" ");
+function capitalizeFirstLetters(originalString){
+    var nameString = originalString;
+    //nameString = $(this).val().charAt(0).toUpperCase() + nameString.slice(1);
+    var words = [];
+
+    if(nameString.split(" ").length>0){
+        words = nameString.split(" ");
+    }
+    else{
+        words.push(nameString);
+    }
+
     var output = "";
     var originalWord = "";
     for (i = 0; i < words.length; i++) {
@@ -25,10 +33,7 @@ function capitalizeFirstLetters(thisInput) {
     } //for
     output[output.length - 1] = '';
 
-    $(thisInput).val(output);
-    //console.log($(this).val());
-    $("#nameOfProductionCompany").val(output);
-    $("#nameOfProductionCompany").attr('placeholder', '');
+    return output
 }
 
 function formatMoney(value) {

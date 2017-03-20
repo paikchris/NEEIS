@@ -31,6 +31,7 @@ public  java.lang.Object getDownloadPDF() { return null;}
 public  void setDownloadPDF(java.lang.Object value) { }
 public  java.lang.Object checkUser() { return null;}
 public  java.lang.Object SpecRunner() { return null;}
+public  java.lang.Object johntest() { return null;}
 public  java.lang.Object resetp() { return null;}
 public  java.lang.Object index() { return null;}
 public  java.lang.Object newSubmissionNew() { return null;}

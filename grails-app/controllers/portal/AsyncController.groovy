@@ -20,16 +20,42 @@ import org.apache.commons.net.ftp.FTP;
 import sun.misc.BASE64Decoder;
 import portal.Utils.FileTransferHelper;
 import portal.Utils.TestDataHelper;
+import portal.Utils.ProductHelper;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 
 class AsyncController {
     def dataSource_aim
     AIMSQL aimDAO = new AIMSQL();
     Intelledox intelledoxHelper = new Intelledox();
     TestDataHelper testDataHelper = new TestDataHelper();
+    ProductHelper productHelper = new ProductHelper();
 
     def timeZone = TimeZone.getTimeZone('PST')
     def dateFormat = 'yyyy-MM-dd HH:mm:ss.SSS'
     def dateSimple = 'MM/dd/yyyy'
+
+    def getProductsForCoverageV2(){
+        log.info("GETTING PRODUCTS FOR COVERAGE V2")
+        log.info(params);
+        Sql aimsql = new Sql(dataSource_aim)
+        productHelper.testLogicLoad();
+
+        def submissionDetailMap = new JsonSlurper().parseText(params.dataMap)
+
+        def riskProducts = RiskType.findWhere(riskTypeName: params.riskType)
+
+        def coveragesAndProducts = new JsonSlurper().parseText(riskProducts.products)
+
+
+        def returnArray = productHelper.getProductsForRisk(coveragesAndProducts, submissionDetailMap);
+
+        def jsonResponse = JsonOutput.toJson(returnArray)
+        log.info JsonOutput.prettyPrint(jsonResponse)
+
+        render JsonOutput.prettyPrint(jsonResponse)
+    }
+
 
     def getProductsForCoverage() {
         //GETTING LIST OF PRODUCTS AVAILABLE FOR EACH COVERAGE AVAILABLE FOR SUBMISSION RISK TYPE
@@ -1044,23 +1070,32 @@ class AsyncController {
                 fileHelper.saveAttachedFileToLocalPath(attachedFile, temporaryFilesFolderPath, tempStuntsFileName)
             }
 
-//            def animalFileRealName
-//            def tempAnimalFileName
-//            if (params.animalFile != "undefined") {
-//                animalFileRealName = params.animalFile.getFileItem().name
-//                tempAnimalFileName = params.quoteIDs.replaceAll(",","") + "_animal_" + System.currentTimeMillis();
-//                attachedFile = params.animalFile;
-//                fileHelper.saveAttachedFileToLocalPath(attachedFile, temporaryFilesFolderPath, tempAnimalFileName)
-//            }
+            def animalFileRealName
+            def tempAnimalFileName
+            if (params.animalPDF != "undefined") {
+                animalFileRealName = params.animalPDF.getFileItem().name
+                tempAnimalFileName = params.quoteIDs.replaceAll(",","") + "_animal_" + System.currentTimeMillis();
+                attachedFile = params.animalPDF;
+                fileHelper.saveAttachedFileToLocalPath(attachedFile, temporaryFilesFolderPath, tempAnimalFileName)
+            }
 
-//            def droneFileRealName
-//            def tempDroneFileName
-//            if (params.droneFile != "undefined") {
-//                droneFileRealName = params.droneFile.getFileItem().name
-//                tempDroneFileName = params.quoteIDs.replaceAll(",","") + "_drone_" + System.currentTimeMillis();
-//                attachedFile = params.droneFile;
-//                fileHelper.saveAttachedFileToLocalPath(attachedFile, temporaryFilesFolderPath, tempDroneFileName)
-//            }
+            def droneFileRealName
+            def tempDroneFileName
+            if (params.dronePDF != "undefined") {
+                droneFileRealName = params.dronePDF.getFileItem().name
+                tempDroneFileName = params.quoteIDs.replaceAll(",","") + "_drone_" + System.currentTimeMillis();
+                attachedFile = params.dronePDF;
+                fileHelper.saveAttachedFileToLocalPath(attachedFile, temporaryFilesFolderPath, tempDroneFileName)
+            }
+
+            def equipScheduleFileRealName
+            def tempEquipScheduleFileName
+            if (params.equipScheduleFile != "undefined") {
+                equipScheduleFileRealName = params.equipScheduleFile.getFileItem().name
+                tempEquipScheduleFileName = params.quoteIDs.replaceAll(",","") + "_equipSchedule_" + System.currentTimeMillis();
+                attachedFile = params.equipScheduleFile;
+                fileHelper.saveAttachedFileToLocalPath(attachedFile, temporaryFilesFolderPath, tempEquipScheduleFileName)
+            }
 
             def doodFileRealName
             def tempDoodFileName
@@ -1169,6 +1204,42 @@ class AsyncController {
                     fileHelper.ftpFileToAIM(fileName, localFolderPath, quoteID, dataSource_aim)
                 }
 
+                if (params.animalPDF != "undefined") {
+                    fileName = "animal-" + animalFileRealName
+                    log.info("COPYING FILE TO ATTACHMENTS LOCAL: " + fileName)
+                    srcStream = new File(temporaryFilesFolderPath, tempAnimalFileName).newDataInputStream()
+                    dstStream = new File(localFolderPath, fileName).newDataOutputStream()
+                    dstStream << srcStream
+                    srcStream.close()
+                    dstStream.close()
+
+                    fileHelper.ftpFileToAIM(fileName, localFolderPath, quoteID, dataSource_aim)
+                }
+
+                if (params.dronePDF != "undefined") {
+                    fileName = "drone-" + droneFileRealName
+                    log.info("COPYING FILE TO ATTACHMENTS LOCAL: " + fileName)
+                    srcStream = new File(temporaryFilesFolderPath, tempDroneFileName).newDataInputStream()
+                    dstStream = new File(localFolderPath, fileName).newDataOutputStream()
+                    dstStream << srcStream
+                    srcStream.close()
+                    dstStream.close()
+
+                    fileHelper.ftpFileToAIM(fileName, localFolderPath, quoteID, dataSource_aim)
+                }
+
+                if (params.equipScheduleFile != "undefined") {
+                    fileName = "equip-" + equipScheduleFileRealName
+                    log.info("COPYING FILE TO ATTACHMENTS LOCAL: " + fileName)
+                    srcStream = new File(temporaryFilesFolderPath, tempEquipScheduleFileName).newDataInputStream()
+                    dstStream = new File(localFolderPath, fileName).newDataOutputStream()
+                    dstStream << srcStream
+                    srcStream.close()
+                    dstStream.close()
+
+                    fileHelper.ftpFileToAIM(fileName, localFolderPath, quoteID, dataSource_aim)
+                }
+
                 if (params.doodFile != "undefined") {
                     fileName = "dood-" + doodFileRealName
                     log.info("COPYING FILE TO ATTACHMENTS LOCAL: " + fileName)
@@ -1232,6 +1303,7 @@ class AsyncController {
 
         render "Upload Completed"
     }
+
 
     def newRatePremiums(){
         log.info("RATING PREMIUMS (NEW METHOD)")
@@ -2893,6 +2965,7 @@ class AsyncController {
       log.info "SAVING SUBMISSION TO AIMSQLV2"
       log.info params
       def dataMap = new JsonSlurper().parseText(params.dataMap)
+
       def quoteID ="";
 
       try {
@@ -2946,37 +3019,24 @@ class AsyncController {
         log.info "SAVING SUBMISSION TO AIMSQL"
         log.info params
 
-        //GATHERING TEST DATA
-        def testDataRecord = testDataHelper.saveParams("savingSubmissionToAIM", JsonOutput.prettyPrint(params.jsonSerial))
+        def dataMap = new JsonSlurper().parseText(params.dataMap)
 
-        log.info "UNDERWRITER QUESTIONS ORDER"
-        log.info params.uwQuestionsOrder
-        log.info "UNDERWRITER QUESTIONS"
-        log.info params.uwQuestionsMap
+        //GATHERING TEST DATA
+        def testDataRecord = testDataHelper.saveParams("savingSubmissionToAIM", JsonOutput.prettyPrint(JsonOutput.toJson(dataMap)))
+
 
         def uwQuestionsOrder = params.uwQuestionsOrder.split("&;&");
         def uwQuestionsMap = new JsonSlurper().parseText(params.uwQuestionsMap)
 
-        log.info uwQuestionsMap
-        log.info JsonOutput.prettyPrint(params.jsonSerial)
-        def jsonParams = new JsonSlurper().parseText(params.jsonSerial)
         def quoteID ="";
-
-        def accountExec = "jason";
-//        if(totalBudget > 416000){
-//            accountExec = "shauna"
-//        }
-//        else{
-//            accountExec = "jason"
-//        }
 
         log.info session.user.firstName
 
         //SAVE INSURED
         try {
-            def quoteIDCoverages = aimDAO.saveNewSubmission(params.jsonSerial, dataSource_aim, session.user, accountExec, uwQuestionsMap, uwQuestionsOrder)
+            def quoteIDCoverages = aimDAO.saveNewSubmission(dataMap, dataSource_aim, session.user, uwQuestionsMap, uwQuestionsOrder)
             log.info "QuoteID: " + quoteIDCoverages
-//0620584;EPKG,0620585;CPK
+            //0620584;EPKG,0620585;CPK
             def submitGroupID = ""
             quoteIDCoverages.split(",").each{
                 submitGroupID = submitGroupID + it.split(";")[0] + ","
@@ -2989,15 +3049,14 @@ class AsyncController {
             def now = new Date()
             def timestamp = now.format(dateFormat, timeZone)
 
-            log.info jsonParams.getAt("namedInsured")
 
             Submissions s;
 
             quoteIDCoverages.split(",").each{
                 quoteID = quoteID + it.split(";")[0] + ","
 
-                s = new portal.Submissions(submittedBy: session.user.email, aimQuoteID: it.split(";")[0], namedInsured: jsonParams.getAt("namedInsured"), submitDate: timestamp,
-                        coverages: it.split(";")[1], statusCode: "QO", underwriter: accountExec+"@neeis.com", questionAnswerMap: params.questionAnswerMap,
+                s = new portal.Submissions(submittedBy: session.user.email, aimQuoteID: it.split(";")[0], namedInsured: dataMap.getAt("namedInsured"), submitDate: timestamp,
+                        coverages: it.split(";")[1], statusCode: "QO", underwriter: dataMap.getAt('accountExec')+"@neeis.com", questionAnswerMap: params.questionAnswerMap,
                         uwQuestionMap:uwQuestionsMap, uwQuestionsOrder:uwQuestionsOrder, submitGroupID: submitGroupID)
                 s.save(flush: true, failOnError: true)
             }
@@ -3006,6 +3065,7 @@ class AsyncController {
             if (quoteID.endsWith(",")) {
                 quoteID = quoteID.substring(0, quoteID.length() - 1);
             }
+            testDataRecord.endStatus = "Success"
         }
         catch (Exception e) {
             StringWriter sw = new StringWriter();
@@ -3013,16 +3073,24 @@ class AsyncController {
             String exceptionAsString = sw.toString();
             log.info("Error Details - " + exceptionAsString)
             quoteID = "Error Details - " + e
+            testDataRecord.endStatus = "Error"
+            testDataRecord.endStatusDetail = exceptionAsString
         }
 
 
         //GATHERING TEST DATA
-        testDataRecord.endStatus = "Success"
-        testDataRecord.quoteID = "quoteID"
+        testDataRecord.quoteID = quoteID
         testDataRecord.save(flush: true, failOnError: true)
 
         render quoteID
 //        redirect(controller: 'main', action: 'newSubmissionConfirm', params: [quoteID: quoteID])
+
+    }
+
+    def getProductInfo(){
+        log.info "GETTING TAX INFO"
+        log.info params
+        Sql aimsql = new Sql(dataSource_aim)
 
     }
 

@@ -13,7 +13,8 @@ class ProductLOB {
     String optionalFlag
     Integer displayOrder
     String includedFlag
-
+    String optionalProduct
+    String optionalLOB 
 
     static constraints = {
         lobCode(unique:true)
@@ -26,5 +27,7 @@ class ProductLOB {
         minPremium nullable:true
         optionalFlag nullable:true
         displayOrder nullable:true
+        optionalProduct nullable:true
+        optionalLOB nullable:true
     }
 }

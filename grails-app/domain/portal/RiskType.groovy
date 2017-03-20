@@ -9,6 +9,7 @@ class RiskType {
     String coverages
     String subCategoryFlag
     String parentSubCategory
+    String products
 
     static constraints = {
         riskTypeCode(unique:true)
@@ -18,5 +19,7 @@ class RiskType {
         coverages(nullable:true)
         subCategoryFlag(nullable:true)
         parentSubCategory(nullable:true)
+        products(nullable:true)
+        products(maxSize: 9000)
     }
 }
