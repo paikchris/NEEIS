@@ -25,7 +25,7 @@
                     </g:if>
                     <g:elseif test="${user.userRole == "Underwriter"}">
                         <g:each status="i" var="s" in="${submissionIDs.split(",")}">
-                            <a href="./../main/submissionView?s=${s}">${s}</a>
+                            <a href="#">${s}</a>
                             <br>
                         </g:each>
                     </g:elseif>

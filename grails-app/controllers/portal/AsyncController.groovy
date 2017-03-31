@@ -3019,21 +3019,24 @@ class AsyncController {
         log.info "SAVING SUBMISSION TO AIMSQL"
         log.info params
 
-        def dataMap = new JsonSlurper().parseText(params.dataMap)
-
-        //GATHERING TEST DATA
-        def testDataRecord = testDataHelper.saveParams("savingSubmissionToAIM", JsonOutput.prettyPrint(JsonOutput.toJson(dataMap)))
-
-
-        def uwQuestionsOrder = params.uwQuestionsOrder.split("&;&");
-        def uwQuestionsMap = new JsonSlurper().parseText(params.uwQuestionsMap)
-
         def quoteID ="";
-
-        log.info session.user.firstName
 
         //SAVE INSURED
         try {
+            def dataMap = new JsonSlurper().parseText(params.dataMap)
+
+            //GATHERING TEST DATA
+            // def testDataRecord = testDataHelper.saveParams("savingSubmissionToAIM", JsonOutput.prettyPrint(JsonOutput.toJson(dataMap)))
+
+
+            def uwQuestionsOrder = params.uwQuestionsOrder.split("&;&");
+            def uwQuestionsMap = new JsonSlurper().parseText(params.uwQuestionsMap)
+
+
+
+            log.info session.user.firstName
+
+
             def quoteIDCoverages = aimDAO.saveNewSubmission(dataMap, dataSource_aim, session.user, uwQuestionsMap, uwQuestionsOrder)
             log.info "QuoteID: " + quoteIDCoverages
             //0620584;EPKG,0620585;CPK
@@ -3065,7 +3068,11 @@ class AsyncController {
             if (quoteID.endsWith(",")) {
                 quoteID = quoteID.substring(0, quoteID.length() - 1);
             }
-            testDataRecord.endStatus = "Success"
+            // testDataRecord.endStatus = "Success"
+            //
+            // //GATHERING TEST DATA
+            // testDataRecord.quoteID = quoteID
+            // testDataRecord.save(flush: true, failOnError: true)
         }
         catch (Exception e) {
             StringWriter sw = new StringWriter();
@@ -3073,14 +3080,12 @@ class AsyncController {
             String exceptionAsString = sw.toString();
             log.info("Error Details - " + exceptionAsString)
             quoteID = "Error Details - " + e
-            testDataRecord.endStatus = "Error"
-            testDataRecord.endStatusDetail = exceptionAsString
+            // testDataRecord.endStatus = "Error"
+            // testDataRecord.endStatusDetail = exceptionAsString
         }
 
 
-        //GATHERING TEST DATA
-        testDataRecord.quoteID = quoteID
-        testDataRecord.save(flush: true, failOnError: true)
+
 
         render quoteID
 //        redirect(controller: 'main', action: 'newSubmissionConfirm', params: [quoteID: quoteID])

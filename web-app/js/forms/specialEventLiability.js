@@ -8,6 +8,7 @@ var CGLPremium
 var brokerPremium
 var liquorPremium
 var totalPremiumTotal
+var riskRate
 // RATES BASED OFF RISK TYPE
 var classOne = 0.25
 var classTwo = 0.35
@@ -16,9 +17,17 @@ var classThree = 0.50
 
 $(document).ready(function () {
 // RATE BASED OFF RISK TYPE
-    var riskRate
+    if ($("li.active").length > 0) {
+        riskChosen = getRiskTypeChosen();
+    }
+    else {
+        alert("bananas")
+    }
     console.log(riskChosen)
+    console.log(riskChosen)
+    // alert (riskChosen)
     rate = riskTypeRate(riskRate);
+    // alert ("RATE" + rate)
 
 
 
@@ -37,13 +46,22 @@ $(document).ready(function () {
     $("#selectState").change(function () {
         var state = this.value;
         liquorRate = setStateRate(state);
-        alert ("LIQUOR RATE:" + liquorRate)
+        // alert ("LIQUOR RATE:" + liquorRate)
     });
 // COMMERCIAL GENERAL LIABILITY PREMIUM
-    $(document.body).on('change', "#estimatedTotalAttendance,#howManyDaysIsTheEvent", function () {
-        var totalPremiumCGL
-        CGLPremium = getCGLPremium(totalPremiumCGL)
-        $("#commercialGeneralLiabilityPremiumCost").html("$" + CGLPremium);
+    $(document.body).on('change', ".effectsTotalCGL", function () {
+        attendance = $("#estimatedTotalAttendance").val()
+        eventDays = $("#howManyDaysIsTheEvent").val()
+        var attendanceValue = parseFloat(attendance)
+        var eventDaysValue = parseFloat(eventDays)
+        // var rateValue = parseFloat(rate)
+        if (attendance.length > 0 && eventDays.length > 0) {
+            var totalPremiumCGL
+            // alert ("step one" + attendance)
+            // alert ("step two" + eventDays)
+            CGLPremium = getCGLPremium(totalPremiumCGL)
+            $("#commercialGeneralLiabilityPremiumCost").html("$" + CGLPremium);
+        }
     });
 // ALCOHOL PREMIUM
     $(document.body).on('change', "#alcoholSales", function () {
@@ -52,15 +70,22 @@ $(document).ready(function () {
         $("#alcoholSalePremiumCost").html("$" + liquorPremium);
     });
 // POLICY PREMIUM
-    $(document.body).on('change', "#estimatedTotalAttendance,#howManyDaysIsTheEvent", function () {
+    $(document.body).on('change', ".effectsTotalCGL", function () {
         var policyFee = 25
         $("#policyFeePremiumCost").html("$" + policyFee);
     });
 // TOTAL SALES
     $(document.body).on('change', ".effectsTotalPremium", function () {
-        var premium
-        totalPremiumTotal = getTotalPremium(premium)
-        $("#totalSalePremiumCost").html("$" + totalPremiumTotal);
+        attendance = $("#estimatedTotalAttendance").val()
+        eventDays = $("#howManyDaysIsTheEvent").val()
+        var attendanceValue = parseFloat(attendance)
+        var eventDaysValue = parseFloat(eventDays)
+        // var rateValue = parseFloat(rate)
+        if (attendance.length > 0 && eventDays.length > 0) {
+            var premium
+            totalPremiumTotal = getTotalPremium(premium)
+            $("#totalSalePremiumCost").html("$" + totalPremiumTotal);
+        }
     });
 // BROKER PREMIUM
     $(document.body).on('change', "#brokerFeeInput", function () {
@@ -289,7 +314,7 @@ function setStateRate(state){
         state ==   "CT" ||
         state ==   "NH" ||
         state ==   "HI") {
-        alert ("NOT ELIGIBLE STATE")
+        alert ("STATE NOT ELIGIBLE FOR LIQUOR COVERAGE")
     }
 
     return lrate;
@@ -345,7 +370,7 @@ function riskTypeRate(riskRate) {
         riskChosen === "Weddings and Wedding Receptions Yodeler"
     ) {
         riskClass = classOne;
-        alert(riskClass)
+        // alert(riskClass)
     }
     else if (riskChosen === "Bingo Games" ||
         riskChosen === "Card Games - Blackjack Card Games - Poker" ||
@@ -371,7 +396,7 @@ function riskTypeRate(riskRate) {
         riskChosen === "Video Game Contests"
     ) {
         riskClass = classTwo;
-        alert(riskClass)
+        // alert(riskClass)
     }
     else if (riskChosen === "Amateur Rodeo and Roping Events" ||
         riskChosen === "Baseball - Amateur Basketball - Amateur" ||
@@ -405,11 +430,12 @@ function riskTypeRate(riskRate) {
         riskChosen === "Tap Dancing" ||
         riskChosen === "Tennis Tournament" ||
         riskChosen === "Theatrical Stage Performances Volleyball - Amateur" ||
+        riskChosen === "Volleyball - Amateur" ||
         riskChosen === "Wagon / Hayrides Walking / Hiking Tour" ||
         riskChosen === "Wine Tasting"
     ) {
         riskClass = classThree;
-        alert(riskClass)
+        // alert(riskClass)
     }
     return riskClass;
 }
@@ -487,15 +513,19 @@ function getCGLPremium(totalPremiumCGL) {
 
     attendance = $("#estimatedTotalAttendance").val()
     eventDays = $("#howManyDaysIsTheEvent").val()
-    if (attendance.length > 0 && eventDays.length > 0) {
-        var attendanceValue = parseFloat(attendance)
-        var eventDaysValue = parseFloat(eventDays)
-        var rateValue = parseFloat(rate)
 
-        if (eventDaysValue <= 5) {
+    var attendanceValue = parseFloat(attendance)
+    var eventDaysValue = parseFloat(eventDays)
+    var rateValue = parseFloat(rate)
+
+    if (attendance.length > 0 && eventDays.length > 0) {
+
+        if (eventDaysValue <= 5 && attendanceValue > 0) {
 
             totalPremium5Below = attendanceValue * rateValue
             // alert("First: " + totalPremium5Below)
+            // alert("Second: " + attendanceValue)
+            // alert("Third: " + rateValue)
             if (attendanceValue >= 1 && attendanceValue <= 100) {
                 if (rate = classOne) {
                     minimumPremium = minimum5Premium100Class1
@@ -676,7 +706,7 @@ function getCGLPremium(totalPremiumCGL) {
             }
 
         }
-        else if (eventDaysValue > 5) {
+        else if (eventDaysValue > 5 && attendanceValue > 0) {
             totalPremium6Above = eventDaysValue * rateValue
 
             if (eventDaysValue >= 6 && eventDaysValue <= 10) {
@@ -937,9 +967,9 @@ function getLiquorPremium(totalPremiumLiquor){
     var eventDaysValue = parseFloat(eventDays)
     var attendanceValue = parseFloat(attendance)
 
-    alert("liquorSaleValue" + liquorSaleValue)
-    alert("eventDatsValue" + eventDaysValue)
-    alert ("LiqourRate" + liquorRate)
+    // alert("liquorSaleValue" + liquorSaleValue)
+    // alert("eventDatsValue" + eventDaysValue)
+    // alert ("LiqourRate" + liquorRate)
 
     if (liquorSaleValue > 0 && liquorSaleValue < 25000 && eventDaysValue > 0 && eventDaysValue <= 5) {
 
@@ -1055,9 +1085,9 @@ function getLiquorPremium(totalPremiumLiquor){
                 liquorTotalPremium = liquorMinimumPremium
             }
         }
-        alert("5Step" + liquorMinimumPremium)
-        alert("6Step" + liquorRatePremium)
-        alert("7Step" + liquorTotalPremium)
+        // alert("5Step" + liquorMinimumPremium)
+        // alert("6Step" + liquorRatePremium)
+        // alert("7Step" + liquorTotalPremium)
         $("#alcoholSalePremiumCost").html("$" + liquorTotalPremium);
     }
     return liquorTotalPremium

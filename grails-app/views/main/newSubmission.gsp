@@ -4,7 +4,7 @@
 <head>
     <meta name="layout" content="main">
     <link rel="stylesheet" href="${resource(dir: 'css', file: 'newSubmission.css')}" type="text/css">
-    <script src="${resource(dir: 'js', file: "newSubmission.js?ts=" + new Date().getTime())}" async></script>
+
     <script src="${resource(dir: 'js', file: "/newSubmissionUtils/progressSaveLoad.js?ts=" + new Date().getTime())}" async></script>
     <script src="${resource(dir: 'js', file: "/newSubmissionUtils/formValidation.js?ts=" + new Date().getTime())}" async></script>
     <script src="${resource(dir: 'js', file: "/newSubmissionUtils/dateHelper.js?ts=" + new Date().getTime())}" async></script>
@@ -12,7 +12,8 @@
     <script src="${resource(dir: 'js', file: "/newSubmissionUtils/googleAddressHelper.js?ts=" + new Date().getTime())}" async></script>
     <script src="${resource(dir: 'js', file: "/newSubmissionUtils/AIMHelper.js?ts=" + new Date().getTime())}" async></script>
     <script src="${resource(dir: 'js', file: "/utils/stringUtils.js?ts=" + new Date().getTime())}" async></script>
-    <script src="${resource(dir: 'js', file: "/utils/fileHelper.js?ts=" + new Date().getTime())}" async></script> 
+    <script src="${resource(dir: 'js', file: "/utils/fileHelper.js?ts=" + new Date().getTime())}" async></script>
+    <script src="${resource(dir: 'js', file: "newSubmission.js?ts=" + new Date().getTime())}" async></script>
 
 
 
@@ -50,7 +51,7 @@
         </div>
         <div class="col-xs-1" style="margin-top:80px">
             <button class="btn btn-xs btn-success pull-right" id="saveProgress" type="button"
-                    style="display:none;background-color: #68848f;border-color: #68848f;margin: 2px;">
+                    style="display:none;background-color: #194b8a;border-color: #194b8a;margin: 2px;">
                 <i class="fa fa-floppy-o" aria-hidden="true"></i>
                 <span class="" style="font-size: 14px; font-weight: 500" > Save Progress</span>
             </button>
@@ -260,9 +261,10 @@
                                                     <option value="Talent Show (no rap, hip hop, heavy metal shows)">Talent Show (no rap, hip hop, heavy metal shows)</option>
                                                     <option value="Tap Dancing">Tap Dancing</option>
                                                     <option value="Tennis Tournament">Tennis Tournament</option>
-                                                    <option value="Theatrical Stage Performances Volleyball - Amateur">Theatrical Stage Performances Volleyball - Amateur</option>
+                                                    <option value="Theatrical Stage Performances">Theatrical Stage Performances</option>
                                                     <option value="Trade Shows - Indoors Vacation Shows Ventriloquist">Trade Shows - Indoors Vacation Shows Ventriloquist</option>
                                                     <option value="Video Game Contests">Video Game Contests</option>
+                                                    <option value="Volleyball - Amateur">Volleyball - Amateur</option>
                                                     <option value="Voter Registration">Voter Registration</option>
                                                     <option value="Wagon / Hayrides Walking / Hiking Tour">Wagon / Hayrides Walking / Hiking Tour</option>
                                                     <option value="Weddings and Wedding Receptions Yodeler">Weddings and Wedding Receptions Yodeler</option>
@@ -896,14 +898,14 @@
                                     <div class="col-xs-2">
                                         <div class="form-group" id="howManyDaysIsTheEventGroup" style="display:none">
                                             <label class="control-label">Number of Event days</label>
-                                            <input class="form-control effectsTotalPremium" id="howManyDaysIsTheEvent" name="howManyDaysIsTheEvent" type="text"
+                                            <input class="form-control effectsTotalCGL effectsTotalPremium" id="howManyDaysIsTheEvent" name="howManyDaysIsTheEvent" type="text"
                                                    style="color: black; background: white;"/>
                                         </div>
                                     </div>
                                     <div class="col-xs-2">
                                         <div class="form-group"id="estimatedTotalAttendanceGroup" style="display:none">
                                             <label class="control-label">Total Attendance</label>
-                                            <input class="form-control effectsTotalPremium" id="estimatedTotalAttendance" name="estimatedTotalAttendance" type="text"
+                                            <input class="form-control effectsTotalCGL effectsTotalPremium" id="estimatedTotalAttendance" name="estimatedTotalAttendance" type="text"
                                                    style="color: black; background: white;"/>
                                         </div>
                                     </div>
@@ -1413,11 +1415,11 @@
                                 </div>
                                 <div class="form-group col-xs-3">
                                     <label class="control-label">SIC</label>
-                                    <input class="form-control showReview" type="text" data-reviewName="SIC" placeholder = "SIC" name="SIC" id="SIC"/>
+                                    <input class="form-control showReview" type="text" data-reviewName="SIC" placeholder = "SIC" name="SIC" id="SIC" value="7812"/>
                                 </div>
                                 <div class="form-group col-xs-3">
-                                    <label class="control-label">NCCI</label>
-                                    <input class="form-control showReview" type="text" data-reviewName="NCCI" placeholder = "NCCI" name="NCCI" id="NCCI"/>
+                                    <label class="control-label">NAIC</label>
+                                    <input class="form-control showReview" type="text" data-reviewName="NAIC" placeholder = "NAIC" name="NCCI" id="NCCI" value="512110"/>
                                 </div>
                             </div>
                         </div>
@@ -1552,6 +1554,14 @@
                                     </div>
                                     <div class="col-xs-9">
                                         <div class="reviewSpan" id="reviewTerms" style="font-size: 12px; white-space: pre-line">Blank</div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-3 text-left">
+                                        <label class="reviewLabel ">Broker Fee</label><br>
+                                    </div>
+                                    <div class="col-xs-9">
+                                        <div class="reviewSpan" id="reviewBrokerFee" style=""></div>
                                     </div>
                                 </div>
                                 %{--<br>--}%

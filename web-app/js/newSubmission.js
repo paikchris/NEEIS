@@ -55,6 +55,9 @@ $(document).ready(function() {
             chosenState === "NY"  ){
             //LICENSED STATE
         }
+        else if(chosenState =="invalid"){
+
+        }
         else{
             //UNLICENSED STATE
             alert($(this).val() + " requires further review before providing a quote. Feel free to continue with your submission and a NEEIS Underwriter will contact you.");
@@ -672,9 +675,6 @@ $(document).ready(function() {
                 else {
                     $('#loadingModal').modal('hide');
                 }
-
-
-
             }
             else if (e.target.id == "nextButtonStep3") {
                 if (namedInsuredConflict == true) {
@@ -702,7 +702,7 @@ $(document).ready(function() {
                         $('#progressBarHeader').html("Please wait, your submission is being processed.")
                         $('.progress-bar').attr('aria-valuenow', "75").animate({
                             width: "75%"
-                        }, 10000);
+                        }, 25000);
 
                         var newSubmissionConfirmParam = "";
                         autoSaveFunction();
@@ -1216,7 +1216,7 @@ function buildReview() {
     var newObject = $('<div/>').html(newHtmlString).contents();
     newObject.find('.limitColumn').each(function(index) {
         if ($(this).find('input').length) {
-            $(this).html("<span class='limit'>" + limitValueArray[index] + "<span>");
+            $(this).html("<span class='limit'>" + limitValueArray[index] + "</span>");
         }
     });
 
@@ -1296,7 +1296,7 @@ function buildReview() {
                     }
 
                     reviewString = reviewString + "<div class='col-xs-9'>" +
-                        "<div class='reviewSpan' id='reviewBrokerFee'>" + answer + "</div>" +
+                        "<div class='reviewSpan'>" + answer + "</div>" +
                         "</div>";
 
                     reviewString = reviewString + "</div>";
@@ -1328,7 +1328,7 @@ function buildReview() {
                     "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
                     "</div>" +
                     "<div class='col-xs-9'>" +
-                    "<div class='reviewSpan' id='reviewBrokerFee'>" + answer + "</div>" +
+                    "<div class='reviewSpan' >" + answer + "</div>" +
                     "</div>" +
                     "</div>";
                 reviewString = reviewString + "<br>";
@@ -1358,7 +1358,7 @@ function buildReview() {
                     "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
                     "</div>" +
                     "<div class='col-xs-9'>" +
-                    "<div class='reviewSpan' id='reviewBrokerFee'>" + answer + "</div>" +
+                    "<div class='reviewSpan' >" + answer + "</div>" +
                     "</div>" +
                     "</div>";
                 reviewString = reviewString + "<br>";
@@ -1381,7 +1381,7 @@ function buildReview() {
                     "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
                     "</div>" +
                     "<div class='col-xs-9'>" +
-                    "<div class='reviewSpan' id='reviewBrokerFee'>" + answer + "</div>" +
+                    "<div class='reviewSpan' >" + answer + "</div>" +
                     "</div>" +
                     "</div>";
                 reviewString = reviewString + "<br>";

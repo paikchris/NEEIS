@@ -165,6 +165,11 @@ function loadSaveFunction(loadMap) {
                 $(domObject).trigger("change");
 
             }
+            else if ($(domObject).is(':file')) {
+                //console.log("RADIO TYPE = " + domObject);
+                // $(domObject).get(0).files.push(value);
+
+            }
             else {
                 //console.log("ELSE TYPE = " + domObject);
                 $(domObject).val(value);
@@ -183,9 +188,24 @@ function loadSaveFunction(loadMap) {
             //$("#proposedExpirationDate").trigger("change");
         }
 
+
+        setTimeout(function() {
+            // alert(loadMap['saveStep']);
+            if(parseInt(loadMap['saveStep']) > 1 ){
+
+                // $("#nextButtonStep1").trigger("click");
+            }
+            if(parseInt(loadMap['saveStep']) > 2 ){
+                $("#nextButtonStep2").trigger("click");
+            }
+            if(parseInt(loadMap['saveStep']) > 3 ){
+                $("#nextButtonStep3").trigger("click");
+            }
+        }, 200);
         $('.progress-bar').attr('aria-valuenow', "100").css("width", "100%");
         $('#progressBarModal').modal('hide');
     }, 2000);
+
 
 
 
@@ -224,7 +244,6 @@ function autoSaveFunction() {
                 }
             }
             else if ($(this).is(':file')) {
-
             }
             else {
                 autoSaveMap[$(this).attr('id')] = $(this).val();
@@ -239,41 +258,70 @@ function autoSaveFunction() {
 }
 
 function saveProgress() {
-    autoSaveMap['riskChosen'] = getRiskTypeChosen();
+    if(checkCookie()){
+        autoSaveMap['riskChosen'] = getRiskTypeChosen();
 
-    //ALL VISIBLE INPUTS
-    $("input, select").each(function() {
-        if ($(this).css("display") != "none") {
-            if ($(this).is("select")) {
-                autoSaveMap[$(this).attr('id')] = $(this).val();
-            }
-            else if ($(this).is(':checkbox')) {
-                if ($(this).is(":checked")) {
-                    //alert($(this).val());
-                    autoSaveMap[$(this).attr('id')] = true;
+        //GET CURRENT STEP
+        var saveStep = currentStep;
+        // if($("#buttonCircleStep1").is(":disabled") == false){
+        //     saveStep = 1;
+        // }
+        // if($("#buttonCircleStep2").is(":disabled") == false){
+        //     saveStep = 2;
+        // }
+        // if($("#buttonCircleStep3").is(":disabled") == false){
+        //     saveStep = 3;
+        // }
+        // if($("#buttonCircleStep4").is(":disabled") == false){
+        //     saveStep = 4;
+        // }
+        autoSaveMap['saveStep'] = saveStep;
+        // alert(autoSaveMap['saveStep']);
+
+        //ALL VISIBLE INPUTS
+        $("input, select").each(function() {
+            if ($(this).css("display") != "none") {
+                if ($(this).is("select")) {
+                    autoSaveMap[$(this).attr('id')] = $(this).val();
+                }
+                else if ($(this).is(':checkbox')) {
+                    if ($(this).is(":checked")) {
+                        //alert($(this).val());
+                        autoSaveMap[$(this).attr('id')] = true;
+                    }
+                }
+                else if ($(this).is(':radio')) {
+                    if ($(this).is(":checked")) {
+                        autoSaveMap[$(this).attr('id')] = true;
+                    }
+                }
+                else if ($(this).is(':file')) {
+                }
+                else {
+                    autoSaveMap[$(this).attr('id')] = $(this).val();
                 }
             }
-            else if ($(this).is(':radio')) {
-                if ($(this).is(":checked")) {
-                    //alert($(this).val());
-                    autoSaveMap[$(this).attr('id')] = true;
-                }
-            }
-            else if ($(this).is(':file')) {
+        });
+        var test = Object.keys(Cookies.get()).filter(function(name) {
+            return name.indexOf("saveData_") > -1;
+        });
+        console.log(test);
 
-            }
-            else {
-                autoSaveMap[$(this).attr('id')] = $(this).val();
-            }
+        Cookies.set("saveData_" + autoSaveMap['riskChosen'] + "_" + moment().format('MM/DD/YY HH:mm'), JSON.stringify(autoSaveMap), {
+            expires: 3
+        });
+    }
+}
 
-        }
-    });
-    var test = Object.keys(Cookies.get()).filter(function(name) {
-        return name.indexOf("saveData_") > -1;
-    });
-    console.log(test);
+function checkCookie(){
+    var cookieEnabled = navigator.cookieEnabled;
+    if (!cookieEnabled){
+        document.cookie = "testcookie";
+        cookieEnabled = document.cookie.indexOf("testcookie")!=-1;
+    }
+    return cookieEnabled || showCookieFail();
+}
 
-    Cookies.set("saveData_" + autoSaveMap['riskChosen'] + "_" + moment().format('MM/DD/YY HH:mm'), JSON.stringify(autoSaveMap), {
-        expires: 3
-    });
+function showCookieFail(){
+    alert("Please enable browser cookies for this feature.")
 }

@@ -282,29 +282,29 @@
                         </div>
                     </div>
 
-
                     %{--TABLE HIRED AND NON-OWNED AUTO LIABILITY --}%
-                    <div class="row tableNOAL" id="hiredNonOwnedAutoProduct">
-                        <div class="col-xs-6 ">
-                            <strong class="coverageCodeString" style="font-size:13px">Hired / Non-Owned Auto</strong>
-                            <span class="productID_pull" data-cov="NOAL" style="display:none">SPEVENTS</span>
+                    <div class="tableNOAL" id="hiredNonOwnedAutoProduct">
+                        <div class="row">
+                            <div class="col-xs-6 ">
+                                <strong class="coverageCodeString" style="font-size:13px">Hired / Non-Owned Auto</strong>
+                                <span class="productID_pull" data-cov="NOAL" style="display:none">SPEVENTS</span>
+                            </div>
+
+                            <div class="col-xs-2">
+                                <span>-</span>
+                            </div>
+
+                            <div class="col-xs-2">
+                                <span>-</span>
+                            </div>
+
+                            <div class="col-xs-2">
+                                <span>-</span>
+                            </div>
                         </div>
 
-                        <div class="col-xs-2">
-                            <span>-</span>
-                        </div>
-
-                        <div class="col-xs-2">
-                            <span>-</span>
-                        </div>
-
-                        <div class="col-xs-2">
-                            <span>-</span>
-                        </div>
-
-                        <div class="row lobRow SPEVENTS NOAL"
-                             style="background-color: rgba(38, 80, 159, 0.13)">
-                            <div class="col-xs-6 coverageColumn">
+                        <div class="row lobRow SPEVENTS NOAL" style="background-color: rgba(38, 80, 159, 0.13)">
+                            <div class="col-xs-6 coverageColumn" style="padding-left:20px">
                                 <span class="lob">Hired Auto Liability - CSL</span>
                             </div>
 
@@ -321,8 +321,9 @@
                             </div>
                         </div>
 
+
                         <div class="row lobRow SPEVENTS NOAL">
-                            <div class="col-xs-6 coverageColumn">
+                            <div class="col-xs-6 coverageColumn" style="padding-left:20px">
                                 <span class="lob">Hired Auto Physical Damage</span>
                             </div>
 
@@ -793,33 +794,33 @@
 
                     %{--TABLE CGL--}%
                     <div id="commercialGeneralLiabilityRequestedContainer" style="display:none">
-                        <div class="row tableCGL" id="commercialGeneralLiabilityProduct">
-                            <div class="col-xs-6 ">
-                                <strong class="coverageCodeString"
-                                        style="font-size:13px">Commercial General Liability</strong>
-                                <span class="productID_pull" data-cov="CGL" style="display:none">SPEVENTS</span>
-                            </div>
+                        <div class="tableCGL" id="commercialGeneralLiabilityProduct">
+                            <div class="row">
+                                <div class="col-xs-6 ">
+                                    <strong class="coverageCodeString"
+                                            style="font-size:13px">Commercial General Liability</strong>
+                                    <span class="productID_pull" data-cov="CGL" style="display:none">SPEVENTS</span>
+                                </div>
 
-                            <div class="col-xs-2">
-                                <span>-</span>
-                            </div>
+                                <div class="col-xs-2">
+                                    <span>-</span>
+                                </div>
 
-                            <div class="col-xs-2">
-                                <span>-</span>
-                            </div>
+                                <div class="col-xs-2">
+                                    <span>-</span>
+                                </div>
 
-                            <div class="col-xs-2">
-                                <span>-</span>
+                                <div class="col-xs-2">
+                                    <span>-</span>
+                                </div>
                             </div>
-
-                            <div class="row lobRow SPEVENTS CGL"
-                                 style="background-color: rgba(38, 80, 159, 0.13)">
+                            <div class="row lobRow SPEVENTS CGL"style="background-color: rgba(38, 80, 159, 0.13)">
                                 <div class="col-xs-6 coverageColumn" style="padding-left:20px">
                                     <span class="lob">General Aggregate Limit</span>
                                 </div>
 
                                 <div class="col-xs-2 limitColumn">
-                                    <span class="limit">$2,000,000</span>
+                                    <span class="limit">$1,000,000</span>
                                 </div>
 
                                 <div class="col-xs-2 premiumColumn">
@@ -934,22 +935,24 @@
 
                     %{--TABLE UMBRELLA--}%
                     <div id="umbrellaLimitRequestedContainer" style="display:none">
-                        <div class="row tablCUMB" id="umbrellaProduct">
-                            <div class="col-xs-6">
-                                <strong class="coverageCodeString" style="font-size:13px">Umbrella</strong>
-                                <span class="productID_pull" data-cov="CUMB" style="display:none">SPEVENTS</span>
-                            </div>
+                        <div class="tableCUMB" id="umbrellaProduct">
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <strong class="coverageCodeString" style="font-size:13px">Umbrella</strong>
+                                    <span class="productID_pull" data-cov="CUMB" style="display:none">SPEVENTS</span>
+                                </div>
 
-                            <div class="col-xs-2 ">
-                                <span'>-</span'>
-                            </div>
+                                <div class="col-xs-2 ">
+                                    <span>-</span>
+                                </div>
 
-                            <div class="col-xs-2 ">
-                                <span'>-</span'>
-                            </div>
+                                <div class="col-xs-2 ">
+                                    <span>-</span>
+                                </div>
 
-                            <div class="col-xs-2 ">
-                                <span'>-</span'>
+                                <div class="col-xs-2 ">
+                                    <span>-</span>
+                                </div>
                             </div>
 
                             <div class="row lobRow SPEVENTS CUMB" style="background-color: rgba(38, 80, 159, 0.13)">
@@ -1049,6 +1052,7 @@
                         </div>
                     </div>
                     %{--TABLE UMBRELLA--}%
+                    <br>
 
                     %{--Premiums--}%
                     <div class="row" id="premiumDistDivContainer">

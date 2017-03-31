@@ -181,7 +181,7 @@ function getProductsForRiskV2(){
     .done(function(msg) {
         // $('#productChoicesDiv').html("");
         $('#loadingModal').modal('hide');
-        var coverageAndProductsJSON = JSON.parse(msg); 
+        var coverageAndProductsJSON = JSON.parse(msg);
         var htmlString = "";
 
 
@@ -295,6 +295,7 @@ function getSubmissionMap() {
 
     var submissionMap = {
         totalBudgetConfirm: $("#totalBudgetConfirm").val(),
+        nameOfProductionCompany: $('#nameOfProductionCompany').val(),
         namedInsured: $('#namedInsured').val(),
         streetNameMailing: $('#googleAutoAddress').val(),
         cityMailing: $('#cityMailing').val(),
@@ -321,7 +322,10 @@ function getSubmissionMap() {
         riskCategory: getRiskCategoryChosen(),
         premiumAllLOBTotal: $('#premiumAllLOBTotal').html(),
         filmingLocation: $('#filmingLocation').html(),
-        productID: []
+        productID: [],
+        producer: $('#producer').val(),
+        director: $('#director').val(),
+        nameOfPrincipal: $('#nameOfPrincipal').val()
     };
 
     submissionMap.coverageCodes = "";
