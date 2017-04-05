@@ -7,12 +7,12 @@ var monthNames = [
 ];
 
 describe('Testing Film Projects Without Cast (No Work Comp)', function() {
-    // jasmine.getFixtures().fixturesPath = 'http://104.236.23.128:8080/portal/test/jasmine/spec/fixtures/javascripts';
+    // jasmine.getFixtures().fixturesPath = 'http://104.236.23.128:8080/test/jasmine/spec/fixtures/javascripts';
 
     beforeAll(function (done) {
         //JS FILES TO LOAD FOR TEST
         var jsFiles = [
-            '/portal/js/newSubmission.js'
+            '/js/newSubmission.js'
         ];
         loadURLForTest('./../main/newSubmission', '#page-content-wrapper', jsFiles, done);
     });
@@ -733,7 +733,7 @@ describe('Testing Film Projects Without Cast (No Work Comp)', function() {
 
         $.ajax({
                 method: "POST",
-                url: "/portal/Async/saveSubmissionToAIM",
+                url: "/Async/saveSubmissionToAIM",
                 data: {
                     riskType: riskChosen,
                     totalGrossBudget: $("#totalBudgetInput").val().replace(/\$|,/g, ''),

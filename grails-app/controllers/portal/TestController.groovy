@@ -8,7 +8,7 @@ class TestController {
 
     def beforeInterceptor = [action: this.&checkUser]
     def dataSource_aim
-    AIMSQL aimDAO = new AIMSQL();
+    AIMSQL aimDAO = new AIMSQL();  
 
     def timeZone = TimeZone.getTimeZone('PST')
     def dateFormat = 'yyyy-MM-dd HH:mm:ss.SSS'

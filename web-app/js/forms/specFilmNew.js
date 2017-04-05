@@ -834,7 +834,7 @@ $(document).ready(function () {
     //
     //
     //        $.ajax({
-    //            url: '/portal/async/ajaxAttach',
+    //            url: '/async/ajaxAttach',
     //            //Ajax events
     //            beforeSend: function (e) {
     //                alert('Are you sure you want to upload document.');
@@ -898,7 +898,7 @@ $(document).ready(function () {
             }
 
             $("#" + $(this).attr('id') + 'Span').closest(".fileNameContainer").css("display","");
-            $("#" + $(this).attr('id') + 'Span').html("<img src='/portal/images/" + iconFilePath + "' height='16' width='16' style='margin-right:5px'/>" + name);
+            $("#" + $(this).attr('id') + 'Span').html("<img src='/images/" + iconFilePath + "' height='16' width='16' style='margin-right:5px'/>" + name);
         }
         //console.log(this.files[0]);
         //Your validation
@@ -1412,8 +1412,8 @@ function ratePremiums(thisObj){
 
         $.ajax({
             method: "POST",
-            url: "/portal/Async/newRatePremiums",
-            //url: "/portal/Async/newRatePremiums",
+            url: "/Async/newRatePremiums",
+            //url: "/Async/newRatePremiums",
             data: {
                 riskType: riskChosen,
                 productsSelected: productsSelected,
@@ -2063,7 +2063,7 @@ function buildReview() {
             filesInsert = filesInsert +
                 "<div class='row'>" +
                 "<div class='col-xs-12 text-left'>" +
-                "<div class='reviewSpan' id='review'><img src='/portal/images/" + iconFilePath + "' height='16' width='16' style='margin-right:10px'/>" + name + "</div>" +
+                "<div class='reviewSpan' id='review'><img src='/images/" + iconFilePath + "' height='16' width='16' style='margin-right:10px'/>" + name + "</div>" +
                 "</div>" +
                 "</div>";
         }

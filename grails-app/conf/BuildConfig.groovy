@@ -7,6 +7,19 @@ grails.project.target.level = 1.8
 grails.project.source.level = 1.8
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
 
+switch ("${System.getProperty('grails.env')}") {
+    case "development":
+        if (new File("/${basedir}/src/templates/war/web_dev.xml").exists()) {
+            grails.config.base.webXml = "file:${basedir}/src/templates/war/web_dev.xml"
+        }
+        break;
+    default:
+        if (new File("/${basedir}/src/templates/war/web_prod.xml").exists()) {
+            grails.config.base.webXml = "file:${basedir}/src/templates/war/web_prod.xml"
+        }
+        break;
+}
+
 grails.project.fork = [
     // configure settings for compilation JVM, note that if you alter the Groovy version forked compilation is required
     //  compile: [maxMemory: 256, minMemory: 64, debug: false, maxPerm: 256, daemon:true],

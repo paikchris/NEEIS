@@ -22,7 +22,7 @@ function resetNewSubmission(done){
         script.onload = function(){
             done();
         };
-        script.src = '/portal/js/newSubmission.js'+"?ts=" + new Date().getTime();
+        script.src = '/js/newSubmission.js'+"?ts=" + new Date().getTime();
         head.appendChild(script);
     });
 
@@ -56,7 +56,7 @@ describe('TESTING A CLICK, OR HAVING THE TEST CLICK AN ELEMENT', function() {
     //******************************************************************************************
     //LOADING THE NEW SUBMISSION PAGE
     //******************************************************************************************
-    jasmine.getFixtures().fixturesPath = 'http://104.236.23.128:8080/portal/test/jasmine/spec/fixtures/javascripts';
+    jasmine.getFixtures().fixturesPath = 'http://104.236.23.128:8080/test/jasmine/spec/fixtures/javascripts';
     //JUST MEANS TO RUN THIS FUNCTION BEFORE THE START OF THE TEST
     beforeAll(function (done) {
         resetNewSubmission(done);

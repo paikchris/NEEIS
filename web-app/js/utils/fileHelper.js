@@ -12,3 +12,15 @@ function getFormDataWithAllAttachedFiles(){
 
     return formData;
 }
+
+function getFormDataWithAllAttachedFilesNew(){
+    var formData = new FormData();
+    $('input:file').each(function(){
+        var file = $(this).get(0).files[0];
+        if(file){
+            formData.append($(this).attr('id'), file);
+        }
+    });
+
+    return formData;
+}

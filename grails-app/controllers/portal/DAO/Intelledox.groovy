@@ -21,8 +21,14 @@ class Intelledox {
         jsonSerial.keySet().each{
             log.info it
             if(jsonSerial[it] && jsonSerial[it] instanceof String){
-                log.info jsonSerial[it] + " -> " +  XmlUtil.escapeXml(jsonSerial[it])
-                jsonSerial[it] = XmlUtil.escapeXml(jsonSerial[it])
+                if(jsonSerial[it].indexOf("&amp;") > -1){
+
+                }
+                else{
+                  log.info jsonSerial[it] + " -> " +  XmlUtil.escapeXml(jsonSerial[it])
+                  jsonSerial[it] = XmlUtil.escapeXml(jsonSerial[it])
+                }
+
             }
         }
 

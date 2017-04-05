@@ -74,7 +74,7 @@ $(document).ready(function () {
             //alert(messageChainRead)
             $.ajax({
                 method: "POST",
-                url: "/portal/Async/markMessagesRead",
+                url: "/Async/markMessagesRead",
                 data: {
                     messageChainRead: messageChainRead
                 }
@@ -164,7 +164,7 @@ $(document).ready(function () {
         }, 1000);
         $.ajax({
             method: "POST",
-            url: "/portal/Async/sendMessage",
+            url: "/Async/sendMessage",
             data: {
                 recipient: recipient,
                 subject: subject,

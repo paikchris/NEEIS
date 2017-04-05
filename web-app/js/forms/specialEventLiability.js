@@ -29,8 +29,6 @@ $(document).ready(function () {
     rate = riskTypeRate(riskRate);
     // alert ("RATE" + rate)
 
-
-
 // MONEY FORMAT
     inputMoneyFormat();
 // PHONE NUMBER FORMAT
@@ -38,7 +36,12 @@ $(document).ready(function () {
         $(".phoneNumberMask").mask("(999) 999-9999");
     });
 
-
+// MIN MAX LIMITS
+    $(document.body).on('change', 'input[name="howManyDaysIsTheEvent"]', function () {
+        //alert();
+        var value, min, max
+        validate(value, min, max)
+    });
 
 // TOTAL PREMIUM COST !@#
 
@@ -115,7 +118,7 @@ $(document).ready(function () {
         }
     });
 // WORK COMP TABLE / ADDITIONAL HIDDEN QUESTIONS
-    $(document.body).on('change', 'input[name="workCompCoverageRequested?"]', function () {
+    $(document.body).on('change', 'input[name="workCompCoverageRequested"]', function () {
         //alert();
         if ($(this).attr("value") == "Yes") {
             $("#workCompCoverageRequestedContainer").css('display', "");
@@ -166,6 +169,18 @@ $(document).ready(function () {
         if ($(this).attr("value") == "No") {
             $(".alcoholSaleContainer").css('display', "none");
             $(".alcoholSaleExplain").css('display', "none");
+        }
+    });
+// INSURED CONTACT TABLE / CONTAINER
+    $(document.body).on('change', 'input[name="contactRep"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#insuredContactInformationContainer").css('display', "");
+            $("#insuredContactInformationExplain").css('display', "");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#insuredContactInformationContainer").css('display', "none");
+            $("#insuredContactInformationExplain").css('display', "none");
         }
     });
 // EQUIPMENT TABLE / ADDITIONAL HIDDEN QUESTIONS
@@ -245,9 +260,6 @@ $(document).ready(function () {
     });
 
 // YES NO CHECK BOX HIDDEN QUESTIONS / TABLES
-
-
-
 });
 
 
@@ -921,9 +933,9 @@ function getCGLPremium(totalPremiumCGL) {
 }
 function getBrokerPremium(brokerFeeTotal) {
     var brokerFee
-
-    brokerFee = $("#brokerFeeInput").val()
-    brokerFee = brokerFee.replace('$', '')
+    var tempBrokerFee
+    tempBrokerFee = $("#brokerFeeInput").val()
+    brokerFee = tempBrokerFee.replace('$', '').replace(',', '')
     if (brokerFee.length > 0) {
         var brokerFeeValue = parseFloat(brokerFee)
     }
@@ -1106,4 +1118,15 @@ function getTotalPremium(premium){
 
     });
     return totalPremium
+}
+function validate(value, min, max){
+    // MIN MAX LIMIT FOR EVENT DAYS
+    if(parseInt(value) < min || isNaN(parseInt(value))) {
+        return "";
+    }
+    else if(parseInt(value) > max) {
+        alert("Please contact your underwriter if your event exceeds 90 days");
+        return 90;
+    }
+    else return value;
 }

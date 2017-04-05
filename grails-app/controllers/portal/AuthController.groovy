@@ -195,6 +195,9 @@ class AuthController {
     def login(){
         log.info("LOGGING IN")
         log.info(params)
+        request.getHeaderNames().each {
+            log.info(it+":"+request.getHeader(it))
+        }
 
         def user = User.findWhere(email:params.email, password:params.password)
 

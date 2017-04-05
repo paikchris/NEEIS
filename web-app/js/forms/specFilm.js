@@ -630,6 +630,10 @@ $(document).ready(function() {
                 if (monthIndex < 10) {
                     monthIndex = '0' + monthIndex;
                 }
+                if (day < 10) {
+                    day = '0' + day;
+                }
+                alert("pip2: " + day)
                 year = dat.getFullYear();
                 $("#proposedExpirationDate").val((monthIndex) + "/" + day + "/" + year);
                 $('#proposedTermLength').val(60 + " Days");
@@ -879,7 +883,7 @@ $(document).ready(function() {
             }
 
             $("#" + $(this).attr('id') + 'Span').closest(".fileNameContainer").css("display", "");
-            $("#" + $(this).attr('id') + 'Span').html("<img src='/portal/images/" + iconFilePath + "' height='16' width='16' style='margin-right:5px'/>" + name);
+            $("#" + $(this).attr('id') + 'Span').html("<img src='/images/" + iconFilePath + "' height='16' width='16' style='margin-right:5px'/>" + name);
         }
         //console.log(this.files[0]);
         //Your validation
@@ -1401,8 +1405,8 @@ function ratePremiums(thisObj) {
 
         $.ajax({
                 method: "POST",
-                url: "/portal/Async/ratePremiums",
-                //url: "/portal/Async/newRatePremiums",
+                url: "/Async/ratePremiums",
+                //url: "/Async/newRatePremiums",
                 data: {
                     riskType: riskChosen,
                     productsSelected: productsSelected,
@@ -2513,7 +2517,7 @@ function buildProductIDArray(data, termLength) {
 //            filesInsert = filesInsert +
 //                "<div class='row'>" +
 //                "<div class='col-xs-12 text-left'>" +
-//                "<div class='reviewSpan' id='review'><img src='/portal/images/" + iconFilePath + "' height='16' width='16' style='margin-right:10px'/>" + name + "</div>" +
+//                "<div class='reviewSpan' id='review'><img src='/images/" + iconFilePath + "' height='16' width='16' style='margin-right:10px'/>" + name + "</div>" +
 //                "</div>" +
 //                "</div>";
 //        }

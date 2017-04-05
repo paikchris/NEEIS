@@ -30,7 +30,7 @@ function resetNewSubmission(done){
             //console.log("Loaded");
             done();
         };
-        script.src = '/portal/js/newSubmission.js'+"?ts=" + new Date().getTime();
+        script.src = '/js/newSubmission.js'+"?ts=" + new Date().getTime();
         head.appendChild(script);
 
 
@@ -40,7 +40,7 @@ function resetNewSubmission(done){
 }
 
 describe('Testing /main/NewSubmission.gsp Step 1 basic functions', function() {
-    jasmine.getFixtures().fixturesPath = 'http://104.236.23.128:8080/portal/test/jasmine/spec/fixtures/javascripts';
+    jasmine.getFixtures().fixturesPath = 'http://104.236.23.128:8080/test/jasmine/spec/fixtures/javascripts';
 
     beforeAll(function (done) {
         resetNewSubmission(done);
@@ -53,7 +53,7 @@ describe('Testing /main/NewSubmission.gsp Step 1 basic functions', function() {
     xit('All Risk Types Loading from database', function(done) {
         $.ajax({
             method: "POST",
-            url: "/portal/Async/getAllRiskTypesForCategory",
+            url: "/Async/getAllRiskTypesForCategory",
             data: {
                 category: "FP"
             }
@@ -159,7 +159,7 @@ describe('Testing /main/NewSubmission.gsp Step 1 basic functions', function() {
 
 
 describe('Testing Film Projects Without Cast (No Work Comp)', function() {
-    jasmine.getFixtures().fixturesPath = 'http://104.236.23.128:8080/portal/test/jasmine/spec/fixtures/javascripts';
+    jasmine.getFixtures().fixturesPath = 'http://104.236.23.128:8080/test/jasmine/spec/fixtures/javascripts';
 
     var fixture;
     beforeAll(function (done) {

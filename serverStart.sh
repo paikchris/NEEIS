@@ -4,4 +4,4 @@ PATH=/root/.sdkman/candidates/grails/current/bin:/root/.sdkman/candidates/groovy
 
 cd /universe/Neeis
 export GRAILS_OPTS="-XX:MaxPermSize=1000m -Xmx1000M -server -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/universe/Neeis/logs -javaagent:/universe/Neeis/dripstat/dripstat.jar "
-( nohup grails -noreloading run-app --non-interactive 2>&1 > /dev/null & )
+( nohup grails -noreloading run-app -https  --non-interactive 2>&1 > /dev/null & )

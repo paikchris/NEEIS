@@ -23,7 +23,7 @@ $(document).ready(function () {
 
         //$.ajax({
         //    method: "POST",
-        //    url: "/portal/Async/searchSubmissions",
+        //    url: "/Async/searchSubmissions",
         //    data: {riskType:  "",
         //        searchString :  $(this).val()
         //
@@ -131,7 +131,7 @@ $(document).ready(function () {
         }, 1000);
         $.ajax({
             method: "POST",
-            url: "/portal/Async/addNewInsured",
+            url: "/Async/addNewInsured",
             data: {description: $('#descriptionInput').val().trim(),
                 ops: $('#operationsInput').val().trim(),
                 additionalInsured: $('#additionaInsuredInput').val().trim()
@@ -144,7 +144,7 @@ $(document).ready(function () {
                 //$('#some_id').click(function() {
                 //
                 //});
-                window.location='/portal/main/submissions';
+                window.location='/main/submissions';
             });
     });
 
@@ -373,7 +373,7 @@ $(document).ready(function () {
 
         $.ajax({
             method: "POST",
-            url: "/portal/Async/assignSubmissionToUW",
+            url: "/Async/assignSubmissionToUW",
             data: {currentUW: thisUnderwriter,
                 assignUW: assignUnderwriter,
                 aimQuoteID: thisQuoteID
@@ -384,7 +384,7 @@ $(document).ready(function () {
                 //$('#some_id').click(function() {
                 //
                 //});
-                window.location='/portal/main/submissions';
+                window.location='/main/submissions';
             });
     });
 
@@ -445,7 +445,7 @@ $(document).ready(function () {
         $('#loadingModal').modal('show');
         $.ajax({
             method: "POST",
-            url: "/portal/Async/changeSubmissionStatus",
+            url: "/Async/changeSubmissionStatus",
             data: {statusCode: changeStatusTo,
                 aimQuoteID: thisQuoteID
             }
@@ -458,7 +458,7 @@ $(document).ready(function () {
                 //});
 
                 $(buttonObject).html(newButtonText)
-                window.location='/portal/main/submissions';
+                window.location='/main/submissions';
             });
     });
 
@@ -473,7 +473,7 @@ $(document).ready(function () {
         $('.sw-btn-next').attr("disabled", "disabled");
         $.ajax({
             method: "POST",
-            url: "/portal/Async/bindPrepare",
+            url: "/Async/bindPrepare",
             data: {
                 aimQuoteID: thisQuoteID
             }
@@ -501,7 +501,7 @@ $(document).ready(function () {
 
         $.ajax({
             method: "POST",
-            url: "/portal/Async/bindGetPolicyNumbersFromRegister",
+            url: "/Async/bindGetPolicyNumbersFromRegister",
             data: {
                 aimQuoteID: thisQuoteID,
                 policyKeyID: $('#policyKeyID').html(),
@@ -558,7 +558,7 @@ $(document).ready(function () {
         var policyNumber = $(this).find('.policyNumber').html();
         $.ajax({
             method: "POST",
-            url: "/portal/Async/bindReviewSubmissionDetails",
+            url: "/Async/bindReviewSubmissionDetails",
             data: {
                 aimQuoteID: thisQuoteID,
                 policyNumber: policyNumber,
@@ -580,7 +580,7 @@ $(document).ready(function () {
         var thisQuoteID = $('#reviewQuoteID').html().trim();
         $.ajax({
             method: "POST",
-            url: "/portal/Async/bindSubmission",
+            url: "/Async/bindSubmission",
             data: {
                 aimQuoteID: thisQuoteID,
                 policyNumber: $('#policyNumberHeader').html().trim(),
@@ -589,7 +589,7 @@ $(document).ready(function () {
             }
         }).done(function (msg) {
             //alert(msg);
-            window.location='/portal/main/submissions';
+            window.location='/main/submissions';
         });
     });
 
@@ -648,7 +648,7 @@ $(document).ready(function () {
 
         $.ajax({
             method: "POST",
-            url: "/portal/Async/changeSubmissionStatus",
+            url: "/Async/changeSubmissionStatus",
             data: {statusCode: changeStatusTo,
                 aimQuoteID: thisQuoteID
             }
@@ -660,7 +660,7 @@ $(document).ready(function () {
                 //});
 
                 $(buttonObject).html(newButtonText)
-                window.location='/portal/main/submissions';
+                window.location='/main/submissions';
             });
     });
 
@@ -677,7 +677,7 @@ $(document).ready(function () {
         else if(userRole == "Underwriter"){
             $.ajax({
                 method: "POST",
-                url: "/portal/Async/findUserFromName",
+                url: "/Async/findUserFromName",
                 data: {
                     brokerName: $(this).find('.brokerName').html().trim(),
                     brokerEmail: $(this).find('.brokerToMessage').html().trim()
@@ -717,7 +717,7 @@ $(document).ready(function () {
         }, 1000);
         $.ajax({
             method: "POST",
-            url: "/portal/Async/sendMessage",
+            url: "/Async/sendMessage",
             data: {
                 recipient: recipient,
                 subject: subject,
@@ -745,7 +745,7 @@ $(document).ready(function () {
 
 
     $(document).on('click', '.reviewButton', function () {
-        //window.location='/portal/main/certs';
+        //window.location='/main/certs';
         //get quote id
 
         var thisQuoteID = $(this).closest('.submissionQuickOptions').find('.QOaimQuoteID').html().trim();
@@ -755,7 +755,7 @@ $(document).ready(function () {
 
         $.ajax({
             method: "POST",
-            url: "/portal/Async/getQuestionAnswers",
+            url: "/Async/getQuestionAnswers",
             data: {quoteID: thisQuoteID
             }
         })
@@ -1030,7 +1030,7 @@ $(document).ready(function () {
                             //    var head = document.getElementsByTagName('head')[0];
                             //    var script = document.createElement('script');
                             //    script.type = 'text/javascript';
-                            //    script.src = '/portal/js/forms/specFilm.js'+"?ts=" + new Date().getTime();
+                            //    script.src = '/js/forms/specFilm.js'+"?ts=" + new Date().getTime();
                             //    head.appendChild(script);
                             //    loadSaveFunction(questionJSON);
                             //
@@ -1080,7 +1080,7 @@ $(document).ready(function () {
     // "company":"NEEIS","email":"andee@neeis.com","recipientSelect":"invalid","messageSubject":""}
 
     $(document).on('click', '.generateCert', function () {
-        //window.location='/portal/main/certs';
+        //window.location='/main/certs';
         //get quote id
         var thisQuoteID = $(this).closest('.submissionQuickOptions').find('.QOaimQuoteID').html().trim();
         $('#certificateQuoteID').html(thisQuoteID);
@@ -1111,7 +1111,7 @@ $(document).ready(function () {
             $('.progress-bar').attr('aria-valuenow', "0")
             $('#progressBarHeader_cert').html("Downloading");
             $('#progressBarModal_cert').modal('show');
-            window.location='/portal/async/downloadCert?quoteID='+certQuoteID +"&r=" + certRemarks + "&h=" + certHolder + "&ai=" + useAcordform ;
+            window.location='/async/downloadCert?quoteID='+certQuoteID +"&r=" + certRemarks + "&h=" + certHolder + "&ai=" + useAcordform ;
             //$('#progressBarHeader').css('z-index', 3000);
 
 
@@ -1149,7 +1149,7 @@ $(document).ready(function () {
 
             $.ajax({
                 method: "POST",
-                url: "/portal/main/getCertWords",
+                url: "/main/getCertWords",
                 data: {additionalID: selectedOption
                 }
             })
@@ -1163,7 +1163,7 @@ $(document).ready(function () {
                     //$('#some_id').click(function() {
                     //
                     //});
-                    //window.location='/portal/main/downloadCert';
+                    //window.location='/main/downloadCert';
                 });
         }
     });
@@ -1185,7 +1185,7 @@ $(document).ready(function () {
             var selectedOption = $(this).find(":selected").val();
             $.ajax({
                 method: "POST",
-                url: "/portal/main/getCertWords",
+                url: "/main/getCertWords",
                 data: {additionalID: selectedOption
                 }
             })
@@ -1426,7 +1426,7 @@ $(document).on('click', '.attachmentsLink', function () {
 
     $.ajax({
         method: "POST",
-        url: "/portal/Async/getAttachmentsList",
+        url: "/Async/getAttachmentsList",
         data: {
             quoteID: quoteID
         }
@@ -1473,7 +1473,7 @@ $(document).on('click', '.attachmentsLink', function () {
                     }
 
                     //$("#" + $(this).attr('id') + 'Span').closest(".fileNameContainer").css("display", "");
-                    //$("#" + $(this).attr('id') + 'Span').html("<img src='/portal/images/" + iconFilePath + "' height='16' width='16' style='margin-right:5px'/>" + name);
+                    //$("#" + $(this).attr('id') + 'Span').html("<img src='/images/" + iconFilePath + "' height='16' width='16' style='margin-right:5px'/>" + name);
 
 
 
@@ -1481,11 +1481,11 @@ $(document).on('click', '.attachmentsLink', function () {
                         "<div class='row fileRow' style='margin-top:10px; margin-bottom: 10px;'>" +
                         "<div class='col-xs-12'>" +
                         //"<button class='downloadFileButton btn btn-primary col-xs-2' style='margin-right:20px; margin-left:15px;'>" +
-                        "<a href='/portal/async/ajaxDownloadAttachment?q=" + quoteID + "&f=" + fileName+ "'>" +
+                        "<a href='/async/ajaxDownloadAttachment?q=" + quoteID + "&f=" + fileName+ "'>" +
                             "<button class='btn btn-primary col-xs-2' style='margin-right:20px; margin-left:15px;'>Download</button>" +
                         "</a>" +
                         "<div class='col-xs-9'>" +
-                        "<img src='/portal/images/" + iconFilePath + "' height='24' width='24' style='margin-right:9px'/>" +
+                        "<img src='/images/" + iconFilePath + "' height='24' width='24' style='margin-right:9px'/>" +
                         "<span class='fileDescriptionSpan ' style='line-height: 30px;'>" + fileName +"</span>" +
                         "</div>" +
                         "</div>" +
@@ -1511,7 +1511,7 @@ $(document).on('click', '.downloadFileButton', function () {
 
     //$.ajax({
     //    method: "POST",
-    //    url: "/portal/Async/ajaxDownloadAttachment",
+    //    url: "/Async/ajaxDownloadAttachment",
     //    data: {
     //        quoteID: quoteID
     //    }
@@ -1528,7 +1528,7 @@ $(document).on('click', '.downloadFileButton', function () {
 function changeSubmissionStatus(submissionID, statusCode){
     $.ajax({
         method: "POST",
-        url: "/portal/Async/changeSubmissionStatus",
+        url: "/Async/changeSubmissionStatus",
         data: {submissionID: submissionID,
             statusCode: statusCode
         }
@@ -1664,7 +1664,7 @@ function getProductsForRisk(){
     if(riskChosen.indexOf("Film Projects") > -1){
         $.ajax({
             method: "POST",
-            url: "/portal/Async/getProductsForCoverage",
+            url: "/Async/getProductsForCoverage",
             data: {riskType: riskChosen,
                 totalGrossBudget: $("#totalBudgetConfirm").val().replace(/\$|,/g, ''),
                 proposedTermLength: $("#proposedTermLength").val()
@@ -1883,7 +1883,7 @@ function getTaxInfo(){
     //console.log("TAX State = " + taxState)
     $.ajax({
         method: "POST",
-        url: "/portal/Async/getTaxInfo",
+        url: "/Async/getTaxInfo",
         data: {riskType: "",
             state: taxState,
             date: monthIndex+1 + "/" + day + "/" + year

@@ -3,7 +3,7 @@ function getProductsForRisk() {
     if (riskChosen.indexOf("Film Projects") > -1 && $("#proposedTermLength").val().length > 0) {
         $.ajax({
                 method: "POST",
-                url: "/portal/Async/getProductsForCoverage",
+                url: "/Async/getProductsForCoverage",
                 data: {
                     riskType: riskChosen,
                     totalGrossBudget: $("#totalBudgetConfirm").val().replace(/\$|,/g, ''),
@@ -170,7 +170,7 @@ function getProductsForRiskV2(){
 
     $.ajax({
         method: "POST",
-        url: "/portal/Async/getProductsForCoverageV2",
+        url: "/Async/getProductsForCoverageV2",
         data: {
             riskType: getRiskTypeChosen(),
             totalGrossBudget: $("#totalBudgetConfirm").val().replace(/\$|,/g, ''),
@@ -213,7 +213,7 @@ function getTaxInfo() {
     //console.log("TAX State = " + taxState)
     $.ajax({
             method: "POST",
-            url: "/portal/Async/getTaxInfo",
+            url: "/Async/getTaxInfo",
             data: {
                 riskType: "",
                 state: taxState,
@@ -323,9 +323,6 @@ function getSubmissionMap() {
         premiumAllLOBTotal: $('#premiumAllLOBTotal').html(),
         filmingLocation: $('#filmingLocation').html(),
         productID: [],
-        producer: $('#producer').val(),
-        director: $('#director').val(),
-        nameOfPrincipal: $('#nameOfPrincipal').val()
     };
 
     submissionMap.coverageCodes = "";
@@ -551,6 +548,85 @@ function getSubmissionMap() {
     submissionMap.statusID = "QO";
 
     return submissionMap;
+}
+
+function getSubmissionMapSP(){
+    var submissionMap = {
+        namedInsured: $('#namedInsured').val(),
+        streetNameMailing: $('#googleAutoAddress').val(),
+        cityMailing: $('#cityMailing').val(),
+        stateMailing: $('#stateMailing').val(),
+        zipCodeMailing: $('#zipCodeMailing').val(),
+        userCompany: $('#userDetails-company').html(), //DONT' CHANGE
+        accountExec: "jason", //DON'T CHANGE
+        accountExecName: "Jason DeBolt", //DON'T CHANGE
+        phoneNumber: $('#phoneNumber').val(),
+        namedInsuredEmail: $('#namedInsuredEmail').val(),
+        FEINSSN: $('#FEINSSN').val(),
+        businessStructure: $('#businessStructureSelect').val(),
+        NCCI: $('#NCCI').val(),
+        SIC: $('#SIC').val(),
+        attention: $('#userDetails-firstName').html() + " " + $('#userDetails-lastName').html(), //DONT' CHANGE
+        aimContactID: $('#userDetails-aimContactID').html(), //DON'T CHANGE
+        website: $('#website').val(),
+        proposedTermLength: parseInt($("#proposedTermLength").val().split(" ")),
+        proposedEffectiveDate: $("#proposedEffectiveDate").val(),
+        proposedExpirationDate: $("#proposedExpirationDate").val(),
+        coverageCodes: "",
+        riskChosen: getRiskTypeChosen(),
+        riskCategory: getRiskCategoryChosen(),
+        premiumAllLOBTotal: $('#totalSalePremiumCost').html(),
+        productID: "CGLSE00"
+    };
+
+
+    submissionMap.lobString = ""
+    submissionMap.limitsString = ""
+    submissionMap.deductsString = ""
+
+// TABLE WORKCOMP
+    $('div#reviewLimitsDeducts div.tableWC div.lobRow').each(function() {
+        submissionMap.lobString = submissionMap.lobString + $(this).find('.coverageColumn').children().first().html() + " \t" + $(this).find('.limitColumn').children().first().html() + " \t" +
+            "" + "\n";
+        submissionMap.limitsString = submissionMap.limitsString + $(this).find('.limitColumn').children().first().html() + "\tWC:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+        submissionMap.deductsString = submissionMap.deductsString + "" + "\tWC:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+    });
+// TABLE HIRED AND NON OWNED AUTO LIABILITY
+    $('div#reviewLimitsDeducts div.tableNOAL div.lobRow').each(function() {
+        submissionMap.lobString = submissionMap.lobString + $(this).find('.coverageColumn').children().first().html() + " \t" + $(this).find('.limitColumn').children().first().html() + " \t" +
+            "" + "\n";
+        submissionMap.limitsString = submissionMap.limitsString + $(this).find('.limitColumn').children().first().html() + "\tNOAL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+        submissionMap.deductsString = submissionMap.deductsString + "" + "\tNOAL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+    });
+// TABLE COMMERCIAL GENERAL LIABILITY (CGL)
+    $('div#reviewLimitsDeducts div.tableCGL div.lobRow').each(function() {
+        submissionMap.lobString = submissionMap.lobString + $(this).find('.coverageColumn').children().first().html() + " \t" + $(this).find('.limitColumn').children().first().html() + " \t" +
+            "" + "\n";
+        submissionMap.limitsString = submissionMap.limitsString + $(this).find('.limitColumn').children().first().html() + "\tCGL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+        submissionMap.deductsString = submissionMap.deductsString + "" + "\tCGL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+    });
+// TABLE UMBRELLA LIABILITY
+    $('div#reviewLimitsDeducts div.tableCUMB div.lobRow').each(function() {
+        submissionMap.lobString = submissionMap.lobString + $(this).find('.coverageColumn').children().first().html() + " \t" + $(this).find('.limitColumn').children().first().html() + " \t" +
+            "" + "\n";
+        submissionMap.limitsString = submissionMap.limitsString + $(this).find('.limitColumn').children().first().html() + "\tCUMB:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+        submissionMap.deductsString = submissionMap.deductsString + "" + "\tCUMB:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+    });
+
+    //BUILD LOB, LIMITS, DEDUCTS STRING
+    //lobString = "Miscellaneous Rented Equipment ;&;$234,234 ;&;$2,500;&&;Extra Expense ;&;$234,234 ;&;$2,500;&&;Props, Sets & Wardrobe ;&;$234,234 ;&;$2,500;&&;Third Party Prop Damage Liab ;&;$234,234 ;&;$2,500;&&;"
+    //limitsString = "$234,234\tEPKG:Miscellaneous Rented Equipment\n$234,234\tEPKG:Extra Expense\n$234,234\tEPKG:Props, Sets &amp; Wardrobe\n$234,234\tEPKG:Third Party Prop Damage Liab\n",
+    //deductsString = "$2,500\tEPKG:Miscellaneous Rented Equipment\n$2,500\tEPKG:Extra Expense\n$2,500\tEPKG:Props, Sets &amp; Wardrobe\n$2,500\tEPKG:Third Party Prop Damage Liab\n",
+
+    //EXAMPLE
+    // $('div#reviewLimitsDeducts div.EPKG_LOBRow').each(function() {
+    //     submissionMap.epkgLOB = submissionMap.epkgLOB + $(this).find('.coverageColumn').children().first().html() + " \t" + $(this).find('.limitColumn').children().first().html() + " \t" +
+    //         $(this).find('.deductibleColumn').children().first().html() + "\n";
+    //     submissionMap.EPKGlimitsString = submissionMap.EPKGlimitsString + $(this).find('.limitColumn').children().first().html() + "\tEPKG:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+    //     submissionMap.EPKGdeductsString = submissionMap.EPKGdeductsString + $(this).find('.deductibleColumn').children().first().html() + "\tEPKG:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+    //     //console.log(EPKGlimitsString)
+    // });
+    return submissionMap
 }
 
 function validateSubmission(dataMap){

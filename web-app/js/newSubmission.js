@@ -224,6 +224,10 @@ $(document).ready(function() {
         //console.log($('.btn-primary').html());
 
 
+        if($item.attr('id') == "buttonCircleStep4"){ 
+            buildReview();
+         }
+
         if (!$item.hasClass('disabled') && !$($item)[0].hasAttribute("disabled")) {
             if (parseInt($('.btn-primary').html()) > parseInt($(this).html())) {
                 navListItems.removeClass('btn-primary').addClass('btn-default');
@@ -334,7 +338,7 @@ $(document).ready(function() {
                             var head = document.getElementsByTagName('head')[0];
                             var script = document.createElement('script');
                             script.type = 'text/javascript';
-                            script.src = '/portal/js/forms/specFilm.js' + "?ts=" + new Date().getTime();
+                            script.src = '/js/forms/specFilm.js' + "?ts=" + new Date().getTime();
                             head.appendChild(script);
                             finishedLoading2 = true;
 
@@ -366,10 +370,10 @@ $(document).ready(function() {
                             var head = document.getElementsByTagName('head')[0];
                             var script = document.createElement('script');
                             script.type = 'text/javascript';
-                            script.src = '/portal/js/forms/specFilm.js' + "?ts=" + new Date().getTime();
+                            script.src = '/js/forms/specFilm.js' + "?ts=" + new Date().getTime();
                             var script1 = document.createElement('script');
                             script1.type = 'text/javascript';
-                            script1.src = '/portal/js/forms/entertainer.js' + "?ts=" + new Date().getTime();
+                            script1.src = '/js/forms/entertainer.js' + "?ts=" + new Date().getTime();
                             head.appendChild(script1);
                             finishedLoading2 = true;
                             if (finishedLoading1 && finishedLoading2 && finishedLoading3) {
@@ -410,10 +414,10 @@ $(document).ready(function() {
                                 var head = document.getElementsByTagName('head')[0];
                                 var script = document.createElement('script');
                                 script.type = 'text/javascript';
-                                script.src = '/portal/js/forms/specFilm.js' + "?ts=" + new Date().getTime();
+                                script.src = '/js/forms/specFilm.js' + "?ts=" + new Date().getTime();
                                 var script1 = document.createElement('script');
                                 script1.type = 'text/javascript';
-                                script1.src = '/portal/js/forms/specialEventVendor.js' + "?ts=" + new Date().getTime();
+                                script1.src = '/js/forms/specialEventVendor.js' + "?ts=" + new Date().getTime();
                                 head.appendChild(script1);
                                 finishedLoading2 = true;
                                 if (finishedLoading1 && finishedLoading2 && finishedLoading3) {
@@ -440,10 +444,10 @@ $(document).ready(function() {
                                 var head = document.getElementsByTagName('head')[0];
                                 var script = document.createElement('script');
                                 script.type = 'text/javascript';
-                                script.src = '/portal/js/forms/specFilm.js' + "?ts=" + new Date().getTime();
+                                script.src = '/js/forms/specFilm.js' + "?ts=" + new Date().getTime();
                                 var script1 = document.createElement('script');
                                 script1.type = 'text/javascript';
-                                script1.src = '/portal/js/forms/specialEventLiability.js' + "?ts=" + new Date().getTime();
+                                script1.src = '/js/forms/specialEventLiability.js' + "?ts=" + new Date().getTime();
                                 head.appendChild(script1);
                                 finishedLoading2 = true;
                                 if (finishedLoading1 && finishedLoading2 && finishedLoading3) {
@@ -475,10 +479,10 @@ $(document).ready(function() {
                             var head = document.getElementsByTagName('head')[0];
                             var script = document.createElement('script');
                             script.type = 'text/javascript';
-                            script.src = '/portal/js/forms/specFilm.js' + "?ts=" + new Date().getTime();
+                            script.src = '/js/forms/specFilm.js' + "?ts=" + new Date().getTime();
                             var script1 = document.createElement('script');
                             script1.type = 'text/javascript';
-                            script1.src = '/portal/js/forms/office.js' + "?ts=" + new Date().getTime();
+                            script1.src = '/js/forms/office.js' + "?ts=" + new Date().getTime();
                             head.appendChild(script1);
                             finishedLoading2 = true;
                             if (finishedLoading1 && finishedLoading2 && finishedLoading3) {
@@ -510,10 +514,10 @@ $(document).ready(function() {
                             var head = document.getElementsByTagName('head')[0];
                             var script = document.createElement('script');
                             script.type = 'text/javascript';
-                            script.src = '/portal/js/forms/specFilm.js' + "?ts=" + new Date().getTime();
+                            script.src = '/js/forms/specFilm.js' + "?ts=" + new Date().getTime();
                             var script1 = document.createElement('script');
                             script1.type = 'text/javascript';
-                            script1.src = '/portal/js/forms/shellCorp.js' + "?ts=" + new Date().getTime();
+                            script1.src = '/js/forms/shellCorp.js' + "?ts=" + new Date().getTime();
                             head.appendChild(script1);
                             finishedLoading2 = true;
                             if (finishedLoading1 && finishedLoading2 && finishedLoading3) {
@@ -545,10 +549,10 @@ $(document).ready(function() {
                             var head = document.getElementsByTagName('head')[0];
                             var script = document.createElement('script');
                             script.type = 'text/javascript';
-                            script.src = '/portal/js/forms/specFilm.js' + "?ts=" + new Date().getTime();
+                            script.src = '/js/forms/specFilm.js' + "?ts=" + new Date().getTime();
                             var script1 = document.createElement('script');
                             script1.type = 'text/javascript';
-                            script1.src = '/portal/js/forms/venueTenantUser.js' + "?ts=" + new Date().getTime();
+                            script1.src = '/js/forms/venueTenantUser.js' + "?ts=" + new Date().getTime();
                             head.appendChild(script1);
                             finishedLoading2 = true;
                             if (finishedLoading1 && finishedLoading2 && finishedLoading3) {
@@ -579,10 +583,10 @@ $(document).ready(function() {
                             var head = document.getElementsByTagName('head')[0];
                             var script = document.createElement('script');
                             script.type = 'text/javascript';
-                            script.src = '/portal/js/forms/specFilm.js' + "?ts=" + new Date().getTime();
+                            script.src = '/js/forms/specFilm.js' + "?ts=" + new Date().getTime();
                             var script1 = document.createElement('script');
                             script1.type = 'text/javascript';
-                            script1.src = '/portal/js/forms/ancillaryEntertainmentRisk.js' + "?ts=" + new Date().getTime();
+                            script1.src = '/js/forms/ancillaryEntertainmentRisk.js' + "?ts=" + new Date().getTime();
                             head.appendChild(script1);
                             finishedLoading2 = true;
                             if (finishedLoading1 && finishedLoading2 && finishedLoading3) {
@@ -601,7 +605,7 @@ $(document).ready(function() {
                             var head = document.getElementsByTagName('head')[0];
                             var script = document.createElement('script');
                             script.type = 'text/javascript';
-                            script.src = '/portal/js/forms/otherForm.js' + "?ts=" + new Date().getTime();
+                            script.src = '/js/forms/otherForm.js' + "?ts=" + new Date().getTime();
                             head.appendChild(script);
                             $('#loadingModal').modal('hide');
                         });
@@ -636,7 +640,7 @@ $(document).ready(function() {
                             var head = document.getElementsByTagName('head')[0];
                             var script = document.createElement('script');
                             script.type = 'text/javascript';
-                            script.src = '/portal/js/forms/otherForm.js' + "?ts=" + new Date().getTime();
+                            script.src = '/js/forms/otherForm.js' + "?ts=" + new Date().getTime();
                             head.appendChild(script);
                             finishedLoading2 = true;
                             if (finishedLoading1 && finishedLoading2 && finishedLoading3) {
@@ -695,6 +699,7 @@ $(document).ready(function() {
                 currentStep = 4;
                 var validSubmission = true;
                 $('#progressBarModal').modal('show');
+                var riskCategory = getRiskCategoryChosen();
                 if (riskChosen.indexOf("Film Projects") > -1) {
                     var dataMap = getSubmissionMap();
                     var validSubmissionMessage = validateSubmission(dataMap);
@@ -709,20 +714,20 @@ $(document).ready(function() {
 
                         /////TEST FOR BROKER OF RECORD STATUS
                         $.ajax({
-                                method: "POST",
-                                url: "/portal/Async/saveSubmissionToAIM",
-                                data: {
-                                    riskType: riskChosen,
-                                    totalGrossBudget: $("#totalBudgetInput").val().replace(/\$|,/g, ''),
-                                    proposedTermLength: $("#proposedTermLength").val(),
-                                    namedInsured: $('#namedInsured').val(),
-                                    questionAnswerMap: JSON.stringify(autoSaveMap),
-                                    uwQuestionsMap: JSON.stringify(uwQuestionsMap),
-                                    uwQuestionsOrder: uwQuestionsOrder.join("&;&"),
-                                    dataMap: JSON.stringify(dataMap),
-                                    BORrequested: BORrequested
-                                }
-                            })
+                            method: "POST",
+                            url: "/Async/saveSubmissionToAIM",
+                            data: {
+                                riskType: riskChosen,
+                                totalGrossBudget: $("#totalBudgetInput").val().replace(/\$|,/g, ''),
+                                proposedTermLength: $("#proposedTermLength").val(),
+                                namedInsured: $('#namedInsured').val(),
+                                questionAnswerMap: JSON.stringify(autoSaveMap),
+                                uwQuestionsMap: JSON.stringify(uwQuestionsMap),
+                                uwQuestionsOrder: uwQuestionsOrder.join("&;&"),
+                                dataMap: JSON.stringify(dataMap),
+                                BORrequested: BORrequested
+                            }
+                        })
                             .done(function(msg) {
                                 //alert(msg);
                                 //0620584,0620585
@@ -731,7 +736,7 @@ $(document).ready(function() {
                                     //console.log("UPLOADING FILES");
                                     //ATTACH FILES
 
-                                    // var formDataNew = getFormDataWithAllAttachedFiles();
+                                    var formDataNew = getFormDataWithAllAttachedFilesNew();
                                     var bioFile = $('#bioFile').get(0).files[0];
                                     var lossesFile = $('#lossesFile').get(0).files[0];
                                     var pyroFile = $('#pyroFile').get(0).files[0];
@@ -749,26 +754,34 @@ $(document).ready(function() {
                                             width: "75%"
                                         }, 2000);
                                         var formData = new FormData();
-                                        formData.append('bioFile', bioFile);
-                                        formData.append('lossesFile', lossesFile);
-                                        formData.append('pyroFile', pyroFile);
-                                        formData.append('stuntsFile', stuntsFile);
-                                        formData.append('animalPDF', animalPDF);
-                                        formData.append('dronePDF', dronePDF);
-                                        formData.append('equipScheduleFile', equipScheduleFile);
-                                        formData.append('doodFile', doodFile);
-                                        formData.append('treatmentFile', treatmentFile);
-                                        formData.append('budgetFile', budgetFile);
+                                        //formData.append('bioFile', bioFile);
+                                        //formData.append('lossesFile', lossesFile);
+                                        //formData.append('pyroFile', pyroFile);
+                                        //formData.append('stuntsFile', stuntsFile);
+                                        //formData.append('animalPDF', animalPDF);
+                                        //formData.append('dronePDF', dronePDF);
+                                        //formData.append('equipScheduleFile', equipScheduleFile);
+                                        //formData.append('doodFile', doodFile);
+                                        //formData.append('treatmentFile', treatmentFile);
+                                        //formData.append('budgetFile', budgetFile);
                                         formData.append('quoteIDs', quoteIDs);
 
+                                        //NEW STUFF
+                                        $('input:file').each(function(){
+                                            var file = $(this).get(0).files[0];
+                                            if(file){
+                                                formData.append($(this).attr('id'), file);
+                                            }
+                                        });
+
                                         $.ajax({
-                                                method: "POST",
-                                                url: "/portal/async/ajaxAttach",
-                                                data: formData,
-                                                cache: false,
-                                                contentType: false,
-                                                processData: false
-                                            })
+                                            method: "POST",
+                                            url: "/async/ajaxAttachNew",
+                                            data: formData,
+                                            cache: false,
+                                            contentType: false,
+                                            processData: false
+                                        })
                                             .done(function(msg) {
                                                 //console.log("Finished Uploading");
                                                 $('.progress-bar').attr('aria-valuenow', "100").css("width", "100%");
@@ -814,6 +827,32 @@ $(document).ready(function() {
 
 
                     $('#loadingModal').modal('hide');
+                }
+                else if (riskCategory == "Special Events"){
+                    var dataMap = getSubmissionMapSP(); //FROM AIMHELPER.JS
+                    $('#progressBarHeader').html("Please wait, your submission is being processed.")
+                    $('.progress-bar').attr('aria-valuenow', "75").animate({
+                        width: "75%"
+                    }, 25000);
+
+                    autoSaveFunction();
+
+                    /////TEST FOR BROKER OF RECORD STATUS
+                    $.ajax({
+                        method: "POST",
+                        url: "/Async/saveSpecialEventSubmission",
+                        data: {
+                            questionAnswerMap: JSON.stringify(autoSaveMap),
+                            uwQuestionsMap: JSON.stringify(uwQuestionsMap),
+                            uwQuestionsOrder: uwQuestionsOrder.join("&;&"),
+                            dataMap: JSON.stringify(dataMap),
+                            BORrequested: BORrequested
+                        }
+                    })
+                        .done(function(msg) {
+                            $('#progressBarModal').modal('hide');
+                            alert(msg)
+                        });
                 }
                 else {
                     //THE ACTIONS THAT WILL BE TAKEN AFTER THEY PUSH THE FINAL SUBMIT BUTTON
@@ -905,20 +944,20 @@ $(document).ready(function() {
 
 
                     $.ajax({
-                            method: "POST",
-                            url: "/portal/Async/saveSubmissionToAIMv2",
-                            data: {
-                                dataMap: JSON.stringify(dataMap),
-                                riskType: riskChosen,
-                                proposedTermLength: $("#proposedTermLength").val(),
-                                namedInsured: $('#namedInsured').val(),
-                                coverageCodes: coverageCodes,
-                                questionAnswerMap: JSON.stringify(autoSaveMap),
-                                uwQuestionsMap: JSON.stringify(uwQuestionsMap),
-                                uwQuestionsOrder: uwQuestionsOrder.join("&;&"),
-                                BORrequested: BORrequested
-                            }
-                        })
+                        method: "POST",
+                        url: "/Async/saveSubmissionToAIMv2",
+                        data: {
+                            dataMap: JSON.stringify(dataMap),
+                            riskType: riskChosen,
+                            proposedTermLength: $("#proposedTermLength").val(),
+                            namedInsured: $('#namedInsured').val(),
+                            coverageCodes: coverageCodes,
+                            questionAnswerMap: JSON.stringify(autoSaveMap),
+                            uwQuestionsMap: JSON.stringify(uwQuestionsMap),
+                            uwQuestionsOrder: uwQuestionsOrder.join("&;&"),
+                            BORrequested: BORrequested
+                        }
+                    })
                         .done(function(msg) {
                             alert(msg);
                         });
@@ -934,13 +973,13 @@ $(document).ready(function() {
                 var data = getFormData($form);
 
                 $.ajax({
-                        method: "POST",
-                        url: "/portal/Async/intelledoxGenerate",
-                        data: {
-                            formData: JSON.stringify(data)
+                    method: "POST",
+                    url: "/Async/intelledoxGenerate",
+                    data: {
+                        formData: JSON.stringify(data)
 
-                        }
-                    })
+                    }
+                })
                     .done(function(msg) {
                         alert(msg);
                     });
@@ -1191,50 +1230,89 @@ function buildReview() {
     $("#reviewNumberYearsExperience").html($("#numberOfYearsOfExperience").val());
     $("#reviewPriorLosses").html($("#listOfPriorLosses").val());
 
-    //FOR PIPCHOICE ONLY
-    var limitValueArray = [];
-    $("#limitsDeductPremiumInsert").find('.limitColumn').each(function() {
-        if ($(this).find('input').length) {
-            limitValueArray.push($(this).find('input').val());
-        }
-    });
+    $('#reviewLimitsDeducts').html("");
+    var riskCategory = getRiskCategoryChosen();
+    if (riskCategory == "Special Events"){
+        $("#reviewEventDays").html($("#howManyDaysIsTheEvent").val());
+        $("#reviewTotalAttendance").html($("#estimatedTotalAttendance").val());
+        $("#reviewLargestAttendees").html($("#largestNumberAttendees").val());
 
-    // var htmlString = $("#limitsDeductPremiumInsert").html();
-    // var object = $('<div/>').html(htmlString).contents();
-    // object.find('.limitColumn').each(function(index) {
-    //     if ($(this).find('input').length) {
-    //         $(this).html("<span class='limit'>" + limitValueArray[index] + "<span>");
-    //     }
-    // });
-
-    var newHtmlString = "";
-    $(".showReviewTable").each(function() {
-        newHtmlString = newHtmlString + $(this).wrap('<p/>').parent().html();
+        $(".specialEventsTableReview").css('display', "");
+        $(".filmProductionTableReview").css('display', "none");
+        $(".premiumReviewEvents").css('display', "");
+        $(".premiumReviewFilm").css('display', "none");
+        $(".totalBudgetReview").css('display', "none");
+        $(".photographyDatesReviewTable").css('display', "none");
+        $(".eventDaysReview").css('display', "");
+        $(".totalAttendanceReview").css('display', "");
+        $(".largestAttendeesReview").css('display', "");
 
 
-    });
-    var newObject = $('<div/>').html(newHtmlString).contents();
-    newObject.find('.limitColumn').each(function(index) {
-        if ($(this).find('input').length) {
-            $(this).html("<span class='limit'>" + limitValueArray[index] + "</span>");
-        }
-    });
+        var newHtmlString = "";
+        $("div#step-2 .showReviewTable").each(function() {
+            newHtmlString = newHtmlString + $(this).wrap('<p/>').parent().html();
+        });
+        $("div#step-3 .showReviewTable").each(function() {
+            newHtmlString = newHtmlString + $(this).wrap('<p/>').parent().html();
+        });
+        var newObject = $('<div/>').html(newHtmlString).contents();
 
-    $("#reviewLimitsDeducts").html(newObject);
-    var premString = "";
-    $('.premDistributionInsert').each(function() {
-        premString = premString + $(this).html();
-    });
-    var str = $("<div />").append($('#premDistributionInsert').clone()).html();
-    str = str + $("<div />").append($('.TaxHeaderRow').clone()[0]).html();
-    str = str + $("<div />").append($('#taxRows').clone()[0]).html();
-    str = str + $("<div />").append($('.TotalPremiumRow').clone()[0]).html();
-    str = str + premString;
-    $("#reviewPremDistribution").html(str);
-    $("#reviewTerms").html($("#termsInsert").html());
-    //$("#reviewSubject").html($("#subjectInsert").html());
-    $("#reviewBrokerFee").html($("#brokerFeeInput").val());
 
+        $("#reviewLimitsDeductsSP").html(newObject);
+        var premString = "";
+        $('.premDistributionInsert').each(function () {
+            premString = premString + $(this).html();
+        });
+
+        var str = $("<div />").append($('#premDistributionInsert').clone()).html();
+        str = str + $("<div />").append($('.TaxHeaderRow').clone()[0]).html();
+        str = str + $("<div />").append($('#taxRows').clone()[0]).html();
+        str = str + $("<div />").append($('.TotalPremiumRow').clone()[0]).html();
+        str = str + premString;
+        $("#reviewPremDistributionSP").html(str);
+        $("#reviewTerms").html($("#termsInsert").html());
+        //$("#reviewSubject").html($("#subjectInsert").html());
+        $("#reviewBrokerFee").html($("#brokerFeeInput").val());
+    }
+    else {
+        //FOR PIPCHOICE ONLY
+        var limitValueArray = [];
+        $("#limitsDeductPremiumInsert").find('.limitColumn').each(function() {
+            if ($(this).find('input').length) {
+                limitValueArray.push($(this).find('input').val());
+            }
+        });
+
+        var newHtmlString = "";
+        $(".showReviewTable").each(function() {
+            newHtmlString = newHtmlString + $(this).wrap('<p/>').parent().html();
+
+
+        });
+        var newObject = $('<div/>').html(newHtmlString).contents();
+        newObject.find('.limitColumn').each(function(index) {
+            if ($(this).find('input').length) {
+                $(this).html("<span class='limit'>" + limitValueArray[index] + "</span>");
+            }
+        });
+
+        $("#reviewLimitsDeducts").html(newObject);
+        var premString = "";
+        $('.premDistributionInsert').each(function () {
+            premString = premString + $(this).html();
+        });
+
+
+        var str = $("<div />").append($('#premDistributionInsert').clone()).html();
+        str = str + $("<div />").append($('.TaxHeaderRow').clone()[0]).html();
+        str = str + $("<div />").append($('#taxRows').clone()[0]).html();
+        str = str + $("<div />").append($('.TotalPremiumRow').clone()[0]).html();
+        str = str + premString;
+        $("#reviewPremDistribution").html(str);
+        $("#reviewTerms").html($("#termsInsert").html());
+        //$("#reviewSubject").html($("#subjectInsert").html());
+        $("#reviewBrokerFee").html($("#brokerFeeInput").val());
+    }
     var reviewString = "";
     var checkboxesReviewed = "";
     var blankAnswer = "To Follow"
@@ -1444,7 +1522,7 @@ function buildReview() {
             filesInsert = filesInsert +
                 "<div class='row'>" +
                 "<div class='col-xs-12 text-left'>" +
-                "<div class='reviewSpan' id='review'><img src='/portal/images/" + iconFilePath + "' height='16' width='16' style='margin-right:10px'/>" + name + "</div>" +
+                "<div class='reviewSpan' id='review'><img src='/images/" + iconFilePath + "' height='16' width='16' style='margin-right:10px'/>" + name + "</div>" +
                 "</div>" +
                 "</div>";
         }

@@ -71,7 +71,7 @@
                 </strong>
                 <div class="col-xs-8">
                     <g:link url="./../main/downloadPDF?q=${submissionIDs.split(",")[0]}" >
-                        <img src="/portal/images/pdfIcon.png" height="32" width="32"> Download PDF</img>
+                        <img src="/images/pdfIcon.png" height="32" width="32"> Download PDF</img>
                     </g:link>
                 </div>
             </div>

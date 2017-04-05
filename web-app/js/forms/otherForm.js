@@ -95,7 +95,7 @@ $(document).ready(function () {
             }
 
             $("#" + $(this).attr('id') + 'Span').closest(".fileNameContainer").css("display","");
-            $("#" + $(this).attr('id') + 'Span').html("<img src='/portal/images/" + iconFilePath + "' height='16' width='16' style='margin-right:5px'/>" + name);
+            $("#" + $(this).attr('id') + 'Span').html("<img src='/images/" + iconFilePath + "' height='16' width='16' style='margin-right:5px'/>" + name);
         }
         //console.log(this.files[0]);
         //Your validation
@@ -251,7 +251,7 @@ function ratePremiums(thisObj){
         //console.log($('#costOfHireInput').val());
         $.ajax({
             method: "POST",
-            url: "/portal/Async/ratePremiums",
+            url: "/Async/ratePremiums",
             data: {
                 riskType: riskChosen,
                 productsSelected: productsSelected,
@@ -982,7 +982,7 @@ function buildReview() {
             filesInsert = filesInsert +
                 "<div class='row'>" +
                 "<div class='col-xs-12 text-left'>" +
-                "<div class='reviewSpan' id='review'><img src='/portal/images/" + iconFilePath + "' height='16' width='16' style='margin-right:10px'/>" + name + "</div>" +
+                "<div class='reviewSpan' id='review'><img src='/images/" + iconFilePath + "' height='16' width='16' style='margin-right:10px'/>" + name + "</div>" +
                 "</div>" +
                 "</div>";
         }
@@ -997,7 +997,7 @@ function buildReview() {
 function getQuestions(riskChosen, questionCategory){
     $.ajax({
         method: "POST",
-        url: "/portal/Async/getQuestionsForRiskType",
+        url: "/Async/getQuestionsForRiskType",
         data: {
             riskType: riskChosen,
             questionCategory: questionCategory

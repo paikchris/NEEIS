@@ -16,6 +16,7 @@ function initializeDateInputAndFunctions() {
     //DATE VALIDATION FUNCTION
     $('#proposedEffectiveDate, #proposedExpirationDate').change(function(e) {
         //alert($('#proposedEffectiveDate').val() + " " + $('#proposedExpirationDate').val());
+
         var riskChosen = getRiskTypeChosen();
         var riskCategory = getRiskCategoryChosen();
         var termLength;

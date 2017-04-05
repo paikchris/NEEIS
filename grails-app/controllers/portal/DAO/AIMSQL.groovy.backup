@@ -486,7 +486,7 @@ class AIMSQL {
                 "$versionmap.Non_Premium, $versionmap.NonTax_Premium, $versionmap.FlagFeeCalc, $versionmap.TaxesPaidBy, $versionmap.TaxesPaidByID, $versionmap.FeeSchedule, $versionmap.PremDistrib, $versionmap.LobDistribSched, $versionmap.LobDistrib, $versionmap.ReferenceKey_FK)"
 
 
- 
+
         def quotemap = [QuoteID: "'${quoteID}'",
                         ProducerID:"'${user.company}'",
                         ProductID:"'${productID}'" ,
@@ -646,7 +646,7 @@ class AIMSQL {
         def quoteID =0;
         def allQuoteIDs = "";
 
-        def insuredID = 0; 
+        def insuredID = 0;
         def brokerName = user.firstName + " " + user.lastName;
 
         aimsql.call("{call dbo.GetKeyField(${Sql.INTEGER}, 'ReferenceID')}") { num ->
@@ -3625,7 +3625,7 @@ class AIMSQL {
                     log.info d.split(" ").size()
                     if(rowItem.value == null){
                         string = ""
-                    }  
+                    }
                     else if(d.split(" ").size()>1){
                         string = d.split(" ")[0].replace("-","") + " " + d.split(" ")[1];
                     }

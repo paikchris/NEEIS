@@ -899,7 +899,7 @@
                                         <div class="form-group" id="howManyDaysIsTheEventGroup" style="display:none">
                                             <label class="control-label">Number of Event days</label>
                                             <input class="form-control effectsTotalCGL effectsTotalPremium" id="howManyDaysIsTheEvent" name="howManyDaysIsTheEvent" type="text"
-                                                   style="color: black; background: white;"/>
+                                                   onkeyup="this.value = validate(this.value, 0, 90)" style="color: black; background: white;"/>
                                         </div>
                                     </div>
                                     <div class="col-xs-2">
@@ -984,7 +984,7 @@
                                         <div class="form-group separatePolicyGroup" style="display:none">
                                             <label>Is this policy for a specific vendor / concessionaire / exhibitor? - Separate Policy</label><br>
                                             <input type="radio" name="separatePolicy"
-                                                   class="showReview effectsTotalPremium"
+                                                   class="showReview effectsTotalCGL effectsTotalPremium"
                                                    value="Yes"
                                                    data-reviewName="Is this policy for a specific vendor, concessionaire or exhibitor? - Separate Policy"
                                                    id="separatePolicyYes_RadioButton"> Yes
@@ -999,7 +999,7 @@
                                     <div class="col-xs-3">
                                         <div class="form-group" id="numberOfExhibitorsGroup" style="display:none">
                                             <label class="control-label">Enter number of Exhibitors</label>
-                                            <input class="form-control effectsTotalPremium" id="numberOfExhibitors" name="numberOfExhibitors" type="text" style="color: black; background: white;"/>
+                                            <input class="form-control effectsTotalCGL effectsTotalPremium" id="numberOfExhibitors" name="numberOfExhibitors" type="text" style="color: black; background: white;"/>
                                         </div>
                                     </div>
                                 </div>
@@ -1465,7 +1465,7 @@
                                     </div>
                                 </div>
                                 <br>
-                                <div class="row">
+                                <div class="row totalBudgetReview" style="">
                                     <div class="col-xs-3 text-left">
                                         <label class="reviewLabel">Total Budget</label><br>
                                     </div>
@@ -1474,13 +1474,31 @@
 
                                     </div>
                                 </div>
+                                <div class="row eventDaysReview" style="display:none">
+                                    <div class="col-xs-3 text-left">
+                                        <label class="reviewLabel">Event Days</label><br>
+                                    </div>
+                                    <div class="col-xs-8">
+                                        <span class="reviewSpan" id="reviewEventDays">Blank</span>
+
+                                    </div>
+                                </div>
                                 <br>
-                                <div class="row">
+                                <div class="row photographyDatesReviewTable" style="">
                                     <div class="col-xs-3 text-left">
                                         <label class="reviewLabel ">Photography Dates</label><br>
                                     </div>
                                     <div class="col-xs-8">
                                         <span class="reviewSpan" id="reviewPrincipalPhotographyDates">Blank</span>
+
+                                    </div>
+                                </div>
+                                <div class="row totalAttendanceReview" style="display:none">
+                                    <div class="col-xs-3 text-left">
+                                        <label class="reviewLabel">Total Attendance</label><br>
+                                    </div>
+                                    <div class="col-xs-8">
+                                        <span class="reviewSpan" id="reviewTotalAttendance">Blank</span>
 
                                     </div>
                                 </div>
@@ -1495,6 +1513,7 @@
                                     </div>
                                 </div>
                                 <br>
+
                                 <div class="row">
                                     <div class="col-xs-3 text-left">
                                         <label class="reviewLabel ">Term Length</label><br>
@@ -1504,7 +1523,18 @@
                                     </div>
                                 </div>
                                 <br>
-                                <div class="row">
+                                <div class="row largestAttendeesReview" style="display:none">
+                                    <div class="col-xs-3 text-left">
+                                        <label class="reviewLabel">Largest Number of Attendees</label><br>
+                                    </div>
+                                    <div class="col-xs-8">
+                                        <span class="reviewSpan" id="reviewLargestAttendees">Blank</span>
+
+                                    </div>
+                                </div>
+                                <br>
+                                %{--FILM PRODUCTION TABLE--}%
+                                <div class="row filmProductionTableReview" style="">
                                     <div class="col-xs-3 text-left">
                                         <label class="reviewLabel ">Limits/Deductibles</label><br>
                                     </div>
@@ -1526,8 +1556,28 @@
                                         <div class="reviewSpan" id="reviewLimitsDeducts">Blank</div>
                                     </div>
                                 </div>
+                                %{--FILM PRODUCTION TABLE--}%
+                                %{--SPECIAL EVENTS TABLE--}%
+                                <div class="row specialEventsTableReview" style="display:none">
+                                    <div class="col-xs-3 text-left">
+                                        <label class="reviewLabel ">Limits/Deductibles</label><br>
+                                    </div>
+                                    <div class="col-xs-9">
+                                        <div class="row">
+                                            <div class="col-xs-9">
+                                                <u>Coverage</u>
+                                            </div>
+                                            <div class="col-xs-3">
+                                                <u>Limits</u>
+                                            </div>
+                                        </div>
+                                        <div class="reviewSpan" id="reviewLimitsDeductsSP">Blank</div>
+                                    </div>
+                                </div>
+                                %{--SPECIAL EVENT TABLE--}%
                                 <br>
-                                <div class="row">
+                                %{--FILM PRODUCTION PREMIUM TABLE--}%
+                                <div class="row premiumReviewFilm" style="">
                                     <div class="col-xs-3 text-left">
                                         <label class="reviewLabel ">Premium Distribution</label><br>
                                     </div>
@@ -1546,6 +1596,25 @@
                                         <div class="reviewSpan" id="reviewPremDistribution">Blank</div>
                                     </div>
                                 </div>
+                                %{--FILM PRODUCTION PREMIUM TABLE--}%
+                                %{--SPECIAL EVENTS PREMIUM TABLE--}%
+                                <div class="row premiumReviewEvents" style="display:none">
+                                    <div class="col-xs-3 text-left">
+                                        <label class="reviewLabel ">Premium Distribution</label><br>
+                                    </div>
+                                    <div class="col-xs-9">
+                                        <div class="row">
+                                            <div class="col-xs-4">
+                                                <u>Line Of Business</u>
+                                            </div>
+                                            <div class="col-xs-3">
+                                                <u>Premium</u>
+                                            </div>
+                                        </div>
+                                        <div class="reviewSpan" id="reviewPremDistributionSP">Blank</div>
+                                    </div>
+                                </div>
+                                %{--SPECIAL EVENTS PREMIUM TABLE--}%
 
                                 <br>
                                 <div class="row">

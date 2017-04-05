@@ -30,6 +30,7 @@ public  void setStateNameToAbbrevMAP(java.lang.Object value) { }
 public  java.lang.Object getBusinessStructureID() { return null;}
 public  void setBusinessStructureID(java.lang.Object value) { }
 public  java.lang.Object test() { return null;}
+public  java.lang.Object saveNewSpecialEventSubmission(java.lang.Object dataMap, java.lang.Object dataSource_aim, java.lang.Object user, java.lang.Object uwQuestionsMap, java.lang.Object uwQuestionsOrder) { return null;}
 public  java.lang.Object saveNewSubmission(java.lang.Object policyFormJSON, java.lang.Object dataSource_aim, java.lang.Object user, java.lang.Object uwQuestionsMap, java.lang.Object uwQuestionsOrder) { return null;}
 public  java.lang.Object updateSubmissionActivity(java.lang.Object quoteID, java.lang.Object description, java.lang.Object statusCode, java.lang.Object typeID, java.lang.Object quoteVersion, java.lang.Object dataSource_aim) { return null;}
 public  java.lang.Object saveToQuote(java.lang.Object policyFormJSON, java.lang.Object dataSource_aim, java.lang.Object insuredID) { return null;}

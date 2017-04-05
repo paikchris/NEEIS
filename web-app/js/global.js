@@ -31,7 +31,7 @@ $(document).ready(function () {
         if(validateResetForm()){
             $.ajax({
                 method: "POST",
-                url: "/portal/auth/resetPassword",
+                url: "/auth/resetPassword",
                 data: {currentPass: currentPass, newPass: newPass, confirmNewPass: confirmNewPass}
             })
                 .done(function (msg) {

@@ -189,19 +189,7 @@ function loadSaveFunction(loadMap) {
         }
 
 
-        setTimeout(function() {
-            // alert(loadMap['saveStep']);
-            if(parseInt(loadMap['saveStep']) > 1 ){
-
-                // $("#nextButtonStep1").trigger("click");
-            }
-            if(parseInt(loadMap['saveStep']) > 2 ){
-                $("#nextButtonStep2").trigger("click");
-            }
-            if(parseInt(loadMap['saveStep']) > 3 ){
-                $("#nextButtonStep3").trigger("click");
-            }
-        }, 200);
+        
         $('.progress-bar').attr('aria-valuenow', "100").css("width", "100%");
         $('#progressBarModal').modal('hide');
     }, 2000);

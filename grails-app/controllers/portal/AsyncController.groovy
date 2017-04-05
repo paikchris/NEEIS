@@ -1022,6 +1022,100 @@ class AsyncController {
 
     }
 
+    def ajaxAttachNew() {
+        log.info("CHECKING AJAX ATTACH BUTTON")
+        log.info(params);
+        FileTransferHelper fileHelper = new FileTransferHelper();
+        Sql aimsql = new Sql(dataSource_aim)
+        FTPClient ftpClient = new FTPClient();
+
+        def temporaryFilesFolderPath = servletContext.getRealPath("/attachments/temp/")
+        def attachedFile
+
+        params.each{ key, value ->
+            log.info value
+            if(value instanceof org.springframework.web.multipart.commons.CommonsMultipartFile){
+                log.info "is File"
+                try{
+                    log.info("STORING ALL ATTACHMENTS IN " + temporaryFilesFolderPath)
+                    def fileRealName
+                    def tempFilename
+
+                    fileRealName = params.getAt(key).getFileItem().name
+                    tempFilename = params.quoteIDs.replaceAll(",","") + "_" + key + "_" + System.currentTimeMillis();
+                    attachedFile = params.getAt(key);
+                    fileHelper.saveAttachedFileToLocalPath(attachedFile, temporaryFilesFolderPath, tempFilename)
+
+
+
+                    String server = "74.100.162.203";
+                    int port = 21;
+                    String user = "web_ftp";
+                    String pass = "Get@4Files";
+
+                    def srcStream
+                    def cpStream
+                    def dstStream
+                    def keepFileHereStream
+
+                    ftpClient.connect(server, port);
+                    ftpClient.login(user, pass);
+                    ftpClient.enterLocalPassiveMode();
+
+                    ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+                    def fileName;
+                    params.quoteIDs.split(",").each {
+                        def quoteID = it
+                        def localFolderPath = servletContext.getRealPath("/attachments/${it}/") //app directory
+                        boolean done = false;
+
+                        log.info("STORING ALL ATTACHMENTS IN AIM FOR = " + it)
+                        log.info(localFolderPath)
+                        File fileDest = new File(localFolderPath)
+                        fileDest.mkdirs();
+
+
+                        if (params.bioFile != "undefined") {
+                            fileName = key + "-" + fileRealName
+                            log.info("COPYING FILE TO ATTACHMENTS LOCAL: " + fileName)
+
+                            srcStream = new File(temporaryFilesFolderPath, tempFilename).newDataInputStream()
+                            dstStream = new File(localFolderPath, fileName).newDataOutputStream()
+
+                            dstStream << srcStream
+
+                            srcStream.close()
+                            dstStream.close()
+
+                            fileHelper.ftpFileToAIM(fileName, localFolderPath, quoteID, dataSource_aim)
+                        }
+
+
+                        if (done) {
+                            log.info("The first file is uploaded successfully.");
+                        }
+                    }
+                } catch (IOException e) {
+                    StringWriter sw = new StringWriter();
+                    e.printStackTrace(new PrintWriter(sw));
+                    String exceptionAsString = sw.toString();
+                    log.info("Error Details - " + exceptionAsString)
+                } finally {
+                    try {
+                        if (ftpClient.isConnected()) {
+                            ftpClient.logout();
+                            ftpClient.disconnect();
+                        }
+                    } catch (IOException ex) {
+                        log.info ex
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        }
+
+
+    }
     def ajaxAttach() {
         log.info("CHECKING AJAX ATTACH BUTTON")
         log.info(params);
@@ -2912,107 +3006,59 @@ class AsyncController {
 
         return deductAmount;
     }
-
-/*
-    def saveSubmissionToAIMv2(){
-        log.info "SAVING SUBMISSION TO AIMSQL"
-        log.info params
-        def uwQuestionsOrder = params.uwQuestionsOrder.split("&;&");
-        def uwQuestionsMap = new JsonSlurper().parseText(params.uwQuestionsMap)
-        def quoteID ="";
-
-        //GET TIMESTAMP
-        def now = new Date()
-        def timestamp = now.format(dateFormat, timeZone)
-
-        try {
-            //SAVE SUBMISSION INTO AIM
-            def quoteIDCoverages = aimDAO.saveNewSubmission(params.dataMap, dataSource_aim, session.user, uwQuestionsMap, uwQuestionsOrder)
-            log.info "QuoteID: " + quoteIDCoverages
-            //0620584;EPKG,0620585;CPK
-
-            //Assign GroupID for 2+ submissions
-            def submitGroupID = ""
-            quoteIDCoverages.split(",").each{
-                submitGroupID = submitGroupID + it.split(";")[0] + ","
-            }
-            if (submitGroupID.endsWith(",")) {
-                submitGroupID = submitGroupID.substring(0, submitGroupID.length() - 1);
-            }
-
-
-
-            //SAVE SUBMISSION TO MYSQL
-            Submissions s;
-            quoteIDCoverages.split(",").each{
-                quoteID = quoteID + it.split(";")[0] + ","
-                s = new portal.Submissions(submittedBy: session.user.email, aimQuoteID: it.split(";")[0], namedInsured: jsonParams.getAt("namedInsured"), submitDate: timestamp,
-                        coverages: it.split(";")[1], statusCode: "QO", underwriter: accountExec+"@neeis.com", questionAnswerMap: params.questionAnswerMap,
-                        uwQuestionMap:uwQuestionsMap, uwQuestionsOrder:uwQuestionsOrder, submitGroupID: submitGroupID)
-                s.save(flush: true, failOnError: true)
-            }
-
-            log.info "REDIRECTING"
-            if (quoteID.endsWith(",")) {
-                quoteID = quoteID.substring(0, quoteID.length() - 1);
-            }
-        }
-
-    }
-    */
-
-    def saveSubmissionToAIMv2() {
-      log.info "SAVING SUBMISSION TO AIMSQLV2"
-      log.info params
-      def dataMap = new JsonSlurper().parseText(params.dataMap)
-
-      def quoteID ="";
-
-      try {
-          def quoteIDCoverages = aimDAO.saveNewSubmissionv2(dataMap, dataSource_aim, session.user)
-          log.info "QuoteID: " + quoteIDCoverages
-          quoteID = quoteIDCoverages;
-          //0620584;EPKG,0620585;CPK
-        //   def submitGroupID = ""
-        //   quoteIDCoverages.split(",").each{
-        //       submitGroupID = submitGroupID + it.split(";")[0] + ","
-        //   }
-        //   if (submitGroupID.endsWith(",")) {
-        //       submitGroupID = submitGroupID.substring(0, submitGroupID.length() - 1);
-        //   }
-
-          //
-        //   def now = new Date()
-        //   def timestamp = now.format(dateFormat, timeZone)
-          //
-        //   log.info jsonParams.getAt("namedInsured")
-          //
-        //   Submissions s;
-          //
-        //   quoteIDCoverages.split(",").each{
-        //       quoteID = quoteID + it.split(";")[0] + ","
-          //
-        //       s = new portal.Submissions(submittedBy: session.user.email, aimQuoteID: it.split(";")[0], namedInsured: jsonParams.getAt("namedInsured"), submitDate: timestamp,
-        //               coverages: it.split(";")[1], statusCode: "QO", underwriter: accountExec+"@neeis.com", questionAnswerMap: params.questionAnswerMap,
-        //               uwQuestionMap:uwQuestionsMap, uwQuestionsOrder:uwQuestionsOrder, submitGroupID: submitGroupID)
-        //       s.save(flush: true, failOnError: true)
-        //   }
-          //
-        //   log.info "REDIRECTING"
-        //   if (quoteID.endsWith(",")) {
-        //       quoteID = quoteID.substring(0, quoteID.length() - 1);
-        //   }
-      }
-      catch (Exception e) {
-          StringWriter sw = new StringWriter();
-          e.printStackTrace(new PrintWriter(sw));
-          String exceptionAsString = sw.toString();
-          log.info("Error Details - " + exceptionAsString)
-          quoteID = "Error Details - " + e
-      }
-
-      render quoteID
-    }
+//
+//    def saveSubmissionToAIMv2() {
+//      log.info "SAVING SUBMISSION TO AIMSQLV2"
+//      log.info params
+//      def dataMap = new JsonSlurper().parseText(params.dataMap)
+//
+//      def quoteID ="";
+//
+//      try {
+//          def quoteIDCoverages = aimDAO.saveNewSubmissionv2(dataMap, dataSource_aim, session.user)
+//          log.info "QuoteID: " + quoteIDCoverages
+//          quoteID = quoteIDCoverages;
+//          //0620584;EPKG,0620585;CPK
+//        //   def submitGroupID = ""
+//        //   quoteIDCoverages.split(",").each{
+//        //       submitGroupID = submitGroupID + it.split(";")[0] + ","
+//        //   }
+//        //   if (submitGroupID.endsWith(",")) {
+//        //       submitGroupID = submitGroupID.substring(0, submitGroupID.length() - 1);
+//        //   }
+//
+//          //
+//        //   def now = new Date()
+//        //   def timestamp = now.format(dateFormat, timeZone)
+//          //
+//        //   log.info jsonParams.getAt("namedInsured")
+//          //
+//        //   Submissions s;
+//          //
+//        //   quoteIDCoverages.split(",").each{
+//        //       quoteID = quoteID + it.split(";")[0] + ","
+//          //
+//        //       s = new portal.Submissions(submittedBy: session.user.email, aimQuoteID: it.split(";")[0], namedInsured: jsonParams.getAt("namedInsured"), submitDate: timestamp,
+//        //               coverages: it.split(";")[1], statusCode: "QO", underwriter: accountExec+"@neeis.com", questionAnswerMap: params.questionAnswerMap,
+//        //               uwQuestionMap:uwQuestionsMap, uwQuestionsOrder:uwQuestionsOrder, submitGroupID: submitGroupID)
+//        //       s.save(flush: true, failOnError: true)
+//        //   }
+//          //
+//        //   log.info "REDIRECTING"
+//        //   if (quoteID.endsWith(",")) {
+//        //       quoteID = quoteID.substring(0, quoteID.length() - 1);
+//        //   }
+//      }
+//      catch (Exception e) {
+//          StringWriter sw = new StringWriter();
+//          e.printStackTrace(new PrintWriter(sw));
+//          String exceptionAsString = sw.toString();
+//          log.info("Error Details - " + exceptionAsString)
+//          quoteID = "Error Details - " + e
+//      }
+//
+//      render quoteID
+//    }
 
 
     def saveSubmissionToAIM() {
@@ -3088,8 +3134,71 @@ class AsyncController {
 
 
         render quoteID
-//        redirect(controller: 'main', action: 'newSubmissionConfirm', params: [quoteID: quoteID])
 
+    }
+
+    def saveSpecialEventSubmission(){
+        log.info "SAVING SPECIAL EVENT SUBMISSION TO AIMSQL"
+        log.info params
+        def quoteID ="";
+
+        //SAVE INSURED
+        try {
+            def dataMap = new JsonSlurper().parseText(params.dataMap)
+            def uwQuestionsOrder = params.uwQuestionsOrder.split("&;&");
+            def uwQuestionsMap = new JsonSlurper().parseText(params.uwQuestionsMap)
+
+            def quoteIDCoverages = aimDAO.saveNewSpecialEventSubmission(dataMap, dataSource_aim, session.user, uwQuestionsMap, uwQuestionsOrder)
+            log.info "QuoteID: " + quoteIDCoverages
+            //0620584;EPKG,0620585;CPK
+            def submitGroupID = ""
+            quoteIDCoverages.split(",").each{
+                submitGroupID = submitGroupID + it.split(";")[0] + ","
+            }
+            if (submitGroupID.endsWith(",")) {
+                submitGroupID = submitGroupID.substring(0, submitGroupID.length() - 1);
+            }
+
+
+            def now = new Date()
+            def timestamp = now.format(dateFormat, timeZone)
+
+
+            Submissions s;
+
+            quoteIDCoverages.split(",").each{
+                quoteID = quoteID + it.split(";")[0] + ","
+
+                s = new portal.Submissions(submittedBy: session.user.email, aimQuoteID: it.split(";")[0], namedInsured: dataMap.getAt("namedInsured"), submitDate: timestamp,
+                        coverages: it.split(";")[1], statusCode: "QO", underwriter: dataMap.getAt('accountExec')+"@neeis.com", questionAnswerMap: params.questionAnswerMap,
+                        uwQuestionMap:uwQuestionsMap, uwQuestionsOrder:uwQuestionsOrder, submitGroupID: submitGroupID)
+                s.save(flush: true, failOnError: true)
+            }
+
+            log.info "REDIRECTING"
+            if (quoteID.endsWith(",")) {
+                quoteID = quoteID.substring(0, quoteID.length() - 1);
+            }
+            // testDataRecord.endStatus = "Success"
+            //
+            // //GATHERING TEST DATA
+            // testDataRecord.quoteID = quoteID
+            // testDataRecord.save(flush: true, failOnError: true)
+        }
+        catch (Exception e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+            quoteID = "Error Details - " + e
+            // testDataRecord.endStatus = "Error"
+            // testDataRecord.endStatusDetail = exceptionAsString
+        }
+
+
+
+
+        render quoteID
     }
 
     def getProductInfo(){
@@ -3491,7 +3600,7 @@ class AsyncController {
 //            log.info "ADD TRANSACTION ID $num"
 //        }
 
-        aimsql.call("{call dbo.spUpdateStatus(?, ?)}", [params.statusCode, params.aimQuoteID])
+        // aimsql.call("{call dbo.spUpdateStatus(?, ?)}", [params.statusCode, params.aimQuoteID])
 
 
 

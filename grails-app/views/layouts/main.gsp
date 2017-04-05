@@ -456,7 +456,7 @@
 				<div class="row fileRow" style="margin-top:10px; margin-bottom: 10px;">
 					<div class="col-xs-12">
 						<button class="downloadFileButton btn btn-primary " style="margin-right:20px; margin-left:15px;">Download</button>
-						<img src='/portal/images/pdfIcon.png' height='16' width='16' style='margin-right:5px'/>
+						<img src='/images/pdfIcon.png' height='16' width='16' style='margin-right:5px'/>
 						<span class="fileDescriptionSpan " style="line-height: 30px;">Indication.pdf</span>
 					</div>
 				</div>

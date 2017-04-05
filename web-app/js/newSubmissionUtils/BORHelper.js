@@ -23,7 +23,7 @@ function initializeBORFunctions(){
               if (checkName.length > 1 && (zipCodeMailing.length == 5)) {
                   $.ajax({
                           method: "POST",
-                          url: "/portal/main/checkNamedInsured",
+                          url: "/main/checkNamedInsured",
                           data: {
                               checkName: checkName,
                               zipCodeMailing: zipCodeMailing,
@@ -124,7 +124,7 @@ function initializeBORFunctions(){
               if (checkName.length > 1 && (resolveZip.length == 5)) {
                   $.ajax({
                           method: "POST",
-                          url: "/portal/main/checkNamedInsured",
+                          url: "/main/checkNamedInsured",
                           data: {
                               checkName: checkName,
                               zipCodeMailing: resolveZip,
@@ -208,7 +208,7 @@ function initializeBORFunctions(){
           if (checkName.length > 1 && (resolveZip.length == 5)) {
               $.ajax({
                       method: "POST",
-                      url: "/portal/main/checkNamedInsured",
+                      url: "/main/checkNamedInsured",
                       data: {
                           checkName: checkName,
                           zipCodeMailing: resolveZip,

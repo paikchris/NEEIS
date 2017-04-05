@@ -8,7 +8,7 @@ $(document).ready(function () {
     $(document.body).on('focusout', '#agencyID' ,function(){
         $.ajax({
             method: "POST",
-            url: "/portal/async/checkAgencyID",
+            url: "/async/checkAgencyID",
             data: {agencyID: $('#agencyID').val().trim()
             }
         })
@@ -28,7 +28,7 @@ $(document).ready(function () {
     $(document.body).on('focusout', '#agencyPIN' ,function(){
         $.ajax({
             method: "POST",
-            url: "/portal/async/checkAgencyPIN",
+            url: "/async/checkAgencyPIN",
             data: {agencyID: $('#agencyID').val().trim(),
                 agencyPIN: $('#agencyPIN').val().trim()
             }
@@ -112,7 +112,7 @@ $(document).ready(function () {
             //alert("good form");
             $.ajax({
                 method: "POST",
-                url: "/portal/auth/registerUser",
+                url: "/auth/registerUser",
                 data: {email: $('#email').val().trim(),
                     password: $('#password').val().trim(),
                     firstName:$('#firstName').val().trim(),
