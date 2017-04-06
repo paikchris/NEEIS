@@ -162,16 +162,19 @@ class AIMSQL {
         log.info "testDAO"
 
     }
-
     def saveNewSpecialEventSubmission(dataMap, dataSource_aim, user, uwQuestionsMap, uwQuestionsOrder) {
         log.info "AIMDAO SPECIAL EVENT SAVE"
         Sql aimsql = new Sql(dataSource_aim)
         log.info dataMap
 
-        def brokerName = user.firstName + " " + user.lastName;
-        def quoteID = 0;
+////        def testjson = policyFormJSON
+//        log.info testjson
+
+        def quoteID =0;
         def allQuoteIDs = "";
+
         def insuredID = 0;
+        def brokerName = user.firstName + " " + user.lastName;
 
         def now = new Date()
         def timestamp = now.format(dateFormat, timeZone)
@@ -348,6 +351,13 @@ class AIMSQL {
         def taxesPaidByID = "";
         def taxCount = 0;
 
+
+        def webQuoteFee = 0 
+        def webQuoteFeeNoTax = 0
+        def feeSchedule
+        def versionPremDist
+        def agentCommCalculation
+
         log.info "TAX AMOUNT ++"  +  taxString
 
         def versionmap = [QuoteID: "'${quoteID}'",
@@ -392,7 +402,7 @@ class AIMSQL {
                           PremDistrib:"'${versionPremDist}'",
                           FormID:"'OCR'",
                           RateInfo:"'${productMap['productRateInfo']}'",
-                          CommPaid:"'${agentCommCalculation}'",
+                          CommPaid:"''",
                           ProposedEffective:"'${dataMap.getAt("proposedEffectiveDate")}'" ,
                           ProposedExpiration:"'${dataMap.getAt("proposedExpirationDate")}'" ,
                           TaxDistrib:"'${taxString}'",
@@ -442,7 +452,7 @@ class AIMSQL {
                           Tax2Name:"'${tax2Name}'",
                           Tax3Name:"'${tax3Name}'",
                           Tax4Name:"'${tax4Name}'",
-                          AgentDeposit:"'-${agentCommCalculation}'",
+                          AgentDeposit:"''",
                           TaxwoTRIA5:"'0.00'",
                           Tax5:"'0.00'",
                           Tax5Name:"''",
@@ -459,7 +469,7 @@ class AIMSQL {
                           Tax7:"'0.00'",
                           Tax8:"'0.00'",
                           InsuredDeposit:"'0.00'",
-                          AgentDepositwoTRIA:"'-${agentCommCalculation}'",
+                          AgentDepositwoTRIA:"''",
                           InsuredDepositwoTRIA:"'0.00'",
                           ReferenceKey_FK:"'${referenceID}'"
         ]
@@ -485,35 +495,35 @@ class AIMSQL {
                 "$versionmap.TaxwoTRIA6, $versionmap.Tax6Name, $versionmap.TaxwoTRIA7, $versionmap.Tax7Name, $versionmap.TaxwoTRIA8, $versionmap.Tax8Name, $versionmap.Tax6, $versionmap.Tax7, $versionmap.Tax8, $versionmap.InsuredDeposit, $versionmap.AgentDepositwoTRIA, $versionmap.InsuredDepositwoTRIA," +
                 "$versionmap.Non_Premium, $versionmap.NonTax_Premium, $versionmap.FlagFeeCalc, $versionmap.TaxesPaidBy, $versionmap.TaxesPaidByID, $versionmap.FeeSchedule, $versionmap.PremDistrib, $versionmap.LobDistribSched, $versionmap.LobDistrib, $versionmap.ReferenceKey_FK)"
 
+        def submitGroupID = quoteID
 
- 
         def quotemap = [QuoteID: "'${quoteID}'",
                         ProducerID:"'${user.company}'",
                         ProductID:"'${productID}'" ,
-                        NamedInsured:"'${testjson.getAt("namedInsured").replaceAll("'","''")}'",
+                        NamedInsured:"'${dataMap.getAt("namedInsured").replaceAll("'","''")}'",
                         UserID:"'web'",
                         Received: "'${timestamp}'",
                         Acknowledged: "'${timestamp}'",
                         Quoted: "'${timestamp}'",
                         TeamID:"'01'",
                         DivisionID:"'00'",
-                        StatusID:"'${testjson.getAt("statusID")}'",
+                        StatusID:"'${dataMap.getAt("statusID")}'",
                         CreatedID:"'web'",
                         Renewal:"'N'",
                         OpenItem:"'N'",
                         VersionCounter:"'A'",
                         InsuredID: "'${insuredID}'",
                         Description:"'Feature Film'",
-                        Address1: "'${testjson.getAt("streetNameMailing")}'",
+                        Address1: "'${dataMap.getAt("streetNameMailing")}'",
                         Address2:"''",
-                        City: "'${testjson.getAt("cityMailing")}'",
-                        State: "'${testjson.getAt("stateMailing")}'",
-                        Zip: "'${testjson.getAt("zipCodeMailing")}'",
-                        AcctExec:"'${testjson.getAt("accountExec")}'",
+                        City: "'${dataMap.getAt("cityMailing")}'",
+                        State: "'${dataMap.getAt("stateMailing")}'",
+                        Zip: "'${dataMap.getAt("zipCodeMailing")}'",
+                        AcctExec:"'${dataMap.getAt("accountExec")}'",
                         CsrID:"'web'",
                         ReferenceID: "'${referenceID}'",
                         SubmitGrpID:"'${submitGroupID}'",
-                        TaxState:"'${taxState}'",
+                        TaxState:"''",
                         CoverageID:"'${coverageID}'",
                         SuspenseFlag:"'N'",
                         ClaimsFlag:"'N'",
@@ -537,8 +547,8 @@ class AIMSQL {
                         MailZip:"''",
                         Attention: "'${user.firstName} ${user.lastName}'",
                         Quoted:"'${timestamp}'",
-                        Effective:"'${testjson.getAt("proposedEffectiveDate")}'" ,
-                        Expiration:"'${testjson.getAt("proposedExpirationDate")}'" ,
+                        Effective:"'${dataMap.getAt("proposedEffectiveDate")}'" ,
+                        Expiration:"'${dataMap.getAt("proposedExpirationDate")}'" ,
                         ContactID:"'${user.aimContactID}'",
                         UserDefinedStr1:"'${user.id}'", //keep track of which agent created quotes
         ]
@@ -609,13 +619,13 @@ class AIMSQL {
         aimsql.commit();
 
 
-        testjson['dateAdded'] = map.DateAdded;
-        testjson['quoteID'] = quotemap.QuoteID;
-        testjson['insuranceCompany'] = companyMap.companyName;
-        testjson['brokerEmail'] = user.email
-        testjson['brokerFirstName'] = user.firstName
-        testjson['brokerLastName'] = user.lastName
-        testjson['brokerPhoneNumber'] = user.phoneNumber
+        dataMap['dateAdded'] = map.DateAdded;
+        dataMap['quoteID'] = quotemap.QuoteID;
+        dataMap['insuranceCompany'] = companyMap.companyName;
+        dataMap['brokerEmail'] = user.email
+        dataMap['brokerFirstName'] = user.firstName
+        dataMap['brokerLastName'] = user.lastName
+        dataMap['brokerPhoneNumber'] = user.phoneNumber
 
         allQuoteIDs = allQuoteIDs + quoteID + ";" + coverageID + ",";
 
@@ -626,11 +636,11 @@ class AIMSQL {
         def totalPolicyFee = 15 * (allQuoteIDs.split(",").size());
 
 
-        testjson['totalPolicyFee'] = totalPolicyFee;
-        testjson['allQuoteIDs'] = allQuoteIDs;
-        log.info("BEFORE SENDING TO INTELLEDOX = "+  testjson['allQuoteIDs'])
+        dataMap['totalPolicyFee'] = totalPolicyFee;
+        dataMap['allQuoteIDs'] = allQuoteIDs;
+        log.info("BEFORE SENDING TO INTELLEDOX = "+  dataMap['allQuoteIDs'])
 
-        asyncController.createIndicationPDF(testjson, uwQuestionsMap, uwQuestionsOrder, dataSource_aim)
+        asyncController.createIndicationPDF(dataMap, uwQuestionsMap, uwQuestionsOrder, dataSource_aim)
 
         return allQuoteIDs
     }

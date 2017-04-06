@@ -382,7 +382,7 @@
                     <br>
 
                     %{--TABLE WORK COMP--}%
-                    <div class=" tableWC" id="workCompProduct">
+                    <div class="tableWC" id="workCompProduct">
                         <div class="row">
                             <div class="col-xs-9">
                                 <strong class="coverageCodeString" style="font-size:13px">Work Comp</strong>
