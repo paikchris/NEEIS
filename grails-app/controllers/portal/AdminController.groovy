@@ -42,15 +42,20 @@ class AdminController {
         def riskTypes = RiskType.list();
         def subCategories = RiskType.findAllWhere(subCategoryFlag: "Y")
 
+        def products = Products.list();
 
-        [user: session.user, riskCategories:riskCategories, subCategories:subCategories, riskTypes:riskTypes ]
+
+        [user: session.user, riskCategories:riskCategories, subCategories:subCategories, riskTypes:riskTypes, products:products ]
+    }
+
+    def saveRiskTypeChanges(){
+
     }
 
     def fixUserAimContactIDs(){
         log.info "FIXING AIM CONTACT IDS"
         log.info params
         Sql aimsql = new Sql(dataSource_aim)
-
 
         def userList = User.list();
         userList.each{

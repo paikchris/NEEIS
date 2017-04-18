@@ -54,7 +54,29 @@ $(document).ready(function () {
     $(document.body).on('focus', '.phoneNumberMask', function () {
         $(".phoneNumberMask").mask("(999) 999-9999");
     });
+// PERCENTAGE FORMAT
+    $(document.body).on('focus', '.whatKindOfLiquorIsServed' ,function(){
+        $(".whatKindOfLiquorIsServed").mask("9?99%", {reverse: true});
+        $(".whatKindOfLiquorIsServed").on("blur", function() {
+            var value = $(this).val().length == 1 ? $(this).val() + '%' : $(this).val();
+            $(this).val( value );
+        })
+    });
+// SQUARE FEET FORMAT
+    $(document.body).on('focus', '#parkingSquareFoot' ,function(){
+        $('#parkingSquareFoot').mask("*?******* sqft");
+        $("#parkingSquareFoot").on("blur", function() {
+            var value = $(this).val().length == 1 ? $(this).val() + '' : $(this).val();
+            $(this).val( value );
+        })
+    });
 
+// MIN MAX LIMITS
+    $(document.body).on('change', 'input[name="howManyDaysIsTheEvent"]', function () {
+        //alert();
+        var value, min, max
+        validate(value, min, max)
+    });
 
 // TOTAL PREMIUM COST !@#
 
@@ -179,6 +201,36 @@ $(document).ready(function () {
             $(".alcoholSaleExplain").css('display', "none");
         }
     });
+// BROKER FEE HIDDEN PREMIUM
+    $(document.body).on('change', '.brokerFeeInput', function () {
+        //alert();
+        var brokerFeeCostTemp = $(".brokerFeeInput").val()
+        var brokerFeeCost = brokerFeeCostTemp.replace('$', '').replace(',', '')
+        var brokerFeeCostValue = parseFloat(brokerFeeCost)
+
+        if (brokerFeeCostValue > 0) {
+            $("#brokerFeePremiumContainer").css('display', "");
+            $("#brokerFeePremiumExplain").css('display', "");
+        }
+        else if (brokerFeeCostValue <= 0) {
+            $("#brokerFeePremiumContainer").css('display', "none");
+            $("#brokerFeePremiumExplain").css('display', "none");
+        }
+    });
+
+
+// INSURED CONTACT TABLE / CONTAINER
+    $(document.body).on('change', 'input[name="contactRep"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#insuredContactInformationContainer").css('display', "");
+            $("#insuredContactInformationExplain").css('display', "");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#insuredContactInformationContainer").css('display', "none");
+            $("#insuredContactInformationExplain").css('display', "none");
+        }
+    });
 // EQUIPMENT TABLE / ADDITIONAL HIDDEN QUESTIONS
     $(document.body).on('change', 'input[name="equipmentOwnedRented"]', function () {
         //alert();
@@ -226,18 +278,6 @@ $(document).ready(function () {
 
         }
     });
-// INSURED CONTACT TABLE / CONTAINER
-    $(document.body).on('change', 'input[name="contactRep"]', function () {
-        //alert();
-        if ($(this).attr("value") == "Yes") {
-            $("#insuredContactInformationContainer").css('display', "");
-            $("#insuredContactInformationExplain").css('display', "");
-        }
-        if ($(this).attr("value") == "No") {
-            $("#insuredContactInformationContainer").css('display', "none");
-            $("#insuredContactInformationExplain").css('display', "none");
-        }
-    });
 // INSURANCE BEEN CANCELLED ADDITIONAL HIDDEN QUESTIONS
     $(document.body).on('change', 'input[name="insuranceCancelled"]', function () {
         //alert();
@@ -262,22 +302,134 @@ $(document).ready(function () {
             $("#numberOfExhibitorsGroup").css('display', "");
         }
     });
-// BROKER FEE HIDDEN PREMIUM
-    $(document.body).on('change', '.brokerFeeInput', function () {
+// PARKING ADDITIONAL QUESTION
+    $(document.body).on('change', 'input[name="responsibleForParking"]', function () {
         //alert();
-        var brokerFeeCostTemp = $(".brokerFeeInput").val()
-        var brokerFeeCost = brokerFeeCostTemp.replace('$', '').replace(',', '')
-        var brokerFeeCostValue = parseFloat(brokerFeeCost)
-
-        if (brokerFeeCostValue > 0) {
-            $("#brokerFeePremiumContainer").css('display', "");
-            $("#brokerFeePremiumExplain").css('display', "");
+        if ($(this).attr("value") == "Yes") {
+            $("#parkingContainer").css('display', "");
+            $("#parkingExplain").css('display', "");
+            $(".parking").addClass("showReview");
         }
-        else if (brokerFeeCostValue <= 0) {
-            $("#brokerFeePremiumContainer").css('display', "none");
-            $("#brokerFeePremiumExplain").css('display', "none");
+        if ($(this).attr("value") == "No") {
+            $("#parkingContainer").css('display', "none");
+            $("#parkingExplain").css('display', "none");
+            $(".parking").removeClass("showReview");
         }
     });
+// SECURITY ADDITIONAL QUESTION
+    $('#securityType').change(function() {
+        // $(document.body).on('change', '#securityType' ,function () {
+        var option = $(this).find('option:selected').val();
+        // alert(option);
+        if  (option == "Unarmed Security" ||
+            option == "Armed Security" ||
+            option == "Other Security") {
+            $("#securityContainer").css('display', "");
+            $("#securityExplain").css('display', "");
+            $(".securityGuards").addClass("showReview");
+        }
+        if  (option == "invalid") {
+            $("#securityContainer").css('display', "none");
+            $("#securityExplain").css('display', "none");
+            $(".securityGuards").removeClass("showReview");
+        }
+    });
+// EVENT OUTDOORS ADDITIONAL QUESTION
+    $(document.body).on('change', 'input[name="willEventBeHeldOutdoors"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#eventOutdoorContainer").css('display', "");
+            $("#eventOutdoorExplain").css('display', "");
+            $(".eventOutdoor").addClass("showReview");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#eventOutdoorContainer").css('display', "none");
+            $("#eventOutdoorExplain").css('display', "none");
+            $(".eventOutdoor").removeClass("showReview");
+        }
+    });
+// FENCED ADDTIONAL QUESTION
+    $(document.body).on('change', 'input[name="facilityFenced"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#fenceTypeContainer").css('display', "");
+            $("#fenceTypeExplain").css('display', "");
+            $(".facilityFence").addClass("showReview");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#fenceTypeContainer").css('display', "none");
+            $("#fenceTypeExplain").css('display', "none");
+            $(".facilityFence").removeClass("showReview");
+        }
+    });
+// BODIES OF WATER ADDITIONAL QUESTION
+    $(document.body).on('change', 'input[name="bodiesOfWater"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#waterContainer").css('display', "");
+            $("#waterExplain").css('display', "");
+            $(".water").addClass("showReview");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#waterContainer").css('display', "none");
+            $("#waterExplain").css('display', "none");
+            $(".water").removeClass("showReview");
+        }
+    });
+// WATER HAZARD ADDITIONAL QUESTION
+    $(document.body).on('change', 'input[name="waterHazardFenced"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#waterHazardNotFencedContainer").css('display', "none");
+            $("#waterHazardNotFencedExplain").css('display', "none");
+            $(".waterHazardNotFenced").removeClass("showReview");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#waterHazardNotFencedContainer").css('display', "");
+            $("#waterHazardNotFencedExplain").css('display', "");
+            $(".waterHazardNotFenced").addClass("showReview");
+        }
+    });
+
+
+
+// ALCOHOL TYPE PERCENTAGE
+    $(document.body).on('change', ".whatKindOfLiquorIsServed", function () {
+        beer = $("#whatKindOfLiquorIsServedBeer").val()
+        wine = $("#whatKindOfLiquorIsServedWine").val()
+        fullBar = $("#whatKindOfLiquorIsServedFullBar").val()
+        var totalPercent
+        if (beer.length > 0 && wine.length > 0 && fullBar.length > 0) {
+            var alcoholTotalPercent = 0;
+
+            alcoholTotalPercent = alcoholPercentage(totalPercent)
+            if (alcoholTotalPercent == 100){
+            }
+            else if (alcoholTotalPercent != 100 ) {
+                alert("please enter values that add up to 100%")
+                $("#whatKindOfLiquorIsServedBeer").val("")
+                $("#whatKindOfLiquorIsServedWine").val("")
+                $("#whatKindOfLiquorIsServedFullBar").val("")
+            }
+        }
+        else if($(this).val().length > 0 ){
+            var alcoholTotalPercent = alcoholPercentage(totalPercent)
+            if (alcoholTotalPercent == 100) {
+                // alert("good")
+                if ($("#whatKindOfLiquorIsServedBeer").val().length == 0 ){
+                    $("#whatKindOfLiquorIsServedBeer").val('00%')
+                };
+                if ($("#whatKindOfLiquorIsServedWine").val().length == 0 ){
+                    $("#whatKindOfLiquorIsServedWine").val('00%')
+                };
+                if ($("#whatKindOfLiquorIsServedFullBar").val().length == 0 ){
+                    $("#whatKindOfLiquorIsServedFullBar").val('00%')
+                    // $("#whatKindOfLiquorIsServedFullBar").html().replace('','0')
+                };
+            }
+        }
+    });
+
 
 });
 
@@ -792,6 +944,35 @@ function getTotalPremium(premium) {
     });
     return totalPremium
 }
+function validate(value, min, max){
+    // MIN MAX LIMIT FOR EVENT DAYS
+    if(parseInt(value) < min || isNaN(parseInt(value))) {
+        return "";
+    }
+    else if(parseInt(value) > max) {
+        alert("Please contact your underwriter if your event exceeds 90 days");
+        return 90;
+    }
+    else return value;
+}
+function alcoholPercentage(totalPercent){
+
+    var total = 0;
+
+    $(".whatKindOfLiquorIsServed").each(function() {
+        if($(this).val().length > 0 ){
+            var tempVal = ($(this).val())
+            var tempVal = parseFloat(tempVal);
+            // alert(tempVal)
+            // var totalPremiumValue = parseFloat $(this)
+            total = total + tempVal
+            // alert (total)
+        }
+    });
+    return total
+    // alert(total)
+}
+
 
 function sendSubmissiontoAIM() {
     // //IN GSP file

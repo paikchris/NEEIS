@@ -231,7 +231,7 @@
 						<span id="userDetails-firstName" style="display:none">${user.firstName}</span>
 						<span id="userDetails-lastName" style="display:none">${user.lastName}</span>
 						<span id="userDetails-aimContactID" style="display:none">${user.aimContactID}</span>
-
+						<span id="userDetails-phoneNumber" style="display:none">${user.phoneNumber}</span>
 						<span class="caret"></span>
 					</a>
 					<ul class="dropdown-menu">

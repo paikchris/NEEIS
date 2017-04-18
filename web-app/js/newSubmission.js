@@ -731,29 +731,46 @@ $(document).ready(function() {
                             .done(function(msg) {
                                 //alert(msg);
                                 //0620584,0620585
+                                var indicationPDFError = false;
+                                if(msg.split("&;&")[1] === "Indication Error"){
+                                    alert("Submission was successful however, the Indication PDF is currently not available. Please contact your underwriter for further details. ");
+                                    // $('#alertMessageModal').modal('show');
+                                    indicationPDFError = true;
+                                }
+
                                 if (!msg.startsWith("Error")) {
                                     newSubmissionConfirmParam = msg;
                                     //console.log("UPLOADING FILES");
                                     //ATTACH FILES
 
+                                    var formData = new FormData();
                                     var formDataNew = getFormDataWithAllAttachedFilesNew();
-                                    var bioFile = $('#bioFile').get(0).files[0];
-                                    var lossesFile = $('#lossesFile').get(0).files[0];
-                                    var pyroFile = $('#pyroFile').get(0).files[0];
-                                    var stuntsFile = $('#stuntsFile').get(0).files[0];
-                                    var animalPDF = $('#animalPDF').get(0).files[0];
-                                    var dronePDF = $('#dronePDF').get(0).files[0];
-                                    var equipScheduleFile = $('#equipScheduleFile').get(0).files[0];
-                                    var doodFile = $('#doodFile').get(0).files[0];
-                                    var treatmentFile = $('#treatmentFile').get(0).files[0];
-                                    var budgetFile = $('#budgetFile').get(0).files[0];
-                                    var quoteIDs = msg;
+                                    // var bioFile = $('#bioFile').get(0).files[0];
+                                    // var lossesFile = $('#lossesFile').get(0).files[0];
+                                    // var pyroFile = $('#pyroFile').get(0).files[0];
+                                    // var stuntsFile = $('#stuntsFile').get(0).files[0];
+                                    // var animalPDF = $('#animalPDF').get(0).files[0];
+                                    // var dronePDF = $('#dronePDF').get(0).files[0];
+                                    // var equipScheduleFile = $('#equipScheduleFile').get(0).files[0];
+                                    // var doodFile = $('#doodFile').get(0).files[0];
+                                    // var treatmentFile = $('#treatmentFile').get(0).files[0];
+                                    // var budgetFile = $('#budgetFile').get(0).files[0];
+                                    var quoteIDs = msg.split("&;&")[0];
 
-                                    if (bioFile || lossesFile || pyroFile || stuntsFile || doodFile || treatmentFile || budgetFile) {
+                                    //NEW STUFF
+                                    var submissionHasFile = false;
+                                    $('input:file').each(function(){
+                                        var file = $(this).get(0).files[0];
+                                        if(file){
+                                            submissionHasFile = true;
+                                            formData.append($(this).attr('id'), file);
+                                        }
+                                    });
+
+                                    if (submissionHasFile) {
                                         $('.progress-bar').attr('aria-valuenow', "75").animate({
                                             width: "75%"
                                         }, 2000);
-                                        var formData = new FormData();
                                         //formData.append('bioFile', bioFile);
                                         //formData.append('lossesFile', lossesFile);
                                         //formData.append('pyroFile', pyroFile);
@@ -765,14 +782,6 @@ $(document).ready(function() {
                                         //formData.append('treatmentFile', treatmentFile);
                                         //formData.append('budgetFile', budgetFile);
                                         formData.append('quoteIDs', quoteIDs);
-
-                                        //NEW STUFF
-                                        $('input:file').each(function(){
-                                            var file = $(this).get(0).files[0];
-                                            if(file){
-                                                formData.append($(this).attr('id'), file);
-                                            }
-                                        });
 
                                         $.ajax({
                                             method: "POST",
@@ -792,7 +801,7 @@ $(document).ready(function() {
                                                 Cookies.remove('autosaveData');
 
                                                 //REDIRECT TO SAVE SUCCESSFUL PAGE
-                                                window.location.href = "./../main/newSubmissionConfirm.gsp?submissionID=" + newSubmissionConfirmParam;
+                                                window.location.href = "./../main/newSubmissionConfirm.gsp?submissionID=" + newSubmissionConfirmParam + "&pdfError=" + indicationPDFError;
 
                                             });
                                     }
@@ -808,7 +817,7 @@ $(document).ready(function() {
                                         Cookies.remove('autosaveData');
 
                                         //REDIRECT TO SAVE SUCCESSFUL PAGE
-                                        window.location.href = "./../main/newSubmissionConfirm.gsp?submissionID=" + newSubmissionConfirmParam;
+                                        window.location.href = "./../main/newSubmissionConfirm.gsp?submissionID=" + newSubmissionConfirmParam + "&pdfError=" + indicationPDFError;
                                     }
                                 }
                                 else {

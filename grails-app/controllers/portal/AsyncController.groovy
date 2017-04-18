@@ -56,7 +56,6 @@ class AsyncController {
         render JsonOutput.prettyPrint(jsonResponse)
     }
 
-
     def getProductsForCoverage() {
         //GETTING LIST OF PRODUCTS AVAILABLE FOR EACH COVERAGE AVAILABLE FOR SUBMISSION RISK TYPE
 
@@ -214,6 +213,19 @@ class AsyncController {
         }
 
         render renderString
+    }
+
+    def getProductsForCoverageV3(){
+        log.info("GETTING PRODUCTS FOR COVERAGE V3")
+        log.info(params);
+        Sql aimsql = new Sql(dataSource_aim)
+        def submissionDetailMap = new JsonSlurper().parseText(params.dataMap)
+
+        def riskProducts = RiskType.findWhere(riskTypeName: submissionDetailMap.risk)
+
+        log.info JsonOutput.prettyPrint(riskProducts.products)
+
+        render "Good"
     }
 
     def getLimitsDeductibles() {
@@ -1046,8 +1058,6 @@ class AsyncController {
                     attachedFile = params.getAt(key);
                     fileHelper.saveAttachedFileToLocalPath(attachedFile, temporaryFilesFolderPath, tempFilename)
 
-
-
                     String server = "74.100.162.203";
                     int port = 21;
                     String user = "web_ftp";
@@ -1114,7 +1124,7 @@ class AsyncController {
             }
         }
 
-
+        render "Upload Completed"
     }
     def ajaxAttach() {
         log.info("CHECKING AJAX ATTACH BUTTON")
@@ -2551,7 +2561,8 @@ class AsyncController {
                                     tempLimitsMap["Civil Authority (US Only)"] = "\$100,000";
                                     productTotalPremium = productTotalPremium + 250;
                                     rateInfo = rateInfo + "EPKG\tflat\t\$250\tCivil Authority (US Only)\t\n";
-                                } else if (params.additionalProducts.contains("EPKGFWCNWCCIVIL500AdditionalCoverage")) {
+                                }
+                                else if (params.additionalProducts.contains("EPKGFWCNWCCIVIL500AdditionalCoverage")) {
                                     tempPremiumsMap["Civil Authority (US Only)"] = ["flat", 550];
                                     tempDeductsMap["Civil Authority (US Only)"] = "\$10,000";
                                     tempLimitsMap["Civil Authority (US Only)"] = "\$100,000+";
@@ -2568,12 +2579,122 @@ class AsyncController {
                                     rateInfo = rateInfo + "EPKG\tflat\t\$250\tAnimal Mortality\t\n";
                                 }
 
+                                if (params.additionalProducts.contains("EPKGBirdsFishAdditionalCoverage")) {
+                                    tempPremiumsMap["Animal Mortality (Birds or Fish)"] = ["flat", 250];
+                                    tempDeductsMap["Animal Mortality (Birds or Fish)"] = "\$2,500";
+                                    tempLimitsMap["Animal Mortality (Birds or Fish)"] = "\$2,500";
+                                    productTotalPremium = productTotalPremium + 250;
+                                    rateInfo = rateInfo + "EPKG\tflat\t\$250\tAnimal Mortality (Birds or Fish)\t\n";
+                                }
+
+                                if (params.additionalProducts.contains("EPKGDogsAdditionalCoverage")) {
+                                    tempPremiumsMap["Animal Mortality (Dogs w/ Breed Exceptions)"] = ["flat", 250];
+                                    tempDeductsMap["Animal Mortality (Dogs w/ Breed Exceptions)"] = "\$2,500";
+                                    tempLimitsMap["Animal Mortality (Dogs w/ Breed Exceptions)"] = "\$2,500";
+                                    productTotalPremium = productTotalPremium + 250;
+                                    rateInfo = rateInfo + "EPKG\tflat\t\$250\tAnimal Mortality (Dogs w/ Breed Exceptions)\t\n";
+                                }
+
+                                if (params.additionalProducts.contains("EPKGReptilesAdditionalCoverage")) {
+                                    tempPremiumsMap["Animal Mortality (Reptiles Non-Venomous)"] = ["flat", 250];
+                                    tempDeductsMap["Animal Mortality (Reptiles Non-Venomous)"] = "\$2,500";
+                                    tempLimitsMap["Animal Mortality (Reptiles Non-Venomous)"] = "\$2,500";
+                                    productTotalPremium = productTotalPremium + 250;
+                                    rateInfo = rateInfo + "EPKG\tflat\t\$250\tAnimal Mortality (Reptiles Non-Venomous)\t\n";
+                                }
+
+                                if (params.additionalProducts.contains("EPKGSmallOtherAdditionalCoverage")) {
+                                    tempPremiumsMap["Animal Mortality (Small Domestic Animals - Other)"] = ["flat", 250];
+                                    tempDeductsMap["Animal Mortality (Small Domestic Animals - Other)"] = "\$2,500";
+                                    tempLimitsMap["Animal Mortality (Small Domestic Animals - Other)"] = "\$2,500";
+                                    productTotalPremium = productTotalPremium + 250;
+                                    rateInfo = rateInfo + "EPKG\tflat\t\$250\tAnimal Mortality (Small Domestic Animals - Other)\t\n";
+                                }
+
+                                if (params.additionalProducts.contains("EPKGFarmAnimalsAdditionalCoverage")) {
+                                    tempPremiumsMap["Animal Mortality (Farm Animals)"] = ["flat", 250];
+                                    tempDeductsMap["Animal Mortality (Farm Animals)"] = "\$2,500";
+                                    tempLimitsMap["Animal Mortality (Farm Animals)"] = "\$2,500";
+                                    productTotalPremium = productTotalPremium + 250;
+                                    rateInfo = rateInfo + "EPKG\tflat\t\$250\tAnimal Mortality (Farm Animals)\t\n";
+                                }
+
+                                if (params.additionalProducts.contains("EPKGWildCatsAdditionalCoverage")) {
+                                    tempPremiumsMap["Animal Mortality (Wild Cats - Caged)"] = ["flat", 250];
+                                    tempDeductsMap["Animal Mortality (Wild Cats - Caged)"] = "\$2,500";
+                                    tempLimitsMap["Animal Mortality (Wild Cats - Caged)"] = "\$2,500";
+                                    productTotalPremium = productTotalPremium + 250;
+                                    rateInfo = rateInfo + "EPKG\tflat\t\$250\tAnimal Mortality (Wild Cats - Caged)\t\n";
+                                }
+
+                                if (params.additionalProducts.contains("EPKGOtherReferAdditionalCoverage")) {
+                                    tempPremiumsMap["Animal Mortality (All Others - Refer Only)"] = ["flat", "incl"];
+                                    tempDeductsMap["Animal Mortality (All Others - Refer Only)"] = "\$2,500";
+                                    tempLimitsMap["Animal Mortality (All Others - Refer Only)"] = "\$2,500";
+                                    productTotalPremium = productTotalPremium + 0;
+                                    rateInfo = rateInfo + "EPKG\tflat\t\$0\tAnimal Mortality (All Others - Refer Only)\t\n";
+                                }
+
                                 if (params.additionalProducts.contains("EPKGMoneySecurityAdditionalCoverage")) {
 
                                     productTotalPremium = productTotalPremium + 0;
                                 }
 
+                                if (params.additionalProducts.contains("moneyCurrencyCheckbox")) {
+                                    tempPremiumsMap["Money and Currency"] = ["flat", "incl"];
+                                    tempDeductsMap["Money and Currency"] = "\$2,500";
+                                    tempLimitsMap["Money and Currency"] = "\$2,500";
+                                    productTotalPremium = productTotalPremium + 0;
+                                    rateInfo = rateInfo + "EPKG\tflat\tincl\tMoney and Currency\t\n";
+                                }
 
+                                if (params.additionalProducts.contains("fursJewelryCheckbox")) {
+                                    tempPremiumsMap["Furs, Jewelry, Art & Antiques"] = ["flat", "incl"];
+                                    tempDeductsMap["Furs, Jewelry, Art & Antiques"] = "\$2,500";
+                                    tempLimitsMap["Furs, Jewelry, Art & Antiques"] = "\$2,500";
+                                    productTotalPremium = productTotalPremium + 0;
+                                    rateInfo = rateInfo + "EPKG\tflat\tincl\tFurs, Jewelry, Art & Antiques\t\n";
+                                }
+
+                                if (params.additionalProducts.contains("talentNonBudgetCheckbox")) {
+                                    tempPremiumsMap["Talent and Non Budgeted Costs"] = ["flat", "incl"];
+                                    tempDeductsMap["Talent and Non Budgeted Costs"] = "\$2,500";
+                                    tempLimitsMap["Talent and Non Budgeted Costs"] = "\$2,500";
+                                    productTotalPremium = productTotalPremium + 0;
+                                    rateInfo = rateInfo + "EPKG\tflat\tincl\tTalent and Non Budgeted Costs\t\n";
+                                }
+
+                                if (params.additionalProducts.contains("adminCostCheckbox")) {
+                                    tempPremiumsMap["Administrative Costs"] = ["flat", "incl"];
+                                    tempDeductsMap["Administrative Costs"] = "\$2,500";
+                                    tempLimitsMap["Administrative Costs"] = "\$2,500";
+                                    productTotalPremium = productTotalPremium + 0;
+                                    rateInfo = rateInfo + "EPKG\tflat\tincl\tAdministrative Costs\t\n";
+                                }
+
+                                if (params.additionalProducts.contains("hardwareElectronicDataCheckbox")) {
+                                    tempPremiumsMap["Hardware"] = ["flat", "incl"];
+                                    tempDeductsMap["Hardware"] = "\$2,500";
+                                    tempLimitsMap["Hardware"] = "\$2,500";
+                                    productTotalPremium = productTotalPremium + 0;
+                                    rateInfo = rateInfo + "EPKG\tflat\tincl\tHardware\t\n";
+                                }
+
+                                if (params.additionalProducts.contains("dataMediaElectronicDataCheckbox")) {
+                                    tempPremiumsMap["Data and Media"] = ["flat", "incl"];
+                                    tempDeductsMap["Data and Media"] = "\$2,500";
+                                    tempLimitsMap["Data and Media"] = "\$2,500";
+                                    productTotalPremium = productTotalPremium + 0;
+                                    rateInfo = rateInfo + "EPKG\tflat\tincl\tData and Media\t\n";
+                                }
+
+                                if (params.additionalProducts.contains("extraExpenseElectronicDataCheckbox")) {
+                                    tempPremiumsMap["Extra Expense"] = ["flat", "incl"];
+                                    tempDeductsMap["Extra Expense"] = "\$2,500";
+                                    tempLimitsMap["Extra Expense"] = "\$2,500";
+                                    productTotalPremium = productTotalPremium + 0;
+                                    rateInfo = rateInfo + "EPKG\tflat\tincl\tExtra Expense\t\n";
+                                }
 
                                 lobString = "Entertainment Package" + "\t" + Math.ceil(productTotalPremium) + "\t" + grossPct + "\t" + agentPct+"\r"
                                 limitsMap = tempLimitsMap
@@ -3066,6 +3187,7 @@ class AsyncController {
         log.info params
 
         def quoteID ="";
+        def indicationStatus="";
 
         //SAVE INSURED
         try {
@@ -3073,17 +3195,33 @@ class AsyncController {
 
             //GATHERING TEST DATA
             // def testDataRecord = testDataHelper.saveParams("savingSubmissionToAIM", JsonOutput.prettyPrint(JsonOutput.toJson(dataMap)))
-
-
             def uwQuestionsOrder = params.uwQuestionsOrder.split("&;&");
             def uwQuestionsMap = new JsonSlurper().parseText(params.uwQuestionsMap)
 
+            //ADDITIONAL INFORMATION NECESSARY FOR INDICATION PDF
+            Sql aimsql = new Sql(dataSource_aim)
+            aimsql.eachRow("SELECT     *\n" +
+                    "FROM         Company with (NOLOCK)\n" +
+                    "WHERE     CompanyID='${session.user.company}'" ) {
 
+                dataMap.brokerCompanyName = it.Name
+                dataMap.brokerCompanyAddress = it.Address1
+                dataMap.brokerCompanyCity = it.City
+                dataMap.brokerCompanyState = it.State
+                dataMap.brokerCompanyZip = it.Zip
+                dataMap.brokerCompanyPhone = it.Phone
+                dataMap.brokerCompanyLicense = it.License
+            }
+            aimsql.eachRow("SELECT     *\n" +
+                    "FROM         UserID with (NOLOCK)\n" +
+                    "WHERE     UserID='${dataMap.accountExec}'" ) {
 
-            log.info session.user.firstName
-
-
-            def quoteIDCoverages = aimDAO.saveNewSubmission(dataMap, dataSource_aim, session.user, uwQuestionsMap, uwQuestionsOrder)
+                dataMap.underwriterPhone = it.Wk_Phone
+                dataMap.underwriterFax = it.Wk_Fax
+            }
+            def quoteAndIndicationStatus = aimDAO.saveNewSubmission(dataMap, dataSource_aim, session.user, uwQuestionsMap, uwQuestionsOrder)
+            def quoteIDCoverages = quoteAndIndicationStatus.split("&;&")[0]
+            indicationStatus = quoteAndIndicationStatus.split("&;&")[1]
             log.info "QuoteID: " + quoteIDCoverages
             //0620584;EPKG,0620585;CPK
             def submitGroupID = ""
@@ -3110,15 +3248,9 @@ class AsyncController {
                 s.save(flush: true, failOnError: true)
             }
 
-            log.info "REDIRECTING"
             if (quoteID.endsWith(",")) {
                 quoteID = quoteID.substring(0, quoteID.length() - 1);
             }
-            // testDataRecord.endStatus = "Success"
-            //
-            // //GATHERING TEST DATA
-            // testDataRecord.quoteID = quoteID
-            // testDataRecord.save(flush: true, failOnError: true)
         }
         catch (Exception e) {
             StringWriter sw = new StringWriter();
@@ -3133,7 +3265,7 @@ class AsyncController {
 
 
 
-        render quoteID
+        render quoteID + "&;&" + indicationStatus
 
     }
 

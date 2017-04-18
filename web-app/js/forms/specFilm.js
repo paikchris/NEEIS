@@ -60,6 +60,15 @@ $(document).ready(function() {
         riskHasWC = true;
     }
 
+    // MONEY FORMAT
+    inputMoneyFormat();
+
+    // PERCENTAGE FORMAT
+    $(document.body).on('focus', '.percent' ,function(){
+        // $("#projectsOutsideUS").mask("9?99%" , {reverse: true});
+        percentage();
+    });
+
     if (riskHasCast) {
         $('#questionListPriorFilmProjects').css('display', '');
         $('#listOfPriorFilms').css('display', '');
@@ -671,6 +680,8 @@ $(document).ready(function() {
         if ($('#EPKGcoverage').is(':checked')) {
             if (riskChosen === "Film Projects With Cast (No Work Comp)") {
                 $(".FILMWITHCASTNOWCOptions").css("display", "");
+                $(".PIP5Only").css("display", "none");
+
                 //$('#EPKGCASTAdditionalCoverage').prop("checked", true);
                 //$('#EPKGCASTAdditionalCoverage').trigger('click');
                 //$('#EPKGCASTEssentialOption').css("display","");
@@ -679,19 +690,21 @@ $(document).ready(function() {
             }
             else {
                 //$('#EPKGCASTAdditionalCoverage').prop("checked", false);
-                $("FILMWITHCASTNOWCOptions").css("display", "none");
+                $(".FILMWITHCASTNOWCOptions").css("display", "none");
+                $(".PIP5Only").css("display", "");
                 //$('#EPKGCASTEssentialOption').css("display","none");
             }
             //alert();
-            if ($("#PIPChoiceInput").is(":visible")) {
-                $('#PIPChoiceInputRadio').prop("checked", true);
-                $('#PIPChoiceInputRadio').trigger("change");
-
-            }
-            else {
-                $('#PIP5InputRadio').prop("checked", true);
-                $('#PIP5InputRadio').trigger("change");
-            }
+            // if ($("#PIPChoiceInput").is(":visible")) {
+            //     $('#PIPChoiceInputRadio').prop("checked", true);
+            //     $('#PIPChoiceInputRadio').trigger("change");
+            //
+            // }
+            // else {
+            //     $('#PIP5InputRadio').prop("checked", true);
+            //     $('#PIP5InputRadio').trigger("change");
+            //
+            // }
             $("#EPKGoptions").css("display", "");
         }
         else {
@@ -1240,7 +1253,15 @@ function checkPhotographyDates() {
 
 }
 
+function percentage(){
+        $(".percent").mask("9?9%");
 
+        $(".percent").on("blur", function() {
+            var jObj = $(this);
+            var jVal = jObj.val();
+            jObj.val((jVal.length === 1) ? jVal + '%' : jVal);
+        })
+}
 
 function ratePremiums(thisObj) {
     console.log("Rating Premiums");
@@ -1255,10 +1276,6 @@ function ratePremiums(thisObj) {
             rateMap["" + $(this).attr('id')] = $(this).val();
 
         });
-
-
-        //RE RUNNING RATES
-        //PIP1
 
     }
     //alert(rateMap.toString)
@@ -1297,6 +1314,7 @@ function ratePremiums(thisObj) {
                 additionalProducts = additionalProducts + $(this).attr("id") + ":" + $(this).attr("id") + ",";
             }
         });
+
     }
     else {
         $(".coverageRadioButton").each(function(index) {
@@ -1776,6 +1794,35 @@ function ratePremiums(thisObj) {
                             limitLines.push("Animal Mortality Under Cast Insurance (All Others - Refer Only)");
                         }
 
+                        if (limitLines.indexOf("Animal Mortality (Birds or Fish)") > -1) {
+                            limitLines.splice(limitLines.indexOf("Animal Mortality (Birds or Fish)"), 1);
+                            limitLines.push("Animal Mortality (Birds or Fish)");
+                        }
+                        if (limitLines.indexOf("Animal Mortality (Dogs w/ Breed Exceptions)") > -1) {
+                            limitLines.splice(limitLines.indexOf("Animal Mortality (Dogs w/ Breed Exceptions)"), 1);
+                            limitLines.push("Animal Mortality (Dogs w/ Breed Exceptions)");
+                        }
+                        if (limitLines.indexOf("Animal Mortality (Reptiles Non-Venomous)") > -1) {
+                            limitLines.splice(limitLines.indexOf("Animal Mortality (Reptiles Non-Venomous)"), 1);
+                            limitLines.push("Animal Mortality (Reptiles Non-Venomous)");
+                        }
+                        if (limitLines.indexOf("Animal Mortality (Small Domestic Animals - Other)") > -1) {
+                            limitLines.splice(limitLines.indexOf("Animal Mortality (Small Domestic Animals - Other)"), 1);
+                            limitLines.push("Animal Mortality (Small Domestic Animals - Other)");
+                        }
+                        if (limitLines.indexOf("Animal Mortality (Farm Animals)") > -1) {
+                            limitLines.splice(limitLines.indexOf("Animal Mortality (Farm Animals)"), 1);
+                            limitLines.push("Animal Mortality (Farm Animals)");
+                        }
+                        if (limitLines.indexOf("Animal Mortality (Wild Cats - Caged)") > -1) {
+                            limitLines.splice(limitLines.indexOf("Animal Mortality (Wild Cats - Caged)"), 1);
+                            limitLines.push("Animal Mortality (Wild Cats - Caged)");
+                        }
+                        if (limitLines.indexOf("Animal Mortality (All Others - Refer Only)") > -1) {
+                            limitLines.splice(limitLines.indexOf("Animal Mortality (All Others - Refer Only)"), 1);
+                            limitLines.push("Animal Mortality (All Others - Refer Only)");
+                        }
+
 
 
                         if (limitLines.indexOf("Hired Auto Physical Damage") > -1) {
@@ -2173,7 +2220,19 @@ function totalUpPremiumAndTax() {
     });
     $("#premiumAllLOBTotal").html(formatTaxAndFee(totalPremium));
 }
+function inputMoneyFormat() {
+// MONEY FORMAT
+    $('#maxCostOneProduction').maskMoney({prefix: '$', precision: "0"});
+    $('#totalAboveLine').maskMoney({prefix: '$', precision: "0"});
+    $('#totalBelowLine').maskMoney({prefix: '$', precision: "0"});
+    $('#totalPostProductionCost').maskMoney({prefix: '$', precision: "0"});
+    $('#annualPayroll').maskMoney({prefix: '$', precision: "0"});
+    $('#umbrellaLimitRequested').maskMoney({prefix: '$', precision: "0"});
+    $('#equipmentLimit').maskMoney({prefix: '$', precision: "0"});
+    $('.errorOmissionsLiability').maskMoney({prefix: '$', precision: "0"});
+    $('#errorOmissionsLiability').maskMoney({prefix: '$', precision: "0"});
 
+};
 function buildProductIDArray(data, termLength) {
     var productID = "";
     var termLength = parseInt(termLength.split(" "));

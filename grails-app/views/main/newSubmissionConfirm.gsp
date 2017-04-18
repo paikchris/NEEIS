@@ -66,14 +66,19 @@
             </div>
 
             <div class="row" style="padding-bottom: 6px;">
-                <strong class="col-xs-4">
-                    PDF
-                </strong>
-                <div class="col-xs-8">
+                <g:if test="${pdfError}">
+                </g:if>
+                <g:else>
+                    <strong class="col-xs-4">
+                        PDF
+                    </strong>
+                    <div class="col-xs-8">
                     <g:link url="./../main/downloadPDF?q=${submissionIDs.split(",")[0]}" >
                         <img src="/images/pdfIcon.png" height="32" width="32"> Download PDF</img>
                     </g:link>
-                </div>
+                    </div>
+                </g:else>
+
             </div>
             <div class="row" style="margin-top:50px;">
                 <div class="col-xs-12 ">

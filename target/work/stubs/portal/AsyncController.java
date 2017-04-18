@@ -42,6 +42,7 @@ public  java.lang.Object getDownloadCert() { return null;}
 public  void setDownloadCert(java.lang.Object value) { }
 public  java.lang.Object getProductsForCoverageV2() { return null;}
 public  java.lang.Object getProductsForCoverage() { return null;}
+public  java.lang.Object getProductsForCoverageV3() { return null;}
 public  java.lang.Object getLimitsDeductibles() { return null;}
 public  java.lang.Object getAvailableCoveragesForRiskType() { return null;}
 public  java.lang.Object getAllRiskTypesForCategory() { return null;}

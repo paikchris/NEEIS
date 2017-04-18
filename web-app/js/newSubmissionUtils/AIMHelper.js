@@ -193,9 +193,25 @@ function getProductsForRiskV2(){
             "</div>";
         }
 
-
-
     });
+}
+
+function getProductsForRiskV3(){
+    var dataMap = {};
+    dataMap.duration = parseInt($("#proposedTermLength").val().split(" ")[0]);
+    dataMap.risk = getRiskTypeChosen();
+    dataMap.budget = parseInt($("#totalBudgetConfirm").val().replace(/\$|,/g, ''));
+
+    $.ajax({
+        method: "POST",
+        url: "/Async/getProductsForCoverage",
+        data: {
+            dataMap: JSON.stringify(dataMap)
+        }
+    })
+        .done(function(msg) {
+            // alert(msg);
+        });
 }
 
 function getTaxInfo() {
@@ -295,6 +311,7 @@ function getSubmissionMap() {
 
     var submissionMap = {
         totalBudgetConfirm: $("#totalBudgetConfirm").val(),
+        titleOfProduction: $("#titleOfProduction").val(),
         nameOfProductionCompany: $('#nameOfProductionCompany').val(),
         namedInsured: $('#namedInsured').val(),
         streetNameMailing: $('#googleAutoAddress').val(),
@@ -304,6 +321,7 @@ function getSubmissionMap() {
         userCompany: $('#userDetails-company').html(),
         accountExec: "jason",
         accountExecName: "Jason DeBolt",
+        accountExecEmail: "jason@neeis.com",
         phoneNumber: $('#phoneNumber').val(),
         namedInsuredEmail: $('#namedInsuredEmail').val(),
         FEINSSN: $('#FEINSSN').val(),
@@ -313,16 +331,25 @@ function getSubmissionMap() {
         attention: $('#userDetails-firstName').html() + " " + $('#userDetails-lastName').html(),
         aimContactID: $('#userDetails-aimContactID').html(),
         website: $('#website').val(),
-        proposedTermLength: parseInt($("#proposedTermLength").val().split(" ")),
+        proposedTermLength: parseInt($("#proposedTermLength").val().split(" ")[0]),
+        proposedTermLengthString: $("#proposedTermLength").val(),
         proposedEffectiveDate: $("#proposedEffectiveDate").val(),
         proposedExpirationDate: $("#proposedExpirationDate").val(),
+        principalPhotographyDateStart: $("#principalPhotographyDateStart").val(),
+        principalPhotographyDateEnd: $("#principalPhotographyDateEnd").val(),
         coverageCodes: "",
         numberProductions: $("#numberProductions").val(),
+        director: $("#director").val(),
+        producer: $("#producer").val(),
         riskChosen: getRiskTypeChosen(),
         riskCategory: getRiskCategoryChosen(),
         premiumAllLOBTotal: $('#premiumAllLOBTotal').html(),
         filmingLocation: $('#filmingLocation').html(),
         productID: [],
+        brokerCompany: $('#userDetails-company').html(),
+        brokerEmail: $('#userDetails-email').html(),
+        brokerPhone: $('#userDetails-phoneNumber').html(),
+        insuredContactName: $('#nameOfPrincipal').val()
     };
 
     submissionMap.coverageCodes = "";
@@ -360,7 +387,10 @@ function getSubmissionMap() {
         if ($('#PIP5InputRadio').is(':checked')) {
             productArray.push("PIP 5");
         }
-        submissionMap.EPKGRateInfo = $('#EPKG_RateInfo').html();
+        if ($('#EPKGcoverage').is(':checked')) {
+            submissionMap.EPKGRateInfo = $('#EPKG_RateInfo').html();
+        }
+
     }
 
     if ($('#CPKInputRadio').is(':checked')) {

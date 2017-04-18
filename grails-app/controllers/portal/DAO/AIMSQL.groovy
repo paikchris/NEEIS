@@ -331,6 +331,7 @@ class AIMSQL {
                 "WHERE (CompanyID = '" + productMap['productCompanyID'] + "') ") {
             companyMap['companyName'] = it.Name
             companyMap['companyNAIC'] = it.NAIC
+            companyMap['companyPhone'] = it.Phone
         }
 
         //////////////////////////////////////////
@@ -612,7 +613,7 @@ class AIMSQL {
 
         //exec dbo.spAddSuspense  @SuspenseID=@p1 output,@ReferenceID='0620022',@AlternateID='0620022',@ReasonID='SQR',@UserID='shauna',@SuspendedByID='web',
         //@TypeID='F',@TeamID='01',@DateEntered='2016-10-11 00:00:00:000',@SuspenseDate='2016-10-17 00:00:00:000',@Comments=NULL
-        aimsql.call("{call dbo.spAddSuspense( ${Sql.INTEGER}, '${quoteID}', '${quoteID}', 'SQR', 'shauna', 'web', 'F', '01', " +
+        aimsql.call("{call dbo.spAddSuspense( ${Sql.INTEGER}, '${quoteID}', '${quoteID}', 'SQR', '${dataMap.accountExec}', 'web', 'F', '01', " +
                 "'${timestamp}', '${timestamp}', NULL) }") { num ->
             log.info "ADD TRANSACTION ID $num"
         }
@@ -622,6 +623,7 @@ class AIMSQL {
         dataMap['dateAdded'] = map.DateAdded;
         dataMap['quoteID'] = quotemap.QuoteID;
         dataMap['insuranceCompany'] = companyMap.companyName;
+        dataMap['insuranceCompanyPhone'] = companyMap.companyPhone;
         dataMap['brokerEmail'] = user.email
         dataMap['brokerFirstName'] = user.firstName
         dataMap['brokerLastName'] = user.lastName
@@ -1296,7 +1298,7 @@ class AIMSQL {
 
             //exec dbo.spAddSuspense  @SuspenseID=@p1 output,@ReferenceID='0620022',@AlternateID='0620022',@ReasonID='SQR',@UserID='shauna',@SuspendedByID='web',
             //@TypeID='F',@TeamID='01',@DateEntered='2016-10-11 00:00:00:000',@SuspenseDate='2016-10-17 00:00:00:000',@Comments=NULL
-            aimsql.call("{call dbo.spAddSuspense( ${Sql.INTEGER}, '${quoteID}', '${quoteID}', 'SQR', 'shauna', 'web', 'F', '01', " +
+            aimsql.call("{call dbo.spAddSuspense( ${Sql.INTEGER}, '${quoteID}', '${quoteID}', 'SQR', '${testjson.accountExec}', 'web', 'F', '01', " +
                     "'${timestamp}', '${timestamp}', NULL) }") { num ->
                 log.info "ADD TRANSACTION ID $num"
             }
@@ -1324,9 +1326,9 @@ class AIMSQL {
         testjson['allQuoteIDs'] = allQuoteIDs;
         log.info("BEFORE SENDING TO INTELLEDOX = "+  testjson['allQuoteIDs'])
 
-        asyncController.createIndicationPDF(testjson, uwQuestionsMap, uwQuestionsOrder, dataSource_aim)
+        def indicationStatus = asyncController.createIndicationPDF(testjson, uwQuestionsMap, uwQuestionsOrder, dataSource_aim)
 
-        return allQuoteIDs
+        return allQuoteIDs + "&;&" + indicationStatus
     }
 
     def updateSubmissionActivity(quoteID, description, statusCode, typeID, quoteVersion, dataSource_aim){

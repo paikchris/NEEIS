@@ -1,130 +1,155 @@
 <div id="insuredInfo">
-    <div class="col-xs-6">
-        <div class="form-group">
-            <label for="nameOfProduction">Name Of Production Company</label>
-            <input type="text" class="form-control showReview" name="nameOfProductionCompany"
-                   data-reviewName="Name Of Production Company"
-                   id="nameOfProductionCompany" placeholder="Company Name"/>
-        </div>
-
-        <div class="form-group">
-            <label for="titleOfProduction">Title of Production</label>
-            <input type="text" class="form-control showReview" name="titleOfProduction" id="titleOfProduction"
-                   data-reviewName="Title of Production"
-                   placeholder="Title of Production"/>
-        </div>
-
-        <div class="form-group">
-            <span>Is This a Reshoot?</span><br>
-            <input type="radio" name="isReshootRadio"
-                   class=""
-                   value="Yes"
-                   id="isReshootYes"> Yes
-            <input type="radio" name="isReshootRadio"
-                   class=""
-                   value="No"
-                   id="isReshootNo"
-                   checked="checked"> No
-
-        </div>
-
-        <div class="form-group">
-            <label for="nameOfPrincipal">Name(s) of Principal(s)</label>
-            <input type="text" class="form-control showReview" name="nameOfPrincipal" id="nameOfPrincipal"
-                   data-reviewName="Name of Principals"
-                   placeholder="Name(s) of Principal(s)"/>
-        </div>
-    </div>
-
-    <div class="col-xs-6">
-        <div class="form-group col-xs-12">
-            <div class="row">
-                <div class="col-xs-12">
-                    <label for="numberOfYearsOfExperience">Number of Years of Experience (Attach Bio / Resume if available)</label>
-                </div>
+    <div class="col-xs-12">
+        <div class="col-xs-6">
+            %{--NAME OF PRODUCTION COMPANY--}%
+            <div class="form-group">
+                <label for="nameOfProduction">Name Of Production Company</label>
+                <input type="text" class="form-control showReview" name="nameOfProductionCompany"
+                       data-reviewName="Name Of Production Company"
+                       id="nameOfProductionCompany" placeholder="Company Name"/>
             </div>
-            <div class="row">
-                <div class="col-xs-9">
-                    <input type="text" class="form-control showReview" name="numberOfYearsOfExperience"
-                           data-reviewName="Years Experience"
-                           id="numberOfYearsOfExperience" placeholder="# Years of Experience"/>
-                </div>
-                <div class="col-xs-3">
-                    <form enctype="multipart/form-data">
-                        <div class="fileUpload btn btn-primary">
-                            <span>Attach File</span>
-                            <input name="bioFile" type="file" class="file" id="bioFile" style="width:120px"/>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <div class="row fileNameContainer" style="padding-top:6px; display:none">
-                <div class="col-xs-9" style="text-align:right; font-size:11px">
-                    <span class="fileNameSpan" id="bioFileSpan">File Name</span>
-                </div>
-                <div class="col-xs-3">
-                    <button type="button" class="btn btn-default btn-xs attachClearButton">Clear</button>
-                </div>
 
+            %{--TITLE OF PRODUCTION--}%
+            <div class="form-group">
+                <label for="titleOfProduction">Title of Production</label>
+                <input type="text" class="form-control showReview" name="titleOfProduction" id="titleOfProduction"
+                       data-reviewName="Title of Production"
+                       placeholder="Title of Production"/>
+            </div>
+
+            %{--IS THIS A RESHOOT--}%
+            <div class="form-group">
+                <span>Is This a Reshoot?</span><br>
+                <input type="radio" name="isReshootRadio"
+                       class=""
+                       value="Yes"
+                       id="isReshootYes"> Yes
+                <input type="radio" name="isReshootRadio"
+                       class=""
+                       value="No"
+                       id="isReshootNo"
+                       checked="checked"> No
+
+            </div>
+
+            %{--NAME OF PRINCIPALS--}%
+            <div class="form-group">
+                <label for="nameOfPrincipal">Name(s) of Principal(s)</label>
+                <input type="text" class="form-control showReview" name="nameOfPrincipal" id="nameOfPrincipal"
+                       data-reviewName="Name of Principals"
+                       placeholder="Name(s) of Principal(s)"/>
             </div>
         </div>
 
-        <div class="form-group col-xs-12">
-            <div class="row">
-                <div class="col-xs-12">
-                    <label for="listOfPriorLosses">List and Describe all Prior Losses (Or Enter "None")</label>
+        <div class="col-xs-6">
+            %{--NUMBER OF YEARS OF EXPERIENCE--}%
+            <div class="form-group col-xs-12">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <label for="numberOfYearsOfExperience">Number of Years of Experience (Attach Bio / Resume if available)</label>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <!--attach bio/resume if available-->
-                <div class="form-group">
+
+                <div class="row">
                     <div class="col-xs-9">
-                        <input type="text" class="form-control showReview" name="listOfPriorLosses"
-                               id="listOfPriorLosses" data-reviewName="Prior Losses"
-                               placeholder="List/Describe Prior Losses"/>
+                        <input type="text" class="form-control showReview" name="numberOfYearsOfExperience"
+                               data-reviewName="Years Experience"
+                               id="numberOfYearsOfExperience" placeholder="# Years of Experience"/>
                     </div>
 
                     <div class="col-xs-3">
                         <form enctype="multipart/form-data">
                             <div class="fileUpload btn btn-primary">
                                 <span>Attach File</span>
-                                <input name="lossesFile" type="file" class="file" id="lossesFile" style="width:120px"/>
+                                <input name="bioFile" type="file" class="file" id="bioFile" style="width:120px"/>
                             </div>
                         </form>
                     </div>
                 </div>
-            </div>
-            <div class="row fileNameContainer" style="padding-top:6px; display:none">
-                <div class="col-xs-9" style="text-align:right; font-size:11px">
-                    <span class="fileNameSpan" id="lossesFileSpan">File Name</span>
-                </div>
-                <div class="col-xs-3">
-                    <button type="button" class="btn btn-default btn-xs attachClearButton">Clear</button>
-                </div>
 
-            </div>
-        </div>
-        <div class="form-group col-xs-12" style ="display:none" id="questionListPriorFilmProjects">
-            <div class="row">
-                <div class="col-xs-12">
-                    <label for="listOfPriorLosses">List of Prior Film Projects</label>
-                </div>
-            </div>
-            <div class="row">
-                <!--attach bio/resume if available-->
-                <div class="form-group">
-                    <div class="col-xs-9">
-                        <input type="text" class="form-control showReview" name="listOfPriorFilms"
-                               id="listOfPriorFilms" data-reviewName="Prior Films"
-                               placeholder="Prior Films"/>
+                <div class="row fileNameContainer" style="padding-top:6px; display:none">
+                    <div class="col-xs-9" style="text-align:right; font-size:11px">
+                        <span class="fileNameSpan" id="bioFileSpan">File Name</span>
+                    </div>
+
+                    <div class="col-xs-3">
+                        <button type="button" class="btn btn-default btn-xs attachClearButton">Clear</button>
                     </div>
 
                 </div>
             </div>
-        </div>
 
+            %{--LIST AND DESCRIBE ALL PRIOR LOSSES--}%
+            <div class="form-group col-xs-12">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <label for="listOfPriorLosses">List and Describe all Prior Losses (Or Enter "None")</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!--attach bio/resume if available-->
+                    <div class="form-group">
+                        <div class="col-xs-9">
+                            <input type="text" class="form-control showReview" name="listOfPriorLosses"
+                                   id="listOfPriorLosses" data-reviewName="Prior Losses"
+                                   placeholder="List/Describe Prior Losses"/>
+                        </div>
+
+                        <div class="col-xs-3">
+                            <form enctype="multipart/form-data">
+                                <div class="fileUpload btn btn-primary">
+                                    <span>Attach File</span>
+                                    <input name="lossesFile" type="file" class="file" id="lossesFile"
+                                           style="width:120px"/>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row fileNameContainer" style="padding-top:6px; display:none">
+                    <div class="col-xs-9" style="text-align:right; font-size:11px">
+                        <span class="fileNameSpan" id="lossesFileSpan">File Name</span>
+                    </div>
+
+                    <div class="col-xs-3">
+                        <button type="button" class="btn btn-default btn-xs attachClearButton">Clear</button>
+                    </div>
+
+                </div>
+            </div>
+
+            %{--MAXIMUM COST OF ANY ONE PRODUCTION--}%
+            <div class="form-group col-xs-12">
+                <label>Maximum Cost of Any One Production</label>
+                <input type="text" class="form-control showReview" name="maxCostOneProduction" id="maxCostOneProduction"
+                       data-reviewName="Maximum Cost of Any One Production"
+                       placeholder="$"/>
+            </div>
+
+            %{--LIST OF PRIOR FILM PROJECTS--}%
+            <div class="form-group col-xs-12" style="display:none" id="questionListPriorFilmProjects">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <label for="listOfPriorLosses">List of Prior Film Projects</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!--attach bio/resume if available-->
+                    <div class="form-group">
+                        <div class="col-xs-9">
+                            <input type="text" class="form-control showReview" name="listOfPriorFilms"
+                                   id="listOfPriorFilms" data-reviewName="Prior Films"
+                                   placeholder="Prior Films"/>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
 </div>
 
 <div id="riskSpecificInfo">
@@ -191,7 +216,6 @@
                                                 id="productionType_TrainingVideo"/> Training Video</p>
 
 
-
                 <p class="control-label"><input type="checkbox" class="productionTypeCheckbox animationCGI showReview"
                                                 data-reviewName="Type of Production" name="animationCGI"
                                                 value="Animation CGI"
@@ -206,6 +230,7 @@
                            id="specFilmOtherDescribe" placeholder="Please describe Other" style="display: none"/>
                 </div>
             </div>
+
             <div class="col-xs-12">
                 <div class="form-group checkboxGroupRequired">
                     <label class="control-label" for="productionInvolves"><span
@@ -231,7 +256,8 @@
 
                     <p class="control-label"><input type="checkbox"
                                                     class="productionInvolvesCheckbox railroadCarsOrEquipment showReview"
-                                                    data-reviewName="Special Hazards Declared" name="railroadCarsOrEquipment"
+                                                    data-reviewName="Special Hazards Declared"
+                                                    name="railroadCarsOrEquipment"
                                                     value="Railroad Cars or Equipment"
                                                     id="productionType_Railroad"/> Railroad Cars or Equipment</p>
 
@@ -276,10 +302,12 @@
                         </div>
 
                     </div>
+
                     <div class="row fileNameContainer" style="padding-top:6px; display:none">
                         <div class="col-xs-9" style="text-align:right; font-size:11px">
                             <span class="fileNameSpan" id="pyroFileSpan">File Name</span>
                         </div>
+
                         <div class="col-xs-3">
                             <button type="button" class="btn btn-default btn-xs attachClearButton">Clear</button>
                         </div>
@@ -300,7 +328,8 @@
                                 <form enctype="multipart/form-data">
                                     <div class="fileUpload btn btn-primary">
                                         <span>Attach File</span>
-                                        <input name="stuntsFile" type="file" class="file" id="stuntsFile" style="width:120px"/>
+                                        <input name="stuntsFile" type="file" class="file" id="stuntsFile"
+                                               style="width:120px"/>
                                     </div>
                                 </form>
                             </div>
@@ -309,10 +338,13 @@
                                 <small>Please attach details of involvement of any Cast Member</small>
                             </div>
                         </div>
+
                         <div class="row fileNameContainer" style="padding-top:6px; display:none">
                             <div class="col-xs-3">
-                                <button type="button" class="btn btn-default btn-xs attachClearButton pull-right">Clear</button>
+                                <button type="button"
+                                        class="btn btn-default btn-xs attachClearButton pull-right">Clear</button>
                             </div>
+
                             <div class="col-xs-9" style="font-size: 11px;padding-left: 20px;">
                                 <span class="fileNameSpan" id="stuntsFileSpan">File Name</span>
                             </div>
@@ -328,7 +360,8 @@
                                 <form enctype="multipart/form-data">
                                     <div class="fileUpload btn btn-primary">
                                         <span>Attach File</span>
-                                        <input name="animalPDF" type="file" class="file" id="animalPDF" style="width:120px"/>
+                                        <input name="animalPDF" type="file" class="file" id="animalPDF"
+                                               style="width:120px"/>
                                     </div>
                                 </form>
                             </div>
@@ -337,10 +370,13 @@
                                 <small>Please complete Animal Questionnaire</small>
                             </div>
                         </div>
+
                         <div class="row fileNameContainer" style="padding-top:6px; display:none">
                             <div class="col-xs-3">
-                                <button type="button" class="btn btn-default btn-xs attachClearButton pull-right">Clear</button>
+                                <button type="button"
+                                        class="btn btn-default btn-xs attachClearButton pull-right">Clear</button>
                             </div>
+
                             <div class="col-xs-9" style="font-size: 11px;padding-left: 20px;">
                                 <span class="fileNameSpan" id="animalPDFSpan">File Name</span>
                             </div>
@@ -355,7 +391,8 @@
                                 <form enctype="multipart/form-data">
                                     <div class="fileUpload btn btn-primary">
                                         <span>Attach File</span>
-                                        <input name="dronePDF" type="file" class="file" id="dronePDF" style="width:120px"/>
+                                        <input name="dronePDF" type="file" class="file" id="dronePDF"
+                                               style="width:120px"/>
                                     </div>
                                 </form>
                             </div>
@@ -364,10 +401,13 @@
                                 <small>Please complete Drone Questionnaire</small>
                             </div>
                         </div>
+
                         <div class="row fileNameContainer" style="padding-top:6px; display:none">
                             <div class="col-xs-3">
-                                <button type="button" class="btn btn-default btn-xs attachClearButton pull-right">Clear</button>
+                                <button type="button"
+                                        class="btn btn-default btn-xs attachClearButton pull-right">Clear</button>
                             </div>
+
                             <div class="col-xs-9" style="font-size: 11px;padding-left: 20px;">
                                 <span class="fileNameSpan" id="dronePDFSpan">File Name</span>
                             </div>
@@ -375,17 +415,21 @@
                         </div>
 
                         <br>
+
                         <div class="col-xs-12">
                             <div class="form-group">
                                 <label for="stuntCoordinator">Name of Stunt Coordinator</label>
-                                <input type="text" name="name" class=" showReview form-control stuntHidden" data-reviewName="Name of Stunt Coordinator"
+                                <input type="text" name="name" class=" showReview form-control stuntHidden"
+                                       data-reviewName="Name of Stunt Coordinator"
                                        placeholder="Stunt Coordinator" id="stuntCoordinatorName" style="display:none"/>
                             </div>
                         </div>
+
                         <div class="col-xs-12">
                             <div class="form-group">
                                 <label for="signing">Are Participants Signing Waivers?</label>
-                                <input type="text" name="name" class="showReview form-control stuntHidden" data-reviewName="Are Participants Signing Waivers?"
+                                <input type="text" name="name" class="showReview form-control stuntHidden"
+                                       data-reviewName="Are Participants Signing Waivers?"
                                        placeholder="Y/N" id="participantsSigningWaivers" style="display:none"/>
                             </div>
                         </div>
@@ -395,7 +439,8 @@
                                                     class="productionInvolvesCheckbox noneOfTheAbove showReview"
                                                     name="noneOfTheAbove showReview"
                                                     data-reviewName="Special Hazards Declared" value="None"
-                                                    id="productionInvolvesNoneAbove" checked="checked"/> None of the Above</p>
+                                                    id="productionInvolvesNoneAbove"
+                                                    checked="checked"/> None of the Above</p>
                 </div>
 
                 <div id="noneOfAboveWords" style="color: red; font-size: 10px; margin-bottom: 50px; ">
@@ -407,6 +452,7 @@
 
             </div>
             <br>
+
             <div class="col-xs-12">
                 <div class="form-group">
                     <label>Do you do post production or special effects for others?</label><br>
@@ -457,11 +503,14 @@
                            checked="checked"> No
                 </div>
             </div>
+
             <div id="insuranceCancelledContainer" style="display:none">
                 <div class="col-xs-12">
                     %{--<div class="form-group">--}%
                     %{--<label for="cancelledDeclinedExplain"></label>--}%
-                    <input type="text" class=" showReview form-control" name="name" style="display:none" data-reviewName="Explain why it was cancelled or declined" placeholder="Please explain why it was cancelled or declined"
+                    <input type="text" class=" showReview form-control" name="name" style="display:none"
+                           data-reviewName="Explain why it was cancelled or declined"
+                           placeholder="Please explain why it was cancelled or declined"
                            id="insuredCancelledExplain"/>
                     %{--</div>--}%
                 </div>
@@ -483,15 +532,16 @@
                            checked="checked"> No
                 </div>
             </div>
+
             <div id="equipmentOwnedRentedContainer" style="display:none">
                 <div class="col-xs-12">
                     <div class="form-group">
-                        <input type="radio" name="equipmentOwned"
+                        <input type="radio" name="equipmentOwnedRadio"
                                class=""
                                value="owned"
                                id="equipmentOwned"
                                style="display: none;"> Owned
-                        <input type="radio" name="equipmentRented"
+                        <input type="radio" name="equipmentOwnedRadio"
                                class=""
                                value="rented"
                                id="equipmentRented"
@@ -499,34 +549,81 @@
                                style="display: none;"> Rented
                     </div>
                 </div>
+
                 <div class="col-xs-12">
                     <div class="form-group">
                         <label for="equipmentLimitRequested">What Equipment Limit is Requested?</label>
-                        <input type="text" id="equipmentLimit" class=" showReview form-control" name="name" data-reviewName="Requested Equipment Limit" style="display: none;" placeholder="\$USD"/>
+                        <input type="text" id="equipmentLimit" class=" showReview form-control" name="name"
+                               data-reviewName="Requested Equipment Limit" style="display: none;" placeholder="\$USD"/>
                     </div>
                 </div>
+
                 <div class="col-xs-12">
                     <div class="form-group">
                         <label for="equipmentSchedule">Provide Equipment Schedule if any one item exceeds $10,000 in value</label>
-                        <input type="text" id="equipmentSchedule" class="showReview form-control" name="name" data-reviewName="Equipment Schedule" style="display: none;" placeholder="Equipment schedule"/>
+
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <input type="text" id="equipmentSchedule" class="showReview form-control" name="name"
+                                       data-reviewName="Equipment Schedule" style="display: none;"
+                                       placeholder="Equipment schedule"/>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <form enctype="multipart/form-data">
+                                    <div class="fileUpload btn btn-primary">
+                                        <span>Attach File</span>
+                                        <input name="equipScheduleFile" type="file" class="file" id="equipScheduleFile"
+                                               style="width:120px"/>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="col-xs-9 fileNameContainer" style="margin-top:2px; display: none">
+                                <div class="col-xs-9" style="text-align:right; font-size:11px">
+                                    <span class="equipScheduleFileSpan" id="equipScheduleFileSpan">File Name</span>
+                                </div>
+
+                                <div class="col-xs-3" style="padding-left:22px">
+                                    <button type="button"
+                                            class="btn btn-default btn-xs attachClearButton">Clear</button>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
+
+                <div class="col-xs-12">
+
+                </div>
+
                 <div class="col-xs-12">
                     <div class="form-group">
                         <label for="equipmentLocation">Where is equipment kept when not in use?</label>
-                        <input type="text" id="equipmentLocation" class="showReview form-control" name="name" data-reviewName="Where is equipment kept when not in use?" style="display: none;" placeholder="Location of equipment"/>
+                        <input type="text" id="equipmentLocation" class="showReview form-control" name="name"
+                               data-reviewName="Where is equipment kept when not in use?" style="display: none;"
+                               placeholder="Location of equipment"/>
                     </div>
                 </div>
+
                 <div class="col-xs-12">
                     <div class="form-group">
                         <label for="equipmentSecurityMeasures">Provide security measures against theft, loss, and damage to equipment</label>
-                        <input type="text" id="equipmentSecurity" class="showReview form-control" name="name" data-reviewName="Security Measures against theft, loss, and damage" style="display: none;" placeholder="Equipment security measures"/>
+                        <input type="text" id="equipmentSecurity" class="showReview form-control" name="name"
+                               data-reviewName="Security Measures against theft, loss, and damage"
+                               style="display: none;" placeholder="Equipment security measures"/>
                     </div>
                 </div>
+
                 <div class="col-xs-12">
                     <div class="form-group">
                         <label for="equipmentInventoryAndProcedures">What method of inventory do you use? Please describe procedures and how often</label>
-                        <input type="text" id="equipmentInventory" class="showReview form-control" name="name" data-reviewName="Method of Inventory" style="display: none;" placeholder="equipment inventory and procedures"/>
+                        <input type="text" id="equipmentInventory" class="showReview form-control" name="name"
+                               data-reviewName="Method of Inventory" style="display: none;"
+                               placeholder="equipment inventory and procedures"/>
                     </div>
                 </div>
             </div>
@@ -547,6 +644,7 @@
                            checked="checked"> No
                 </div>
             </div>
+
             <div class="col-xs-12">
                 <div class="form-group">
                     <label>Do you require Film Producers Error and Omissions Liability? If yes, what limits? Please complete online application and submit for quoting</label><br>
@@ -563,8 +661,10 @@
                            checked="checked"> No
                 </div>
             </div>
+
             <div id="errorOmissionsLiabilityContainer" style="display:none">
-                <input type="text" id="errorOmissionsLiability" class="showReview form-control" name="name" data-reviewName="Error and Omission Limit"
+                <input type="text" id="errorOmissionsLiability" class="showReview form-control" name="name"
+                       data-reviewName="Error and Omission Limit"
                        id="errorOmissionsLimit" style="display:none" placeholder="\$USD"/>
             </div>
         </div>
@@ -592,10 +692,12 @@
                     </div>
                 </form>
             </div>
+
             <div class="col-xs-12 fileNameContainer" style="margin-top:-10px; display: none">
                 <div class="col-xs-9" style="text-align:right; font-size:11px">
                     <span class="fileNameSpan" id="budgetFileSpan">File Name</span>
                 </div>
+
                 <div class="col-xs-3" style="padding-left:22px">
                     <button type="button" class="btn btn-default btn-xs attachClearButton">Clear</button>
                 </div>
@@ -651,6 +753,7 @@
 
                 </div>
             </div>
+
             <div class="col-xs-12">
                 <div class="form-group">
                     <label>Completion Bond Required</label><br>
@@ -676,11 +779,13 @@
             %{--</div>--}%
             %{--</div>--}%
 
-            <div id="questionFilmingLocations" style = 'display: none;'>
+            <div id="questionFilmingLocations" style='display: none;'>
                 <div class="row col-xs-12">
                     <br>
+
                     <div class="col-xs-9">
                         <label for="totalBudget">Filming Location(s) and Filming date(s)</label>
+
                         <p class="control-label"><input type="checkbox"
                                                         class=""
                                                         data-reviewName="" name=""
@@ -688,8 +793,10 @@
                                                         value=""/> Enter Film Locations
                         </p>
                     </div>
+
                     <div class="col-xs-3">
                         <br>
+
                         <form enctype="multipart/form-data">
                             <div class="fileUpload btn btn-primary">
                                 <span>Attach File</span>
@@ -698,10 +805,12 @@
                         </form>
                     </div>
                 </div>
+
                 <div class="col-xs-12 fileNameContainer" style="padding-top:6px; display: none">
                     <div class="col-xs-9" style="text-align:right; font-size:11px; padding-right:29px;">
                         <span class="fileNameSpan" id="doodFileSpan">File Name</span>
                     </div>
+
                     <div class="col-xs-3" style="padding-left:0px">
                         <button type="button" class="btn btn-default btn-xs attachClearButton">Clear</button>
                     </div>
@@ -751,33 +860,38 @@
             </div>
 
 
-
             <div class="row col-xs-12">
                 <br>
+
                 <div class="col-xs-9">
                     <label for="storySynopsis">Story / Synopsis (Attach Treatment)</label>
                 </div>
             </div>
+
             <div class="row col-xs-12">
                 <div class="col-xs-9">
                     <input type="text" class="form-control showReview" data-reviewName="Story / Synopsis" id="story"
                            name="story" placeholder="Story"/>
                 </div>
+
                 <div class="col-xs-3">
                     <div class="form-group">
                         <form enctype="multipart/form-data">
                             <div class="fileUpload btn btn-primary">
                                 <span>Attach File</span>
-                                <input name="treatmentFile" type="file" class="file" id="treatmentFile" style="width:120px"/>
+                                <input name="treatmentFile" type="file" class="file" id="treatmentFile"
+                                       style="width:120px"/>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
+
             <div class="col-xs-12 fileNameContainer" style="margin-top:-6px; display: none">
                 <div class="col-xs-9" style="text-align:right; font-size:11px; padding-right: 30px;">
                     <span class="fileNameSpan" id="treatmentFileSpan">File Name</span>
                 </div>
+
                 <div class="col-xs-3" style="margin-left:-15px;">
                     <button type="button" class="btn btn-default btn-xs attachClearButton">Clear</button>
                 </div>
@@ -786,6 +900,7 @@
 
             <div class="row col-xs-12" id="questionsCast" style="display:none">
                 <br><br>
+
                 <div class="col-xs-12">
                     <h3>Cast Detail</h3>
                 </div>
@@ -793,12 +908,15 @@
                 <div class="col-xs-12">
                     <label for="storySynopsis">Number of Cast Members</label>
                 </div>
+
                 <div class="col-xs-2">
                     <div class="form-group">
-                        <input type="text" class="form-control showReview" data-reviewName="Number of Cast Members" id="numberOfCastMembers"
+                        <input type="text" class="form-control showReview" data-reviewName="Number of Cast Members"
+                               id="numberOfCastMembers"
                                name="numberOfCastMembers" placeholder="#" style="display:none"/>
                     </div>
                 </div>
+
                 <div class="col-xs-10">
                 </div>
 
@@ -807,31 +925,39 @@
                         <div class="col-xs-6">
                             <label>Cast Member Name</label>
                         </div>
+
                         <div class="col-xs-2">
                             <label>Age</label>
                         </div>
+
                         <div class="col-xs-4">
                             <label>Role</label>
                         </div>
                     </div>
                 </div>
+
                 <div id="castMemberDetailContainer" class="col-xs-12">
                     <div class="row">
                         <div class="col-xs-6">
                             <div class="form-group">
-                                <input type="text" class="form-control showReview castMemberName" data-reviewName="Cast Member Name, Age, Role"
+                                <input type="text" class="form-control showReview castMemberName"
+                                       data-reviewName="Cast Member Name, Age, Role"
                                        name="castMemberName" placeholder="" style="display:none"/>
                             </div>
                         </div>
+
                         <div class="col-xs-2">
                             <div class="form-group">
-                                <input type="text" class="form-control showReview castMemberAge" data-reviewName="Cast Member Name, Age, Role"
+                                <input type="text" class="form-control showReview castMemberAge"
+                                       data-reviewName="Cast Member Name, Age, Role"
                                        name="castMemberAge" placeholder="" style="display:none"/>
                             </div>
                         </div>
+
                         <div class="col-xs-4">
                             <div class="form-group">
-                                <input type="text" class="form-control showReview castMemberRole" data-reviewName="Cast Member Name, Age, Role"
+                                <input type="text" class="form-control showReview castMemberRole"
+                                       data-reviewName="Cast Member Name, Age, Role"
                                        name="castMemberRole" placeholder="" style="display:none"/>
                             </div>
                         </div>
@@ -893,11 +1019,13 @@
             </div>
 
             <div id="questionTotalAbove" style="display: none">
-                <div class="col-xs-12" >
+                <div class="col-xs-12">
                     <br>
+
                     <div class="form-group">
                         <label for="storySynopsis">Total Above-The-Line</label>
-                        <input type="text" class="form-control showReview" data-reviewName="Total Above-The-Line" id="totalAboveLine"
+                        <input type="text" class="form-control showReview" data-reviewName="Total Above-The-Line"
+                               id="totalAboveLine"
                                name="totalAboveLine" placeholder="total"/>
                     </div>
                 </div>
@@ -907,7 +1035,8 @@
                 <div class="col-xs-12">
                     <div class="form-group">
                         <label for="storySynopsis">Total Below-The-Line</label>
-                        <input type="text" class="form-control showReview" data-reviewName="Total Below-The-Line" id="totalBelowLine"
+                        <input type="text" class="form-control showReview" data-reviewName="Total Below-The-Line"
+                               id="totalBelowLine"
                                name="totalBelowLine" placeholder="total"/>
                     </div>
                 </div>
@@ -918,7 +1047,8 @@
                 <div class="col-xs-12">
                     <div class="form-group">
                         <label for="storySynopsis">Total Post Production Cost</label>
-                        <input type="text" class="form-control showReview" data-reviewName="Total Post Production Cost" id="totalPostProductionCost"
+                        <input type="text" class="form-control showReview" data-reviewName="Total Post Production Cost"
+                               id="totalPostProductionCost"
                                name="totalPostProductionCost" placeholder="totalPost"/>
                     </div>
                 </div>
@@ -926,39 +1056,41 @@
 
             <div class="col-xs-12">
                 <div class="form-group">
-                    <label for="numberOfFilms">Number of Productions Per Year </label>
-                    <input type="text" class="form-control" name="numberProductions" placeholder="#" id="numberProductions"/>
+                    <label for="numberOfFilms">Number of Productions Per Year</label>
+                    <input type="number" min="0" class="form-control" name="numberProductions" placeholder="0"
+                           id="numberProductions"/>
                 </div>
             </div>
 
             <div class="col-xs-12">
                 <div class="form-group">
-                    <label for="projectsOutsideUS">Projects Outside the US (%) </label>
+                    <label for="projectsOutsideUS">Projects Outside the US (%)</label>
                     <input type="text" class="form-control" name="name" placeholder="%" id="projectsOutsideUS"/>
                 </div>
             </div>
+
             <div class="col-xs-12">
                 <div class="form-group">
                     <label for="totalEmployees">Total number of employees</label>
-                    <input type="text" class="form-control" name="name" placeholder="Country" id="totalNumEmployees"/>
+                    <input type="text" class="form-control" name="name" placeholder="# of Employees"
+                           id="totalNumEmployees"/>
                 </div>
             </div>
+
             <div class="col-xs-12">
                 <div class="form-group">
                     <label for="annualPayroll">Annual Payroll</label>
                     <input type="text" class="form-control" name="name" placeholder="\$USD" id="annualPayroll"/>
                 </div>
             </div>
+
             <div class="col-xs-12">
                 <div class="form-group">
                     <label for="umbrellaRequested">Umbrella Limit Requested</label>
-                    <input type="text" class="form-control" name="name" placeholder="\$USD" id="umbrellaLimitRequested"/>
+                    <input type="text" class="form-control" name="name" placeholder="\$USD"
+                           id="umbrellaLimitRequested"/>
                 </div>
             </div>
-
-
-
-
 
 
             <div id="">
@@ -970,6 +1102,7 @@
                                                     value=""/> Work Comp Coverage Requested
                     </p>
                 </div>
+
                 <div class="col-xs-12">
                     <div class="form-group">
                         <label>Will Payroll Service Co provide primary Work Comp Coverage?</label><br>
@@ -1001,9 +1134,11 @@
                             <label for="storySynopsis">States of Hire & Total Payroll Each State</label>
                         </div>
                     </div>
+
                     <div class="row col-xs-12">
                         <div class="col-xs-9">
-                            <input type="text" class="form-control showReview" data-reviewName="States of Hire & Total Payroll Each State"
+                            <input type="text" class="form-control showReview"
+                                   data-reviewName="States of Hire & Total Payroll Each State"
                                    name="statesOfHire" placeholder="" id="statesOfHireAndPayroll"/>
                         </div>
                     </div>
@@ -1015,9 +1150,11 @@
                             <label for="storySynopsis">Names of Officers, Title, % of Ownership</label>
                         </div>
                     </div>
+
                     <div class="row col-xs-12">
                         <div class="col-xs-9">
-                            <input type="text" class="form-control showReview" data-reviewName="Names of Officers, Title, % of Ownership"
+                            <input type="text" class="form-control showReview"
+                                   data-reviewName="Names of Officers, Title, % of Ownership"
                                    name="namesOfOfficers" placeholder="" id="namesOfficerTitleOwnership"/>
                         </div>
                     </div>
@@ -1030,9 +1167,11 @@
                             <label for="storySynopsis">Name of Officers to be Excluded under WC</label>
                         </div>
                     </div>
+
                     <div class="row col-xs-12">
                         <div class="col-xs-9">
-                            <input type="text" class="form-control showReview" data-reviewName="Name of Officers to be Excluded under WC"
+                            <input type="text" class="form-control showReview"
+                                   data-reviewName="Name of Officers to be Excluded under WC"
                                    name="namesOfOfficersExcluded" placeholder="" id="officersExcludedUnderWC"/>
                         </div>
                     </div>
@@ -1045,7 +1184,7 @@
 
 
 <div id="coverageCheckboxesDiv">
-    <div class='col-xs-4' style="margin-top: 5px;">
+    <div class='col-xs-4' id="productChoicesDiv" style="margin-top: 5px;">
         <div class='form-group col-xs-12 EPKGDiv'>
             <p><input type='checkbox' class='coverageInput' name='coverage' id='EPKGcoverage'/> Entertainment Package
             </p>
@@ -1055,47 +1194,65 @@
             <span class='coverageInput' style="display:none" id="PIPChoiceInput"><input type="radio" name="EPKGRadio"
                                                                                         class="coverageRadioButton EPKG"
                                                                                         value="PIP CHOI"
+                                                                                        data-object="product"
+                                                                                        data-key="productID"
+                                                                                        data-value="PIP CHOI"
                                                                                         id="PIPChoiceInputRadio"> PIP Choice (A la Carte)<br>
             </span>
 
             <div id="pipChoiceSelections" style="display:none">
                 <span class='' style="font-weight: 400px; font-size:12px; padding-left:20px;" id=""><input
-                        type="checkbox" name="PIPCHOIRadio" class="PIPCHOIOption optionalProduct" value="" data-productLOB="PIPCHOI_extra"
+                        type="checkbox" name="PIPCHOIRadio" class="PIPCHOIOption" value=""
                         id="PIPChoice_ExtraExpense"> Extra Expense<br></span>
                 <span class='' style="font-weight: 400px; font-size:12px; padding-left:20px;" id=""><input
-                        type="checkbox" name="PIPCHOIRadio" class="PIPCHOIOption optionalProduct" value="" data-productLOB="PIPCHOI_misc"
+                        type="checkbox" name="PIPCHOIRadio" class="PIPCHOIOption" value=""
                         id="PIPChoice_MiscRented"> Miscellaneous Rented Equipment<br></span>
                 <span class='' style="font-weight: 400px; font-size:12px; padding-left:20px;" id=""><input
-                        type="checkbox" name="PIPCHOIRadio" class="PIPCHOIOption optionalProduct" value="" data-productLOB="PIPCHOI_props"
+                        type="checkbox" name="PIPCHOIRadio" class="PIPCHOIOption" value=""
                         id="PIPChoice_Props"> Props, Sets & Wardrobe<br></span>
                 <span class='' style="font-weight: 400px; font-size:12px; padding-left:20px;" id=""><input
-                        type="checkbox" name="PIPCHOIRadio" class="PIPCHOIOption optionalProduct" value="" data-productLOB="PIPCHOI_third"
+                        type="checkbox" name="PIPCHOIRadio" class="PIPCHOIOption" value=""
                         id="PIPChoice_ThirdParty"> Third Party Prop Damage Liab<br></span>
 
             </div>
             <span class='coverageInput' style="display:none" id="PIP1Input"><input type="radio" name="EPKGRadio"
                                                                                    class="coverageRadioButton EPKG"
                                                                                    value="PIP 1"
+                                                                                   data-object="product"
+                                                                                   data-key="productID"
+                                                                                   data-value="PIP 1"
                                                                                    id="PIP1InputRadio"> PIP 1 (60 Days or less)<br>
             </span>
             <span class='coverageInput' style="display:none" id="PIP2Input"><input type="radio" name="EPKGRadio"
                                                                                    class="coverageRadioButton EPKG"
                                                                                    value="PIP 2"
+                                                                                   data-object="product"
+                                                                                   data-key="productID"
+                                                                                   data-value="PIP 2"
                                                                                    id="PIP2InputRadio"> PIP 2 (60 Days or less)<br>
             </span>
             <span class='coverageInput' style="display:none" id="PIP3Input"><input type="radio" name="EPKGRadio"
                                                                                    class="coverageRadioButton EPKG"
                                                                                    value="PIP 3"
+                                                                                   data-object="product"
+                                                                                   data-key="productID"
+                                                                                   data-value="PIP 3"
                                                                                    id="PIP3InputRadio"> PIP 3 (365 Days Policy)<br>
             </span>
             <span class='coverageInput' style="display:none" id="PIP4Input"><input type="radio" name="EPKGRadio"
                                                                                    class="coverageRadioButton EPKG"
                                                                                    value="PIP 4"
+                                                                                   data-object="product"
+                                                                                   data-key="productID"
+                                                                                   data-value="PIP 4"
                                                                                    id="PIP4InputRadio"> PIP 4 (365 Days Policy)<br>
             </span>
             <span class='coverageInput' style="display:none" id="PIP5Input"><input type="radio" name="EPKGRadio"
                                                                                    class="coverageRadioButton EPKG"
                                                                                    value="PIP 5"
+                                                                                   data-object="product"
+                                                                                   data-key="productID"
+                                                                                   data-value="PIP 5"
                                                                                    id="PIP5InputRadio"> PIP 5 (365 Days Policy)
             </span>
         </div>
@@ -1111,8 +1268,8 @@
             <br>
 
             <p id="EPKGNOHAOption" style=" font-size:12px; margin:0px"><input type='checkbox'
-                                                                              class='additionalCoverageCheckboxEPKG optionalProduct'
-                                                                              name='coverage' value="NOHA01" data-productLOB="NOHA"
+                                                                              class='additionalCoverageCheckboxEPKG'
+                                                                              name='coverage' value="NOHA01"
                                                                               id='EPKGNOHAAdditionalCoverage'/> Non Owned Hired Auto Physical Damage
             </p>
 
@@ -1121,8 +1278,11 @@
                                                                                         name='coverage' value="CAST"
                                                                                         id='EPKGCASTEssentialAdditionalCoverage'/> Cast Essential Elements
                 <br></p>
+
             <div class="col-xs-12" style="padding-top: 5px;padding-left: 20px; display: none;" id="castEssentialDiv">
-                <input type="text" style='font-size: 12px;margin-top: 0px; margin-bottom:10px; width: 35px; margin-right:2px;' name="commercial"
+                <input type="text"
+                       style='font-size: 12px;margin-top: 0px; margin-bottom:10px; width: 35px; margin-right:2px;'
+                       name="commercial"
                        class="CPK" value="" id="castEssentialInput">
                 <span style="margin-bottom: 0px; font-size: 11px;"># of Elements</span>
 
@@ -1134,77 +1294,126 @@
             %{--<br></p>--}%
             <p class="FILMWITHCASTNOWCOptions" style=" font-size:12px; margin:0px; display:none"><input type='radio'
                                                                                                         name="FILMWITHCASTNOWCOptions"
-                                                                                                        class='additionalCoverageCheckboxEPKG FWCNWCCheckbox '
+                                                                                                        class='additionalCoverageCheckboxEPKG FWCNWCCheckbox'
                                                                                                         name='coverage'
                                                                                                         value="CIVIL100"
-                                                                                                        data-productLOB=""
                                                                                                         id='EPKGFWCNWCCIVIL100AdditionalCoverage'/> Civil Authority (US Only) - $100K Limit
             </p>
 
             <p class="FILMWITHCASTNOWCOptions" style=" font-size:12px; margin:0px; display:none"><input type='radio'
                                                                                                         name="FILMWITHCASTNOWCOptions"
-                                                                                                        class='additionalCoverageCheckboxEPKG FWCNWCCheckbox '
+                                                                                                        class='additionalCoverageCheckboxEPKG FWCNWCCheckbox'
                                                                                                         name='coverage'
-                                                                                                        data-productLOB=""
                                                                                                         value="CIVIL500"
                                                                                                         id='EPKGFWCNWCCIVIL500AdditionalCoverage'/> Civil Authority (US Only) - Over $100K, Refer Only Subj to MP
             </p>
-            <p class="FILMWITHCASTNOWCOptions" style=" font-size:12px; margin:0px; display:none;"><input type='checkbox'
-                                                                                                         class='additionalCoverageCheckboxEPKG FWCNWCCheckbox'
-                                                                                                         name='coverage' value="Money"
-                                                                                                         id='EPKGFWCNWCAnimalAdditionalCoverage'/> Animal Mortality
-                <br></p>
 
-
-
-            <p class="PIP5Options" style=" font-size:12px; margin:0px; display:none"><input type='radio'
-                                                                                            name="PIP5RadioOptionCoverage"
-                                                                                            class='additionalCoverageCheckboxPIP5 optionalProduct'
-                                                                                            name='coverage'
-                                                                                            data-productLOB="PIP5_civilAuth100"
-                                                                                            value="CIVIL100"
-                                                                                            id='EPKGCIVIL100AdditionalCoverage'/> Civil Authority (US Only) - $100K Limit
+            <p class="AnnualOptions" style=" font-size:12px; margin:0px; display:none"><input type='checkbox'
+                                                                                              class='additionalCoverageCheckboxEPKG'
+                                                                                              name='coverage'
+                                                                                              value="MoneyCurrency"
+                                                                                              id='moneyCurrencyCheckbox'/> Money and Currency
             </p>
 
-            <p class="PIP5Options" style=" font-size:12px; margin:0px; display:none"><input type='radio'
-                                                                                            name="PIP5RadioOptionCoverage"
-                                                                                            class='additionalCoverageCheckboxPIP5 optionalProduct'
-                                                                                            name='coverage'
-                                                                                            data-productLOB="PIP5_civilAuth500"
-                                                                                            value="CIVIL500"
-                                                                                            id='EPKGCIVIL500AdditionalCoverage'/> Civil Authority (US Only) - $500K Limit
+            <p class="AnnualOptions" style=" font-size:12px; margin:0px; display:none"><input type='checkbox'
+                                                                                              class='additionalCoverageCheckboxEPKG'
+                                                                                              name='coverage'
+                                                                                              value="FursJewelry"
+                                                                                              id='fursJewelryCheckbox'/> Furs, Jewelry, Art & Antiques
+            </p>
+
+            <p class="AnnualOptions" style=" font-size:12px; margin:0px; display:none"><input type='checkbox'
+                                                                                              class='additionalCoverageCheckboxEPKG'
+                                                                                              name='coverage'
+                                                                                              value="TalentNonBudgetCosts"
+                                                                                              id='talentNonBudgetCheckbox'/> Talent and Non Budgeted Costs
+            </p>
+
+            <p class="AnnualOptions" style=" font-size:12px; margin:0px; display:none"><input type='checkbox'
+                                                                                              class='additionalCoverageCheckboxEPKG'
+                                                                                              name='coverage'
+                                                                                              value="AdmnistrativeCosts"
+                                                                                              id='adminCostCheckbox'/> Administrative Costs
+            </p>
+
+            <p class="AnnualOptions ElectronicData"
+               style=" font-size:12px; margin:0px; display:none">Electronic Data Processing</p>
+
+            <p class="AnnualOptions ElectronicData"
+               style=" font-size:12px; margin:0px; padding-left: 20px;display:none">
+                <input type='checkbox' class='additionalCoverageCheckboxEPKG' name='coverage' value="Hardware"
+                       id='hardwareElectronicDataCheckbox'/> Hardware</p>
+
+            <p class="AnnualOptions ElectronicData"
+               style=" font-size:12px; margin:0px; padding-left: 20px;display:none">
+                <input type='checkbox' class='additionalCoverageCheckboxEPKG' name='coverage' value="DataMedia"
+                       id='dataMediaElectronicDataCheckbox'/> Data and Media</p>
+
+            <p class="AnnualOptions ElectronicData"
+               style=" font-size:12px; margin:0px; padding-left: 20px;display:none">
+                <input type='checkbox' class='additionalCoverageCheckboxEPKG' name='coverage' value="ExtraExpense"
+                       id='extraExpenseElectronicDataCheckbox'/> Extra Expense</p>
+
+            <p class="PIP5Options PIP5Only" style=" font-size:12px; margin:0px; display:none"><input type='radio'
+                                                                                                     name="PIP5RadioOptionCoverage"
+                                                                                                     class='additionalCoverageCheckboxPIP5'
+                                                                                                     name='coverage'
+                                                                                                     value="CIVIL100"
+                                                                                                     id='EPKGCIVIL100AdditionalCoverage'/> Civil Authority (US Only) - $100K Limit
+            </p>
+
+            <p class="PIP5Options PIP5Only" style=" font-size:12px; margin:0px; display:none"><input type='radio'
+                                                                                                     name="PIP5RadioOptionCoverage"
+                                                                                                     class='additionalCoverageCheckboxPIP5'
+                                                                                                     name='coverage'
+                                                                                                     value="CIVIL500"
+                                                                                                     id='EPKGCIVIL500AdditionalCoverage'/> Civil Authority (US Only) - $500K Limit
             </p>
             <br>
 
-            <p class="PIP5Options"
+            <p class="PIP5Options FILMWITHCASTNOWCOptions   "
                style=" font-size:12px; margin:0px; display:none">Animal Mortality</p>
 
-            <p class="PIP5Options" style=" font-size:12px; margin:0px; padding-left: 20px;display:none"><input
-                    type='checkbox' class='additionalCoverageCheckboxPIP5 optionalProduct' name='coverage' value="BirdsFish" data-productLOB="PIP5_animalDomestic"
+            <p class="PIP5Options FILMWITHCASTNOWCOptions"
+               style=" font-size:12px; margin:0px; padding-left: 20px;display:none"><input
+                    type='checkbox' class='additionalCoverageCheckboxPIP5 additionalCoverageCheckboxEPKG FWCNWCCheckbox'
+                    name='coverage' value="BirdsFish"
                     id='EPKGBirdsFishAdditionalCoverage'/> Domestic Birds Or Fish</p>
 
-            <p class="PIP5Options" style=" font-size:12px; margin:0px; padding-left: 20px;display:none"><input
-                    type='checkbox' class='additionalCoverageCheckboxPIP5 optionalProduct' name='coverage' value="Dogs" data-productLOB="PIP5_animalDogs"
+            <p class="PIP5Options FILMWITHCASTNOWCOptions"
+               style=" font-size:12px; margin:0px; padding-left: 20px;display:none"><input
+                    type='checkbox' class='additionalCoverageCheckboxPIP5 additionalCoverageCheckboxEPKG FWCNWCCheckbox'
+                    name='coverage' value="Dogs"
                     id='EPKGDogsAdditionalCoverage'/> Dogs (with certain breed exceptions)</p>
 
-            <p class="PIP5Options" style=" font-size:12px; margin:0px; padding-left: 20px;display:none"><input
-                    type='checkbox' class='additionalCoverageCheckboxPIP5 optionalProduct' name='coverage' value="Reptiles" data-productLOB="PIP5_animalReptiles"
-                    id='EPKGReptilesAdditionalCoverage'/> Reptiles (non-venomous)</p>
+            <p class="PIP5Options FILMWITHCASTNOWCOptions"
+               style=" font-size:12px; margin:0px; padding-left: 20px;display:none"><input
+                    type='checkbox' class='additionalCoverageCheckboxPIP5 additionalCoverageCheckboxEPKG FWCNWCCheckbox'
+                    name='coverage' value="Reptiles"
+                    id='EPKGReptilesAdditionalCoverage'/> Reptiles (Non-Venomous)</p>
 
-            <p class="PIP5Options" style=" font-size:12px; margin:0px; padding-left: 20px;display:none"><input
-                    type='checkbox' class='additionalCoverageCheckboxPIP5 optionalProduct' name='coverage' value="SmallOther" data-productLOB="PIP5_animalSmall"
+            <p class="PIP5Options FILMWITHCASTNOWCOptions"
+               style=" font-size:12px; margin:0px; padding-left: 20px;display:none"><input
+                    type='checkbox' class='additionalCoverageCheckboxPIP5 additionalCoverageCheckboxEPKG FWCNWCCheckbox'
+                    name='coverage' value="SmallOther"
                     id='EPKGSmallOtherAdditionalCoverage'/> Small Domestic Animals (Other)</p>
 
-            <p class="PIP5Options" style=" font-size:12px; margin:0px; padding-left: 20px;display:none"><input
-                    type='checkbox' class='additionalCoverageCheckboxPIP5 optionalProduct' name='coverage' value="FarmAnimals" data-productLOB="PIP5_animalFarm"
+            <p class="PIP5Options FILMWITHCASTNOWCOptions"
+               style=" font-size:12px; margin:0px; padding-left: 20px;display:none"><input
+                    type='checkbox' class='additionalCoverageCheckboxPIP5 additionalCoverageCheckboxEPKG FWCNWCCheckbox'
+                    name='coverage' value="FarmAnimals"
                     id='EPKGFarmAnimalsAdditionalCoverage'/> Farm Animals</p>
 
-            <p class="PIP5Options" style=" font-size:12px; margin:0px; padding-left: 20px;display:none"><input
-                    type='checkbox' class='additionalCoverageCheckboxPIP5 optionalProduct' name='coverage' value="WildCats" data-productLOB="PIP5_animalCats"
+            <p class="PIP5Options FILMWITHCASTNOWCOptions"
+               style=" font-size:12px; margin:0px; padding-left: 20px;display:none"><input
+                    type='checkbox' class='additionalCoverageCheckboxPIP5 additionalCoverageCheckboxEPKG FWCNWCCheckbox'
+                    name='coverage' value="WildCats"
                     id='EPKGWildCatsAdditionalCoverage'/> Wild Cats (Caged)</p>
 
-            <p class="PIP5Options" style=" font-size:12px; margin:0px; padding-left: 20px;display:none"><input
-                    type='checkbox' class='additionalCoverageCheckboxPIP5 optionalProduct' name='coverage' value="OtherRefer" data-productLOB="PIP5_animalOther"
+            <p class="PIP5Options FILMWITHCASTNOWCOptions"
+               style=" font-size:12px; margin:0px; padding-left: 20px;display:none"><input
+                    type='checkbox' class='additionalCoverageCheckboxPIP5 additionalCoverageCheckboxEPKG FWCNWCCheckbox'
+                    name='coverage' value="OtherRefer"
                     id='EPKGOtherReferAdditionalCoverage'/> All Others - Refer Only</p>
         </div>
 
@@ -1215,7 +1424,9 @@
 
         <div class='form-group col-xs-12 CPKDiv' style="padding-left: 40px; margin-top:-20px;">
             <span class='coverageInput' id="CPKInput"><input type="radio" name="commercial"
-                                                             class="coverageRadioButton CPK" value="BARCPKGC_CPK"
+                                                             class="coverageRadioButton CPK" value="BARCPKGC"
+                                                             data-object="product" data-key="productID"
+                                                             data-value="BARCPKGC-CPK"
                                                              id="CPKInputRadio"> Commercial Package  (CGL & NOAL)<br>
             </span>
 
@@ -1225,7 +1436,9 @@
                        class="CPK" value="$" id="costOfHireInput"><br>
             </div>
             <span class='coverageInput' id="CGLInput"><input type="radio" name="commercial"
-                                                             class="coverageRadioButton CGL" value="BARCPKGC_CGL"
+                                                             class="coverageRadioButton CGL" value="BARCPKGC"
+                                                             data-object="product" data-key="productID"
+                                                             data-value="BARCPKGC-CGL"
                                                              id="CGLInputRadio"> Commercial General Liability</span>
         </div>
 
@@ -1301,7 +1514,7 @@
 
             </div>
 
-            <div id="limitsDeductPremiumInsert" style="white-space: pre-line">
+            <div class="showReviewTable" id="limitsDeductPremiumInsert">
                 <div class="row">
                     <div class="col-xs-6 coverageColumn">
                         <span>-</span>

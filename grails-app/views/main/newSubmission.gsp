@@ -898,21 +898,21 @@
                                     <div class="col-xs-2">
                                         <div class="form-group" id="howManyDaysIsTheEventGroup" style="display:none">
                                             <label class="control-label">Number of Event days</label>
-                                            <input class="form-control effectsTotalCGL effectsTotalPremium" id="howManyDaysIsTheEvent" name="howManyDaysIsTheEvent" type="text"
+                                            <input class="form-control effectsTotalCGL effectsTotalPremium" id="howManyDaysIsTheEvent" name="howManyDaysIsTheEvent" type="number"
                                                    onkeyup="this.value = validate(this.value, 0, 90)" style="color: black; background: white;"/>
                                         </div>
                                     </div>
                                     <div class="col-xs-2">
                                         <div class="form-group"id="estimatedTotalAttendanceGroup" style="display:none">
                                             <label class="control-label">Total Attendance</label>
-                                            <input class="form-control effectsTotalCGL effectsTotalPremium" id="estimatedTotalAttendance" name="estimatedTotalAttendance" type="text"
+                                            <input class="form-control effectsTotalCGL effectsTotalPremium" id="estimatedTotalAttendance" name="estimatedTotalAttendance" type="number"
                                                    style="color: black; background: white;"/>
                                         </div>
                                     </div>
                                     <div class="col-xs-5">
                                         <div class="form-group" id="largestNumberAttendeesGroup" style="display:none">
                                             <label class="control-label">Largest Number of Attendees Any One Event Per Day</label>
-                                            <input class="form-control" id="largestNumberAttendees" name="largestNumberAttendees" type="text"
+                                            <input class="form-control" id="largestNumberAttendees" name="largestNumberAttendees" type="number"
                                                    style="color: black; background: white;"/>
                                         </div>
                                     </div>

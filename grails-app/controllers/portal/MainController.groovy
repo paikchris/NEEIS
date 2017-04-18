@@ -954,7 +954,7 @@ class MainController {
         log.info(submissionIDs)
 
 
-        [user: session.user, submission: submission, submissionIDs: submissionIDs, coverages: coverages]
+        [user: session.user, submission: submission, submissionIDs: submissionIDs, coverages: coverages, pdfError:params.pdfError]
     }
 
     def downloadPDF = {
