@@ -66,7 +66,7 @@
             </div>
 
             <div class="row" style="padding-bottom: 6px;">
-                <g:if test="${pdfError}">
+                <g:if test="${pdfError == "true"}">
                 </g:if>
                 <g:else>
                     <strong class="col-xs-4">

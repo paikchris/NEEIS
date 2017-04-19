@@ -642,7 +642,7 @@ $(document).ready(function() {
                 if (day < 10) {
                     day = '0' + day;
                 }
-                alert("pip2: " + day)
+                // alert("pip2: " + day)
                 year = dat.getFullYear();
                 $("#proposedExpirationDate").val((monthIndex) + "/" + day + "/" + year);
                 $('#proposedTermLength').val(60 + " Days");
@@ -1217,6 +1217,12 @@ $(document).ready(function() {
 
 
 
+        //FIX TAXES
+        if($('#taxRateInfoDiv').length > 0){
+            // console.log("tax String = " + $('#taxRateInfoDiv').attr('data-taxstring'))
+            var taxString = $('#taxRateInfoDiv').attr('data-taxstring');
+            calculateTaxesFromTaxString(taxString);
+        }
 
 
     });

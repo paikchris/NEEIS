@@ -239,64 +239,65 @@ function getTaxInfo() {
         .done(function(msg) {
             //alert(msg);
 
-            var totalPremium = 0.0;
-            $('.premiumSpan').each(function() {
-
-                if ($.isNumeric($(this).html())) {
-                    totalPremium = totalPremium + parseFloat($(this).html());
-                }
-                else if ($(this).html().substring(0, 1) === "\$") {
-                    var v = $(this).html();
-                    v = v.replace("$", "");
-                    v = v.replace(/,/g, "");
-                    //console.log("PREMIUM LINE ===== " + v);
-                    //v = ("$"+v+"").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                    totalPremium = totalPremium + parseFloat(v);
-                }
-            });
-
-            var taxResponseArray = msg.split("&;;&");
-            var htmlString = "";
-            taxResponseArray.forEach(function(item, index) {
-                if (item.split("&,&").length > 1) {
-                    htmlString = htmlString + "<div class='row " + item.split("&,&")[0] + "TaxRow' style= ''" + ">" +
-                        "<div class='col-xs-4'>" +
-                        "<span class='taxDescriptionSpan'>" + item.split("&,&")[1] + "(" + item.split("&,&")[2] + ")</span>" +
-                        "</div>" +
-                        "<div class='col-xs-3'>" +
-                        "<span class='taxSpan'>" + formatTaxAndFee(totalPremium * parseFloat(item.split("&,&")[2])) + "</span>" +
-                        "</div>" +
-                        "<div class='col-xs-3'>" +
-                        "<span class=''>" + "" + "</span>" +
-                        "</div>" +
-                        "</div>";
-                }
-
-            });
-
-            var policyFeeTotal = 0;
-            if ($('#EPKGcoverage').is(':checked')) {
-                policyFeeTotal = policyFeeTotal + 15;
-            }
-            if ($('#CPKCGLcoverage').is(':checked')) {
-                policyFeeTotal = policyFeeTotal + 15;
-            }
-
-            htmlString = htmlString + "<div class='row " + "PolicyFee" + "TaxRow' style= ''" + ">" +
-                "<div class='col-xs-4'>" +
-                "<span class='taxDescriptionSpan'>Policy Fee</span>" +
-                "</div>" +
-                "<div class='col-xs-3'>" +
-                "<span class='taxSpan'>$" + policyFeeTotal + ".00</span>" +
-                "</div>" +
-                "<div class='col-xs-3'>" +
-                "<span class=''>" + "" + "</span>" +
-                "</div>" +
-                "</div>";
+            // var totalPremium = 0.0;
+            // $('.premiumSpan').each(function() {
             //
-            //alert(htmlString);
-            //console.log("TAXING === ")
-            $("#taxRows").html(htmlString);
+            //     if ($.isNumeric($(this).html())) {
+            //         totalPremium = totalPremium + parseFloat($(this).html());
+            //     }
+            //     else if ($(this).html().substring(0, 1) === "\$") {
+            //         var v = $(this).html();
+            //         v = v.replace("$", "");
+            //         v = v.replace(/,/g, "");
+            //         //console.log("PREMIUM LINE ===== " + v);
+            //         //v = ("$"+v+"").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            //         totalPremium = totalPremium + parseFloat(v);
+            //     }
+            // });
+            //
+            // var taxResponseArray = msg.split("&;;&");
+            // var htmlString = "<div id='taxRateInfoDiv' style='display:none'>" + taxResponseArray + "</div>" ;
+            // taxResponseArray.forEach(function(item, index) {
+            //     if (item.split("&,&").length > 1) {
+            //         htmlString = htmlString + "<div class='row " + item.split("&,&")[0] + "TaxRow' style= ''" + ">" +
+            //             "<div class='col-xs-4'>" +
+            //             "<span class='taxDescriptionSpan'>" + item.split("&,&")[1] + "(" + item.split("&,&")[2] + ")</span>" +
+            //             "</div>" +
+            //             "<div class='col-xs-3'>" +
+            //             "<span class='taxSpan'>" + formatTaxAndFee(totalPremium * parseFloat(item.split("&,&")[2])) + "</span>" +
+            //             "</div>" +
+            //             "<div class='col-xs-3'>" +
+            //             "<span class=''>" + "" + "</span>" +
+            //             "</div>" +
+            //             "</div>";
+            //     }
+            //
+            // });
+            //
+            // var policyFeeTotal = 0;
+            // if ($('#EPKGcoverage').is(':checked')) {
+            //     policyFeeTotal = policyFeeTotal + 15;
+            // }
+            // if ($('#CPKCGLcoverage').is(':checked')) {
+            //     policyFeeTotal = policyFeeTotal + 15;
+            // }
+            //
+            // htmlString = htmlString + "<div class='row " + "PolicyFee" + "TaxRow' style= ''" + ">" +
+            //     "<div class='col-xs-4'>" +
+            //     "<span class='taxDescriptionSpan'>Policy Fee</span>" +
+            //     "</div>" +
+            //     "<div class='col-xs-3'>" +
+            //     "<span class='taxSpan'>$" + policyFeeTotal + ".00</span>" +
+            //     "</div>" +
+            //     "<div class='col-xs-3'>" +
+            //     "<span class=''>" + "" + "</span>" +
+            //     "</div>" +
+            //     "</div>";
+            // //
+            // //alert(htmlString);
+            // //console.log("TAXING === ")
+            // $("#taxRows").html(htmlString);
+            calculateTaxesFromTaxString(msg);
             totalUpPremiumAndTax();
 
 
@@ -304,6 +305,66 @@ function getTaxInfo() {
 
 
         });
+}
+
+function calculateTaxesFromTaxString(msg){
+    var totalPremium = 0.0;
+    $('.premiumSpan').each(function() {
+
+        if ($.isNumeric($(this).html())) {
+            totalPremium = totalPremium + parseFloat($(this).html());
+        }
+        else if ($(this).html().substring(0, 1) === "\$") {
+            var v = $(this).html();
+            v = v.replace("$", "");
+            v = v.replace(/,/g, "");
+            //console.log("PREMIUM LINE ===== " + v);
+            //v = ("$"+v+"").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            totalPremium = totalPremium + parseFloat(v);
+        }
+    });
+
+    var taxResponseArray = msg.split("&;;&");
+    var htmlString = "<div id='taxRateInfoDiv' style='display:none' data-taxstring='" + msg + "'>"  + "</div>" ;
+    taxResponseArray.forEach(function(item, index) {
+        if (item.split("&,&").length > 1) {
+            // console.log(item)
+            htmlString = htmlString + "<div class='row " + item.split("&,&")[0] + "TaxRow' style= ''" + ">" +
+                "<div class='col-xs-4'>" +
+                "<span class='taxDescriptionSpan'>" + item.split("&,&")[1] + "(" + item.split("&,&")[2] + ")</span>" +
+                "</div>" +
+                "<div class='col-xs-3'>" +
+                "<span class='taxSpan'>" + formatTaxAndFee(totalPremium * parseFloat(item.split("&,&")[2])) + "</span>" +
+                "</div>" +
+                "<div class='col-xs-3'>" +
+                "<span class=''>" + "" + "</span>" +
+                "</div>" +
+                "</div>";
+        }
+
+    });
+
+    var policyFeeTotal = 0;
+    if ($('#EPKGcoverage').is(':checked')) {
+        policyFeeTotal = policyFeeTotal + 15;
+    }
+    if ($('#CPKCGLcoverage').is(':checked')) {
+        policyFeeTotal = policyFeeTotal + 15;
+    }
+
+    htmlString = htmlString + "<div class='row " + "PolicyFee" + "TaxRow' style= ''" + ">" +
+        "<div class='col-xs-4'>" +
+        "<span class='taxDescriptionSpan'>Policy Fee</span>" +
+        "</div>" +
+        "<div class='col-xs-3'>" +
+        "<span class='taxSpan'>$" + policyFeeTotal + ".00</span>" +
+        "</div>" +
+        "<div class='col-xs-3'>" +
+        "<span class=''>" + "" + "</span>" +
+        "</div>" +
+        "</div>";
+
+    $("#taxRows").html(htmlString);
 }
 
 
@@ -529,7 +590,6 @@ function getSubmissionMap() {
     if ($('#brokerFeeInput').length && $('#brokerFeeInput').val().length > 0) {
         submissionMap.premSummary = submissionMap.premSummary + "Broker Fee" + "\t" + $('#brokerFeeInput').val() + ".00\n";
     }
-    submissionMap.premSummary = submissionMap.premSummary + "Policy Fee" + "\t" + "\$20.00" + "\n";
 
 
 

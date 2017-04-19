@@ -24,19 +24,19 @@ class Intelledox {
             def timestamp = now.format(indicationDateFormat, timeZone)
 
 
-            jsonSerial.keySet().each{
-                log.info it
-                if(jsonSerial[it] && jsonSerial[it] instanceof String){
-                    if(jsonSerial[it].indexOf("&amp;") > -1){
-
-                    }
-                    else{
-                        log.info jsonSerial[it] + " -> " +  XmlUtil.escapeXml(jsonSerial[it])
-                        jsonSerial[it] = XmlUtil.escapeXml(jsonSerial[it])
-                    }
-
-                }
-            }
+//            jsonSerial.keySet().each{
+//                log.info it
+//                if(jsonSerial[it] && jsonSerial[it] instanceof String){
+//                    if(jsonSerial[it].indexOf("&amp;") > -1){
+//
+//                    }
+//                    else{
+//                        log.info jsonSerial[it] + " -> " +  XmlUtil.escapeXml(jsonSerial[it])
+//                        jsonSerial[it] = XmlUtil.escapeXml(jsonSerial[it])
+//                    }
+//
+//                }
+//            }
 
             FileTransferHelper fileHelper = new FileTransferHelper();
 
@@ -82,7 +82,7 @@ class Intelledox {
 \t\t<agentPhone>${XmlUtil.escapeXml(jsonSerial.getAt('brokerPhone'))}</agentPhone>
 \t\t<date>${timestamp}</date>
 \t\t<dateStart>${XmlUtil.escapeXml(jsonSerial.getAt('proposedEffective'))}</dateStart>
-\t\t<submission>${XmlUtil.escapeXml(jsonSerial.getAt('allQuoteIDs'))}</submission>
+\t\t<submission>${XmlUtil.escapeXml(jsonSerial.getAt('allQuoteIDs').split(';')[0])}</submission>
 \t\t<underwriter>${XmlUtil.escapeXml(jsonSerial.getAt('accountExecName'))}</underwriter>
 \t\t<underwriterPhone>${XmlUtil.escapeXml(jsonSerial.getAt('underwriterPhone'))}</underwriterPhone>
 \t\t<underwriterFax>${XmlUtil.escapeXml(jsonSerial.getAt('underwriterFax'))}</underwriterFax>
@@ -134,7 +134,7 @@ class Intelledox {
 \t<policyTermTable>
 \t\t<policyTermHeader>Policy Term</policyTermHeader>
 \t\t<policyTermRow>
-\t\t\t<policyTerm policyTermColOne="${XmlUtil.escapeXml(jsonSerial.getAt("proposedTermLengthString"))}"></policyTerm>
+\t\t\t<policyTerm policyTermColOne="Policy Term: ${XmlUtil.escapeXml(jsonSerial.getAt("proposedTermLengthString"))}"></policyTerm>
 \t\t</policyTermRow>
 \t\t<policyTermRow>
 \t\t\t<policyTerm policyTermColOne="Proposed Effective: ${XmlUtil.escapeXml(jsonSerial.getAt("proposedEffectiveDate"))} - ${XmlUtil.escapeXml(jsonSerial.getAt("proposedExpirationDate"))}"></policyTerm>
@@ -148,7 +148,10 @@ class Intelledox {
             if (jsonSerial.getAt("premSummary").split("\n").size() > 0) {
                 jsonSerial.getAt("premSummary").split("\n").each {
                     if (it.length() > 0) {
-                        if (it.split("\\t")[0] == "Taxes and Fees" || it.split("\\t")[0] == "Premium Distribution") {
+                        if(it.split("\\t")[0] == "Premium Distribution"){
+
+                        }
+                        else if (it.split("\\t")[0] == "Taxes and Fees" ) {
                             soapXML = soapXML + """
 \t\t<premiumSummary premiumSummaryPackage="${it.split("\\t")[0]}">
 \t\t\t<premiumSummaryCost>  </premiumSummaryCost>
@@ -160,7 +163,7 @@ class Intelledox {
 \t\t<premiumSummary premiumSummaryPackage="   ${it.split("\\t")[0]}">
 \t\t\t<premiumSummaryCost>${it.split("\t")[1]} </premiumSummaryCost>
 \t\t</premiumSummary>"""
-                        }
+                        } 
 
                     } else {
 
@@ -369,18 +372,18 @@ class Intelledox {
 \t\t<productionInformationHeader>Production Information</productionInformationHeader>
 \t\t<productionInformationRow>
 \t\t\t<productionInformationName productionInformationColOne="Types of Production:">
-\t\t\t\t<productionInformationColTwo> ${jsonSerial.getAt("productionType")} </productionInformationColTwo>
+\t\t\t\t<productionInformationColTwo> ${XmlUtil.escapeXml(jsonSerial.getAt("productionType"))} </productionInformationColTwo>
 \t\t\t</productionInformationName>
 \t\t\t<productionInformationName startPrincipalPhoto="Script / Story:">
-\t\t\t\t<productionInformationColTwo> ${jsonSerial.getAt("story")} </productionInformationColTwo>
+\t\t\t\t<productionInformationColTwo> ${XmlUtil.escapeXml(jsonSerial.getAt("story"))} </productionInformationColTwo>
 \t\t</productionInformationName>
 \t\t</productionInformationRow>
 
 \t\t<principalPhotographyTable>
 \t\t\t<principalPhotographyHeader>Principal Photography</principalPhotographyHeader>
 \t\t\t<principalPhotographyRow>
-\t\t\t\t<productionInformationName startPrincipalPhoto="${jsonSerial.getAt("principalPhotographyDateStart")} - ">
-\t\t\t\t\t<endPrincipalPhoto>${jsonSerial.getAt("principalPhotographyDateStart")}</endPrincipalPhoto>
+\t\t\t\t<productionInformationName startPrincipalPhoto="${XmlUtil.escapeXml(jsonSerial.getAt("principalPhotographyDateStart"))} - ">
+\t\t\t\t\t<endPrincipalPhoto>${XmlUtil.escapeXml(jsonSerial.getAt("principalPhotographyDateStart"))}</endPrincipalPhoto>
 \t\t\t\t\t<locationPrincipalPhoto></locationPrincipalPhoto>
 \t\t\t\t</productionInformationName>
 \t\t\t</principalPhotographyRow>
@@ -390,12 +393,12 @@ class Intelledox {
 \t\t\t<keyPersonnelHeader>Key Personnel</keyPersonnelHeader>
 \t\t\t<keyPersonnelRow>
 \t\t\t\t<keyPerson keyPersonnel="Director">
-\t\t\t\t\t<keyPersonnelName>${jsonSerial.getAt("director")}</keyPersonnelName>
+\t\t\t\t\t<keyPersonnelName>${XmlUtil.escapeXml(jsonSerial.getAt("director"))}</keyPersonnelName>
 \t\t\t\t\t<keyPersonnelYOE></keyPersonnelYOE>
 \t\t\t\t\t<keyPersonnelPrior></keyPersonnelPrior>
 \t\t\t\t</keyPerson>
 \t\t\t\t<keyPerson keyPersonnel="Producer">
-\t\t\t\t\t<keyPersonnelName>${jsonSerial.getAt("producer")}</keyPersonnelName>
+\t\t\t\t\t<keyPersonnelName>${XmlUtil.escapeXml(jsonSerial.getAt("producer"))}</keyPersonnelName>
 \t\t\t\t\t<keyPersonnelYOE></keyPersonnelYOE>
 \t\t\t\t\t<keyPersonnelPrior></keyPersonnelPrior>
 \t\t\t\t</keyPerson>
@@ -421,13 +424,15 @@ class Intelledox {
             client.authorization = new HTTPBasicAuthorization("admin", "admin")
             def response = client.send(SOAPAction:'http://services.dpm.com.au/intelledox/GenerateWithData', soapXML)
 
-            log.info response.text
+            log.info response.text.substring(0,1500);
+//            log.info response.text
             def fileName = "Indication A.pdf"
 
             def a = new XmlSlurper().parseText(response.text)
             def nodeToSerialize = a."**".find {it.name() == 'BinaryFile'}
             def pdfBinaryFile = nodeToSerialize.text();
 
+//            throw new IOException()
             log.info("NEW FOLDER QUOTE = " + jsonSerial.getAt("allQuoteIDs"))
 //        def quoteID = jsonSerial.getAt("allQuoteIDs").split(",")[0].split(";")[0]
 
@@ -444,6 +449,10 @@ class Intelledox {
             return "good"
         }
         catch(Exception e){
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
             return "Indication Error"
         }
 
