@@ -2071,8 +2071,11 @@ function ratePremiums(thisObj) {
                         //termsInsert = termsInsert +
                         //    responseJSON.coverages[i].coverageCode + " - " + responseJSON.coverages[i].productCode + "\n"  +  responseJSON.coverages[i].terms + "\n\n\n";
                         endorseInsert = endorseInsert +
+                                "<span id='" + responseJSON.coverages[i].coverageCode + "_EndorsementForms'>" +
                             responseJSON.coverages[i].coverageCode + " - " + responseJSON.coverages[i].productCode + "\n" +
-                            responseJSON.coverages[i].endorse + "\n\n\n";
+                            responseJSON.coverages[i].endorse + "\n\n\n" +
+                            "</span>"
+                        ;
                     }
 
 

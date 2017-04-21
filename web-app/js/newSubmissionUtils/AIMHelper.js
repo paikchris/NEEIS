@@ -481,8 +481,8 @@ function getSubmissionMap() {
     submissionMap.productID = productArray;
 
     //Get LOB Limits Deductibles Premiums
-    var EPKGlimitsString = "";
-    var EPKGdeductsString = "";
+    submissionMap.EPKGlimitsString = "";
+    submissionMap.EPKGdeductsString = "";
     submissionMap.epkgLOB = "";
     submissionMap.cpkLOB = "";
     submissionMap.cglLOB = "";
@@ -532,10 +532,8 @@ function getSubmissionMap() {
         });
     }
 
-    var CPKlimitsString = "";
-    var CPKdeductsString = "";
-    var CGLlimitsString = "";
-    var CGLdeductsString = "";
+    submissionMap.CPKlimitsString = "";
+    submissionMap.CPKdeductsString = "";
     if ($('#CPKCGLcoverage').is(':checked')) {
         if ($('#CPKInputRadio').is(':checked')) {
             $('div#reviewLimitsDeducts div.CPK_LOBRow').each(function() {
@@ -596,6 +594,19 @@ function getSubmissionMap() {
 
     submissionMap.termsInsert = $('#termsInsert').html();
     submissionMap.endorseInsert = $('#endorseInsert').html();
+    if ($('#EPKGcoverage').is(':checked')) {
+        submissionMap.endorseInsertEPKG = $('#EPKG_EndorsementForms').html();
+    }
+    if ($('#CPKCGLcoverage').is(':checked')) {
+        if ($('#CPKInputRadio').is(':checked')) {
+            submissionMap.endorseInsertCPK = $('#CPK_EndorsementForms').html();
+        }
+        else if ($('#CGLInputRadio').is(':checked')) {
+            submissionMap.endorseInsertCGL = $('#CGL_EndorsementForms').html();
+        }
+    }
+
+
     submissionMap.maxCostOneProduction = $('#maxCostOneProduction').val();
 
     submissionMap.productionType = "";

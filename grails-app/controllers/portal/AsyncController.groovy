@@ -1801,21 +1801,13 @@ class AsyncController {
                                 deductsMap[key] = it.split('\t')[0]
                             }
                         }
-//                    limitsMap.each{ k, v ->
-//                        log.info "${k}:${v}"
-//                    }
-//                    deductsMap.each{ k, v ->
-//                        log.info "${k}:${v}"
-//                    }
+
                         subjectString = it.Subject;
                         log.info subjectString
                         endorseString = it.Endorse;
 
                         lobString = it.LobDistrib;
-
-
                     }
-
                     try{
                         agentPct = lobString.split('\r')[0].split('\t')[3].trim();
                     }
@@ -2702,7 +2694,8 @@ class AsyncController {
                                 premiumsMap = tempPremiumsMap
                             }
                         }
-                    } else if (coverageID == "CGL" || coverageID == "CPK") {
+                    }
+                    else if (coverageID == "CGL" || coverageID == "CPK") {
                         def rate = 0.0;
                         def premium = 0;
                         def minPremium = 0;
@@ -2881,6 +2874,17 @@ class AsyncController {
                         if(coverageID == "CGL"){
                             lobString = "Commercial General Liability" + "\t" + Math.ceil(productTotalPremium) + "\t" + grossPct + "\t" + agentPct+"\r"
                             rateInfo = "CGL\tRate\tPremium\tCoverage\tMin Prem\n";
+                            def newEndorseString = ""
+                            endorseString.split("\r\n").each(){
+                                log.info("ROW:" + it);
+                                def formName = it.split("-")[1].trim();
+                                log.info("Form Name:" + it);
+                                if(formName.indexOf("NOAL:") == -1){
+                                    newEndorseString = newEndorseString + it + "\r\n";
+                                }
+                            }
+
+                            endorseString = newEndorseString;
                         }
                         else if(coverageID == "CPK"){
                             lobString = "Commercial Package" + "\t" + Math.ceil(productTotalPremium) + "\t" + grossPct + "\t" + agentPct+"\r"
@@ -3219,6 +3223,8 @@ class AsyncController {
                 dataMap.underwriterPhone = it.Wk_Phone
                 dataMap.underwriterFax = it.Wk_Fax
             }
+
+
             def quoteAndIndicationStatus = aimDAO.saveNewSubmission(dataMap, dataSource_aim, session.user, uwQuestionsMap, uwQuestionsOrder)
             def quoteIDCoverages = quoteAndIndicationStatus.split("&;&")[0]
             indicationStatus = quoteAndIndicationStatus.split("&;&")[1]

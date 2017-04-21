@@ -4,6 +4,7 @@
 
 
 $(document).ready(function () {
+    $('.currency').maskMoney({prefix:'$', precision:"0"});
 
     $('a.someclass').click(function(e)
     {
@@ -84,7 +85,16 @@ $(document).ready(function () {
             if ($('#productAlwaysAvailableCheckBox').prop('checked')) {
                 $('#productAlwaysAvailableCheckBox').prop('checked', false)
             }
+            if($(this).prop('checked')){
+                $('#' + $(this).attr('id') + 'Container').css('display', '');
+            }
+            else{
+                $('#' + $(this).attr('id') + 'Container').css('display', 'none');
+            }
         }
+
+
+
     });
 
     $(document).on('click', '.subCategory_ListItem', function (e){
@@ -156,7 +166,29 @@ $(document).ready(function () {
             $('#riskProductsDiv').append(productHtmlString);
             $('#addProductModal').modal('hide');
         }
+    });
 
+    $(document).on('click', '.addCondition', function (e){
+        var htmlString = "";
+        var deleteButtonHTML = "<button class='btn btn-xs btn-danger deleteCondition' id='' type='button' style='margin-left:20px;'>" +
+        "<i class='fa fa-minus' aria-hidden='true'></i>" +
+            "<span class='' style='font-size: 14px; font-weight: 500' > </span>" +
+        "</button>";
+
+        // htmlString = $(this).closest('.conditionContainer').children().first().wrap('<p/>').parent().html();
+        htmlString = $("<div />").append($(this).closest('.conditionContainer').children().first().clone()).html();
+
+        $(this).closest('.conditionContainer').append(htmlString);
+
+        $(this).closest('.conditionContainer').find('.deleteCondition').remove();
+        $(this).closest('.conditionContainer').children().each(function(e){
+            $(this).append(deleteButtonHTML);
+        });
+        $(this).closest('.conditionContainer').find('.deleteCondition').first().remove();
+    });
+
+    $(document).on('click', '.deleteCondition', function (e) {
+        $(this).parent().remove();
     });
 
 });

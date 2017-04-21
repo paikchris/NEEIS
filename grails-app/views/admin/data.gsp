@@ -191,8 +191,8 @@
                             </div>
 
                             <div class="col-xs-12">
-                                <div class="row">
-                                    <div class="col-xs-3">
+                                <div class="row" style="margin-bottom:10px;">
+                                    <div class="col-xs-6">
                                         <div class="form-group">
                                             <label>Risk Name</label>
                                             <input type="text" class="form-control fieldInput" id="riskTypeName_Input"
@@ -203,65 +203,96 @@
 
                                     </div>
                                 </div>
-                                <div class="row">
+                                <div class="row" style="margin-left:-4px;margin-bottom: 40px;">
+                                    <div class="col-xs-3">
+                                        <label>Coverages</label>
+                                        <button class="btn btn-xs btn-primary pull-right" id="" type="button" style="margin-left:20px;"
+                                                onclick="$('#addCoverageModal').modal('show'); clearModalCoverageFields();">
+                                            <i class="fa fa-plus" aria-hidden="true"></i>
+                                            <span class="" style="font-size: 14px; font-weight: 500" > Add Coverage</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-left:-4px;margin-bottom: 40px;">
                                     <div class="col-xs-3">
                                         <label>Products</label>
-                                        <button class="btn btn-xs btn-primary" id="" type="button" style="margin-left:20px;"
+                                        <button class="btn btn-xs btn-primary pull-right" id="" type="button" style="margin-left:20px;"
                                                 onclick="$('#addProductModal').modal('show'); clearModalProductFields();">
                                             <i class="fa fa-plus" aria-hidden="true"></i>
                                             <span class="" style="font-size: 14px; font-weight: 500" > Add Product</span>
                                         </button>
                                     </div>
                                 </div>
-                                <div class="row"  style="margin-top:10px; margin-bottom:10px">
+                                <div class="row"  style="margin-left:-4px; margin-top:10px; margin-bottom:10px">
                                     <div class="col-xs-12" id="riskProductsDiv">
                                     </div>
 
                                 </div>
-                                <div class="row">
-                                    <div class="col-xs-4">
-                                        <label>Availability Conditions</label>
+                                <div id="mainConditionContainer" style="margin-bottom: 40px;">
+                                    <div class="row" style="margin-left:-4px;">
+                                        <div class="col-xs-4">
+                                            <label>Show Product When: </label>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-4">
-                                        <p>
-                                            <input type="checkbox"  class="productField productAvailabilityCheckbox" id="productAlwaysAvailableCheckBox"> Always Available
-                                        </p>=
+                                    <div class="row" style="margin-left:-4px;">
+                                        <div class="col-xs-4">
+                                            <p>
+                                                <input type="checkbox"  class="productField productAvailabilityCheckbox" id="productAlwaysAvailableCheckBox"> Always
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-12">
-                                        <p>
-                                            <input type="checkbox" class="productField productAvailabilityCheckbox" id="productDependsOnBudget"> Depends on Budget
-                                        </p>
+                                    <div class="row" style="margin-left:-4px;">
+                                        <div class="col-xs-12">
+                                            <p>
+                                                <input type="checkbox" class="productField productAvailabilityCheckbox" id="productDependsOnBudget"> Budget is:
+                                            </p>
+                                        </div>
+                                        <div class="col-xs-12" id="productDependsOnBudgetContainer" style="margin-left:25px;margin-bottom:30px; display:none">
+                                            <div class="conditionContainer" id="budgetConditionsContainer">
+                                                <div class="col-xs-12">
+                                                    <select>
+                                                        <option>Less Than </option>
+                                                        <option>Less Than or Equal To </option>
+                                                        <option>Equal To</option>
+                                                        <option>Greater Than</option>
+                                                        <option>Greater Than or Equal To </option>
+                                                    </select>
+                                                    <input class="currency" type="text" placeholder = "$"  style="margin-top:4px; margin-bottom:4px; margin-left:20px;"/>
+                                                    <button class="btn btn-xs btn-success addCondition" id="" type="button" style="margin-left:20px;">
+                                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                                        <span class="" style="font-size: 14px; font-weight: 500" > Add Another Condition</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="col-xs-12" style="margin-left:25px;margin-bottom:30px;">
-                                        <div id="budgetConditionsContainer">
-                                            <div col-xs-12>
-                                                <select>
-                                                    <option>Less Than </option>
-                                                    <option>Less Than or Equal To </option>
-                                                    <option>Equal To</option>
-                                                    <option>Greater Than</option>
-                                                    <option>Greater Than or Equal To </option>
-                                                </select>
-                                                <input class="currency" type="text" placeholder = "$"  style="margin-left:20px;"/>
-                                                <button class="btn btn-xs btn-success" id="" type="button" style="margin-left:20px;">
-                                                    <i class="fa fa-plus" aria-hidden="true"></i>
-                                                    <span class="" style="font-size: 14px; font-weight: 500" > </span>
-                                                </button>
+                                    <div class="row" style="margin-left:-4px;">
+                                        <div class="col-xs-4">
+                                            <p>
+                                                <input type="checkbox"  class="productField productAvailabilityCheckbox" id="productDependsOnTermLength"> Term Length is:
+                                            </p>
+                                        </div>
+                                        <div class="col-xs-12" id="productDependsOnTermLengthContainer" style="margin-left:25px;margin-bottom:30px; display:none">
+                                            <div class="conditionContainer" id="termConditionsContainer">
+                                                <div class="col-xs-12">
+                                                    <select>
+                                                        <option>Less Than </option>
+                                                        <option>Less Than or Equal To </option>
+                                                        <option>Equal To</option>
+                                                        <option>Greater Than</option>
+                                                        <option>Greater Than or Equal To </option>
+                                                    </select>
+                                                    <input class="" type="text" placeholder = "Days"  style="margin-top:4px; margin-bottom:4px; margin-left:20px; "/>
+                                                    <button class="btn btn-xs btn-success addCondition" id="" type="button" style="margin-left:20px;">
+                                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                                        <span class="" style="font-size: 14px; font-weight: 500" > Add Another Condition</span>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-xs-4">
-                                        <p>
-                                            <input type="checkbox"  class="productField productAvailabilityCheckbox" id="productDependsOnTermLength"> Depends on Term Length
-                                        </p>
-                                    </div>
-                                </div>
+
 
                             </div>
                         </div>
@@ -311,7 +342,7 @@
     <div class="modal-dialog" role="document" style="">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="progressBarHeader_cert">Select Product</h4>
+                <h4 class="modal-title" id="">Select Product</h4>
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -324,31 +355,163 @@
                         </select>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-xs-4">
-                        <p>
-                            <input type="checkbox"  class="productAvailabilityCheckboxModal" id="productAlwaysAvailableCheckBox_Modal"> Always Available
-                        </p>
+                <div id="productModalConditionContainer">
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <label>Show Product When: </label>
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-12">
-                        <p>
-                            <input type="checkbox"  class="productAvailabilityCheckboxModal" id="productDependsOnBudget_Modal"> Depends on Budget
-                        </p>
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <p>
+                                <input type="checkbox"  class="productField productAvailabilityCheckbox" id="productAlwaysAvailableCheckBox"> Always
+                            </p>
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-4">
-                        <p>
-                            <input type="checkbox"  class="productAvailabilityCheckboxModal" id="productDependsOnTermLength_Modal"> Depends on Term Length
-                        </p>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <p>
+                                <input type="checkbox" class="productField productAvailabilityCheckbox" id="productDependsOnBudget"> Budget is:
+                            </p>
+                        </div>
+                        <div class="col-xs-12" id="productDependsOnBudgetContainer" style="margin-left:25px;margin-bottom:30px; display:none">
+                            <div class="conditionContainer" id="budgetConditionsContainer">
+                                <div class="col-xs-12">
+                                    <select>
+                                        <option>Less Than </option>
+                                        <option>Less Than or Equal To </option>
+                                        <option>Equal To</option>
+                                        <option>Greater Than</option>
+                                        <option>Greater Than or Equal To </option>
+                                    </select>
+                                    <input class="currency" type="text" placeholder = "$"  style="margin-top:4px; margin-bottom:4px; margin-left:20px;"/>
+                                    <button class="btn btn-xs btn-success addCondition" id="" type="button" style="margin-left:20px;">
+                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                        <span class="" style="font-size: 14px; font-weight: 500" > Add Another Condition</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <p>
+                                <input type="checkbox"  class="productField productAvailabilityCheckbox" id="productDependsOnTermLength"> Term Length is:
+                            </p>
+                        </div>
+                        <div class="col-xs-12" id="productDependsOnTermLengthContainer" style="margin-left:25px;margin-bottom:30px; display:none">
+                            <div class="conditionContainer" id="termConditionsContainer">
+                                <div class="col-xs-12">
+                                    <select>
+                                        <option>Less Than </option>
+                                        <option>Less Than or Equal To </option>
+                                        <option>Equal To</option>
+                                        <option>Greater Than</option>
+                                        <option>Greater Than or Equal To </option>
+                                    </select>
+                                    <input class="" type="text" placeholder = "Days"  style="margin-top:4px; margin-bottom:4px; margin-left:20px; "/>
+                                    <button class="btn btn-xs btn-success addCondition" id="" type="button" style="margin-left:20px;">
+                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                        <span class="" style="font-size: 14px; font-weight: 500" > Add Another Condition</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" id='saveProductDetailModalButton' data-dismiss="modal" aria-label="Save">Save</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" tabindex="-1" role="dialog" id="addCoverageModal" style="">
+    <div class="modal-dialog" role="document" style="">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Select Product</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <select id="coverageModalCoverageSelect">
+                            <option value="invalid">Select a Coverage</option>
+                            <g:each var="coverage" in="${coverages}">
+                                <option value="${coverage.coverageCode}">${coverage.coverageCode} - ${coverage.coverageName}</option>
+                            </g:each>
+                        </select>
+                    </div>
+                </div>
+                <div id="coverageModalConditionContainer">
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <label>Show Product When: </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <p>
+                                <input type="checkbox"  class="productField productAvailabilityCheckbox" id="productAlwaysAvailableCheckBox"> Always
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <p>
+                                <input type="checkbox" class="productField productAvailabilityCheckbox" id="productDependsOnBudget"> Budget is:
+                            </p>
+                        </div>
+                        <div class="col-xs-12" id="productDependsOnBudgetContainer" style="margin-left:25px;margin-bottom:30px; display:none">
+                            <div class="conditionContainer" id="budgetConditionsContainer">
+                                <div class="col-xs-12">
+                                    <select>
+                                        <option>Less Than </option>
+                                        <option>Less Than or Equal To </option>
+                                        <option>Equal To</option>
+                                        <option>Greater Than</option>
+                                        <option>Greater Than or Equal To </option>
+                                    </select>
+                                    <input class="currency" type="text" placeholder = "$"  style="margin-top:4px; margin-bottom:4px; margin-left:20px;"/>
+                                    <button class="btn btn-xs btn-success addCondition" id="" type="button" style="margin-left:20px;">
+                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                        <span class="" style="font-size: 14px; font-weight: 500" > Add Another Condition</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <p>
+                                <input type="checkbox"  class="productField productAvailabilityCheckbox" id="productDependsOnTermLength"> Term Length is:
+                            </p>
+                        </div>
+                        <div class="col-xs-12" id="productDependsOnTermLengthContainer" style="margin-left:25px;margin-bottom:30px; display:none">
+                            <div class="conditionContainer" id="termConditionsContainer">
+                                <div class="col-xs-12">
+                                    <select>
+                                        <option>Less Than </option>
+                                        <option>Less Than or Equal To </option>
+                                        <option>Equal To</option>
+                                        <option>Greater Than</option>
+                                        <option>Greater Than or Equal To </option>
+                                    </select>
+                                    <input class="" type="text" placeholder = "Days"  style="margin-top:4px; margin-bottom:4px; margin-left:20px; "/>
+                                    <button class="btn btn-xs btn-success addCondition" id="" type="button" style="margin-left:20px;">
+                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                        <span class="" style="font-size: 14px; font-weight: 500" > Add Another Condition</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id='saveCoverageDetailModalButton' data-dismiss="modal" aria-label="Save">Save</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->

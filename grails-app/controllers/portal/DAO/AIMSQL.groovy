@@ -4,10 +4,12 @@ import grails.util.Environment
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.sql.Sql
+import groovy.xml.XmlUtil
 import portal.DAO.Intelledox;
 import groovy.json.JsonOutput.*
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringEscapeUtils
+import sun.swing.StringUIClientPropertyKey;
 
 
 
@@ -661,6 +663,8 @@ class AIMSQL {
         def insuredID = 0; 
         def brokerName = user.firstName + " " + user.lastName;
 
+
+
         aimsql.call("{call dbo.GetKeyField(${Sql.INTEGER}, 'ReferenceID')}") { num ->
             log.info "InsuredID $num"
             insuredID = num
@@ -804,8 +808,8 @@ class AIMSQL {
 
             if(productID == "PIP CHOI" || productID == "PIP 1" || productID == "PIP 2"|| productID == "PIP 3"|| productID == "PIP 4"||
                     productID == "PIP 5" || productID == "EPKG37"){
-                limitsString = StringUtils.chomp(testjson.getAt("EPKGlimitsString").trim());
-                deductsString = StringUtils.chomp(testjson.getAt("EPKGdeductsString").trim());
+                limitsString = StringUtils.chomp(StringEscapeUtils.unescapeXml(testjson.getAt("EPKGlimitsString").trim()));
+                deductsString = StringUtils.chomp(StringEscapeUtils.unescapeXml(testjson.getAt("EPKGdeductsString").trim()));
                 coverageID = "EPKG";
                 if(testjson.getAt("epkgLOB").length() > 1){
                     stringLOB = testjson.getAt("epkgLOB");
@@ -814,8 +818,8 @@ class AIMSQL {
                 premiumRaw = testjson.getAt("EPKGPremium")
             }
             else if(productID == "BARCPKSF" || productID == "BARCPKGP"||productID == "BARCPKGC"){
-                limitsString = StringUtils.chomp(testjson.getAt("CPKlimitsString").trim());
-                deductsString = StringUtils.chomp(testjson.getAt("CPKdeductsString").trim());
+                limitsString = StringUtils.chomp(StringEscapeUtils.unescapeXml(testjson.getAt("CPKlimitsString").trim()));
+                deductsString = StringUtils.chomp(StringEscapeUtils.unescapeXml(testjson.getAt("CPKdeductsString").trim()));
                 coverageID = "CPK";
 
                 if(testjson.getAt("cpkLOB").length() > 1){
@@ -858,7 +862,7 @@ class AIMSQL {
                     // "\t\t0\t0\t\n" +
                     // "\t\t0\t0\t";
 
-                    productMap['productRateInfo'] = testjson.getAt("EPKGRateInfo");
+                    productMap['productRateInfo'] = StringEscapeUtils.unescapeXml(testjson.getAt("EPKGRateInfo"));
 
                 }
                 else if(coverageID == "CPK"){
@@ -872,7 +876,7 @@ class AIMSQL {
                     // "\t\t0\t0\t\n" +
                     // "\t\t0\t0\t\n" +
                     // "\t\t0\t0\t";
-                    productMap['productRateInfo'] = testjson.getAt("CPKRateInfo");
+                    productMap['productRateInfo'] = StringEscapeUtils.unescapeXml(testjson.getAt("CPKRateInfo"));
 
                     productMap['productEndorse'] = testjson.getAt("endorseInsert")
 
@@ -887,13 +891,15 @@ class AIMSQL {
                     // "\t\t0\t0\t\n" +
                     // "\t\t0\t0\t\n" +
                     // "\t\t0\t0\t";
-                    productMap['productRateInfo'] = testjson.getAt("CGLRateInfo");
+                    productMap['productRateInfo'] = StringEscapeUtils.unescapeXml(testjson.getAt("CGLRateInfo"));
 
                 }
                 else{
                     productMap['productLobDistribSched'] = it.LobDistrib
                 }
             }
+            log.info("PRODUCT RATE INFO: " + productMap['productRateInfo'] )
+            log.info("PRODUCT Limits INFO: " + limitsString )
             def companyMap = [:]
             aimsql.eachRow("SELECT Name, NAIC " +
                     "FROM Company WITH (NOLOCK) " +

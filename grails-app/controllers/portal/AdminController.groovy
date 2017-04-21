@@ -44,8 +44,10 @@ class AdminController {
 
         def products = Products.list();
 
+        def coverages = Coverages.list();
 
-        [user: session.user, riskCategories:riskCategories, subCategories:subCategories, riskTypes:riskTypes, products:products ]
+
+        [user: session.user, riskCategories:riskCategories, subCategories:subCategories, riskTypes:riskTypes, products:products, coverages:coverages ]
     }
 
     def saveRiskTypeChanges(){
