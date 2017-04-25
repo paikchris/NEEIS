@@ -1470,6 +1470,49 @@
                     </div>
                     %{--TABLE UMBRELLA--}%
                     <br>
+                    %{--TABLE ALCOHOL--}%
+                    <div class="alcoholSaleTableContainer" style="display:none">
+                        <div class="tableAlcohol" id="alcoholSaleProduct">
+                            <div class="row">
+                                <div class="col-xs-9 ">
+                                    <strong class="coverageCodeString"
+                                            style="font-size:13px">Liquor Liability</strong>
+                                    <span class="productID_pull" data-cov="ALCOHOL" style="display:none">SPEVENTS</span>
+                                </div>
+
+                                <div class="col-xs-3">
+                                    <span>-</span>
+                                </div>
+                            </div>
+
+                            <div class="row lobRow SPEVENTS ALCOHOL" style="background-color: rgba(38, 80, 159, 0.13)">
+                                <div class="col-xs-9 coverageColumn" style="padding-left:20px">
+                                    <span class="lob">Each common cause</span>
+                                </div>
+
+                                <div class="col-xs-3 limitColumn">
+                                    <span class="limit">$1,000,000</span>
+                                </div>
+                            </div>
+
+                            <div class="row lobRow SPEVENTS ALCOHOL">
+                                <div class="col-xs-9 coverageColumn" style="padding-left:20px">
+                                    <span class="lob">Aggregate limit</span>
+                                </div>
+
+                                <div class="col-xs-3 limitColumn">
+                                    <span class="limit">$1,000,000</span>
+                                </div>
+                            </div>
+
+                            <div class="row" style="border-top: 1px solid rgba(0, 0, 0, 0.19);">
+                                <div class="col-xs-10 "><strong style="font-size:13px"></strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    %{--TABLE ALCOHOL--}%
+                    <br>
                     <br>
                     %{--Premiums--}%
                     <div class="row" id="premiumDistDivContainer">

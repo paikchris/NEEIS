@@ -413,6 +413,10 @@ function getSubmissionMap() {
         insuredContactName: $('#nameOfPrincipal').val()
     };
 
+    if($('#sourceOfFinancing').is(":visible")){
+        submissionMap.sourceOfFinancing = $('#sourceOfFinancing').val();
+    }
+
     submissionMap.coverageCodes = "";
     $('#reviewLimitsDeducts .coverageCodeString').each(function() {
         submissionMap.coverageCodes = submissionMap.coverageCodes + $(this).html() + ",";

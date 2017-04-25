@@ -181,10 +181,18 @@ $(document).ready(function () {
         if ($(this).attr("value") == "Yes") {
             $(".alcoholSaleContainer").css('display', "");
             $(".alcoholSaleExplain").css('display', "");
+
+            $(".alcoholSaleTableContainer").css('display', "");
+            $(".alcoholSaleTableExplain").css('display', "")
+            $(".tableAlcohol").addClass("showReviewTable");
         }
         if ($(this).attr("value") == "No") {
             $(".alcoholSaleContainer").css('display', "none");
             $(".alcoholSaleExplain").css('display', "none");
+
+            $(".alcoholSaleTableContainer").css('display', "none");
+            $(".alcoholSaleTableExplain").css('display', "none");
+            $(".tableAlcohol").removeClass("showReviewTable");
         }
     });
 // BROKER FEE HIDDEN PREMIUM

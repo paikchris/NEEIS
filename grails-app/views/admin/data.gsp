@@ -187,10 +187,6 @@
                     <div class="col-xs-9">
                         <div id="riskTypeFields" style="display:none">
                             <div class="col-xs-12">
-                                <h5>Risk Type Fields</h5>
-                            </div>
-
-                            <div class="col-xs-12">
                                 <div class="row" style="margin-bottom:10px;">
                                     <div class="col-xs-6">
                                         <div class="form-group">
@@ -203,29 +199,53 @@
 
                                     </div>
                                 </div>
-                                <div class="row" style="margin-left:-4px;margin-bottom: 40px;">
-                                    <div class="col-xs-3">
-                                        <label>Coverages</label>
-                                        <button class="btn btn-xs btn-primary pull-right" id="" type="button" style="margin-left:20px;"
-                                                onclick="$('#addCoverageModal').modal('show'); clearModalCoverageFields();">
-                                            <i class="fa fa-plus" aria-hidden="true"></i>
-                                            <span class="" style="font-size: 14px; font-weight: 500" > Add Coverage</span>
+                                <div class=" row col-xs-12" style="">
+                                    <label>Product Offerings</label>
+                                </div>
+
+                                <div class="col-xs-3" id="levelOneContainer">
+
+                                    <div class="btn-group ">
+                                        <button type="button" class="btn btn-primary" onclick="$(this).toggleClass('active');">EPKG</button>
+                                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
+                                                aria-haspopup="true" aria-expanded="false" >
+                                            <span class="caret"></span>
+                                            <span class="sr-only">Toggle Dropdown</span>
                                         </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="#">Change</a></li>
+                                            <li><a href="#">Edit</a></li>
+                                            <li role="separator" class="divider"></li>
+                                            <li><a href="#">Remove</a></li>
+                                        </ul>
+                                    </div>
+
+                                    <br><br>
+
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-success dropdown-toggle" type="button" id="dropdownMenu1"
+                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" style="border-radius: 25px; padding: 1px 10px;">
+                                            Add
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                            %{--<li><a href="#" onclick="$('#addPackageModal').modal('show');">Package</a></li>--}%
+                                            <li><a href="#" onclick="$('#addProductModal').modal('show');">Product</a></li>
+                                            %{--<li><a href="#" onclick="$('#addCoverageModal').modal('show');">Coverage</a></li>--}%
+                                        </ul>
                                     </div>
                                 </div>
-                                <div class="row" style="margin-left:-4px;margin-bottom: 40px;">
-                                    <div class="col-xs-3">
-                                        <label>Products</label>
-                                        <button class="btn btn-xs btn-primary pull-right" id="" type="button" style="margin-left:20px;"
-                                                onclick="$('#addProductModal').modal('show'); clearModalProductFields();">
-                                            <i class="fa fa-plus" aria-hidden="true"></i>
-                                            <span class="" style="font-size: 14px; font-weight: 500" > Add Product</span>
-                                        </button>
-                                    </div>
+                                <div class="col-xs-3" id="levelTwoContainer">
+
+                                </div>
+                                <div class="col-xs-3" id="levelThreeContainer">
+
+                                </div>
+                                <div class="col-xs-3" id="levelFourContainer">
+
                                 </div>
                                 <div class="row"  style="margin-left:-4px; margin-top:10px; margin-bottom:10px">
-                                    <div class="col-xs-12" id="riskProductsDiv">
-                                    </div>
+
 
                                 </div>
                                 <div id="mainConditionContainer" style="margin-bottom: 40px;">
@@ -346,16 +366,16 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-xs-12">
-                        <select id="productModalProductSelect">
+                    <div class="col-xs-6 col-xs-offset-3">
+                        <select class="form-control" id="productModalProductSelect">
                             <option value="invalid">Select a Product</option>
                             <g:each var="product" in="${products}">
-                                <option value="${product.productID}">${product.productID}</option>
+                                <option value="${product.productID}" onclick="alert();">${product.productID}</option>
                             </g:each>
                         </select>
                     </div>
                 </div>
-                <div id="productModalConditionContainer">
+                <div id="productModalConditionContainer" style="margin: 24px; display: none">
                     <div class="row">
                         <div class="col-xs-4">
                             <label>Show Product When: </label>

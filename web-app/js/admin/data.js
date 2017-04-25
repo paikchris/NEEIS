@@ -213,6 +213,7 @@ function saveRiskTypeChanges(){
         });
 }
 
+
 function fillRiskCategoryFields(clickedRisk){
     $('#riskCategoryName_Input').val($(clickedRisk).attr('data-riskcategoryname'));
     $('#riskTypeCategoryDescription_Input').val($(clickedRisk).attr('data-description'));
