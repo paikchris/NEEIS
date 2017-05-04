@@ -55,7 +55,7 @@
                 <i class="fa fa-floppy-o" aria-hidden="true"></i>
                 <span class="" style="font-size: 14px; font-weight: 500" > Save Progress</span>
             </button>
-            <button class="btn btn-xs btn-success pull-right" id="loadProgress" type="button" style=";background-color: #15a175;border-color: #15a175;margin: 2px; ">
+            <button class="btn btn-xs btn-success pull-right" id="loadProgress" type="button" style="display:none ;background-color: #15a175;border-color: #15a175;margin: 2px; ">
                 <i class="fa fa-folder-open-o" aria-hidden="true"></i>
                 <span class="" style="font-size: 14px; font-weight: 500" > Load Previous</span>
             </button>

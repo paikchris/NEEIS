@@ -57,6 +57,7 @@ function initializeDateInputAndFunctions() {
                 yearTemp = mdyEffectiveDateObjectTemp.getFullYear() + 1;
                 $("#proposedExpirationDate").val((monthIndexTemp) + "/" + dayTemp + "/" + yearTemp);
                 $('#proposedTermLength').val(365 + " Days");
+                pulseInputChange($('#proposedTermLength'));
             }
             else if (riskChosen.indexOf("Film Projects") > -1) {
                 //console.log("DO NOTHING")
@@ -81,6 +82,7 @@ function initializeDateInputAndFunctions() {
                 //yearTemp = mdyEffectiveDateObjectTemp.getFullYear() + 1;
                 $("#proposedExpirationDate").val((monthIndexTemp) + "/" + dayTemp + "/" + yearTemp);
                 $('#proposedTermLength').val(5 + " Days");
+                pulseInputChange($('#proposedTermLength'));
             }
             else {
                 var termLengthTemp;
@@ -101,6 +103,7 @@ function initializeDateInputAndFunctions() {
                 yearTemp = mdyEffectiveDateObjectTemp.getFullYear() + 1;
                 $("#proposedExpirationDate").val((monthIndexTemp) + "/" + dayTemp + "/" + yearTemp);
                 $('#proposedTermLength').val(365 + " Days");
+                pulseInputChange($('#proposedTermLength'));
             }
 
         }
@@ -123,6 +126,7 @@ function initializeDateInputAndFunctions() {
                 }
                 else if (days > 1) {
                     $('#proposedTermLength').val(days + " Days")
+                    pulseInputChange($('#proposedTermLength'));
                     datesAreValid = true;
                 }
                 else if (days < 1) {
@@ -239,6 +243,7 @@ function initializeDateInputAndFunctions() {
         var length = $(this).val().split(" ")[0];
         if (isNaN(length)) {
             $(this).val($(this).val().replace(/\D/g, '') + " Days");
+            pulseInputChange($('#proposedTermLength'));
             if ($(this).val().split(" ")[0].length == 0) {
                 var mdyEffective = $('#proposedEffectiveDate').val().split('/');
                 var mdyEffectiveDateObject = new Date(mdyEffective[2], mdyEffective[0] - 1, mdyEffective[1]);
@@ -286,6 +291,7 @@ function initializeDateInputAndFunctions() {
 
             $("#proposedExpirationDate").val((monthIndex) + "/" + day + "/" + year);
             $(this).val(length + " Days");
+            pulseInputChange($('#proposedTermLength'));
 
             if ($(this).val().split(" ")[0].length == 0) {
                 $(this).val("1 Days");

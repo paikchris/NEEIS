@@ -91,6 +91,43 @@ $(document).ready(function () {
         liquorPremium = getLiquorPremium(totalPremiumLiquor)
         $("#alcoholSalePremiumCost").html("$" + liquorPremium);
     });
+    // ALCOHOL TYPE PERCENTAGE
+    $(document.body).on('change', ".whatKindOfLiquorIsServed", function () {
+        beer = $("#whatKindOfLiquorIsServedBeer").val()
+        wine = $("#whatKindOfLiquorIsServedWine").val()
+        fullBar = $("#whatKindOfLiquorIsServedFullBar").val()
+        var totalPercent
+        if (beer.length > 0 && wine.length > 0 && fullBar.length > 0) {
+            var alcoholTotalPercent = 0;
+
+            alcoholTotalPercent = alcoholPercentage(totalPercent)
+            if (alcoholTotalPercent == 100){
+            }
+            else if (alcoholTotalPercent != 100 ) {
+                alert("please enter values that add up to 100%")
+                $("#whatKindOfLiquorIsServedBeer").val("")
+                $("#whatKindOfLiquorIsServedWine").val("")
+                $("#whatKindOfLiquorIsServedFullBar").val("")
+            }
+        }
+        else if($(this).val().length > 0 ){
+            var alcoholTotalPercent = alcoholPercentage(totalPercent)
+            if (alcoholTotalPercent == 100) {
+                // alert("good")
+                if ($("#whatKindOfLiquorIsServedBeer").val().length == 0 ){
+                    $("#whatKindOfLiquorIsServedBeer").val('00%')
+                };
+                if ($("#whatKindOfLiquorIsServedWine").val().length == 0 ){
+                    $("#whatKindOfLiquorIsServedWine").val('00%')
+                };
+                if ($("#whatKindOfLiquorIsServedFullBar").val().length == 0 ){
+                    $("#whatKindOfLiquorIsServedFullBar").val('00%')
+                    // $("#whatKindOfLiquorIsServedFullBar").html().replace('','0')
+                };
+            }
+        }
+    });
+
 // POLICY PREMIUM
     $(document.body).on('change', ".effectsTotalCGL", function () {
         var policyFee = 25
@@ -215,7 +252,6 @@ $(document).ready(function () {
         }
     });
 
-
 // INSURED CONTACT TABLE / CONTAINER
     $(document.body).on('change', 'input[name="contactRep"]', function () {
         //alert();
@@ -240,41 +276,6 @@ $(document).ready(function () {
             $("#equipmentOwnedRentedExplain").css('display', "none");
         }
     });
-// OVERNIGHT EVENTS ADDITIONAL HIDDEN QUESTIONS
-    $(document.body).on('change', 'input[name="overnight"]', function () {
-        //alert();
-        if ($(this).attr("value") == "Yes") {
-            $("#overnightContainer").css('display', "");
-            $("#overnightExplain").css('display', "");
-        }
-        if ($(this).attr("value") == "No") {
-            $("#overnightContainer").css('display', "none");
-            $("#overnightExplain").css('display', "none");
-        }
-    });
-// PYRO ADDITIONAL HIDDEN QUESTIONS
-    $(document.body).on('change', '#pyrotechnicsCheckbox' ,function(){
-        if($("#pyrotechnicsCheckbox").is(':checked')) {
-            $('#pyrotechnicsAttachContainer').css("display", "");
-        }
-        else{
-            $('#pyrotechnicsAttachContainer').css("display", "none");
-        }
-    });
-// STUNTS HAZARDOUS EVENTS ADDITIONAL HIDDEN QUESTIONS
-    $(document.body).on('change', '#stuntsHazardousCheckbox' ,function(){
-        if($("#stuntsHazardousCheckbox").is(':checked')) {
-            $('#stuntsHazardousActivitiesAttachContainer').css("display", "");
-            $('#stuntCoordinatorName').css("display", "");
-            $('#participantsSigningWaivers').css("display", "");
-        }
-        else{
-            $('#stuntsHazardousActivitiesAttachContainer').css("display", "none");
-            $('#stuntCoordinatorName').css("display", "none");
-            $('#participantsSigningWaivers').css("display", "none");
-
-        }
-    });
 // INSURANCE BEEN CANCELLED ADDITIONAL HIDDEN QUESTIONS
     $(document.body).on('change', 'input[name="insuranceCancelled"]', function () {
         //alert();
@@ -287,39 +288,11 @@ $(document).ready(function () {
             $("#insuranceCancelledExplain").css('display', "none");
         }
     });
-// PARKING ADDITIONAL QUESTION
-    $(document.body).on('change', 'input[name="responsibleForParking"]', function () {
-        //alert();
-        if ($(this).attr("value") == "Yes") {
-            $("#parkingContainer").css('display', "");
-            $("#parkingExplain").css('display', "");
-            $(".parking").addClass("showReview");
-        }
-        if ($(this).attr("value") == "No") {
-            $("#parkingContainer").css('display', "none");
-            $("#parkingExplain").css('display', "none");
-            $(".parking").removeClass("showReview");
-        }
-    });
-// SECURITY ADDITIONAL QUESTION
-    $('#securityType').change(function() {
-    // $(document.body).on('change', '#securityType' ,function () {
-    var option = $(this).find('option:selected').val();
-    // alert(option);
-        if  (option == "Unarmed Security" ||
-            option == "Armed Security" ||
-            option == "Other Security") {
-            $("#securityContainer").css('display', "");
-            $("#securityExplain").css('display', "");
-            $(".securityGuards").addClass("showReview");
-        }
-        if  (option == "invalid") {
-            $("#securityContainer").css('display', "none");
-            $("#securityExplain").css('display', "none");
-            $(".securityGuards").removeClass("showReview");
-        }
-    });
-// EVENT OUTDOORS ADDITIONAL QUESTION
+
+
+
+// INSURED INFO CONTAINERS
+    // Y/N EVENT OUTDOORS CONTAINER ADDITIONAL QUESTION
     $(document.body).on('change', 'input[name="willEventBeHeldOutdoors"]', function () {
         //alert();
         if ($(this).attr("value") == "Yes") {
@@ -333,21 +306,19 @@ $(document).ready(function () {
             $(".eventOutdoor").removeClass("showReview");
         }
     });
-// FENCED ADDTIONAL QUESTION
-    $(document.body).on('change', 'input[name="facilityFenced"]', function () {
+    // Y/N EVACUATION PLAN CONTAINER ATTACHMENT
+    $(document.body).on('change', 'input[name="evacuationFormalPlan"]', function () {
         //alert();
         if ($(this).attr("value") == "Yes") {
-            $("#fenceTypeContainer").css('display', "");
-            $("#fenceTypeExplain").css('display', "");
-            $(".facilityFence").addClass("showReview");
+            $("#evacuationAttachContainer").css('display', "");
+            $("#evacuationAttachExplain").css('display', "");
         }
         if ($(this).attr("value") == "No") {
-            $("#fenceTypeContainer").css('display', "none");
-            $("#fenceTypeExplain").css('display', "none");
-            $(".facilityFence").removeClass("showReview");
+            $("#evacuationAttachContainer").css('display', "none");
+            $("#evacuationAttachExplain").css('display', "none");
         }
     });
-// BODIES OF WATER ADDITIONAL QUESTION
+    // Y/N BODIES OF WATER CONTAINER ADDITIONAL QUESTION
     $(document.body).on('change', 'input[name="bodiesOfWater"]', function () {
         //alert();
         if ($(this).attr("value") == "Yes") {
@@ -361,7 +332,7 @@ $(document).ready(function () {
             $(".water").removeClass("showReview");
         }
     });
-// WATER HAZARD ADDITIONAL QUESTION
+    // Y/N WATER HAZARD FENCED CONTAINER ADDITIONAL QUESTION
     $(document.body).on('change', 'input[name="waterHazardFenced"]', function () {
         //alert();
         if ($(this).attr("value") == "Yes") {
@@ -375,55 +346,277 @@ $(document).ready(function () {
             $(".waterHazardNotFenced").addClass("showReview");
         }
     });
-// RISK HAZARD QUESTION
+    // Y/N FENCED CONTAINER ADDTIONAL QUESTION
+    $(document.body).on('change', 'input[name="facilityFenced"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#fenceTypeContainer").css('display', "");
+            $("#fenceTypeExplain").css('display', "");
+            $(".facilityFence").addClass("showReview");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#fenceTypeContainer").css('display', "none");
+            $("#fenceTypeExplain").css('display', "none");
+            $(".facilityFence").removeClass("showReview");
+        }
+    });
+    // Y/N SEATING AND STAGE CONTAINER ATTACHMENT
+    $(document.body).on('change', 'input[name="independentFirmStageSeating"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#stageSeatingAttachContainer").css('display', "");
+            $("#waterHazardNotFencedExplain").css('display', "");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#stageSeatingAttachContainer").css('display', "none");
+            $("#waterHazardNotFencedExplain").css('display', "none");
+        }
+    });
+    // Y/N PARTICIPANT ACCIDENT MEDICAL COVERAGE IN PLACE CONTAINER ATTACHMENT
+    $(document.body).on('change', 'input[name="pamc"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#pamcAttachContainer").css('display', "");
+            $("#pamcAttachExplain").css('display', "");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#pamcAttachContainer").css('display', "none");
+            $("#pamcAttachExplain").css('display', "none");
+        }
+    });
+    // Y/N VOLUNTEER SIGN WAIVER CONTAINER ATTACHMENT
+    $(document.body).on('change', 'input[name="signingVolunteersWaivers"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#volunteerAttachContainer").css('display', "");
+            $("#volunteerAttachExplain").css('display', "");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#volunteerAttachContainer").css('display', "none");
+            $("#volunteerAttachExplain").css('display', "none");
+        }
+    });
+
+// RISK SPECIFIC INFO CONTAINERS
+    // Y/N RISK HAZARD QUESTION
     $(document.body).on('change', '.riskHazard' ,function(){
         if($(".riskHazard").is(':checked')) {
             alert("Due to the risk hazards of this event, the indication provided in the previous page is no longer valid. Please proceed with entering all the information requested following this notification and an underwriter will be contacting you shortly. Please note, we may not be able to offer terms based on additional information received")
         }
     });
-
-
-
-
-
-
-// ALCOHOL TYPE PERCENTAGE
-    $(document.body).on('change', ".whatKindOfLiquorIsServed", function () {
-        beer = $("#whatKindOfLiquorIsServedBeer").val()
-            wine = $("#whatKindOfLiquorIsServedWine").val()
-            fullBar = $("#whatKindOfLiquorIsServedFullBar").val()
-            var totalPercent
-        if (beer.length > 0 && wine.length > 0 && fullBar.length > 0) {
-            var alcoholTotalPercent = 0;
-
-            alcoholTotalPercent = alcoholPercentage(totalPercent)
-            if (alcoholTotalPercent == 100){
-            }
-            else if (alcoholTotalPercent != 100 ) {
-                alert("please enter values that add up to 100%")
-                $("#whatKindOfLiquorIsServedBeer").val("")
-                $("#whatKindOfLiquorIsServedWine").val("")
-                $("#whatKindOfLiquorIsServedFullBar").val("")
-            }
+    // CHECKBOX HAZARDOUS CONTAINER ADDITIONAL HIDDEN QUESTIONS
+    $(document.body).on('change', '#amusementCheckbox' ,function(){
+        if($("#amusementCheckbox").is(':checked')) {
+            $('.hazardousContainer').css("display", "");
+            $(".typeAmusement").addClass("showReview");
         }
-        else if($(this).val().length > 0 ){
-            var alcoholTotalPercent = alcoholPercentage(totalPercent)
-            if (alcoholTotalPercent == 100) {
-                // alert("good")
-                if ($("#whatKindOfLiquorIsServedBeer").val().length == 0 ){
-                    $("#whatKindOfLiquorIsServedBeer").val('00%')
-                };
-                if ($("#whatKindOfLiquorIsServedWine").val().length == 0 ){
-                    $("#whatKindOfLiquorIsServedWine").val('00%')
-                };
-                if ($("#whatKindOfLiquorIsServedFullBar").val().length == 0 ){
-                    $("#whatKindOfLiquorIsServedFullBar").val('00%')
-                    // $("#whatKindOfLiquorIsServedFullBar").html().replace('','0')
-                };
-            }
+        else{
+            $('.hazardousContainer').css("display", "none");
+            $(".typeAmusement").removeClass("showReview");
         }
     });
+    // CHECKBOX PYROTECH CONTAINER ATTACHMENT
+    $(document.body).on('change', '#pyrotechnicsCheckbox' ,function(){
+        if($("#pyrotechnicsCheckbox").is(':checked')) {
+            $('#pyrotechnicsAttachContainer').css("display", "");
+        }
+        else{
+            $('#pyrotechnicsAttachContainer').css("display", "none");
 
+        }
+    });
+    // CHECKBOX STUNTS HAZARDOUS CONTAINER EVENTS ATTACHMENT
+    $(document.body).on('change', '#stuntsHazardousCheckbox' ,function(){
+        if($("#stuntsHazardousCheckbox").is(':checked')) {
+            $('#stuntsHazardousActivitiesAttachContainer').css("display", "");
+            $('#stuntCoordinatorName').css("display", "");
+            $('#participantsSigningWaivers').css("display", "");
+        }
+        else{
+            $('#stuntsHazardousActivitiesAttachContainer').css("display", "none");
+            $('#stuntCoordinatorName').css("display", "none");
+            $('#participantsSigningWaivers').css("display", "none");
+
+        }
+    });
+    // SELECT SECURITY CONTAINER ADDITIONAL QUESTION
+    $('#securityType').change(function() {
+        // $(document.body).on('change', '#securityType' ,function () {
+        var option = $(this).find('option:selected').val();
+        // alert(option);
+        if  (option == "Unarmed Security" ||
+            option == "Armed Security" ||
+            option == "Other Security") {
+            $("#securityContainer").css('display', "");
+            $("#securityExplain").css('display', "");
+            $(".securityGuards").addClass("showReview");
+        }
+        if  (option == "invalid") {
+            $("#securityContainer").css('display', "none");
+            $("#securityExplain").css('display', "none");
+            $(".securityGuards").removeClass("showReview");
+        }
+    });
+    // Y/N SECURITY INDEPENDENT CONTAINER ADDITIONAL HIDDEN QUESTIONS
+    $(document.body).on('change', 'input[name="independentFirmSecurity"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#securityIndependentContainer").css('display', "");
+            $("#securityIndependentExplain").css('display', "");
+            $(".securityDetails").addClass("showReview");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#securityIndependentContainer").css('display', "none");
+            $("#securityIndependentExplain").css('display', "none");
+            $(".securityDetails").removeClass("showReview");
+        }
+    });
+    // SELECT MEDICAL CONTAINER ADDITIONAL QUESTION
+    $('#firstAidType').change(function() {
+        // $(document.body).on('change', '#securityType' ,function () {
+        var option = $(this).find('option:selected').val();
+        // alert(option);
+        if  (option == "City Paramedics" ||
+            option == "Venue Staff" ||
+            option == "Other First Aid") {
+            $("#medicalContainer").css('display', "");
+            $("#medicalExplain").css('display', "");
+            $(".medicalselected").addClass("showReview");
+        }
+        if  (option == "invalid") {
+            $("#medicalContainer").css('display', "none");
+            $("#medicalExplain").css('display', "none");
+            $(".medicalselected").removeClass("showReview");
+        }
+    });
+    // Y/N MEDICAL INDEMNIFIED CONTAINER ATTACHMENT
+    $(document.body).on('change', 'input[name="medicalIndemnified"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#medicalAttachContainer").css('display', "");
+            $("#medicalAttachExplain").css('display', "");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#medicalAttachContainer").css('display', "none");
+            $("#medicalAttachExplain").css('display', "none");
+        }
+    });
+    // Y/N MEDICAL OFF SITE CONTAINER ADDITIONAL HIDDEN QUESTIONS
+    $(document.body).on('change', 'input[name="emtOutsideOnsite"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#medicalOffSiteContainer").css('display', "");
+            $("#medicalOffSiteExplain").css('display', "");
+            $(".responseTimeEMT").addClass("showReview");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#medicalOffSiteContainer").css('display', "none");
+            $("#medicalOffSiteExplain").css('display', "none");
+            $(".responseTimeEMT").removeClass("showReview");
+        }
+    });
+    // Y/N MEDICAL EMPLOYEES CONTAINER ADDITIONAL HIDDEN QUESTIONS
+    $(document.body).on('change', 'input[name="emtEmployees"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#medicalNotEmployeesContainer").css('display', "none");
+            $("#medicalNotEmployeesExplain").css('display', "none");
+            $(".medicalEmployeeNo").removeClass("showReview");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#medicalNotEmployeesContainer").css('display', "");
+            $("#medicalNotEmployeesExplain").css('display', "");
+            $(".medicalEmployeeNo").addClass("showReview");
+        }
+    });
+    // Y/N OVERNIGHT EVENTS CONTAINER ADDITIONAL HIDDEN QUESTIONS
+    $(document.body).on('change', 'input[name="overnight"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#overnightContainer").css('display', "");
+            $("#overnightExplain").css('display', "");
+            $(".camperReview").addClass("showReview");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#overnightContainer").css('display', "none");
+            $("#overnightExplain").css('display', "none");
+            $(".camperReview").removeClass("showReview");
+        }
+    });
+    // Y/N OVERNIGHT SECURITY CAMPER CONTAINER ADDITIONAL HIDDEN QUESTIONS
+    $(document.body).on('change', 'input[name="overnightSecurity"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#overnightSecurityContainer").css('display', "");
+            $("#overnightSecurityExplain").css('display', "");
+            $(".overnightSecurityReview").addClass("showReview");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#overnightSecurityContainer").css('display', "none");
+            $("#overnightSecurityExplain").css('display', "none");
+            $(".overnightSecurityReview").removeClass("showReview");
+        }
+    });
+    // SELECT PARKING CONTAINER ADDITIONAL QUESTION
+    $('#parkingType').change(function() {
+        // $(document.body).on('change', '#securityType' ,function () {
+        var option = $(this).find('option:selected').val();
+        // alert(option);
+        if  (option == "Dirt" ||
+            option == "Gravel" ||
+            option == "Pathway" ||
+            option == "Unpaved" ||
+            option == "Other") {
+            $("#parkingMainContainer").css('display', "");
+            $("#parkingMainExplain").css('display', "");
+            $(".parkingReview").addClass("showReview");
+        }
+        if  (option == "invalid") {
+            $("#parkingMainContainer").css('display', "none");
+            $("#parkingMainExplain").css('display', "none");
+            $(".parkingReview").removeClass("showReview");
+        }
+    });
+    // Y/N PARKING CONTAINER ADDITIONAL HIDDEN QUESTIONS
+    $(document.body).on('change', 'input[name="responsibleForParking"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#parkingContainer").css('display', "none");
+            $("#parkingExplain").css('display', "none");
+            $(".parkingIndemnifiedReview").removeClass("showReview");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#parkingContainer").css('display', "");
+            $("#parkingExplain").css('display', "");
+            $(".parkingIndemnifiedReview").addClass("showReview");
+        }
+    });
+    // Y/N PARKING CONTAINER ATTACHMENT
+    $(document.body).on('change', 'input[name="parkingIndemnified"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#parkingAttachContainer").css('display', "");
+            $("#parkingAttachExplain").css('display', "");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#parkingAttachContainer").css('display', "none");
+            $("#parkingAttachExplain").css('display', "none");
+        }
+    });
+    // Y/N WEATHER CONTAINER ADDITIONAL HIDDEN QUESTIONS
+    $(document.body).on('change', 'input[name="weather"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#weatherContainer").css('display', "");
+            $("#weatherExplain").css('display', "");
+            $(".weatherReview").addClass("showReview");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#weatherContainer").css('display', "none");
+            $("#weatherExplain").css('display', "none");
+            $(".weatherReview").removeClass("showReview");
+        }
+    });
 
 
 // YES NO CHECK BOX HIDDEN QUESTIONS / TABLES

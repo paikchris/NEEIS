@@ -49,6 +49,7 @@ public  java.lang.Object getAllRiskTypesForCategory() { return null;}
 public  java.lang.Object getAttachmentsList() { return null;}
 public  java.lang.Object addNewInsured() { return null;}
 public  java.lang.Object ajaxAttachNew() { return null;}
+public  java.lang.Object saveProgressStoreAttachedFiles() { return null;}
 public  java.lang.Object ajaxAttach() { return null;}
 public  java.lang.Object newRatePremiums() { return null;}
 public  java.lang.Object ratePremiumsSGP() { return null;}

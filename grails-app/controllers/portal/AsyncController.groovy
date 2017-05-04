@@ -1085,7 +1085,6 @@ class AsyncController {
                         fileDest.mkdirs();
 
 
-                        if (params.bioFile != "undefined") {
                             fileName = key + "-" + fileRealName
                             log.info("COPYING FILE TO ATTACHMENTS LOCAL: " + fileName)
 
@@ -1098,7 +1097,7 @@ class AsyncController {
                             dstStream.close()
 
                             fileHelper.ftpFileToAIM(fileName, localFolderPath, quoteID, dataSource_aim)
-                        }
+
 
 
                         if (done) {
@@ -1126,6 +1125,53 @@ class AsyncController {
 
         render "Upload Completed"
     }
+
+    def saveProgressStoreAttachedFiles() {
+        log.info("Store Temporary Saved Files")
+        log.info(params);
+        FileTransferHelper fileHelper = new FileTransferHelper();
+        Sql aimsql = new Sql(dataSource_aim)
+        FTPClient ftpClient = new FTPClient();
+
+        def temporaryFilesFolderPath = servletContext.getRealPath("/attachments/temp/")
+        def attachedFile
+
+        params.each{ key, value ->
+            log.info value
+            if(value instanceof org.springframework.web.multipart.commons.CommonsMultipartFile){
+                log.info "is File"
+                try{
+                    log.info("STORING ALL ATTACHMENTS IN " + temporaryFilesFolderPath)
+                    def fileRealName
+                    def tempFilename
+
+                    fileRealName = params.getAt(key).getFileItem().name
+                    tempFilename = params.uuid + "#NEUUID#" + key + "#NEUUID#" + fileRealName;
+                    attachedFile = params.getAt(key);
+                    fileHelper.saveAttachedFileToLocalPath(attachedFile, temporaryFilesFolderPath, tempFilename)
+
+                } catch (IOException e) {
+                    StringWriter sw = new StringWriter();
+                    e.printStackTrace(new PrintWriter(sw));
+                    String exceptionAsString = sw.toString();
+                    log.info("Error Details - " + exceptionAsString)
+                } finally {
+                    try {
+                        if (ftpClient.isConnected()) {
+                            ftpClient.logout();
+                            ftpClient.disconnect();
+                        }
+                    } catch (IOException ex) {
+                        log.info ex
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        render "Upload Completed"
+    }
+
     def ajaxAttach() {
         log.info("CHECKING AJAX ATTACH BUTTON")
         log.info(params);

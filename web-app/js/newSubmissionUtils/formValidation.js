@@ -132,7 +132,24 @@ function validateFields() {
         }
     });
 
-
-    console.log("Error: " + message);
+    if(message.length > 0){
+        console.log("Error: " + message);
+    }
     return [valid, message];
+}
+
+function pulseInputChange(element){
+
+    setTimeout(function(){
+        element.addClass('pulse')
+    }, 200);
+    setTimeout(function(){
+        element.removeClass('pulse')
+    }, 400);
+    setTimeout(function(){
+        element.addClass('pulse')
+    }, 700);
+    setTimeout(function(){
+        element.removeClass('pulse')
+    }, 850);
 }

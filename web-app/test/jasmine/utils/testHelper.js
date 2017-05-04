@@ -4,7 +4,7 @@ function loadURLForTest(urlString, divElementToLoad, jsFiles, done){
         $.fx.off = true;
 
         //Turn off Autosave Loading
-        Cookies.remove('autosaveData');
+        // Cookies.remove('autosaveData');
 
         //APPEND THE HTML TO THE APPROPRIATE FIXTURE DIV
         $("#fixtureToBeTested").html($(this).find(divElementToLoad).html());

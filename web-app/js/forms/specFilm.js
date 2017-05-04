@@ -629,6 +629,7 @@ $(document).ready(function() {
                 year = mdyEffectiveDateObject.getFullYear() + 1;
                 $("#proposedExpirationDate").val((monthIndex) + "/" + day + "/" + year);
                 $('#proposedTermLength').val(365 + " Days");
+                pulseInputChange($('#proposedTermLength'));
                 $("#CPKCGLcoverage").trigger('change');
 
             }
@@ -647,6 +648,7 @@ $(document).ready(function() {
                 year = dat.getFullYear();
                 $("#proposedExpirationDate").val((monthIndex) + "/" + day + "/" + year);
                 $('#proposedTermLength').val(60 + " Days");
+                pulseInputChange($('#proposedTermLength'));
                 $("#CPKCGLcoverage").trigger('change');
             }
 
@@ -682,31 +684,14 @@ $(document).ready(function() {
             if (riskChosen === "Film Projects With Cast (No Work Comp)") {
                 $(".FILMWITHCASTNOWCOptions").css("display", "");
                 $(".PIP5Only").css("display", "none");
-
-                //$('#EPKGCASTAdditionalCoverage').prop("checked", true);
-                //$('#EPKGCASTAdditionalCoverage').trigger('click');
-                //$('#EPKGCASTEssentialOption').css("display","");
-
-
             }
             else {
-                //$('#EPKGCASTAdditionalCoverage').prop("checked", false);
                 $(".FILMWITHCASTNOWCOptions").css("display", "none");
                 $(".PIP5Only").css("display", "");
-                //$('#EPKGCASTEssentialOption').css("display","none");
             }
-            //alert();
-            // if ($("#PIPChoiceInput").is(":visible")) {
-            //     $('#PIPChoiceInputRadio').prop("checked", true);
-            //     $('#PIPChoiceInputRadio').trigger("change");
-            //
-            // }
-            // else {
-            //     $('#PIP5InputRadio').prop("checked", true);
-            //     $('#PIP5InputRadio').trigger("change");
-            //
-            // }
             $("#EPKGoptions").css("display", "");
+            $('#EPKGProductsDiv').find('input:radio').first().prop("checked", true);
+            $('#EPKGProductsDiv').find('input:radio').first().trigger('change')
         }
         else {
             $('#PIP1InputRadio').prop("checked", false);
@@ -1012,7 +997,12 @@ $(document).ready(function() {
                 //IF ANNUAL POLICY SHOW ANNUAL OPTIONS
                 if ($('#EPKGcoverage').is(':checked')) {
                     if ($('#PIPChoiceInputRadio').is(':checked')) {
-
+                        if (termLength >= 365) {
+                            $('.AnnualOptions').css("display", "");
+                        }
+                        else {
+                            $('.AnnualOptions').css("display", "none");
+                        }
                     }
                     else {
                         if (termLength >= 365) {
@@ -1022,8 +1012,6 @@ $(document).ready(function() {
                             $('.AnnualOptions').css("display", "none");
                         }
                     }
-
-
                 }
                 else {
 

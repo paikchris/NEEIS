@@ -192,7 +192,31 @@
 <script src="${resource(dir: 'js', file: "submissions.js?ts=" + new Date().getTime())}"></script>
 
 
-
+<div class="modal fade" tabindex="-1" role="dialog" id="attachmentsViewModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Attachments</h4>
+            </div>
+            <div class="modal-body" id="attachmentRowsContainer">
+                <div class="row fileRow" style="margin-top:10px; margin-bottom: 10px;">
+                    <div class="col-xs-12">
+                        <button class="downloadFileButton btn btn-primary " style="margin-right:20px; margin-left:15px;">Download</button>
+                        <img src='/images/pdfIcon.png' height='16' width='16' style='margin-right:5px'/>
+                        <span class="fileDescriptionSpan " style="line-height: 30px;">Indication.pdf</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                %{--<g:link controller="Async" action="ajaxDownloadAttachment" >--}%
+                %{--<button>Test</button>--}%
+                %{--</g:link>--}%
+                <button type="button" class="btn btn-primary" data-dismiss="modal" aria-label="Close">Done</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 <div class="modal fade" tabindex="-1" role="dialog" id="reviewModal">
     <style>

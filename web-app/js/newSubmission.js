@@ -12,7 +12,10 @@ var uwQuestionsMap = {};
 var uwQuestionsOrder = [];
 
 function init(){
-    $('html,body').scrollTop(0);
+    // $('html,body').scrollTop(0);
+    $(window).on('unload', function() {
+        $(window).scrollTop(0);
+    });
     var testingMode = false; //SET TO TRUE IF TESTING
 
 
@@ -30,6 +33,7 @@ function init(){
     initializeDateInputAndFunctions();
     initializeBORFunctions();
 }
+
 
 $(document).ready(function() {
     init();
@@ -82,6 +86,9 @@ $(document).ready(function() {
             }
         }
     });
+
+
+
 
     //RATE PREMIUMS WHEN COVERAGE CHECKBOX IS CLICKED
     $(document.body).on('change', '.coverageCheckbox', function() {
@@ -792,16 +799,7 @@ $(document).ready(function() {
 
                                     var formData = new FormData();
                                     var formDataNew = getFormDataWithAllAttachedFilesNew();
-                                    // var bioFile = $('#bioFile').get(0).files[0];
-                                    // var lossesFile = $('#lossesFile').get(0).files[0];
-                                    // var pyroFile = $('#pyroFile').get(0).files[0];
-                                    // var stuntsFile = $('#stuntsFile').get(0).files[0];
-                                    // var animalPDF = $('#animalPDF').get(0).files[0];
-                                    // var dronePDF = $('#dronePDF').get(0).files[0];
-                                    // var equipScheduleFile = $('#equipScheduleFile').get(0).files[0];
-                                    // var doodFile = $('#doodFile').get(0).files[0];
-                                    // var treatmentFile = $('#treatmentFile').get(0).files[0];
-                                    // var budgetFile = $('#budgetFile').get(0).files[0];
+
                                     var quoteIDs = msg.split("&;&")[0];
 
                                     //NEW STUFF
@@ -906,8 +904,86 @@ $(document).ready(function() {
                         }
                     })
                         .done(function(msg) {
-                            $('#progressBarModal').modal('hide');
-                            alert(msg)
+
+                            var indicationPDFError = false;
+
+                            if (!msg.startsWith("Error")) {
+                                newSubmissionConfirmParam = msg;
+                                //console.log("UPLOADING FILES");
+                                //ATTACH FILES
+
+                                var formData = new FormData();
+                                var formDataNew = getFormDataWithAllAttachedFilesNew();
+
+                                var quoteIDs = msg.split("&;&")[0];
+
+                                //NEW STUFF
+                                var submissionHasFile = false;
+                                $('input:file').each(function(){
+                                    var file = $(this).get(0).files[0];
+                                    if(file){
+                                        submissionHasFile = true;
+                                        formData.append($(this).attr('id'), file);
+                                    }
+                                });
+
+                                if (submissionHasFile) {
+                                    $('.progress-bar').attr('aria-valuenow', "75").animate({
+                                        width: "75%"
+                                    }, 2000);
+                                    //formData.append('bioFile', bioFile);
+                                    //formData.append('lossesFile', lossesFile);
+                                    //formData.append('pyroFile', pyroFile);
+                                    //formData.append('stuntsFile', stuntsFile);
+                                    //formData.append('animalPDF', animalPDF);
+                                    //formData.append('dronePDF', dronePDF);
+                                    //formData.append('equipScheduleFile', equipScheduleFile);
+                                    //formData.append('doodFile', doodFile);
+                                    //formData.append('treatmentFile', treatmentFile);
+                                    //formData.append('budgetFile', budgetFile);
+                                    formData.append('quoteIDs', quoteIDs);
+
+                                    $.ajax({
+                                        method: "POST",
+                                        url: "/async/ajaxAttachNew",
+                                        data: formData,
+                                        cache: false,
+                                        contentType: false,
+                                        processData: false
+                                    })
+                                        .done(function(msg) {
+                                            //console.log("Finished Uploading");
+                                            $('.progress-bar').attr('aria-valuenow', "100").css("width", "100%");
+                                            $('#progressBarModal').modal('hide');
+
+                                            //CLEAR AUTOSAVE INFO
+                                            autoSaveMap = {};
+                                            Cookies.remove('autosaveData');
+
+                                            //REDIRECT TO SAVE SUCCESSFUL PAGE
+                                            window.location.href = "./../main/newSubmissionConfirm.gsp?submissionID=" + newSubmissionConfirmParam + "&pdfError=" + indicationPDFError;
+
+                                        });
+                                }
+                                else {
+                                    //console.log ("REDIRECTING");
+                                    $('.progress-bar').attr('aria-valuenow', "100").animate({
+                                        width: "100%"
+                                    }, 2000);
+                                    $('#progressBarModal').modal('hide');
+
+                                    //CLEAR AUTOSAVE INFO
+                                    autoSaveMap = {};
+                                    Cookies.remove('autosaveData');
+
+                                    //REDIRECT TO SAVE SUCCESSFUL PAGE
+                                    window.location.href = "./../main/newSubmissionConfirm.gsp?submissionID=" + newSubmissionConfirmParam + "&pdfError=" + indicationPDFError;
+                                }
+                            }
+                            else {
+                                $('#progressBarModal').modal('hide');
+                                alert(msg)
+                            }
                         });
                 }
                 else {
@@ -1079,10 +1155,10 @@ $(document).ready(function() {
             }
             $('#loadingModal').modal('hide');
             nextStepWizard.removeAttr('disabled').trigger('click');
-            $('html, body').animate({
-                scrollTop: 0
-            }, 'fast');
-
+            // $('html, body').animate({
+            //     scrollTop: 0
+            // }, 'fast');
+            $('html,body').scrollTop(0);
         }
         else {
             if ($('#step-1').is(":visible")) {
@@ -1094,9 +1170,10 @@ $(document).ready(function() {
                     }, "fast");
                 }
                 else {
-                    $('html, body').animate({
-                        scrollTop: 0
-                    }, "fast");
+                    // $('html, body').animate({
+                    //     scrollTop: 0
+                    // }, "fast");
+                    $('html,body').scrollTop(0);
                 }
 
             }

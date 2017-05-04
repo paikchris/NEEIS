@@ -4,6 +4,7 @@ function showLoadButtonIfSavedSubmissionsExist(){
     var savedSubmissions = Object.keys(Cookies.get()).filter(function(name) {
         return name.indexOf("saveData_") > -1;
     });
+    // console.log(savedSubmissions.length + " Saved Submissions");
     if (savedSubmissions.length > 0) {
         $('#loadProgress').css('display', '');
     }
@@ -126,7 +127,6 @@ function loadSaveFunction(loadMap) {
 
     }
     setTimeout(function() {
-
         //console.log("wait")
         Object.keys(loadMap).forEach(function(key) {
 
@@ -247,24 +247,13 @@ function autoSaveFunction() {
 
 function saveProgress() {
     if(checkCookie()){
+        console.log("Saving Progress")
         autoSaveMap['riskChosen'] = getRiskTypeChosen();
 
         //GET CURRENT STEP
         var saveStep = currentStep;
-        // if($("#buttonCircleStep1").is(":disabled") == false){
-        //     saveStep = 1;
-        // }
-        // if($("#buttonCircleStep2").is(":disabled") == false){
-        //     saveStep = 2;
-        // }
-        // if($("#buttonCircleStep3").is(":disabled") == false){
-        //     saveStep = 3;
-        // }
-        // if($("#buttonCircleStep4").is(":disabled") == false){
-        //     saveStep = 4;
-        // }
+
         autoSaveMap['saveStep'] = saveStep;
-        // alert(autoSaveMap['saveStep']);
 
         //ALL VISIBLE INPUTS
         $("input, select").each(function() {
@@ -290,14 +279,50 @@ function saveProgress() {
                 }
             }
         });
-        var test = Object.keys(Cookies.get()).filter(function(name) {
-            return name.indexOf("saveData_") > -1;
-        });
-        console.log(test);
+
+
+        // //SAVE ATTACHED FILES
+        // var saveUUID = generateUUID();
+        // autoSaveMap["saveUUID"] = saveUUID;
+        // var formData = new FormData();
+        // var formDataNew = getFormDataWithAllAttachedFilesNew();
+        //
+        // var submissionHasFile = false;
+        // $('input:file').each(function(){
+        //     var file = $(this).get(0).files[0];
+        //     if(file){
+        //         submissionHasFile = true;
+        //         formData.append($(this).attr('id'), file);
+        //     }
+        // });
+        //
+        // if (submissionHasFile) {
+        //     formData.append('uuid', saveUUID);
+        //
+        //     $.ajax({
+        //         method: "POST",
+        //         url: "/async/saveProgressStoreAttachedFiles",
+        //         data: formData,
+        //         cache: false,
+        //         contentType: false,
+        //         processData: false
+        //     })
+        //         .done(function(msg) {
+        //             alert(msg)
+        //         });
+        // }
+
+
+
 
         Cookies.set("saveData_" + autoSaveMap['riskChosen'] + "_" + moment().format('MM/DD/YY HH:mm'), JSON.stringify(autoSaveMap), {
             expires: 3
         });
+
+        var test = Object.keys(Cookies.get()).filter(function(name) {
+            return name.indexOf("saveData_") > -1;
+        });
+        console.log(test);
     }
 }
 

@@ -4,6 +4,10 @@
 
 
 $(document).ready(function () {
+    $(document).on('change', 'input', function () {
+        // alert();
+    });
+
     $("#sidebar-wrapper").hover(function(e) {
         e.preventDefault();
         $("#wrapper").toggleClass("toggled");
