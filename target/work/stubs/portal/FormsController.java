@@ -21,6 +21,7 @@ public  void setBeforeInterceptor(java.lang.Object value) { }
 public  java.lang.Object checkUser() { return null;}
 public  java.lang.Object index() { return null;}
 public  java.lang.Object specFilm() { return null;}
+public  java.lang.Object sgpFilm() { return null;}
 public  java.lang.Object specFilmNew() { return null;}
 public  java.lang.Object specialEventLiability() { return null;}
 public  java.lang.Object specialEventVendor() { return null;}

@@ -1467,3 +1467,541 @@
 
     %{--</div>--}%
 </div>
+
+
+<div id="coverageSGPCheckboxesDiv">
+    <div class='col-xs-4' id="productChoicesDiv" style="margin-top: 5px;">
+        <div class="selectionContainer" id="sgpSilverSelectionContainer">
+            <span class='coverageInput' style="" id="sgpSilverRadioContainer"><input type="radio" name="productOptionRadio"
+                                                                                     class="productOptionRadio"
+                                                                                     value="Silver"
+                                                                                     id="sgpSilverRadio"
+                                                                                     style="margin-bottom:10px;"> Silver (Up to 30 Days)<br>
+            </span>
+            <div id="sgpSilverOptionsContainer" style="margin-left:30px; margin-bottom: 20px; display:none" >
+                <div class="selectionContainer" style="padding-bottom:10px;">
+                    <span class='' style="" >
+                        <input type="checkbox" class="sgpSilverCoverageCheckbox" value="" id="sgpSilver_CGL" disabled="true" checked="true"> General Liability<br>
+                    </span>
+                    <div class="selectionContainer" style="margin-left:20px; " >
+                        <span class='' style="" >
+                            <input type="checkbox" class="sgpSilver_CGLOption" value="" id="sgpSilver_BAI" disabled="true" checked="true">
+                            Blanket Additional Insured <br>
+                        </span>
+                    </div>
+                    <div class="selectionContainer" style="margin-left:20px; " >
+                        <span class='' style="" >
+                            <input type="checkbox" class="sgpSilver_CGLOption" value="" id="sgpSilver_WOS">
+                            Waiver of Subrogation <br>
+                        </span>
+                    </div>
+                    <div class="selectionContainer" style="margin-left:20px; " >
+                        <span class='' style="" >
+                            <input type="checkbox" class="sgpSilver_CGLOption" value="" id="sgpSilver_5kMed">
+                            $5,000 Medical Expense <br>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="selectionContainer" style="padding-bottom:10px;">
+                    <span class='' style="" >
+                        <input type="checkbox" class="sgpSilver_CoverageCheckbox" value="" id="sgpSilver_Misc">
+                        Miscellaneous Equipment <br>
+                        <small style="margin-left:20px; ">(Incl. Props, Sets & Wardrobe)</small> <br>
+                    </span>
+                    <div style="margin-left:30px; padding-top:4px; display:none">
+                        <small style="font-weight: 500">Desired Limit</small><br>
+                        <input type="text"
+                               style=''
+                               name=""
+                               placeholder="$"
+                               class="currency" value="$1,000"  id="sgpSilver_MiscLimit">
+                    </div>
+                </div>
+                <div class="selectionContainer" style="padding-bottom:10px;">
+                    <span class='' style="" >
+                        <input type="checkbox" class="sgpSilver_CoverageCheckbox" value="" id="sgpSilver_1MTPP">
+                        1 Million Third Party Property Damage <br>
+                    </span>
+                </div>
+                <div class="selectionContainer" style="padding-bottom:10px;">
+                    <span class='' style="" >
+                        <input type="checkbox" class="sgpSilver_CoverageCheckbox" value="" id="sgpSilver_NOHA">
+                        Non Owned & Hired Auto Liability <br>
+                    </span>
+                    <div style="margin-left:30px; padding-top:4px; display:none">
+                        <small style="font-weight: 500">Cost of Hire</small><br>
+                        <input type="text"
+                               style=''
+                               name=""
+                               placeholder="$"
+                               class="currency" value=""  id="sgpSilver_NOHACost">
+                    </div>
+                    <div class="selectionContainer" style="display:none; margin-left:30px; padding-top:10px;">
+                        <span class='' style="" >
+                            <input type="checkbox" class="sgpSilver_CoverageCheckbox" value="" id="sgpSilver_NOHAPD">
+                                Non Owned & Hired Auto Physical Damage <br>
+                        </span>
+                    </div>
+                </div>
+                <div class="selectionContainer" style="padding-bottom:10px;">
+                    <span class='' style="" >
+                        <input type="checkbox" class="sgpSilver_CoverageCheckbox sgpSilver_WCOption" value="" id="sgpSilver_PrimaryWC">
+                        Primary Workers Compensation <br>
+                    </span>
+                    <div style="margin-left:30px; padding-top:4px; display:none">
+                        <small style="font-weight: 500">Salespersons - Outside - (8742)</small><br>
+                        <input type="text"
+                               style=''
+                               name=""
+                               placeholder="$"
+                               class="currency" value=""  id="sgpSilver_PrimaryWC_Sales"><br>
+
+                        <small style="font-weight: 500">Clerical Employees - NOC - (8810)</small><br>
+                        <input type="text"
+                               style=''
+                               name=""
+                               placeholder="$"
+                               class="currency" value=""  id="sgpSilver_PrimaryWC_Clerical"><br>
+
+                        <small style="font-weight: 500">Motion Picture - In Studios - (9610)</small><br>
+                        <input type="text"
+                               style=''
+                               name=""
+                               placeholder="$"
+                               class="currency" value=""  id="sgpSilver_PrimaryWC_Motion"><br>
+                        <small class="text-danger">
+                            Primary Worker's compensation requires that you declare payroll
+                        </small>
+                    </div>
+                    <div style="margin-left:30px; padding-top:4px; display:none">
+                        <small style="font-weight: 500">Experience Mod</small><br>
+                        <input type="number"
+                               step=".1" min="0"
+                               style=''
+                               name=""
+                               class="" value="1.0"  id="sgpSilver_PrimaryWC_ExpMod"><br>
+                        <small class="text-danger">
+                            *Rates are subject to change at any time prior to binding due to Workers Compensation being a state regulate line.
+                        </small>
+                    </div>
+                </div>
+                <div class="selectionContainer" style="padding-bottom:10px;">
+                    <span class='' style="" >
+                        <input type="checkbox" class="sgpSilver_CoverageCheckbox sgpSilver_WCOption" value="" id="sgpSilver_ContingentWC">
+                        Contingent Workers Compensation <br>
+                    </span>
+                    <div style="margin-left:30px; padding-top:4px; display:none">
+                        <small class="text-danger">
+                            This Workers' Comp coverage will be contingent only. Applicant must go through a payroll service company for Primary Workers' Comp coverage. You must provide the name of the payroll service company before you can bind coverage.
+                            *Rates are subject to change at any time prior to binding due to Workers Compensation being a state regulate line.
+                        </small>
+                    </div>
+                </div>
+                <div class="selectionContainer" style="padding-bottom:10px;">
+                    <span class='' style="" >
+                        <input type="checkbox" class="sgpSilver_CoverageCheckbox" value="" id="sgpSilver_Umbrella">
+                        Umbrella/Excess Liability <br>
+                    </span>
+                    <div class="selectionContainer" style="display:none; margin-left:30px; padding-top:10px;">
+                        <span class='' style="" >
+                            <input type="radio" name="umbrellaTermRadio" class="sgpSilver_CoverageCheckbox" value="" id="sgpSilver_UmbrellaFullTerm">
+                            Full Policy Duration  <br>
+                        </span>
+                    </div>
+                    <div class="selectionContainer" style="display:none; margin-left:30px; padding-top:10px;">
+                        <span class='' style="" >
+                            <input type="radio" name="umbrellaTermRadio" class="sgpSilver_CoverageCheckbox" value="" id="sgpSilver_UmbrellaCustomTerm">
+                            <input type="text"
+                                   style='width:40px;'
+                                   name=""
+                                   class="" value=""  id="sgpSilver_UmbrellaCustomTermValue"> Days<br>
+                        </span>
+                    </div>
+                    <div class="" style="display:none; margin-left:30px; padding-top:10px;">
+                        <select id="sgpSilver_UmbrellaLimitSelect">
+                            <option value="invalid">Select Umbrella Limit</option>
+                            <option value="1">$1,000,000</option>
+                            <option value="2">$2,000,000</option>
+                            <option value="3">$3,000,000</option>
+                            <option value="4">$4,000,000</option>
+                            <option value="5">$5,000,000</option>
+                        </select>
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+        <div class="selectionContainer" id="sgpGoldSelectionContainer">
+            <span class='coverageInput' style="" id="sgpGoldRadioContainer"><input type="radio" name="productOptionRadio"
+                                                                                   class="productOptionRadio"
+                                                                                   value="Gold"
+                                                                                   id="sgpGoldRadio"
+                                                                                   style="margin-bottom:10px;"> Gold (Up to 60 Days or Annual)<br>
+            </span>
+            <div id="sgpGoldOptionsContainer" style="margin-left:30px; margin-bottom: 20px; display:none" >
+                <div class="selectionContainer" style="padding-bottom:10px;">
+                    <span class='' style="" >
+                        <input type="checkbox" class="sgpGoldCoverageCheckbox" value="" id="sgpGold_CGL" disabled="true" checked="true"> General Liability<br>
+                    </span>
+                    <div class="selectionContainer" style="margin-left:20px; " >
+                        <span class='' style="" >
+                            <input type="checkbox" class="sgpGold_CGLOption" value="" id="sgpGold_BAI" disabled="true" checked="true">
+                            Blanket Additional Insured <br>
+                        </span>
+                    </div>
+                    <div class="selectionContainer" style="margin-left:20px; " >
+                        <span class='' style="" >
+                            <input type="checkbox" class="sgpGold_CGLOption" value="" id="sgpGold_WOS">
+                            Waiver of Subrogation <br>
+                        </span>
+                    </div>
+                    <div class="selectionContainer" style="margin-left:20px; " >
+                        <span class='' style="" >
+                            <input type="checkbox" class="sgpGold_CGLOption" value="" id="sgpGold_5kMed">
+                            $5,000 Medical Expense <br>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="selectionContainer" style="padding-bottom:10px;">
+                    <span class='' style="" >
+                        <input type="checkbox" class="sgpGold_CoverageCheckbox" value="" id="sgpGold_EPKG">
+                        Entertainment Package <br>
+                    </span>
+                    <div class="selectionContainer" style="display:none; margin-left:20px;">
+                        <span class='' style="" >
+                            <input type="radio" name="GoldEPKGLimits" class="sgpGold_CoverageCheckbox" value="" id="sgpGold_EPKGLowLimits">
+                            Low Limits  <br>
+                        </span>
+                    </div>
+                    <div class="selectionContainer" style="display:none; margin-left:20px;">
+                        <span class='' style="" >
+                            <input type="radio" name="GoldEPKGLimits" class="sgpGold_CoverageCheckbox" value="" id="sgpGold_EPKGMedLimits">
+                            Med Limits  <br>
+                        </span>
+                    </div>
+                    <div class="selectionContainer" style="display:none; margin-left:20px;">
+                        <span class='' style="" >
+                            <input type="radio" name="GoldEPKGLimits" class="sgpGold_CoverageCheckbox" value="" id="sgpGold_EPKGHighLimits">
+                            High Limits  <br>
+                        </span>
+                    </div>
+                </div>
+                <div class="selectionContainer" style="padding-bottom:10px;">
+                    <span class='' style="" >
+                        <input type="checkbox" class="sgpGold_CoverageCheckbox" value="" id="sgpGold_NOHA">
+                        Non Owned & Hired Auto Liability <br>
+                    </span>
+                    <div style="margin-left:30px; padding-top:4px; display:none">
+                        <small style="font-weight: 500">Cost of Hire</small><br>
+                        <input type="text"
+                               style=''
+                               name=""
+                               placeholder="$"
+                               class="currency" value=""  id="">
+                    </div>
+                    <div class="selectionContainer" style="display:none; margin-left:30px; padding-top:10px;">
+                        <span class='' style="" >
+                            <input type="checkbox" class="sgpGold_CoverageCheckbox" value="" id="sgpGold_NOHAPD">
+                            <small>Non Owned & Hired Auto Physical Damage</small> <br>
+                            <div style="margin-left:20px;">
+                                <small class="text-danger" >
+                                    NOAPD coverage is Included on the Entertainment Package under Miscellaneous Equipment
+                                </small>
+                            </div>
+                        </span>
+                    </div>
+
+                </div>
+                <div class="selectionContainer" style="padding-bottom:10px;">
+                    <span class='' style="" >
+                        <input type="checkbox" class="sgpGold_CoverageCheckbox sgpGold_WCOption" value="" id="sgpGold_PrimaryWC">
+                        Primary Workers Compensation <br>
+                    </span>
+                    <div style="margin-left:30px; padding-top:4px; display:none">
+                        <small style="font-weight: 500">Salespersons - Outside - (8742)</small><br>
+                        <input type="text"
+                               style=''
+                               name=""
+                               placeholder="$"
+                               class="currency" value=""  id=""><br>
+
+                        <small style="font-weight: 500">Clerical Employees - NOC - (8810)</small><br>
+                        <input type="text"
+                               style=''
+                               name=""
+                               placeholder="$"
+                               class="currency" value=""  id=""><br>
+
+                        <small style="font-weight: 500">Motion Picture - In Studios - (9610)</small><br>
+                        <input type="text"
+                               style=''
+                               name=""
+                               placeholder="$"
+                               class="currency" value=""  id=""><br>
+                        <small class="text-danger">
+                            Primary Worker's compensation requires that you declare payroll
+                        </small>
+                    </div>
+                    <div style="margin-left:30px; padding-top:4px; display:none">
+                        <small style="font-weight: 500">Experience Mod</small><br>
+                        <input type="number"
+                               step=".1" min="0"
+                               style=''
+                               name=""
+                               class="" value="1.0"  id=""><br>
+                        <small class="text-danger">
+                            *Rates are subject to change at any time prior to binding due to Workers Compensation being a state regulate line.
+                        </small>
+                    </div>
+                </div>
+                <div class="selectionContainer" style="padding-bottom:10px;">
+                    <span class='' style="" >
+                        <input type="checkbox" class="sgpGold_CoverageCheckbox sgpGold_WCOption" value="" id="sgpGold_ContingentWC">
+                        Contingent Workers Compensation <br>
+                    </span>
+                    <div style="margin-left:30px; padding-top:4px; display:none">
+                        <small class="text-danger">
+                            This Workers' Comp coverage will be contingent only. Applicant must go through a payroll service company for Primary Workers' Comp coverage. You must provide the name of the payroll service company before you can bind coverage.
+                            *Rates are subject to change at any time prior to binding due to Workers Compensation being a state regulate line.
+                        </small>
+                    </div>
+                </div>
+                <div class="selectionContainer" style="padding-bottom:10px;">
+                    <span class='' style="" >
+                        <input type="checkbox" class="sgpGold_CoverageCheckbox" value="" id="sgpGold_Umbrella">
+                        Umbrella/Excess Liability <br>
+                    </span>
+                    <div class="selectionContainer" style="display:none; margin-left:30px; padding-top:10px;">
+                        <span class='' style="" >
+                            <input type="radio" name="umbrellaTermRadio" class="sgpGold_CoverageCheckbox" value="" id="sgpGold_UmbrellaFullTerm">
+                            Full Policy Duration  <br>
+                        </span>
+                    </div>
+                    <div class="selectionContainer" style="display:none; margin-left:30px; padding-top:10px;">
+                        <span class='' style="" >
+                            <input type="radio" name="umbrellaTermRadio" class="sgpGold_CoverageCheckbox" value="" id="sgpGold_UmbrellaCustomTerm">
+                            <input type="text"
+                                   style='width:40px;'
+                                   name=""
+                                   class="" value=""  id=""> Days<br>
+                        </span>
+                    </div>
+                    <div class="" style="display:none; margin-left:30px; padding-top:10px;">
+                        <select id="sgpGold_UmbrellaLimitSelect">
+                            <option value="invalid">Select Umbrella Limit</option>
+                            <option value="1">$1,000,000</option>
+                            <option value="2">$2,000,000</option>
+                            <option value="3">$3,000,000</option>
+                            <option value="4">$4,000,000</option>
+                            <option value="5">$5,000,000</option>
+                        </select>
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+        <div class="selectionContainer" id="sgpPlatinumSelectionContainer">
+            <span class='coverageInput' style="" id="sgpPlatinumRadioContainer"><input type="radio" name="productOptionRadio"
+                                                                                   class="productOptionRadio"
+                                                                                   value="Platinum"
+                                                                                   id="sgpPlatinumRadio"
+                                                                                   style="margin-bottom:10px;"> Platinum (Annual)<br>
+            </span>
+            <div id="sgpPlatinumOptionsContainer" style="margin-left:30px; margin-bottom: 20px; display:none" >
+                <div class="selectionContainer" style="padding-bottom:10px;">
+                    <span class='' style="" >
+                        <input type="checkbox" class="sgpPlatinumCoverageCheckbox" value="" id="sgpPlatinum_CGL" disabled="true" checked="true"> General Liability<br>
+                    </span>
+                    <div class="selectionContainer" style="margin-left:20px;" >
+                        <span class='' style="" >
+                            <input type="checkbox" class="sgpPlatinum_CGLOption" value="" id="sgpPlatinum_IncAgg2M">
+                            Increase Aggregate Limit to $2,000,000 <br>
+                        </span>
+                    </div>
+                    <div class="selectionContainer" style="margin-left:20px;" >
+                        <span class='' style="" >
+                            <input type="checkbox" class="sgpPlatinum_CGLOption" value="" id="sgpPlatinum_IncMed5K">
+                            Increase Medical Expense Limit to $5,000 <br>
+                        </span>
+                    </div>
+                    <div class="selectionContainer" style="margin-left:20px;" >
+                        <span class='' style="" >
+                            <input type="checkbox" class="sgpPlatinum_CGLOption" value="" id="sgpPlatinum_BAI">
+                            Blanket Additional Insured <br>
+                        </span>
+                    </div>
+                    <div class="selectionContainer" style="margin-left:20px; " >
+                        <span class='' style="" >
+                            <input type="checkbox" class="sgpPlatinum_CGLOption" value="" id="sgpPlatinum_WOS">
+                            Waiver of Subrogation <br>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="selectionContainer" style="padding-bottom:10px;">
+                    <span class='' style="" >
+                        <input type="checkbox" class="sgpPlatinum_CoverageCheckbox" value="" id="sgpPlatinum_EPKG">
+                        Entertainment Package <br>
+                    </span>
+                </div>
+                <div class="selectionContainer" style="padding-bottom:10px;">
+                    <span class='' style="" >
+                        <input type="checkbox" class="sgpPlatinum_CoverageCheckbox" value="" id="sgpPlatinum_NOHA">
+                        Non Owned & Hired Auto Liability <br>
+                    </span>
+                    <div style="margin-left:30px; padding-top:4px; display:none">
+                        <small style="font-weight: 500">Cost of Hire</small><br>
+                        <input type="text"
+                               style=''
+                               name=""
+                               placeholder="$"
+                               class="currency" value=""  id="">
+                    </div>
+                    <div class="selectionContainer" style="display:none; margin-left:30px; padding-top:10px;">
+                        <span class='' style="" >
+                            <input type="checkbox" class="sgpPlatinum_CoverageCheckbox" value="" id="sgpPlatinum_NOHAPD">
+                            <small>Non Owned & Hired Auto Physical Damage</small> <br>
+                            <div style="margin-left:20px;">
+                                <small class="text-danger" >
+                                    NOAPD coverage is Included on the Entertainment Package under Miscellaneous Equipment
+                                </small>
+                            </div>
+                        </span>
+                    </div>
+
+                </div>
+                <div class="selectionContainer" style="padding-bottom:10px;">
+                    <span class='' style="" >
+                        <input type="checkbox" class="sgpPlatinum_CoverageCheckbox sgpPlatinum_WCOption" value="" id="sgpPlatinum_PrimaryWC">
+                        Primary Workers Compensation <br>
+                    </span>
+                    <div style="margin-left:30px; padding-top:4px; display:none">
+                        <small style="font-weight: 500">Salespersons - Outside - (8742)</small><br>
+                        <input type="text"
+                               style=''
+                               name=""
+                               placeholder="$"
+                               class="currency" value=""  id=""><br>
+
+                        <small style="font-weight: 500">Clerical Employees - NOC - (8810)</small><br>
+                        <input type="text"
+                               style=''
+                               name=""
+                               placeholder="$"
+                               class="currency" value=""  id=""><br>
+
+                        <small style="font-weight: 500">Motion Picture - In Studios - (9610)</small><br>
+                        <input type="text"
+                               style=''
+                               name=""
+                               placeholder="$"
+                               class="currency" value=""  id=""><br>
+                        <small class="text-danger">
+                            Primary Worker's compensation requires that you declare payroll
+                        </small>
+                    </div>
+                    <div style="margin-left:30px; padding-top:4px; display:none">
+                        <small style="font-weight: 500">Experience Mod</small><br>
+                        <input type="number"
+                               step=".1" min="0"
+                               style=''
+                               name=""
+                               class="" value="1.0"  id=""><br>
+                        <small class="text-danger">
+                            *Rates are subject to change at any time prior to binding due to Workers Compensation being a state regulate line.
+                        </small>
+                    </div>
+                </div>
+                <div class="selectionContainer" style="padding-bottom:10px;">
+                    <span class='' style="" >
+                        <input type="checkbox" class="sgpPlatinum_CoverageCheckbox sgpPlatinum_WCOption" value="" id="sgpPlatinum_ContingentWC">
+                        Contingent Workers Compensation <br>
+                    </span>
+                    <div style="margin-left:30px; padding-top:4px; display:none">
+                        <small class="text-danger">
+                            This Workers' Comp coverage will be contingent only. Applicant must go through a payroll service company for Primary Workers' Comp coverage. You must provide the name of the payroll service company before you can bind coverage.
+                            *Rates are subject to change at any time prior to binding due to Workers Compensation being a state regulate line.
+                        </small>
+                    </div>
+                </div>
+                <div class="selectionContainer" style="padding-bottom:10px;">
+                    <span class='' style="" >
+                        <input type="checkbox" class="sgpPlatinum_CoverageCheckbox" value="" id="sgpPlatinum_Umbrella">
+                        Terrorism Coverage <br>
+                    </span>
+                    <div style="margin-left:20px; padding-top:4px; display:none">
+                        <small class="text-danger">
+                            Terrorism Coverage ratings vary by county and state and are subject to change prior to binding. Please confirm premium with your underwriter should your insured accept coverage.
+                        </small>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-8" style="margin-top: -33px;">
+        <div class="form-group col-xs-12">
+            <h5 id="limitsHeader">Limits/Deductions</h5>
+
+            <div class="row">
+                <div class="col-xs-6">
+                    <u>Coverage</u>
+                </div>
+
+                <div class="col-xs-2">
+                    <u>Limits</u>
+                </div>
+
+                <div class="col-xs-2">
+                    <u>Premium</u>
+                </div>
+
+                <div class="col-xs-2">
+                    <u>Deductibles</u>
+                </div>
+            </div>
+
+            <div class="row" id="castInsuranceInfo">
+
+            </div>
+
+            <div class="showReviewTable" id="limitsDeductPremiumInsert">
+                <div class="row">
+                    <div class="col-xs-6 coverageColumn">
+                        <span>-</span>
+                    </div>
+
+                    <div class="col-xs-2 limitColumn">
+                        <span>-</span>
+                    </div>
+
+                    <div class="col-xs-2 premiumColumn">
+                        <span>-</span>
+                    </div>
+
+                    <div class="col-xs-2 deductibleColumn">
+                        <span>-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    %{--<div class='col-xs-4'>--}%
+
+    %{--</div>--}%
+    %{--<div class='row'>--}%
+
+    %{--</div>--}%
+    %{--<div class='row'>--}%
+
+    %{--</div>--}%
+</div>

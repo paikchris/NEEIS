@@ -328,7 +328,7 @@ class AIMSQL {
         }
 
         def companyMap = [:]
-        aimsql.eachRow("SELECT Name, NAIC " +
+        aimsql.eachRow("SELECT Name, NAIC, Phone " +
                 "FROM Company WITH (NOLOCK) " +
                 "WHERE (CompanyID = '" + productMap['productCompanyID'] + "') ") {
             companyMap['companyName'] = it.Name
@@ -644,7 +644,7 @@ class AIMSQL {
         dataMap['allQuoteIDs'] = allQuoteIDs;
         log.info("BEFORE SENDING TO INTELLEDOX = "+  dataMap['allQuoteIDs'])
 
-        asyncController.createIndicationPDF(dataMap, uwQuestionsMap, uwQuestionsOrder, dataSource_aim)
+        asyncController.createIndicationSpecialEventsPDF(dataMap, uwQuestionsMap, uwQuestionsOrder, dataSource_aim)
 
         return allQuoteIDs
     }

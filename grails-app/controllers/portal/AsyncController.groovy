@@ -1508,7 +1508,7 @@ class AsyncController {
                     if(productLOB.lobLimit == "custom"){ //RATE BASED ON CUSTOM LIMIT
                         NumberFormat format = NumberFormat.getCurrencyInstance();
 
-                        def customLimitAmount = customLimitsMap[productLOB.lobName].replaceAll("[\$,]", "");;
+                        def customLimitAmount = customLimitsMap[productLOB.lobName].replaceAll("[\$,]", "");
                         lobPremium = (productLOB.rateValue.toFloat() * customLimitAmount.toFloat()) / 100
                     }
                     else{
@@ -1595,6 +1595,276 @@ class AsyncController {
 
         render JsonOutput.prettyPrint(jsonResponse)
 //        render "good"
+    }
+
+    def ratePremiumsSGP(){
+        log.info("RATING PREMIUMS SGP")
+        log.info(params);
+        Sql aimsql = new Sql(dataSource_aim)
+
+        def dataMap = new JsonSlurper().parseText(params.dataMap)
+        def totalBudgetString = dataMap.totalBudget
+        def totalBudgetFloat = Float.parseFloat(totalBudgetString.replaceAll("[\$,]", "")) ;
+
+        def jsonResponse = "";
+        def cglLobMap = [:];
+        def cglDeductsMap = [:];
+        def cglLimitsMap = [:];
+        def cglPremiumsMap = [:];
+        def arrayOfCoverageDetails = [];
+        def cglTerms = "";
+        def universalForms = "IL DS 00 (09-08) -  Common Policy Declarations\n" +
+                "IL 00 01 (10-10) -  Signature Page\n" +
+                "IL 00 17 (11-98) -  Common Policy Conditions\n" +
+                "IL 00 21 (09-08) -  Nuclear Energy Liability Exclusion Endorsement\n" +
+                "IL 02 70 (08-11) -  California Changes -Cancellation and Nonrenewal\n" +
+                "IL 09 35 (07-02) -  Exclusion of Certain Computer-Related Losses\n" +
+                "IL 09 85 (01-08) -  Disclosure Pursuant to Terrorism Risk Insurance Act\n";
+
+        def cglForms = "";
+        def cglRateInfo = "";
+        def cglPremium = 0;
+        def cglBaseCalculatedPremium = 0;
+
+        if(dataMap.SGPProduct == "silver"){
+            def silverPremium = 0;
+
+            //CALCULATE BASIC CGL
+            if(dataMap.CGLSelected == true){
+                def cglMinPrem = 450;
+                def cglRate = 0.5;
+                def miscLimit = dataMap.MiscLimitSelected;
+
+                cglPremium = (totalBudgetFloat * cglRate)/100
+                if(cglPremium < cglMinPrem){
+                    cglPremium = cglMinPrem;
+                }
+                cglBaseCalculatedPremium = cglPremium;
+//                def cglPremiumString = "\$ " + NumberFormat.getNumberInstance(Locale.US).format(cglPremium);
+
+
+                cglLobMap["General Aggregate Limit"] = "";
+                cglLobMap["Products & Completed Operations Agg Limit"] = "";
+                cglLobMap["Personal & Advertising Injury (Any One Person or Organization)"] = "";
+                cglLobMap["Each Occurrence Limit"] = "";
+                cglLobMap["Damage to Premises Rented to You Limit"] = "";
+                cglLobMap["Medical Expense"] = "";
+                cglLobMap["General Liability Terrorism"] = "";
+
+                cglPremiumsMap["General Aggregate Limit"] = "";
+                cglPremiumsMap["Products & Completed Operations Agg Limit"] = "";
+                cglPremiumsMap["Personal & Advertising Injury (Any One Person or Organization)"] = "";
+                cglPremiumsMap["Each Occurrence Limit"] = "";
+                cglPremiumsMap["Damage to Premises Rented to You Limit"] = "";
+                cglPremiumsMap["Medical Expense"] = "";
+                cglPremiumsMap["General Liability Terrorism"] = "incl";
+
+                cglLimitsMap["General Aggregate Limit"] = "\$2,000,000";
+                cglLimitsMap["Products & Completed Operations Agg Limit"] = "\$1,000,000";
+                cglLimitsMap["Personal & Advertising Injury (Any One Person or Organization)"] = "\$1,000,000";
+                cglLimitsMap["Each Occurrence Limit"] = "\$1,000,000";
+                cglLimitsMap["Damage to Premises Rented to You Limit"] = "\$100,000";
+                cglLimitsMap["Medical Expense"] = "Excluded";
+                cglLimitsMap["General Liability Terrorism"] = "";
+
+                cglDeductsMap["General Aggregate Limit"] = "";
+                cglDeductsMap["Products & Completed Operations Agg Limit"] = "";
+                cglDeductsMap["Personal & Advertising Injury (Any One Person or Organization)"] = "";
+                cglDeductsMap["Each Occurrence Limit"] = "";
+                cglDeductsMap["Damage to Premises Rented to You Limit"] = "";
+                cglDeductsMap["Medical Expense"] = "";
+                cglDeductsMap["General Liability Terrorism"] = "";
+
+                cglRateInfo = "Basis: Gross Production Cost (GPC)\t${totalBudgetString}\n" +
+                        "Rate per \$1,000 GPC\t\$ 5.00\n" +
+                        "Minimum Premium\t\$ 450\n" +
+                        "Blanket Additional Insured\tIncluded\n";
+
+                cglTerms = "Commercial General Liability\n" +
+                        "\n" +
+                        "NO EXTENSIONS WILL BE ALLOWED AFTER COVERAGE IS BOUND.\n" +
+                        "SUBJECT TO:\n" +
+                        "Receipt of Bio/Resume of Film Producer/Entity and Website Information.\n" +
+                        "A minimum of 3 years industry experience.\n" +
+                        "Insured productions are limited to Documentaries, Industrial Films, Commercials, Education Films, Training Films, Corporate Films, and similar Commercial Media Productions and Small Budget Feature Films.\n" +
+                        "Productions are filmed in the U.S. only.\n" +
+                        "Prior Losses do not exceed \$5,000 for the past 3 years.\n" +
+                        "Coverage has not been declined, cancelled or non-renewed.\n" +
+                        "EXCLUDES:\n" +
+                        "Reality TV Shows\n" +
+                        "Adult films\n" +
+                        "Hidden camera filming\n" +
+                        "Any use of: Watercraft, Aircraft, Stunts, Car Chases/Racing and Pyrotechnics\n" +
+                        "Injury to Participants\n" +
+                        "The following types of productions are \"Insured Productions\" under this Policy:\n" +
+                        "Productions with total Gross Production Costs no more than \$1.\n" +
+                        "Productions where the Production Shoot is 30 days or less.\n" +
+                        "Covered Property does not include:\n" +
+                        "Negative or Digital Film, Data and Records, Costume, Jewelry, Furs, Art, Antiques, Valuable Papers, Currency, Aircraft, Watercraft Mobile Vehicles, Furniture and Fixtures, Animals, Growing Plants.\n" +
+                        "We will not pay for loss or damage caused by or resulting from any of the following: Delay, loss of use, loss of market, interruption of business, or any other consequential loss, unless specifically added by an endorsement."
+
+                cglForms = "CG DS 01 (10-01) -  Commercial General Liability Declarations\n" +
+                        "CG 00 01 (04-13) -  Commercial General Liability Coverage Form\n" +
+                        "CG 00 68 (05-09) -  Recording And Distribution of Material or Information In Violation of Law Exclusion\n" +
+                        "CG 20 23 (04-13) -  Additional Insured -Executors, Administrators, Trustees or Beneficiaries\n" +
+                        "CG 20 26 (04-13) -  Additional insured -Designated Person or Organization -Any person or organization when you and such person or organization have agreed in writing in a contract or agreement that such person or organization be added as an additional insured on your policy prior to performance of the agreement.\n" +
+                        "CG 20 34 (04-13) -  Additional Insured -Lessor of Leased Equipment -Automatic Status When Required in Lease\n" +
+                        "CG 21 44 (07-98) -  Limitation of Coverage to Designated Premises or Project -Coverage is Limited to DICE and Commercial Media Productions only.\n" +
+                        "CG 21 46 (07-98) -  Abuse or Molestation Exclusion\n" +
+                        "CG 21 47 (12-07) -  Employment-Related Practices Exclusion\n" +
+                        "CG 21 67 (12-04) -  Fungi or Bacteria Exclusion\n" +
+                        "CG 21 71 (06-08) -  Exclusion Of Other Acts Of Terrorism Committed Outside The United States; Cap On Losses From Certified Acts of Terrorism\n" +
+                        "CG 21 76 (01-08) -  Exclusion of Punitive Damages Related to a Certified Act of Terrorism\n" +
+                        "CG 21 84 (01-08) -  Exclusion of Certified Acts of Nuclear, Biological or Chemical Acts\n" +
+                        "CG 21 96 (03-05) -  Silica or Silica-Related Dust Exclusion\n" +
+                        "CG 24 04 (05-09) -  Waiver Of Transfer Rights Of Recovery Against Others To Us\n" +
+                        "CG 32 34 (01-05) -  California Changes\n" +
+                        "GL 0001 (06-10) -  Absolute Asbestos Exclusion\n" +
+                        "GL 0002 (06-10) -  Absolute Lead Exclusion\n" +
+                        "GL 0008 (06-10) -  Amendment of Employment Definition (Temporary Employee)\n" +
+                        "GL 0019 (06-10) -  Cross Liability Exclusion\n" +
+                        "GL 0029 (06-10) -  Exclusion -Designated Activities\n" +
+                        "GL 0030 (06-10) -  Exclusion -Fireworks With Exception for Concussion Effects, Flashpots and Smokepots\n" +
+                        "GL 0035 (06-10) -  Exclusion -Personal And Advertising Injury Liability -Entertainment Industry\n" +
+                        "GL 0038 (06-10) -  Exclusion -Sport, Athletic, Event, Exhibition or Performance Participants\n" +
+                        "GL 0041 (06-10) -  Knowledge of Occurrence\n" +
+                        "GL 0042 (06-10) -  Limitation -No Stacking of Occurrence Limits of Insurance\n" +
+                        "GL 0339 (08-14) -  WrapGap Endorsement Operations Insured Under Wrap-Up Program\n";
+
+                if(dataMap.BAISelected == true){
+                    cglLobMap["Blanket Additional Insured"] = "";
+                    cglPremiumsMap["Blanket Additional Insured"] = "incl";
+                    cglLimitsMap["Blanket Additional Insured"] = "";
+                    cglDeductsMap["Blanket Additional Insured"] = "";
+
+                }
+                if(dataMap.WOSSelected == true){
+                    cglLobMap["Waiver of Subrogation"] = "";
+                    cglPremiumsMap["Waiver of Subrogation"] = "\$250";
+                    cglLimitsMap["Waiver of Subrogation"] = "Included \$250 AP";
+                    cglDeductsMap["Waiver of Subrogation"] = "";
+
+                    cglPremium = cglPremium + 250
+
+                    cglRateInfo = cglRateInfo + "Waiver of Subrogation\t\$250"
+                }
+                if(dataMap.MedSelected == true){
+                    cglLobMap["Medical Expense"] = ""
+                    cglPremiumsMap["Medical Expense"] = "\$250";
+                    cglLimitsMap["Medical Expense"] = "\$5,000";
+                    cglDeductsMap["Medical Expense"] = "";
+
+                    cglPremium = cglPremium + 250
+
+                    cglRateInfo = cglRateInfo + "Medical Expense Coverage\t\$250\n";
+                }
+
+
+            }
+
+            //RATE MISC EQUIP IF SELECTED
+            if(dataMap.MiscSelected == true){
+                def miscMinPrem = 100
+                def miscRate = 0.5;
+                def miscPremium  = 0;
+                def miscLimit = dataMap.MiscLimitSelected;
+                def miscLimitFloat= Float.parseFloat(miscLimit.replaceAll("[\$,]", "")) ;
+                log.info("MISC LIMIT = " + miscLimitFloat)
+                //CALCULATE PREMIUM
+                miscPremium = (miscLimitFloat * miscRate)/100
+                if(miscPremium < miscMinPrem){
+                    miscPremium = miscMinPrem;
+                }
+                def miscPremiumString = "\$ " + NumberFormat.getNumberInstance(Locale.US).format(miscPremium);
+
+                //DETERMIN CORRECT DEDUCTIBLE
+
+                def miscDeductible = ""
+                if(miscLimitFloat <= 50000){
+                    miscDeductible = "\$ 1,000";
+                }
+                else if(miscLimitFloat > 50000 && miscLimitFloat <= 150000){
+                    miscDeductible = "\$ 1,500";
+
+                }
+                else if(miscLimitFloat > 150000 && miscLimitFloat <= 350000){
+                    miscDeductible = "\$ 2,000";
+
+                }
+                else if(miscLimitFloat > 150000 && miscLimitFloat <= 1000000){
+                    miscDeductible = "\$ 2,500";
+
+                }
+                else if(miscLimitFloat > 1000000 ){
+                    miscDeductible = "Refer";
+                }
+
+
+                //ASSIGN PREMIUMS, LIMITS, DEDUCTS
+                cglLobMap["Miscellaneous Equipment Limit"] = "";
+                cglPremiumsMap["Miscellaneous Equipment Limit"] = miscPremiumString;
+                cglLimitsMap["Miscellaneous Equipment Limit"] = miscLimit;
+
+                //CHOOSING MISC EQUIP ASSIGNS CGL DEDUCTS
+                cglDeductsMap["General Aggregate Limit"] = "Nil";
+                cglDeductsMap["Products & Completed Operations Agg Limit"] = "Nil";
+                cglDeductsMap["Personal & Advertising Injury (Any One Person or Organization)"] = "Nil";
+                cglDeductsMap["Each Occurrence Limit"] = "Nil";
+                cglDeductsMap["Damage to Premises Rented to You Limit"] = "Nil";
+                cglDeductsMap["Medical Expense"] = "Nil";
+                cglDeductsMap["General Liability Terrorism"] = "Nil";
+                cglDeductsMap["Miscellaneous Equipment Limit"] = miscDeductible;
+
+                cglForms = cglForms + "IM 00 85 (06-10)\tPersonal Property Floater Policy\n" +
+                        "IM 01 30 (10-10)\tPersonal Property Floater Policy Supplemental Declarations\n" +
+                        "IM 01 87 (08 14)\tWrapGap Endorsement Property Insured Under Wrap-Up Program\n";
+
+                cglRateInfo = cglRateInfo + "Miscellaneous Equipment Limit\t${miscLimit}\n" +
+                        "Rate Per \$100\t\$ 0.50\n" +
+                        "Minimum Premium\t\$ 100";
+            }
+
+            
+            //ORGANIZE INFO INTO MAP
+            def cgllimitsMapJson = JsonOutput.toJson(cglLimitsMap)
+            def cgldeductsMapJson = JsonOutput.toJson(cglDeductsMap)
+            def cglpremiumsMapJson = JsonOutput.toJson(cglPremiumsMap)
+            def cgllobMapJson = JsonOutput.toJson(cglLobMap)
+
+
+            def coverageJson = JsonOutput.toJson(
+                    coverageCode: "CGL",
+                    productCode: "TBD",
+                    productTotalPremium: cglPremium,
+                    basePremium: cglBaseCalculatedPremium,
+                    limits: new JsonSlurper().parseText(cgllimitsMapJson),
+                    deductibles: new JsonSlurper().parseText(cgldeductsMapJson),
+                    premiums: new JsonSlurper().parseText(cglpremiumsMapJson),
+                    lobDist: new JsonSlurper().parseText(cgllobMapJson),
+                    terms: cglTerms,
+                    endorse: cglForms,
+                    rateInfo: cglRateInfo
+            )
+            arrayOfCoverageDetails.add(new JsonSlurper().parseText(coverageJson))
+
+        }
+        else if(dataMap.SGPProduct == "gold"){
+
+        }
+        else if(dataMap.SGPProduct == "platinum"){
+
+        }
+
+
+
+        jsonResponse = JsonOutput.toJson(
+                coverages: arrayOfCoverageDetails
+        )
+        log.info JsonOutput.prettyPrint(jsonResponse)
+
+
+        render JsonOutput.prettyPrint(jsonResponse)
+
     }
 
     def ratePremiums() {
@@ -3296,7 +3566,28 @@ class AsyncController {
             if (submitGroupID.endsWith(",")) {
                 submitGroupID = submitGroupID.substring(0, submitGroupID.length() - 1);
             }
+            
+            //ADDITIONAL INFORMATION NECESSARY FOR INDICATION PDF
+            Sql aimsql = new Sql(dataSource_aim)
+            aimsql.eachRow("SELECT     *\n" +
+                    "FROM         Company with (NOLOCK)\n" +
+                    "WHERE     CompanyID='${session.user.company}'" ) {
 
+                dataMap.brokerCompanyName = it.Name
+                dataMap.brokerCompanyAddress = it.Address1
+                dataMap.brokerCompanyCity = it.City
+                dataMap.brokerCompanyState = it.State
+                dataMap.brokerCompanyZip = it.Zip
+                dataMap.brokerCompanyPhone = it.Phone
+                dataMap.brokerCompanyLicense = it.License
+            }
+            aimsql.eachRow("SELECT     *\n" +
+                    "FROM         UserID with (NOLOCK)\n" +
+                    "WHERE     UserID='${dataMap.accountExec}'" ) {
+
+                dataMap.underwriterPhone = it.Wk_Phone
+                dataMap.underwriterFax = it.Wk_Fax
+            }
 
             def now = new Date()
             def timestamp = now.format(dateFormat, timeZone)

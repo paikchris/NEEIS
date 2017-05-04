@@ -35,6 +35,7 @@ $(document).ready(function() {
     init();
     console.log("NEWSUBMISSION.JS LOADED");
 
+
     //WHEN THE STATE CHANGES IN STEP 3, UPDATE PREMIUMS FOR TAX
     $(document).on('change', '#stateMailing', function() {
         var chosenState = $(this).val();
@@ -312,10 +313,51 @@ $(document).ready(function() {
                         testingMode = true;
                     }
                     else if (riskChosen === "Film Projects Without Cast (With Work Comp)" || riskChosen === "Film Projects With Cast (With Work Comp)") {
-                        //window.location.href = "http://www.neeis.com/d/users/sign_in";
-                        logIntoLegacyNeeis();
-                        $('#loadingModal').modal('hide');;
-                        return false;
+                        $('#totalBudgetConfirmGroup').css('display', '');
+                        var finishedLoading1 = false;
+                        var finishedLoading2 = false;
+                        var finishedLoading3 = false;
+                        $("#insuredInfoInsert").load("./../forms/specFilm #insuredInfo", function() {
+                            finishedLoading1 = true;
+                            if (finishedLoading1 && finishedLoading2 && finishedLoading3) {
+                                $('#loadingModal').modal('hide');
+                            }
+                        });
+                        $("#coverageCheckboxesDiv").load("./../forms/specFilm #coverageSGPCheckboxesDiv", function() {
+                            finishedLoading3 = true;
+                            if (finishedLoading1 && finishedLoading2 && finishedLoading3) {
+                                $('#loadingModal').modal('hide');
+                            }
+                        });
+                        $("#riskSpecificInsert").load("./../forms/specFilm #riskSpecificInfo", function() {
+                            var head = document.getElementsByTagName('head')[0];
+                            var script = document.createElement('script');
+                            script.type = 'text/javascript';
+                            var scriptPath = '/js/forms/specFilm.js' + "?ts=" + new Date().getTime();
+                            script.src = scriptPath;
+                            head.appendChild(script);
+
+                            //WAIT TO ENSURE SPECFILMS HAS LOADED
+                            while($("script[src*='"  + scriptPath + "']").length === 0){
+                                // console.log("still Loading");
+                            }
+                            //LOAD SGP JS FILE
+                            var sgpScript = document.createElement("script");
+                            // set the type attribute
+                            sgpScript.type = "application/javascript";
+                            // make the script element load file
+
+                            sgpScript.src = '/js/forms/sgpFilm.js' + "?ts=" + new Date().getTime();;
+                            // finally insert the element to the body element in order to load the script
+                            document.body.appendChild(sgpScript);
+
+                            finishedLoading2 = true;
+                            if (finishedLoading1 && finishedLoading2 && finishedLoading3) {
+                                $('#loadingModal').modal('hide');
+                            }
+
+
+                        });
                     }
                     else if (riskChosen.indexOf("Film Projects") > -1) {
                         $('#totalBudgetConfirmGroup').css('display', '');
@@ -651,7 +693,12 @@ $(document).ready(function() {
                             }
                         });
                     }
-                    getProductsForRisk();
+                    if (riskChosen === "Film Projects Without Cast (With Work Comp)" || riskChosen === "Film Projects With Cast (With Work Comp)") {
+                        clearProductChoices();
+                    }
+                    else{
+                        getProductsForRisk();
+                    }
                 }
                 else {
                     alert("Please select a risk option");

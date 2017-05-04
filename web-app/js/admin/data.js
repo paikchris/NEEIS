@@ -13,6 +13,11 @@ $(document).ready(function () {
         // Cancel the default action
         e.preventDefault();
     });
+
+
+    /////////////////////////////////////////////////////////////////
+    //RISK TYPE AND RISK CATEGORY LISTENERS
+    /////////////////////////////////////////////////////////////////
     $(document).on('click', '.riskCategory_ListItem', function (e){
         if($(this).hasClass('active')){
             $(this).removeClass('active')
@@ -45,60 +50,7 @@ $(document).ready(function () {
 
     });
 
-    $(document).on('click', '.closebtn', function (e){
-        // this.parentElement.style.display='none';
-        clearProductFields();
-        $(this).parent().remove();
-    });
-
-    $(document).on('click', '.chip', function (e){
-        if(!$(this).hasClass('active')){
-            $('.chip').removeClass('active');
-            $(this).addClass('active');
-            fillProductFields(this);
-        }
-
-    });
-
-    $(document).on('change', '.productAvailabilityCheckboxModal', function (e){
-        if($(this).attr('id') === "productAlwaysAvailableCheckBox_Modal"){
-            if ($('#productAlwaysAvailableCheckBox_Modal').prop('checked')) {
-                $('.productAvailabilityCheckboxModal').prop('checked', false)
-                $(this).prop('checked', true)
-            }
-        }
-        else{
-            if ($('#productAlwaysAvailableCheckBox_Modal').prop('checked')) {
-                $('#productAlwaysAvailableCheckBox_Modal').prop('checked', false)
-            }
-        }
-    });
-
-    $(document).on('change', '.productAvailabilityCheckbox', function (e){
-        if($(this).attr('id') === "productAlwaysAvailableCheckBox"){
-            if ($('#productAlwaysAvailableCheckBox').prop('checked')) {
-                $('.productAvailabilityCheckbox').prop('checked', false)
-                $(this).prop('checked', true)
-            }
-        }
-        else{
-            if ($('#productAlwaysAvailableCheckBox').prop('checked')) {
-                $('#productAlwaysAvailableCheckBox').prop('checked', false)
-            }
-            if($(this).prop('checked')){
-                $('#' + $(this).attr('id') + 'Container').css('display', '');
-            }
-            else{
-                $('#' + $(this).attr('id') + 'Container').css('display', 'none');
-            }
-        }
-
-
-
-    });
-
     $(document).on('click', '.subCategory_ListItem', function (e){
-
         if($(this).hasClass('active')){
             $(this).removeClass('active')
             $('.subCategory_ListItem').removeClass('active')
@@ -137,36 +89,119 @@ $(document).ready(function () {
         e.preventDefault();
     });
 
-    $(document).on('click', '#saveProductDetailModalButton', function (e){
-        //LOOP THROUGH EXISTING PRODUCT CHIPS TO SEE IF PRODUCT ALREADY IS INCLUDED
-        $()
-
-        if($('#productModalProductSelect').val()!= "invalid"){
-            var productText = $("#productModalProductSelect option:selected").text();
-
-            var availableConditions = "";
-            if($('#productAlwaysAvailableCheckBox_Modal').prop('checked')){
-                availableConditions = availableConditions + "productAlwaysAvailableCheckBox,"
+    /////////////////////////////////////////////////////////////////
+    //ADD COVERAGE TO RISK TYPE OPERATIONS
+    /////////////////////////////////////////////////////////////////
+    $(document).on('click', '.addCoverageDropDownOption', function (e){
+        //loop through existing coverages to not add duplicate
+        var coverageNameChosen = $(this).text();
+        var coverageAlreadyChosen = false;
+        $('#productColumn1').find('.productsContainer').find('.coverageName').each(function(e){
+            if(coverageNameChosen.trim() === $(this).text().trim()){
+                coverageAlreadyChosen = true;
             }
-            if($('#productDependsOnBudget_Modal').prop('checked')){
-                availableConditions = availableConditions + "productDependsOnBudget,"
-            }
-            if($('#productDependsOnTermLength_Modal').prop('checked')){
-                availableConditions = availableConditions + "productDependsOnTermLength,"
-            }
+        });
 
-            var productHtmlString =  "<div class='chip' " +
-                "data-id='" + $('#productModalProductSelect').val() + "' " +
-                "data-availablecondition='" + availableConditions + "' " +
-                ">" +
-                productText +
-            "<span class='closebtn'>&times;</span>" +
-            "</div>";
-
-            $('#riskProductsDiv').append(productHtmlString);
-            $('#addProductModal').modal('hide');
+        if(coverageAlreadyChosen == false){
+            addCoverageToColumn($(this).text(), $(this).attr('data-value'));
         }
     });
+
+    /////////////////////////////////////////////////////////////////
+    //CLICKING ON A COVERAGE BUTTON TO MAKE IT ACTIVE AND SHOW OPTIONS
+    /////////////////////////////////////////////////////////////////
+    $(document).on('click', '.coverageButton, .productButton', function (e){
+        //deactivate all other buttons
+        $('.coverageButton, .productButton').removeClass('active');
+        $(this).toggleClass('active')
+    });
+
+    /////////////////////////////////////////////////////////////////
+    //AVAILABILITY CONDITION OPERATIONS
+    /////////////////////////////////////////////////////////////////
+    $(document).on('change', '.productAvailabilityCheckboxModal', function (e){
+        if($(this).attr('id') === "productAlwaysAvailableCheckBox_Modal"){
+            if ($('#productAlwaysAvailableCheckBox_Modal').prop('checked')) {
+                $('.productAvailabilityCheckboxModal').prop('checked', false)
+                $(this).prop('checked', true)
+            }
+        }
+        else{
+            if ($('#productAlwaysAvailableCheckBox_Modal').prop('checked')) {
+                $('#productAlwaysAvailableCheckBox_Modal').prop('checked', false)
+            }
+        }
+    });
+
+    /////////////////////////////////////////////////////////////////
+    //REMOVING Product and Coverages
+    /////////////////////////////////////////////////////////////////
+    $(document).on('click', '.removeProductButton', function (e){
+        $(this).closest('.productChip').remove();
+    });
+    $(document).on('click', '.removeCoverageButton', function (e){
+        $(this).closest('.coverageContainer').remove();
+    });
+
+
+
+    $(document).on('change', '.productAvailabilityCheckbox', function (e){
+        if($(this).attr('id') === "productAlwaysAvailableCheckBox"){
+            if ($('#productAlwaysAvailableCheckBox').prop('checked')) {
+                $('.productAvailabilityCheckbox').prop('checked', false)
+                $(this).prop('checked', true)
+            }
+        }
+        else{
+            if ($('#productAlwaysAvailableCheckBox').prop('checked')) {
+                $('#productAlwaysAvailableCheckBox').prop('checked', false)
+            }
+            if($(this).prop('checked')){
+                $('#' + $(this).attr('id') + 'Container').css('display', '');
+            }
+            else{
+                $('#' + $(this).attr('id') + 'Container').css('display', 'none');
+            }
+        }
+    });
+
+    $(document).on('change', '#productModalProductSelect', function (){
+        if($(this).val()!=='invalid'){
+            $('#productModalConditionContainer').css('display', '');
+        }
+        else{
+            $('#productModalConditionContainer').css('display', 'none');
+        }
+    });
+
+    $(document).on('click', '#addProductModalAddButton', function (e){
+        //LOOP THROUGH EXISTING PRODUCT CHIPS TO SEE IF PRODUCT ALREADY IS INCLUDED
+        // var productText =
+        var productNameChosen = $("#productModalProductSelect option:selected").text();
+        var productAlreadyChosen = false;
+        $('#productColumn1').find('.productsContainer').find('.productName').each(function(e){
+            if(productNameChosen.trim() === $(this).text().trim()){
+                productAlreadyChosen = true;
+            }
+        });
+
+        if(productAlreadyChosen == false){
+            addProductUnderCoverage(productNameChosen);
+        }
+
+    });
+
+    $(document).on('click', '.coverageAddProductButton', function (e){
+        //LOOP THROUGH EXISTING PRODUCT CHIPS TO SEE IF PRODUCT ALREADY IS INCLUDED
+        var coverageName = $(this).closest('.coverageChip').find('.coverageName').text().trim();
+        addProductModalShow(coverageName);
+    });
+
+    $(document).on('click', '#addCoverageModalAddButton', function (e){
+        //LOOP THROUGH EXISTING PRODUCT CHIPS TO SEE IF PRODUCT ALREADY IS INCLUDED
+        addCoverageToColumn();
+    });
+
 
     $(document).on('click', '.addCondition', function (e){
         var htmlString = "";
@@ -191,6 +226,8 @@ $(document).ready(function () {
         $(this).parent().remove();
     });
 
+
+
 });
 
 function fillRiskTypeFields(clickedRisk){
@@ -212,6 +249,87 @@ function saveRiskTypeChanges(){
             // alert(msg);
         });
 }
+
+
+
+
+//FUNCTIONS FOR ADDING PRODUCTS AND COVERAGES
+var addingIntoColumn =1;
+var coverageNameToAddProduct ="";
+function addProductModalShow(coverageName){
+    coverageNameToAddProduct = coverageName;
+    $('#addProductModal').modal('show');
+}
+
+function addProductUnderCoverage(productText){
+    if($('#productModalProductSelect').val()!= "invalid") {
+
+        var productHtmlString = "<div class='btn-group productChip' style='margin-bottom:10px; width:100%;'>" +
+            "<button type='button' class='btn btn-sm btn-default productButton'" +
+            "data-productcode='" + $('#productModalProductSelect').val() + "' " +
+            "style='max-width: 80%; min-width:40%; border-radius: 25px; border-top-right-radius: 0; border-bottom-right-radius: 0;'>" +
+            "<span class='buttontext productName'>" + productText + "</span>" +
+            "</button>" +
+            "<button type='button' class='btn btn-sm btn-default dropdown-toggle' data-toggle='dropdown' " +
+            "aria-haspopup='true' aria-expanded='false' " +
+            "style='border-radius: 25px; border-top-left-radius: 0; border-bottom-left-radius: 0;'>" +
+            " <span class='caret'></span>" +
+            "<span class='sr-only'>Toggle Dropdown</span>" +
+            "</button>" +
+            "<ul class='dropdown-menu'>" +
+            "   <li><a href='#'>Change</a></li>" +
+            "   <li><a href='#'>Edit</a></li>" +
+            "  <li role='separator' class='divider'></li>" +
+            "   <li><a href='#' class='removeProductButton'>Remove</a></li>" +
+            "   </ul>" +
+            "   </div>"
+
+        // $('.productColumn[data-containernumber="' + addingIntoColumn + '"]').find('.productsContainer').css('display', '')
+        $('.coverageContainer[data-coverageName="' + coverageNameToAddProduct + '"]').find('.coverageProductsContainer').append(productHtmlString);
+        $('#addProductModal').modal('hide');
+    }
+}
+
+
+
+function addCoverageModalShow(column){
+    addingIntoColumn = column;
+    $('#addCoverageModal').modal('show');
+}
+function addCoverageToColumn(coverageName, coverageCode){
+    if(coverageName && coverageCode) {
+        var productHtmlString = "<div class='coverageContainer' data-coverageName='" + coverageName + "'>" +
+            "<div class='btn-group coverageChip' style='margin-bottom:10px; width:100%;'>" +
+            "<button type='button' class='btn btn-primary coverageButton' " +
+            "data-productcode='" + coverageCode + "' style='max-width: 80%; '>" +
+            "<span class='buttontext coverageName'>" + coverageName + "</span></button>" +
+            "<button type='button' class='btn btn-primary dropdown-toggle' data-toggle='dropdown' " +
+            "aria-haspopup='true' aria-expanded='false' >" +
+            "<span class='caret'></span>" +
+            "<span class='sr-only'>Toggle Dropdown</span>" +
+            "</button>" +
+            "<ul class='dropdown-menu'>" +
+            "   <li><a href='#'>Change</a></li>" +
+            "   <li><a href='#'>Edit</a></li>" +
+            "   <li><a href='#' class='coverageAddProductButton'>Add Product</a></li>" +
+            "  <li role='separator' class='divider'></li>" +
+            "   <li><a href='#' class='removeCoverageButton'>Remove</a></li>" +
+            "   </ul>" +
+            "   </div>" +
+            "<br>" +
+            "<div class='coverageProductsContainer' style='padding-left:30px'>" +
+            "</div>" +
+            "</div>"
+        // alert(productHtmlString)
+
+        $('.productColumn[data-containernumber="' + addingIntoColumn + '"]').find('.productsContainer').css('display', '')
+        $('.productColumn[data-containernumber="' + addingIntoColumn + '"]').find('.productsContainer').append(productHtmlString);
+        // $('#addCoverageModal').modal('hide');
+    }
+}
+
+
+
 
 
 function fillRiskCategoryFields(clickedRisk){

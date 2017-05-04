@@ -37,8 +37,12 @@ function capitalizeFirstLetters(originalString){
 }
 
 function formatMoney(value) {
-    //console.log("value=" + value);
+    // console.log("value=" + value);
+
     if (isNaN(parseFloat(value))) {
+        if(value.indexOf("incl") > -1 || value.indexOf("Incl") > -1){
+            return value;
+        }
         if (value.substring(0, 1) === "\$") {
             value = value.replace("$", "");
             value = ("$" + value + "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")

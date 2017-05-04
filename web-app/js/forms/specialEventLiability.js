@@ -80,6 +80,9 @@ $(document).ready(function () {
             // alert ("step two" + eventDays)
             CGLPremium = getCGLPremium(totalPremiumCGL)
             $("#commercialGeneralLiabilityPremiumCost").html("$" + CGLPremium);
+
+            $("#termsInsert").css('display', "");
+            $("#endorseInsert").css('display', "");
         }
     });
 // ALCOHOL PREMIUM
@@ -372,7 +375,12 @@ $(document).ready(function () {
             $(".waterHazardNotFenced").addClass("showReview");
         }
     });
-
+// RISK HAZARD QUESTION
+    $(document.body).on('change', '.riskHazard' ,function(){
+        if($(".riskHazard").is(':checked')) {
+            alert("Due to the risk hazards of this event, the indication provided in the previous page is no longer valid. Please proceed with entering all the information requested following this notification and an underwriter will be contacting you shortly. Please note, we may not be able to offer terms based on additional information received")
+        }
+    });
 
 
 
@@ -437,7 +445,6 @@ function setStateRate(state){
     else if (state == "AR" ||
         state ==   "CA" ||
         state ==   "CO" ||
-        state ==   "FL" ||
         state ==   "GA" ||
         state ==   "ID" ||
         state ==   "IL" ||
@@ -467,8 +474,7 @@ function setStateRate(state){
         state ==   "RI" ||
         state ==   "SC" ||
         state ==   "TX" ||
-        state ==   "UT" ||
-        state ==   "WA") {
+        state ==   "UT") {
         lrate = 14
     }
     else if (state ==  "DC" ||
@@ -483,7 +489,10 @@ function setStateRate(state){
     }
     else if (state ==  "AK" ||
         state ==   "CT" ||
+        state ==   "DC" ||
+        state ==   "FL" ||
         state ==   "NH" ||
+        state ==   "WA" ||
         state ==   "HI") {
         alert ("STATE NOT ELIGIBLE FOR LIQUOR COVERAGE")
     }
@@ -497,112 +506,193 @@ function riskTypeRate(riskRate) {
 
     if (riskChosen === "Anniversary Parties" ||
         riskChosen === "Antique Shows" ||
-        riskChosen === "Arts & Crafts Exhibit" ||
-        riskChosen === "Auto Shows-Auto Static Only Award Presentations" ||
+        riskChosen === "Art Festivals and Shows" ||
+        riskChosen === "Auctions" ||
+        riskChosen === "Auto Shows-Auto Static Only" ||
+        riskChosen === "Award Presentations" ||
         riskChosen === "Baby Shower" ||
         riskChosen === "Ballet or Other Classical Dance Shows Balloon Artist" ||
-        riskChosen === "Banquets Baptism" ||
-        riskChosen === "Bar Mitzvahs / Bat Mitzvahs Bazaars" ||
-        riskChosen === "Beauty Pageants Belly Dancer Birthday Parties" ||
-        riskChosen === "Boat Shows (Dry Dock only) Body Building Contests Book Signing" ||
+        riskChosen === "Balloon Artist" ||
+        riskChosen === "Banquets" ||
+        riskChosen === "Baptism" ||
+        riskChosen === "Bar Mitzvahs / Bat Mitzvahs" ||
+        riskChosen === "Bazaars" ||
+        riskChosen === "Beauty Pageants" ||
+        riskChosen === "Belly Dancer" ||
+        riskChosen === "Birthday Parties" ||
+        riskChosen === "Boat Shows (Dry Dock only)" ||
+        riskChosen === "Body Building Contests" ||
+        riskChosen === "Book Signing" ||
         riskChosen === "Bridal Showers" ||
-        riskChosen === "Business Meetings and Shows Business Parties" ||
-        riskChosen === "Camera Shows Card Shows" ||
-        riskChosen === "Caricature Sketching Carolers" ||
+        riskChosen === "Business Meetings and Shows" ||
+        riskChosen === "Business Parties" ||
+        riskChosen === "Camera Shows" ||
+        riskChosen === "Card Shows" ||
+        riskChosen === "Caricature Sketching" ||
+        riskChosen === "Carolers" ||
         riskChosen === "Cartoonist" ||
         riskChosen === "Casino Nights" ||
         riskChosen === "Chamber of Commerce Events" ||
-        riskChosen === "Charity Benefits, Dances, Auctions, or Sales Choirs - indoor" ||
-        riskChosen === "Church Services or Meetings Civic Club Meetings" ||
-        riskChosen === "Classic Dance Shows Computer Shows Concerts - Celtic Music Concerts - Chamber Music" ||
-        riskChosen === "Concerts - Classical Music - Indoors Concerts - Holiday Music" ||
-        riskChosen === "Concerts - Instrumental Consumer Shows Conventions - Indoors Craft Shows" ||
-        riskChosen === "Dance Competitions Dance Recital Debutant Balls Debuts" ||
-        riskChosen === "Drill Team Exhibitions Educational Exhibitions Electronics Conventions Face Painters" ||
+        riskChosen === "Charity Benefits, Dances, Auctions, or Sales" ||
+        riskChosen === "Choirs - indoor" ||
+        riskChosen === "Church Services or Meetings" ||
+        riskChosen === "Civic Club Meetings" ||
+        riskChosen === "Classic Dance Shows" ||
+        riskChosen === "Computer Shows" ||
+        riskChosen === "Concerts - Celtic Music" ||
+        riskChosen === "Concerts - Chamber Music" ||
+        riskChosen === "Concerts - Classical Music - Indoors" ||
+        riskChosen === "Concerts - Holiday Music" ||
+        riskChosen === "Concerts - Instrumental" ||
+        riskChosen === "Consumer Shows" ||
+        riskChosen === "Conventions - Indoors" ||
+        riskChosen === "Craft Shows" ||
+        riskChosen === "Dance Competitions" ||
+        riskChosen === "Dance Recital" ||
+        riskChosen === "Debutant Balls" ||
+        riskChosen === "Debuts" ||
+        riskChosen === "Drill Team Exhibitions" ||
+        riskChosen === "Educational Exhibitions" ||
+        riskChosen === "Electronics Conventions" ||
+        riskChosen === "Face Painters" ||
         riskChosen === "Fashion Shows" ||
-        riskChosen === "Flower and Garden Shows Fund Raising Dinner Funeral Service Graduations" ||
+        riskChosen === "Flower and Garden Shows" ||
+        riskChosen === "Fund Raising Dinner" ||
+        riskChosen === "Funeral Service" ||
+        riskChosen === "Graduations" ||
         riskChosen === "Harvest Festivals - No Farm Implements or Equipment" ||
-        riskChosen === "Holiday Events & Parties / Gift Exchanges Home Shows" ||
-        riskChosen === "Jazz and Jam Concerts - Indoors Jewelry Maker" ||
-        riskChosen === "Job Fairs Indoor Ladies Club Events Lectures Luncheons Meetings - Indoors Mime" ||
-        riskChosen === "Mobile Home Shows Pageants" ||
+        riskChosen === "Holiday Events & Parties / Gift Exchanges" ||
+        riskChosen === "Home Shows" ||
+        riskChosen === "Jazz and Jam Concerts - Indoors" ||
+        riskChosen === "Jewelry Maker" ||
+        riskChosen === "Job Fairs Indoor" ||
+        riskChosen === "Ladies Club Events" ||
+        riskChosen === "Lectures" ||
+        riskChosen === "Luncheons" ||
+        riskChosen === "Meetings - Indoors" ||
+        riskChosen === "Mime" ||
+        riskChosen === "Mobile Home Shows" ||
+        riskChosen === "Pageants" ||
         riskChosen === "Poetry Reading" ||
-        riskChosen === "Professional and Amateur Association Meetings Puppeteer" ||
+        riskChosen === "Professional and Amateur Association Meetings" ||
+        riskChosen === "Puppeteer" ||
         riskChosen === "Quinceanera" ||
         riskChosen === "Recitals" ||
         riskChosen === "Reunions Indoors" ||
         riskChosen === "RV Shows" ||
-        riskChosen === "Scouting Jamborees - No Overnight Camping Seances" ||
+        riskChosen === "Scouting Jamborees - No Overnight Camping" ||
+        riskChosen === "Seances" ||
         riskChosen === "Seminars" ||
-        riskChosen === "Social Receptions - Indoors Speaking Engagements Store Openings" ||
-        riskChosen === "Story Teller Symphony Concerts Teleconferences Telethons" ||
-        riskChosen === "Trade Shows - Indoors Vacation Shows Ventriloquist" ||
+        riskChosen === "Social Receptions - Indoors" ||
+        riskChosen === "Speaking Engagements" ||
+        riskChosen === "Store Openings" ||
+        riskChosen === "Story Teller" ||
+        riskChosen === "Symphony Concerts" ||
+        riskChosen === "Teleconferences" ||
+        riskChosen === "Telethons" ||
+        riskChosen === "Trade Shows - Indoors" ||
+        riskChosen === "Vacation Shows" ||
+        riskChosen === "Ventriloquist" ||
         riskChosen === "Voter Registration" ||
-        riskChosen === "Weddings and Wedding Receptions Yodeler"
-    ) {
+        riskChosen === "Weddings and Wedding Receptions"
+    ){
         riskClass = classOne;
         // alert(riskClass)
     }
     else if (riskChosen === "Bingo Games" ||
-        riskChosen === "Card Games - Blackjack Card Games - Poker" ||
+        riskChosen === "Card Games - Blackjack" ||
+        riskChosen === "Card Games - Poker" ||
         riskChosen === "Carnivals - School Events with No Mechanical Rides" ||
-        riskChosen === "Chess Tournament Choirs - Outdoor Christmas Tree Lighting" ||
+        riskChosen === "Chess Tournament" ||
+        riskChosen === "Choirs - Outdoor" ||
+        riskChosen === "Christmas Tree Lighting" ||
         riskChosen === "Clowns - No Motorized Vehicles" ||
         riskChosen === "Comedians" ||
         riskChosen === "Concerts - 50's, 60's, 70's or 80's Music" ||
         riskChosen === "Concerts - Blues Music" ||
-        riskChosen === "Concerts - Classical Music - Outdoors Concerts - Country Music" ||
-        riskChosen === "Concerts - Folk Music Concerts - Funk Music Concerts - Motown Concerts Soul Music" ||
+        riskChosen === "Concerts - Classical Music - Outdoors" ||
+        riskChosen === "Concerts - Country Music" ||
+        riskChosen === "Concerts - Folk Music" ||
+        riskChosen === "Concerts - Funk Music" ||
+        riskChosen === "Concerts - Motown" ||
+        riskChosen === "Concerts Soul Music" ||
         riskChosen === "Dog, Cat, Bird & Other Domestic Animal Show / Event" ||
         riskChosen === "Easter Egg Hunt" ||
-        riskChosen === "Festival and Cultural Events - Indoors Fishing Events" ||
-        riskChosen === "Impersonator - Celebrity or Holiday Character Impressionist" ||
-        riskChosen === "Jazz and Jam Concerts - Outdoors Job Fairs Outdoors" ||
-        riskChosen === "Jugglers (No Pyro) Magician Mariachi Band" ||
+        riskChosen === "Festival and Cultural Events - Indoors" ||
+        riskChosen === "Fishing Events" ||
+        riskChosen === "Impersonator - Celebrity or Holiday Character" ||
+        riskChosen === "Impressionist" ||
+        riskChosen === "Jazz and Jam Concerts - Outdoors" ||
+        riskChosen === "Job Fairs Outdoors" ||
+        riskChosen === "Jugglers (No Pyro)" ||
+        riskChosen === "Magician" ||
+        riskChosen === "Mariachi Band" ||
         riskChosen === "Math Tournament" ||
         riskChosen === "Meetings - Outdoors" ||
-        riskChosen === "Menorah Lightning Picnics - No Pools or Lakes Reunions Outdoors" ||
-        riskChosen === "School Band Competitions or Events Soap Box Derbies" ||
-        riskChosen === "Social Receptions - Outdoors Trade Shows - Outdoors Union Meetings" ||
+        riskChosen === "Menorah Lightning" ||
+        riskChosen === "Picnics - No Pools or Lakes" ||
+        riskChosen === "Reunions Outdoors" ||
+        riskChosen === "School Band Competitions or Events" ||
+        riskChosen === "Soap Box Derbies" ||
+        riskChosen === "Social Receptions - Outdoors" ||
+        riskChosen === "Trade Shows - Outdoors" ||
+        riskChosen === "Union Meetings" ||
         riskChosen === "Video Game Contests"
     ) {
         riskClass = classTwo;
         // alert(riskClass)
     }
     else if (riskChosen === "Amateur Rodeo and Roping Events" ||
-        riskChosen === "Baseball - Amateur Basketball - Amateur" ||
+        riskChosen === "Baseball - Amateur" ||
+        riskChosen === "Basketball - Amateur" ||
         riskChosen === "Bicycling - No Racing / Off-road" ||
         riskChosen === "Block Parties / Street Closures / Street Fairs - Under 5000 Spectators" ||
         riskChosen === "Bowling Tournaments" ||
         riskChosen === "Boxing, Wrestling, Hockey and Football Games - Amateur" ||
-        riskChosen === "Casino and Lounge Shows Cheerleading Events / Competitions (no Pyramids)" ||
+        riskChosen === "Casino and Lounge Shows" ||
+        riskChosen === "Cheerleading Events / Competitions (no Pyramids)" ||
         riskChosen === "Comedy Shows" ||
-        riskChosen === "Company or Corporate Retreats Concerts - Pop Cover Bands Cornfield Mazes" ||
+        riskChosen === "Company or Corporate Retreats" ||
+        riskChosen === "Concerts - Pop Cover Bands" ||
+        riskChosen === "Cornfield Mazes" ||
         riskChosen === "Country & Western Events - No Rodeos or Rides" ||
         riskChosen === "Country Festivals and Fairs - No Rides" ||
         riskChosen === "Festival and Cultural Events - Outdoors" ||
-        riskChosen === "Film Screenings Film Showings" ||
-        riskChosen === "Golf Tournament - Daytime Grad Night" ||
-        riskChosen === "Gymnastic Competitions - Spectators Only Halloween - Costume Contests" ||
-        riskChosen === "Ice Skating Shows Junior Athletic Games Karate Meets Lacrosse" ||
-        riskChosen === "Laser Tag (Indoors) Livestock Shows Magic Shows" ||
-        riskChosen === "Marathons (Walking & Running) Marathons / Walkathons" ||
+        riskChosen === "Film Screenings" ||
+        riskChosen === "Film Showings" ||
+        riskChosen === "Golf Tournament - Daytime" ||
+        riskChosen === "Grad Night" ||
+        riskChosen === "Gymnastic Competitions - Spectators Only" ||
+        riskChosen === "Halloween - Costume Contests" ||
+        riskChosen === "Ice Skating Shows" ||
+        riskChosen === "Junior Athletic Games" ||
+        riskChosen === "Karate Meets" ||
+        riskChosen === "Lacrosse" ||
+        riskChosen === "Laser Tag (Indoors)" ||
+        riskChosen === "Livestock Shows" ||
+        riskChosen === "Magic Shows" ||
+        riskChosen === "Marathons (Walking & Running)" ||
+        riskChosen === "Marathons / Walkathons" ||
         riskChosen === "Mobile Homes / RV Shows - Professionally Managed" ||
         riskChosen === "Movie Release Party" ||
         riskChosen === "New Years Party (Private / by invite only)" ||
         riskChosen === "Old Timer Events" ||
-        riskChosen === "Parades - Under 5000 Spectators Play Readings" ||
+        riskChosen === "Parades - Under 5000 Spectators" ||
+        riskChosen === "Play Readings" ||
         riskChosen === "Plays" ||
-        riskChosen === "Pool and / or Billiards Tournaments Proms" ||
-        riskChosen === "Rugby Soccer" ||
+        riskChosen === "Pool and / or Billiards Tournaments" ||
+        riskChosen === "Proms" ||
+        riskChosen === "Rugby" ||
+        riskChosen === "Soccer" ||
         riskChosen === "Softball - Amateur" ||
         riskChosen === "Sporting Events - Indoors - Non-Professional" ||
         riskChosen === "Talent Show (no rap, hip hop, heavy metal shows)" ||
         riskChosen === "Tap Dancing" ||
         riskChosen === "Tennis Tournament" ||
-        riskChosen === "Theatrical Stage Performances Volleyball - Amateur" ||
+        riskChosen === "Theatrical Stage Performances" ||
         riskChosen === "Volleyball - Amateur" ||
-        riskChosen === "Wagon / Hayrides Walking / Hiking Tour" ||
+        riskChosen === "Wagon / Hayrides" ||
+        riskChosen === "Walking / Hiking Tour" ||
         riskChosen === "Wine Tasting"
     ) {
         riskClass = classThree;
@@ -1131,7 +1221,11 @@ function getLiquorPremium(totalPremiumLiquor){
     attendance = $("#estimatedTotalAttendance").val()
 
     // alert("Step2" + liquorSale) removes $ from val
-    liquorSale = tempLiquorSale.replace('$','').replace(',', '')
+    liquorSale = tempLiquorSale.replace('$','').replace(/,/g , '')
+
+    //this removes the first comma, but does not remove more than one
+    // liquorSale = tempLiquorSale.replace('$','').replace(',', '')
+    
     // alert (liquorSale)
 
     var liquorSaleValue = parseFloat(liquorSale)

@@ -67,7 +67,7 @@ class Intelledox {
                     <int:Data><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <application>
 \t<basicInfo>
-\t\t<logo>xx</logo>
+\t\t<logo>c:\\IntelledoxLogo\\trumanVanDyke.png</logo>
 \t\t<nameOfInsured>${XmlUtil.escapeXml(jsonSerial.getAt('namedInsured'))}</nameOfInsured>
 \t\t<brokerCompanyName>${XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyName'))}</brokerCompanyName>
 \t\t<brokerCompanyAddress>${XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyAddress'))}</brokerCompanyAddress>
@@ -485,6 +485,8 @@ class Intelledox {
 \t\t</keyPersonnelRow>
 \t</keyPersonnelTable>
 
+\t<extraForms> </extraForms>
+
 
 </application>]]></int:Data>
                 </int:ProvidedData>
@@ -504,8 +506,8 @@ class Intelledox {
             client.authorization = new HTTPBasicAuthorization("admin", "admin")
             def response = client.send(SOAPAction:'http://services.dpm.com.au/intelledox/GenerateWithData', soapXML)
 
-            log.info response.text.substring(0,1500);
-//            log.info response.text
+//            log.info response.text.substring(0,1500);
+            log.info response.text
             def fileName = "Indication A.pdf"
 
             def a = new XmlSlurper().parseText(response.text)
@@ -573,11 +575,17 @@ class Intelledox {
             if(jsonSerial.getAt("cglLOB").length() > 1){
                 coverages = coverages + "CGL "
             }
-            if(jsonSerial.getAt("cpkLOB").length() > 1){
-                coverages = coverages + "CPK "
+            if(jsonSerial.getAt("cumbLOB").length() > 1){
+                coverages = coverages + "CUMB "
             }
-            if(jsonSerial.getAt("epkgLOB").length() > 1){
-                coverages = coverages + "EPKG "
+            if(jsonSerial.getAt("alcoholLOB").length() > 1){
+                coverages = coverages + "ALCOHOL "
+            }
+            if(jsonSerial.getAt("wcLOB").length() > 1){
+                coverages = coverages + "WC "
+            }
+            if(jsonSerial.getAt("noalLOB").length() > 1){
+                coverages = coverages + "NOAL "
             }
 
 
@@ -595,7 +603,7 @@ class Intelledox {
                     <int:Data><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <application>
 \t<basicInfo>
-\t\t<logo>xx</logo>
+\t\t<logo>c:\\IntelledoxLogo\\proSight.png</logo>
 \t\t<nameOfInsured>${XmlUtil.escapeXml(jsonSerial.getAt('namedInsured'))}</nameOfInsured>
 \t\t<brokerCompanyName>${XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyName'))}</brokerCompanyName>
 \t\t<brokerCompanyAddress>${XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyAddress'))}</brokerCompanyAddress>
@@ -640,16 +648,16 @@ class Intelledox {
 \t<namedInsuredTable>
 \t\t<namedInsuredHeader>Named Insured</namedInsuredHeader>
 \t\t<namedInsuredRow>
-\t\t\t<nameInsured nameInsuredColOne="${XmlUtil.escapeXml(jsonSerial.getAt("nameOfProductionCompany"))}"></nameInsured>
-\t\t\t<nameInsuredColTwo>Contact: ${XmlUtil.escapeXml(jsonSerial.getAt("insuredContactName"))}</nameInsuredColTwo>
+\t\t\t<nameInsured nameInsuredColOne="${XmlUtil.escapeXml(jsonSerial.getAt("namedInsured"))}"></nameInsured>
+\t\t\t<nameInsuredColTwo>Contact: ${XmlUtil.escapeXml(jsonSerial.getAt("principalName"))}</nameInsuredColTwo>
 \t\t</namedInsuredRow>
 \t\t<namedInsuredRow>
 \t\t\t<nameInsured nameInsuredColOne="${XmlUtil.escapeXml(jsonSerial.getAt('streetNameMailing'))}"></nameInsured>
-\t\t\t<nameInsuredColTwo>Email: ${XmlUtil.escapeXml(jsonSerial.getAt("namedInsuredEmail"))}</nameInsuredColTwo>
+\t\t\t<nameInsuredColTwo>Email: ${XmlUtil.escapeXml(jsonSerial.getAt("principalEmail"))}</nameInsuredColTwo>
 \t\t</namedInsuredRow>
 \t\t<namedInsuredRow>
 \t\t\t<nameInsured nameInsuredColOne="${XmlUtil.escapeXml(jsonSerial.getAt('cityMailing'))}, ${XmlUtil.escapeXml(jsonSerial.getAt('stateMailing'))} ${XmlUtil.escapeXml(jsonSerial.getAt('zipCodeMailing'))}"></nameInsured>
-\t\t\t<nameInsuredColTwo>Phone: ${XmlUtil.escapeXml(jsonSerial.getAt("phoneNumber"))}</nameInsuredColTwo>
+\t\t\t<nameInsuredColTwo>Phone: ${XmlUtil.escapeXml(jsonSerial.getAt("principalPhone"))}</nameInsuredColTwo>
 \t\t</namedInsuredRow>
 \t</namedInsuredTable>
 \t
@@ -663,7 +671,7 @@ class Intelledox {
 \t<policyTermTable>
 \t\t<policyTermHeader>Policy Term</policyTermHeader>
 \t\t<policyTermRow>
-\t\t\t<policyTerm policyTermColOne="Policy Term: ${XmlUtil.escapeXml(jsonSerial.getAt("proposedTermLengthString"))}"></policyTerm>
+\t\t\t<policyTerm policyTermColOne="Policy Term: ${XmlUtil.escapeXml(jsonSerial.getAt("proposedEffectiveDate"))}"></policyTerm>
 \t\t</policyTermRow>
 \t\t<policyTermRow>
 \t\t\t<policyTerm policyTermColOne="Proposed Effective: ${XmlUtil.escapeXml(jsonSerial.getAt("proposedEffectiveDate"))} - ${XmlUtil.escapeXml(jsonSerial.getAt("proposedExpirationDate"))}"></policyTerm>
@@ -716,29 +724,10 @@ class Intelledox {
 
             ///////////////////Product descriptions and Limit/Deduct Breakdowns
 
-            if(jsonSerial.getAt("cpkLOB").length() > 1){
+            if(jsonSerial.getAt("cglLOB").length() > 1){
                 soapXML = soapXML + """
 \t<coverageTable>
 \t\t<coverageHeader>Commercial Package Policy - Limits/Deductibles</coverageHeader>
-\t\t<coverageRow>""";
-                jsonSerial.getAt("cpkLOB").split("\n").each {
-                    if (it.length() > 0) {
-                        soapXML = soapXML + """
-\t\t<coverage coveragePackage="${it.split("\t")[0]}">
-\t\t\t<coverageLimit> ${it.split("\t")[1]} </coverageLimit>
-\t\t\t<coverageDeductible> ${it.split("\t").size() >=3 ? it.split("\t")[2] : ""} </coverageDeductible>
-\t\t</coverage>
-\t"""
-                    }
-                }
-                soapXML = soapXML + """
-\t\t</coverageRow>
-\t</coverageTable>"""
-            }
-            else if(jsonSerial.getAt("cglLOB").length() > 1){
-                soapXML = soapXML + """
-\t<coverageTable>
-\t\t<coverageHeader>Host Liquor - Limits/Deductibles</coverageHeader>
 \t\t<coverageRow>""";
                 jsonSerial.getAt("cglLOB").split("\n").each {
                     if (it.length() > 0) {
@@ -754,12 +743,31 @@ class Intelledox {
 \t\t</coverageRow>
 \t</coverageTable>"""
             }
-            if(jsonSerial.getAt("NOALLOB").length() > 1){
+            else if(jsonSerial.getAt("cumbLOB").length() > 1){
+                soapXML = soapXML + """
+\t<coverageTable>
+\t\t<coverageHeader>Host Liquor - Limits/Deductibles</coverageHeader>
+\t\t<coverageRow>""";
+                jsonSerial.getAt("cumbLOB").split("\n").each {
+                    if (it.length() > 0) {
+                        soapXML = soapXML + """
+\t\t<coverage coveragePackage="${it.split("\t")[0]}">
+\t\t\t<coverageLimit> ${it.split("\t")[1]} </coverageLimit>
+\t\t\t<coverageDeductible> ${it.split("\t").size() >=3 ? it.split("\t")[2] : ""} </coverageDeductible>
+\t\t</coverage>
+\t"""
+                    }
+                }
+                soapXML = soapXML + """
+\t\t</coverageRow>
+\t</coverageTable>"""
+            }
+            if(jsonSerial.getAt("alcoholLOB").length() > 1){
                 soapXML = soapXML + """
 \t<coverageTable>
 \t\t<coverageHeader>Non-Owned and Hired Automobile- Limits/Deductibles</coverageHeader>
 \t\t<coverageRow>""";
-                jsonSerial.getAt("NOALLOB").split("\n").each {
+                jsonSerial.getAt("alcoholLOB").split("\n").each {
                     if (it.length() > 0) {
                         soapXML = soapXML + """
 \t\t<coverage coveragePackage="${it.split("\t")[0]}">
@@ -773,12 +781,12 @@ class Intelledox {
 \t\t</coverageRow>
 \t</coverageTable>"""
             }
-            if(jsonSerial.getAt("CUMBLOB").length() > 1){
+            if(jsonSerial.getAt("wcLOB").length() > 1){
                 soapXML = soapXML + """
 \t<coverageTable>
 \t\t<coverageHeader>Umbrella- Limits/Deductibles</coverageHeader>
 \t\t<coverageRow>""";
-                jsonSerial.getAt("CUMBLOB").split("\n").each {
+                jsonSerial.getAt("wcLOB").split("\n").each {
                     if (it.length() > 0) {
                         soapXML = soapXML + """
 \t\t<coverage coveragePackage="${it.split("\t")[0]}">
@@ -792,12 +800,12 @@ class Intelledox {
 \t\t</coverageRow>
 \t</coverageTable>"""
             }
-            if(jsonSerial.getAt("WCLOB").length() > 1){
+            if(jsonSerial.getAt("noalLOB").length() > 1){
                 soapXML = soapXML + """
 \t<coverageTable>
 \t\t<coverageHeader>Workers Compensation- Limits/Deductibles</coverageHeader>
 \t\t<coverageRow>""";
-                jsonSerial.getAt("WCLOB").split("\n").each {
+                jsonSerial.getAt("noalLOB").split("\n").each {
                     if (it.length() > 0) {
                         soapXML = soapXML + """
 \t\t<coverage coveragePackage="${it.split("\t")[0]}">
@@ -827,9 +835,9 @@ class Intelledox {
 \t\t<policyFormEndorsementTitle>Policy Form / Endorsement</policyFormEndorsementTitle>
 \t</policyFormEndorsementTable>
 """
-
-            if(jsonSerial.getAt("epkgLOB").length() > 1){
-                jsonSerial.getAt("endorseInsertEPKG").split("\n").eachWithIndex { row, index ->
+log.info(jsonSerial.getAt("endorseInsert"))
+            if(jsonSerial.getAt("cglLOB").length() > 1){
+                jsonSerial.getAt("endorseInsert").split("\n").eachWithIndex { row, index ->
                     if (row.length() > 0) {
                         if(index ==0){
                             soapXML = soapXML + """
@@ -839,6 +847,10 @@ class Intelledox {
 """
                         }
                         else{
+                            log.info row
+                            log.info row.split(" - ")[0]
+                            log.info row.split(" - ")[1]
+
                             soapXML = soapXML + """
 \t\t\t\t<policyFormEndorsement policyFormEndorsementCode="${XmlUtil.escapeXml(row.split(" - ")[0])}">
 \t\t\t\t\t\t<policyFormEndorsementName>${XmlUtil.escapeXml(row.split(" - ")[1])}</policyFormEndorsementName>
@@ -853,56 +865,6 @@ class Intelledox {
 """
 
             }
-            if(jsonSerial.getAt("cpkLOB").length() > 1){
-                jsonSerial.getAt("endorseInsertCPK").split("\n").eachWithIndex { row, index ->
-                    if (row.length() > 0) {
-                        if(index ==0){
-                            soapXML = soapXML + """
-\t<policyFormEndorsementHeaders>
-\t\t<policyFormEndorsementHeader>${XmlUtil.escapeXml(row)}</policyFormEndorsementHeader>
-\t\t\t<policyFormEndorsementRow>
-"""
-                        }
-                        else{
-                            soapXML = soapXML + """
-\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="${XmlUtil.escapeXml(row.split(" - ")[0])}">
-\t\t\t\t\t\t<policyFormEndorsementName>${XmlUtil.escapeXml(row.split(" - ")[1])}</policyFormEndorsementName>
-\t\t\t\t</policyFormEndorsement>
-"""
-                        }
-                    }
-                }
-                soapXML = soapXML + """
-\t\t\t</policyFormEndorsementRow>
-\t</policyFormEndorsementHeaders>
-"""
-            }
-            else if(jsonSerial.getAt("cglLOB").length() > 1){
-                jsonSerial.getAt("endorseInsertCGL").split("\n").eachWithIndex { row, index ->
-                    if (row.length() > 0) {
-                        if(index ==0){
-                            soapXML = soapXML + """
-\t<policyFormEndorsementHeaders>
-\t\t<policyFormEndorsementHeader>${XmlUtil.escapeXml(row)}</policyFormEndorsementHeader>
-\t\t\t<policyFormEndorsementRow>
-"""
-                        }
-                        else{
-                            soapXML = soapXML + """
-\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="${XmlUtil.escapeXml(row.split(" - ")[0])}">
-\t\t\t\t\t\t<policyFormEndorsementName>${XmlUtil.escapeXml(row.split(" - ")[1])}</policyFormEndorsementName>
-\t\t\t\t</policyFormEndorsement>
-"""
-                        }
-                    }
-                }
-                soapXML = soapXML + """
-\t\t\t</policyFormEndorsementRow>
-\t</policyFormEndorsementHeaders>
-"""
-            }
-
-
             soapXML = soapXML + """
 \t<notesTable>
 \t\t<notesHeader>Underwriting Questions</notesHeader>
@@ -920,45 +882,45 @@ class Intelledox {
 \t</notesTable>"""
 
 
-            soapXML = soapXML + """
-\t<ratingTable>
-\t"""
-
-            if(jsonSerial.getAt("EPKGRateInfo") != null){
-                soapXML = soapXML + """
-\t
-\t
-\t\t<ratingHeader>Rating</ratingHeader>
-\t\t<ratingRow>
-\t\t\t<rating ratingName="Entertainment Package">
-\t\t\t\t<ratingPrice>${XmlUtil.escapeXml(jsonSerial.getAt("EPKGRateInfo"))}</ratingPrice>
-\t\t\t</rating>
-\t\t</ratingRow>"""
-            }
-            if(jsonSerial.getAt("CPKRateInfo") != null){
-                soapXML = soapXML + """
-\t
-\t
-\t\t<ratingRow>
-\t\t\t<rating ratingName="Commercial Package">
-\t\t\t\t<ratingPrice>${XmlUtil.escapeXml(jsonSerial.getAt("CPKRateInfo"))}</ratingPrice>
-\t\t\t</rating>
-\t\t</ratingRow>"""
-            }
-            else if(jsonSerial.getAt("CGLRateInfo") != null){
-                soapXML = soapXML + """
-\t
-\t
-\t\t<ratingRow>
-\t\t\t<rating ratingName="Commercial General Liability">
-\t\t\t\t<ratingPrice>${XmlUtil.escapeXml(jsonSerial.getAt("CGLRateInfo"))}</ratingPrice>
-\t\t\t</rating>
-\t\t</ratingRow>"""
-            }
-
-            soapXML = soapXML + """
-\t</ratingTable>
-\t"""
+//            soapXML = soapXML + """
+//\t<ratingTable>
+//\t"""
+//
+//            if(jsonSerial.getAt("EPKGRateInfo") != null){
+//                soapXML = soapXML + """
+//\t
+//\t
+//\t\t<ratingHeader>Rating</ratingHeader>
+//\t\t<ratingRow>
+//\t\t\t<rating ratingName="Entertainment Package">
+//\t\t\t\t<ratingPrice>${XmlUtil.escapeXml(jsonSerial.getAt("EPKGRateInfo"))}</ratingPrice>
+//\t\t\t</rating>
+//\t\t</ratingRow>"""
+//            }
+//            if(jsonSerial.getAt("CPKRateInfo") != null){
+//                soapXML = soapXML + """
+//\t
+//\t
+//\t\t<ratingRow>
+//\t\t\t<rating ratingName="Commercial Package">
+//\t\t\t\t<ratingPrice>${XmlUtil.escapeXml(jsonSerial.getAt("CPKRateInfo"))}</ratingPrice>
+//\t\t\t</rating>
+//\t\t</ratingRow>"""
+//            }
+//            else if(jsonSerial.getAt("CGLRateInfo") != null){
+//                soapXML = soapXML + """
+//\t
+//\t
+//\t\t<ratingRow>
+//\t\t\t<rating ratingName="Commercial General Liability">
+//\t\t\t\t<ratingPrice>${XmlUtil.escapeXml(jsonSerial.getAt("CGLRateInfo"))}</ratingPrice>
+//\t\t\t</rating>
+//\t\t</ratingRow>"""
+//            }
+//
+//            soapXML = soapXML + """
+//\t</ratingTable>
+//\t"""
 
 
             soapXML = soapXML + """
@@ -966,11 +928,8 @@ class Intelledox {
 \t<applicantInformationTable>
 \t\t<applicantInformationHeader>Application Information</applicantInformationHeader>
 \t\t<applicantInformationRow>
-\t\t\t<applicantInformation applicantInformationColOne="Name of Production Company">
-\t\t\t\t<applicantInformationColTwo>${XmlUtil.escapeXml(jsonSerial.getAt("nameOfProductionCompany"))}</applicantInformationColTwo>
-\t\t\t</applicantInformation>
-\t\t\t<applicantInformation applicantInformationColOne="Title of Production">
-\t\t\t\t<applicantInformationColTwo>${XmlUtil.escapeXml(jsonSerial.getAt("titleOfProduction"))}</applicantInformationColTwo>
+\t\t\t<applicantInformation applicantInformationColOne="Name of Insured">
+\t\t\t\t<applicantInformationColTwo>${XmlUtil.escapeXml(jsonSerial.getAt("namedInsured"))}</applicantInformationColTwo>
 \t\t\t</applicantInformation>
 \t\t\t<applicantInformation applicantInformationColOne="Website">
 \t\t\t\t<applicantInformationColTwo>${XmlUtil.escapeXml(jsonSerial.getAt("website"))}</applicantInformationColTwo>
@@ -979,7 +938,7 @@ class Intelledox {
 \t\t\t\t<applicantInformationColTwo>${XmlUtil.escapeXml(jsonSerial.getAt("streetNameMailing"))} ${XmlUtil.escapeXml(jsonSerial.getAt("cityMailing"))}, ${XmlUtil.escapeXml(jsonSerial.getAt("stateMailing"))} ${XmlUtil.escapeXml(jsonSerial.getAt("zipCodeMailing"))} </applicantInformationColTwo>
 \t\t\t</applicantInformation>
 \t\t\t<applicantInformation applicantInformationColOne="Primary Contact Name">
-\t\t\t\t<applicantInformationColTwo>${XmlUtil.escapeXml(jsonSerial.getAt("insuredContactName"))} </applicantInformationColTwo>
+\t\t\t\t<applicantInformationColTwo>${XmlUtil.escapeXml(jsonSerial.getAt("namedInsured"))} </applicantInformationColTwo>
 \t\t\t</applicantInformation>
 \t\t\t<applicantInformation applicantInformationColOne="Tel No">
 \t\t\t\t<applicantInformationColTwo>${XmlUtil.escapeXml(jsonSerial.getAt("phoneNumber"))} </applicantInformationColTwo>
@@ -990,66 +949,35 @@ class Intelledox {
 \t\t</applicantInformationRow>
 \t</applicantInformationTable>
 
-\t
-\t<budgetInformationTable>
-\t\t<budgetInformationHeader>Budget Information</budgetInformationHeader>
-\t\t<budgetInformationRow>
-\t\t\t<budgetInformation budgetInformationColOne="Gross Production Cost">
-\t\t\t\t<budgetInformationColTwo> ${XmlUtil.escapeXml(jsonSerial.getAt("totalBudgetConfirm"))} </budgetInformationColTwo>
-\t\t\t</budgetInformation>
-\t\t\t<budgetInformation budgetInformationColOne="Budget Attached">
-\t\t\t\t<budgetInformationColTwo> Top Sheet of Budget is required </budgetInformationColTwo>
-\t\t\t</budgetInformation>
-"""
-
-            if(jsonSerial.getAt("sourceOfFinancing") != null){
-                soapXML = soapXML + """      
-\t\t\t<budgetInformation budgetInformationColOne="Source of Financing">
-\t\t\t\t<budgetInformationColTwo> ${XmlUtil.escapeXml(jsonSerial.getAt("sourceOfFinancing"))} </budgetInformationColTwo>
-\t\t\t</budgetInformation>"""
-            }
-
-            soapXML = soapXML + """
-\t\t</budgetInformationRow>
-\t</budgetInformationTable>
 
 \t
 \t<productionInformationTable>
-\t\t<productionInformationHeader>Production Information</productionInformationHeader>
+\t\t<productionInformationHeader>Event Information</productionInformationHeader>
 \t\t<productionInformationRow>
-\t\t\t<productionInformationName productionInformationColOne="Types of Production:">
-\t\t\t\t<productionInformationColTwo> ${XmlUtil.escapeXml(jsonSerial.getAt("productionType"))} </productionInformationColTwo>
+\t\t\t<productionInformationName productionInformationColOne="Types of Event:">
+\t\t\t\t<productionInformationColTwo> ${XmlUtil.escapeXml(jsonSerial.getAt("totalAttendance"))} </productionInformationColTwo>
 \t\t\t</productionInformationName>
-\t\t\t<productionInformationName productionInformationColOne="Script / Story:">
-\t\t\t\t<productionInformationColTwo> ${XmlUtil.escapeXml(jsonSerial.getAt("story"))} </productionInformationColTwo>
+\t\t\t<productionInformationName productionInformationColOne="Total Attendance:">
+\t\t\t\t<productionInformationColTwo> ${XmlUtil.escapeXml(jsonSerial.getAt("totalAttendance"))} </productionInformationColTwo>
+\t\t</productionInformationName>
+\t\t\t<productionInformationName productionInformationColOne="Largest Number of Attendees Per Day:">
+\t\t\t\t<productionInformationColTwo> ${XmlUtil.escapeXml(jsonSerial.getAt("attendeePerDay"))} </productionInformationColTwo>
+\t\t</productionInformationName>
+\t\t\t<productionInformationName productionInformationColOne="Event Location:">
+\t\t\t\t<productionInformationColTwo> ${XmlUtil.escapeXml(jsonSerial.getAt("eventState"))} </productionInformationColTwo>
+\t\t</productionInformationName>
+\t\t\t<productionInformationName productionInformationColOne="Primary Business Operation:">
+\t\t\t\t<productionInformationColTwo> ${XmlUtil.escapeXml(jsonSerial.getAt("primaryBusinessOperation"))} </productionInformationColTwo>
 \t\t</productionInformationName>
 \t\t</productionInformationRow>
 \t</productionInformationTable>
 
 \t<principalPhotographyTable>
-\t\t<principalPhotographyHeader>Principal Photography</principalPhotographyHeader>
-\t\t<principalPhotographyRow>
-\t\t\t<principalPhotographyName startPrincipalPhoto="${XmlUtil.escapeXml(jsonSerial.getAt("principalPhotographyDateStart"))} - ">
-\t\t\t\t<endPrincipalPhoto>${XmlUtil.escapeXml(jsonSerial.getAt("principalPhotographyDateStart"))}</endPrincipalPhoto>
-\t\t\t\t<locationPrincipalPhoto></locationPrincipalPhoto>
-\t\t\t</principalPhotographyName>
-\t\t</principalPhotographyRow>
+\t\t<principalPhotographyHeader></principalPhotographyHeader>
 \t</principalPhotographyTable>
 
 \t<keyPersonnelTable>
-\t\t<keyPersonnelHeader>Key Personnel</keyPersonnelHeader>
-\t\t<keyPersonnelRow>
-\t\t\t<keyPerson keyPersonnel="Director">
-\t\t\t\t<keyPersonnelName>${XmlUtil.escapeXml(jsonSerial.getAt("director"))}</keyPersonnelName>
-\t\t\t\t<keyPersonnelYOE></keyPersonnelYOE>
-\t\t\t\t<keyPersonnelPrior></keyPersonnelPrior>
-\t\t\t</keyPerson>
-\t\t\t<keyPerson keyPersonnel="Producer">
-\t\t\t\t<keyPersonnelName>${XmlUtil.escapeXml(jsonSerial.getAt("producer"))}</keyPersonnelName>
-\t\t\t\t<keyPersonnelYOE></keyPersonnelYOE>
-\t\t\t\t<keyPersonnelPrior></keyPersonnelPrior>
-\t\t\t</keyPerson>
-\t\t</keyPersonnelRow>
+\t\t<keyPersonnelHeader></keyPersonnelHeader>
 \t</keyPersonnelTable>
 
 
@@ -1071,8 +999,8 @@ class Intelledox {
             client.authorization = new HTTPBasicAuthorization("admin", "admin")
             def response = client.send(SOAPAction:'http://services.dpm.com.au/intelledox/GenerateWithData', soapXML)
 
-            log.info response.text.substring(0,1500);
-//            log.info response.text
+//            log.info response.text.substring(0,1500);
+            log.info response.text
             def fileName = "Indication A.pdf"
 
             def a = new XmlSlurper().parseText(response.text)

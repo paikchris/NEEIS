@@ -51,6 +51,7 @@ public  java.lang.Object addNewInsured() { return null;}
 public  java.lang.Object ajaxAttachNew() { return null;}
 public  java.lang.Object ajaxAttach() { return null;}
 public  java.lang.Object newRatePremiums() { return null;}
+public  java.lang.Object ratePremiumsSGP() { return null;}
 public  java.lang.Object ratePremiums() { return null;}
 public  java.lang.Object calcPIP3Deductibles(java.lang.Object totalBudget) { return null;}
 public  java.lang.Object saveSubmissionToAIM() { return null;}

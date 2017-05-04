@@ -45,6 +45,13 @@
         margin: 6px;
     }
 
+
+    .buttontext{
+        overflow: hidden;
+        white-space: nowrap;
+        display: block;
+        text-overflow: ellipsis;
+    }
     .chip {
         display: inline-block;
         padding: 0 15px;
@@ -68,19 +75,6 @@
         height: 50px;
         width: 50px;
         border-radius: 50%;
-    }
-    .closebtn {
-        padding-left: 10px;
-        color: #888;
-        font-weight: bold;
-        line-height: 25px;
-        float: right;
-        font-size: 20px;
-        cursor: pointer;
-    }
-
-    .closebtn:hover {
-        color: #000;
     }
     </style>
 </head>
@@ -199,119 +193,97 @@
 
                                     </div>
                                 </div>
-                                <div class=" row col-xs-12" style="">
-                                    <label>Product Offerings</label>
-                                </div>
 
-                                <div class="col-xs-3" id="levelOneContainer">
-
-                                    <div class="btn-group ">
-                                        <button type="button" class="btn btn-primary" onclick="$(this).toggleClass('active');">EPKG</button>
-                                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
-                                                aria-haspopup="true" aria-expanded="false" >
-                                            <span class="caret"></span>
-                                            <span class="sr-only">Toggle Dropdown</span>
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            <li><a href="#">Change</a></li>
-                                            <li><a href="#">Edit</a></li>
-                                            <li role="separator" class="divider"></li>
-                                            <li><a href="#">Remove</a></li>
-                                        </ul>
+                                <div class="col-xs-4 productColumn" data-containernumber="1" id="productColumn1">
+                                    <div class="">
+                                        <label>Product Offerings</label>
                                     </div>
-
-                                    <br><br>
-
-                                    <div class="dropdown">
+                                    <div class="productsContainer" style="margin-bottom:30px; display:none">
+                                    </div>
+                                    <div class="dropdown addProductDropdown">
                                         <button class="btn btn-sm btn-success dropdown-toggle" type="button" id="dropdownMenu1"
                                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" style="border-radius: 25px; padding: 1px 10px;">
-                                            Add
+                                            Add Coverage
                                             <span class="caret"></span>
                                         </button>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                                            %{--<li><a href="#" onclick="$('#addPackageModal').modal('show');">Package</a></li>--}%
-                                            <li><a href="#" onclick="$('#addProductModal').modal('show');">Product</a></li>
-                                            %{--<li><a href="#" onclick="$('#addCoverageModal').modal('show');">Coverage</a></li>--}%
+                                            %{--<li><a href="#" onclick="addProductModalShow($(this).closest('.productColumn').attr('data-containernumber'));">Product</a></li>--}%
+                                            %{--<li><a href="#" onclick="addCoverageModalShow($(this).closest('.productColumn').attr('data-containernumber'));">Coverage</a></li>--}%
+                                            <g:each var="coverage" in="${coverages}">
+                                                <li><a href="#" class="addCoverageDropDownOption" data-value="${coverage.coverageCode}">${coverage.coverageName}</a></li>
+                                            </g:each>
                                         </ul>
                                     </div>
                                 </div>
-                                <div class="col-xs-3" id="levelTwoContainer">
-
-                                </div>
-                                <div class="col-xs-3" id="levelThreeContainer">
-
-                                </div>
-                                <div class="col-xs-3" id="levelFourContainer">
-
+                                <div class="col-xs-8 productColumn" >
+                                    <div class="">
+                                        <label>Show Product When: </label>
+                                    </div>
+                                    <div id="mainConditionContainer" style="margin-bottom: 40px;">
+                                        <div class="row" style="margin-left:-4px;">
+                                            <div class="col-xs-4">
+                                                <p>
+                                                    <input type="checkbox"  class="productField productAvailabilityCheckbox" id="productAlwaysAvailableCheckBox"> Always
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="row" style="margin-left:-4px;">
+                                            <div class="col-xs-12">
+                                                <p>
+                                                    <input type="checkbox" class="productField productAvailabilityCheckbox" id="productDependsOnBudget"> Budget is:
+                                                </p>
+                                            </div>
+                                            <div class="col-xs-12" id="productDependsOnBudgetContainer" style="margin-left:25px;margin-bottom:30px; display:none">
+                                                <div class="conditionContainer" id="budgetConditionsContainer">
+                                                    <div class="col-xs-12">
+                                                        <select>
+                                                            <option>Less Than </option>
+                                                            <option>Less Than or Equal To </option>
+                                                            <option>Equal To</option>
+                                                            <option>Greater Than</option>
+                                                            <option>Greater Than or Equal To </option>
+                                                        </select>
+                                                        <input class="currency" type="text" placeholder = "$"  style="margin-top:4px; margin-bottom:4px; margin-left:20px;"/>
+                                                        <button class="btn btn-xs btn-success addCondition" id="" type="button" style="margin-left:20px;">
+                                                            <i class="fa fa-plus" aria-hidden="true"></i>
+                                                            <span class="" style="font-size: 14px; font-weight: 500" > Add Another Condition</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row" style="margin-left:-4px;">
+                                            <div class="col-xs-4">
+                                                <p>
+                                                    <input type="checkbox"  class="productField productAvailabilityCheckbox" id="productDependsOnTermLength"> Term Length is:
+                                                </p>
+                                            </div>
+                                            <div class="col-xs-12" id="productDependsOnTermLengthContainer" style="margin-left:25px;margin-bottom:30px; display:none">
+                                                <div class="conditionContainer" id="termConditionsContainer">
+                                                    <div class="col-xs-12">
+                                                        <select>
+                                                            <option>Less Than </option>
+                                                            <option>Less Than or Equal To </option>
+                                                            <option>Equal To</option>
+                                                            <option>Greater Than</option>
+                                                            <option>Greater Than or Equal To </option>
+                                                        </select>
+                                                        <input class="" type="text" placeholder = "Days"  style="margin-top:4px; margin-bottom:4px; margin-left:20px; "/>
+                                                        <button class="btn btn-xs btn-success addCondition" id="" type="button" style="margin-left:20px;">
+                                                            <i class="fa fa-plus" aria-hidden="true"></i>
+                                                            <span class="" style="font-size: 14px; font-weight: 500" > Add Another Condition</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="row"  style="margin-left:-4px; margin-top:10px; margin-bottom:10px">
 
 
                                 </div>
-                                <div id="mainConditionContainer" style="margin-bottom: 40px;">
-                                    <div class="row" style="margin-left:-4px;">
-                                        <div class="col-xs-4">
-                                            <label>Show Product When: </label>
-                                        </div>
-                                    </div>
-                                    <div class="row" style="margin-left:-4px;">
-                                        <div class="col-xs-4">
-                                            <p>
-                                                <input type="checkbox"  class="productField productAvailabilityCheckbox" id="productAlwaysAvailableCheckBox"> Always
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="row" style="margin-left:-4px;">
-                                        <div class="col-xs-12">
-                                            <p>
-                                                <input type="checkbox" class="productField productAvailabilityCheckbox" id="productDependsOnBudget"> Budget is:
-                                            </p>
-                                        </div>
-                                        <div class="col-xs-12" id="productDependsOnBudgetContainer" style="margin-left:25px;margin-bottom:30px; display:none">
-                                            <div class="conditionContainer" id="budgetConditionsContainer">
-                                                <div class="col-xs-12">
-                                                    <select>
-                                                        <option>Less Than </option>
-                                                        <option>Less Than or Equal To </option>
-                                                        <option>Equal To</option>
-                                                        <option>Greater Than</option>
-                                                        <option>Greater Than or Equal To </option>
-                                                    </select>
-                                                    <input class="currency" type="text" placeholder = "$"  style="margin-top:4px; margin-bottom:4px; margin-left:20px;"/>
-                                                    <button class="btn btn-xs btn-success addCondition" id="" type="button" style="margin-left:20px;">
-                                                        <i class="fa fa-plus" aria-hidden="true"></i>
-                                                        <span class="" style="font-size: 14px; font-weight: 500" > Add Another Condition</span>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row" style="margin-left:-4px;">
-                                        <div class="col-xs-4">
-                                            <p>
-                                                <input type="checkbox"  class="productField productAvailabilityCheckbox" id="productDependsOnTermLength"> Term Length is:
-                                            </p>
-                                        </div>
-                                        <div class="col-xs-12" id="productDependsOnTermLengthContainer" style="margin-left:25px;margin-bottom:30px; display:none">
-                                            <div class="conditionContainer" id="termConditionsContainer">
-                                                <div class="col-xs-12">
-                                                    <select>
-                                                        <option>Less Than </option>
-                                                        <option>Less Than or Equal To </option>
-                                                        <option>Equal To</option>
-                                                        <option>Greater Than</option>
-                                                        <option>Greater Than or Equal To </option>
-                                                    </select>
-                                                    <input class="" type="text" placeholder = "Days"  style="margin-top:4px; margin-bottom:4px; margin-left:20px; "/>
-                                                    <button class="btn btn-xs btn-success addCondition" id="" type="button" style="margin-left:20px;">
-                                                        <i class="fa fa-plus" aria-hidden="true"></i>
-                                                        <span class="" style="font-size: 14px; font-weight: 500" > Add Another Condition</span>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+
 
 
                             </div>
@@ -370,10 +342,11 @@
                         <select class="form-control" id="productModalProductSelect">
                             <option value="invalid">Select a Product</option>
                             <g:each var="product" in="${products}">
-                                <option value="${product.productID}" onclick="alert();">${product.productID}</option>
+                                <option value="${product.productID}" >${product.productID}</option>
                             </g:each>
                         </select>
                     </div>
+
                 </div>
                 <div id="productModalConditionContainer" style="margin: 24px; display: none">
                     <div class="row">
@@ -442,7 +415,7 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id='saveProductDetailModalButton' data-dismiss="modal" aria-label="Save">Save</button>
+                <button type="button" class="btn btn-primary" id='addProductModalAddButton' data-dismiss="modal" aria-label="Add">Add</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
@@ -451,40 +424,41 @@
     <div class="modal-dialog" role="document" style="">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Select Product</h4>
+                <h4 class="modal-title" id="">Select Coverage</h4>
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-xs-12">
-                        <select id="coverageModalCoverageSelect">
+                    <div class="col-xs-6 col-xs-offset-3">
+                        <select class="form-control" id="coverageModalCoverageSelect">
                             <option value="invalid">Select a Coverage</option>
                             <g:each var="coverage" in="${coverages}">
-                                <option value="${coverage.coverageCode}">${coverage.coverageCode} - ${coverage.coverageName}</option>
+                                <option value="${coverage.coverageCode}" >${coverage.coverageName}</option>
                             </g:each>
                         </select>
                     </div>
+
                 </div>
-                <div id="coverageModalConditionContainer">
+                <div id="coverageModalConditionContainer" style="margin: 24px; display: none">
                     <div class="row">
                         <div class="col-xs-4">
-                            <label>Show Product When: </label>
+                            <label>Show Coverage When: </label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-xs-4">
                             <p>
-                                <input type="checkbox"  class="productField productAvailabilityCheckbox" id="productAlwaysAvailableCheckBox"> Always
+                                <input type="checkbox"  class="coverageField coverageAvailabilityCheckbox" id="coverageAlwaysAvailableCheckBox"> Always
                             </p>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-xs-12">
                             <p>
-                                <input type="checkbox" class="productField productAvailabilityCheckbox" id="productDependsOnBudget"> Budget is:
+                                <input type="checkbox" class="coverageField coverageAvailabilityCheckbox" id="coverageDependsOnBudget"> Budget is:
                             </p>
                         </div>
-                        <div class="col-xs-12" id="productDependsOnBudgetContainer" style="margin-left:25px;margin-bottom:30px; display:none">
-                            <div class="conditionContainer" id="budgetConditionsContainer">
+                        <div class="col-xs-12" id="coverageDependsOnBudgetContainer" style="margin-left:25px;margin-bottom:30px; display:none">
+                            <div class="conditionContainer" id="">
                                 <div class="col-xs-12">
                                     <select>
                                         <option>Less Than </option>
@@ -505,11 +479,11 @@
                     <div class="row">
                         <div class="col-xs-4">
                             <p>
-                                <input type="checkbox"  class="productField productAvailabilityCheckbox" id="productDependsOnTermLength"> Term Length is:
+                                <input type="checkbox"  class="coverageField coverageAvailabilityCheckbox" id="coverageDependsOnTermLength"> Term Length is:
                             </p>
                         </div>
-                        <div class="col-xs-12" id="productDependsOnTermLengthContainer" style="margin-left:25px;margin-bottom:30px; display:none">
-                            <div class="conditionContainer" id="termConditionsContainer">
+                        <div class="col-xs-12" id="coverageDependsOnTermLengthContainer" style="margin-left:25px;margin-bottom:30px; display:none">
+                            <div class="conditionContainer" id="">
                                 <div class="col-xs-12">
                                     <select>
                                         <option>Less Than </option>
@@ -531,7 +505,7 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id='saveCoverageDetailModalButton' data-dismiss="modal" aria-label="Save">Save</button>
+                <button type="button" class="btn btn-primary" id='addCoverageModalAddButton' data-dismiss="modal" aria-label="Add">Add</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->

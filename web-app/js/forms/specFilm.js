@@ -1,4 +1,4 @@
-/**
+/*
  * Created by paikchris on 8/23/16.
  */
 
@@ -13,6 +13,7 @@ var pipChoiceCastEssential = "";
 
 var riskHasCast = false;
 var riskHasWC = false;
+var specFilmJSScriptIsLoaded = true;
 
 
 
@@ -956,7 +957,12 @@ $(document).ready(function() {
             //pipChoiceProps = formatMoney(tempLimit);
             //pipChoiceThird = formatMoney(tempLimit);
             //pipChoiceNOHA = formatMoney(tempLimit);
-            getProductsForRisk();
+            if (riskChosen === "Film Projects Without Cast (With Work Comp)" || riskChosen === "Film Projects With Cast (With Work Comp)") {
+                clearProductChoices();
+            }
+            else{
+                getProductsForRisk();
+            }
         }
         else {
             $('#coverageOptionsReview').addClass("panel-default");
@@ -1284,907 +1290,1370 @@ function ratePremiums(thisObj) {
         });
 
     }
-    //alert(rateMap.toString)
-    var prodString = $(".productsSelect option[value='" + val + "']").text();
-    var productsSelected = "";
-    var additionalProducts = "";
-    var pipChoiOptions = "";
 
-
-
-
-    ///////////////////////////// Film Projects With Cast (No Work Comp)
-    if (riskChosen === "Film Projects With Cast (No Work Comp)") {
-        if ($('#EPKGcoverage').is(':checked')) {
-            productsSelected = productsSelected + "EPKG" + ":" + "EPKG37" + ",";
-        }
-        if ($('#CPKInputRadio').is(':checked')) {
-            productsSelected = productsSelected + $('#CPKInputRadio').attr('class').replace("coverageRadioButton ", "") + ":" + $('#CPKInputRadio').val() + ",";
-            if ($('#CPKInputRadio').hasClass("CPK")) {
-                productsSelected = productsSelected + "NOAL" + ":" + "NOAL01" + ",";
-            }
-        }
-        if ($('#CGLInputRadio').is(':checked')) {
-            productsSelected = productsSelected + $('#CGLInputRadio').attr('class').replace("coverageRadioButton ", "") + ":" + $('#CGLInputRadio').val() + ",";
-        }
-        //if($('#EPKGCASTAdditionalCoverage').is(':checked')){
-        //    additionalProducts = additionalProducts + "EPKGCASTAdditionalCoverage" + ":" + "EPKGCASTAdditionalCoverage" + ",";
-        //}
-
-        if ($('#EPKGCASTEssentialAdditionalCoverage').is(':checked')) {
-            additionalProducts = additionalProducts + "EPKGCASTEssentialAdditionalCoverage" + ":" + "EPKGCASTEssentialAdditionalCoverage" + ",";
-        }
-        //alert($("#hardwareElectronicDataCheckbox").is(':checked'));
-        $(".additionalCoverageCheckboxEPKG").each(function(index) {
-            if ($(this).is(':checked')) {
-                additionalProducts = additionalProducts + $(this).attr("id") + ":" + $(this).attr("id") + ",";
-            }
-        });
-
+    //IF SGP FILM
+    if(riskChosen === "Film Projects Without Cast (With Work Comp)" || riskChosen === "Film Projects With Cast (With Work Comp)"){
+        ratePremiumsSGP();
     }
-    else {
-        $(".coverageRadioButton").each(function(index) {
-            if ($(this).is(':checked')) {
-                productsSelected = productsSelected + $(this).attr('class').replace("coverageRadioButton ", "") + ":" + $(this).val() + ",";
-                if ($(this).hasClass("CPK")) {
+    else{//IF BARBICAN FILM
+        var prodString = $(".productsSelect option[value='" + val + "']").text();
+        var productsSelected = "";
+        var additionalProducts = "";
+        var pipChoiOptions = "";
+
+
+
+
+        ///////////////////////////// Film Projects With Cast (No Work Comp)
+        if (riskChosen === "Film Projects With Cast (No Work Comp)") {
+            if ($('#EPKGcoverage').is(':checked')) {
+                productsSelected = productsSelected + "EPKG" + ":" + "EPKG37" + ",";
+            }
+            if ($('#CPKInputRadio').is(':checked')) {
+                productsSelected = productsSelected + $('#CPKInputRadio').attr('class').replace("coverageRadioButton ", "") + ":" + $('#CPKInputRadio').val() + ",";
+                if ($('#CPKInputRadio').hasClass("CPK")) {
                     productsSelected = productsSelected + "NOAL" + ":" + "NOAL01" + ",";
                 }
             }
+            if ($('#CGLInputRadio').is(':checked')) {
+                productsSelected = productsSelected + $('#CGLInputRadio').attr('class').replace("coverageRadioButton ", "") + ":" + $('#CGLInputRadio').val() + ",";
+            }
+            //if($('#EPKGCASTAdditionalCoverage').is(':checked')){
+            //    additionalProducts = additionalProducts + "EPKGCASTAdditionalCoverage" + ":" + "EPKGCASTAdditionalCoverage" + ",";
+            //}
+
+            if ($('#EPKGCASTEssentialAdditionalCoverage').is(':checked')) {
+                additionalProducts = additionalProducts + "EPKGCASTEssentialAdditionalCoverage" + ":" + "EPKGCASTEssentialAdditionalCoverage" + ",";
+            }
+            //alert($("#hardwareElectronicDataCheckbox").is(':checked'));
+            $(".additionalCoverageCheckboxEPKG").each(function(index) {
+                if ($(this).is(':checked')) {
+                    additionalProducts = additionalProducts + $(this).attr("id") + ":" + $(this).attr("id") + ",";
+                }
+            });
+
+        }
+        else {
+            $(".coverageRadioButton").each(function(index) {
+                if ($(this).is(':checked')) {
+                    productsSelected = productsSelected + $(this).attr('class').replace("coverageRadioButton ", "") + ":" + $(this).val() + ",";
+                    if ($(this).hasClass("CPK")) {
+                        productsSelected = productsSelected + "NOAL" + ":" + "NOAL01" + ",";
+                    }
+                }
+            });
+            $(".additionalCoverageCheckboxEPKG").each(function(index) {
+                if ($(this).is(':checked')) {
+                    additionalProducts = additionalProducts + $(this).attr("id") + ":" + $(this).attr("id") + ",";
+                }
+            });
+        }
+
+        ///////////////////////////// Film Projects With Cast (No Work Comp)
+
+
+        $("#EPKGNOHAAdditionalCoverage").each(function(index) {
+            if ($(this).is(':checked')) {
+                productsSelected = productsSelected + "NOHA" + ":" + $(this).val() + ",";
+            }
         });
-        $(".additionalCoverageCheckboxEPKG").each(function(index) {
+
+        $(".additionalCoverageCheckboxCPKCGL").each(function(index) {
             if ($(this).is(':checked')) {
                 additionalProducts = additionalProducts + $(this).attr("id") + ":" + $(this).attr("id") + ",";
             }
         });
-    }
 
-    ///////////////////////////// Film Projects With Cast (No Work Comp)
+        $('.PIPCHOIOption').each(function(index) {
+            if ($(this).is(':checked')) {
+                pipChoiOptions = pipChoiOptions + $(this).attr('id') + ",";
+            }
 
-
-    $("#EPKGNOHAAdditionalCoverage").each(function(index) {
-        if ($(this).is(':checked')) {
-            productsSelected = productsSelected + "NOHA" + ":" + $(this).val() + ",";
-        }
-    });
-
-    $(".additionalCoverageCheckboxCPKCGL").each(function(index) {
-        if ($(this).is(':checked')) {
-            additionalProducts = additionalProducts + $(this).attr("id") + ":" + $(this).attr("id") + ",";
-        }
-    });
-
-    $('.PIPCHOIOption').each(function(index) {
-        if ($(this).is(':checked')) {
-            pipChoiOptions = pipChoiOptions + $(this).attr('id') + ",";
-        }
-
-    });
-    $(".additionalCoverageCheckboxPIP5").each(function(index) {
-        if ($(this).is(':checked')) {
-            additionalProducts = additionalProducts + $(this).attr("id") + ":" + $(this).attr("id") + ",";
-        }
-    });
+        });
+        $(".additionalCoverageCheckboxPIP5").each(function(index) {
+            if ($(this).is(':checked')) {
+                additionalProducts = additionalProducts + $(this).attr("id") + ":" + $(this).attr("id") + ",";
+            }
+        });
 
 
-    //alert(productsSelected);
+        //alert(productsSelected);
 
-    var CGLNOALLimit = "";
-    var elem = document.createElement('textarea');
-    $('.PIPCHOILimitsInput').each(function(index) {
-        elem.innerHTML = $(this).parent().siblings(".coverageColumn").children().first().html();
-        var decoded = elem.value;
-        if ($(this).val().length == 0) {
-            pipchoiceLimits = pipchoiceLimits + decoded + "&;&" + 0 + "&;;&";
-            $(this).val("0");
-            //$(this).val($('#totalBudgetConfirm').val());
-        }
-        else {
-            pipchoiceLimits = pipchoiceLimits + decoded + "&;&" + $(this).val() + "&;;&";
-        }
+        var CGLNOALLimit = "";
+        var elem = document.createElement('textarea');
+        $('.PIPCHOILimitsInput').each(function(index) {
+            elem.innerHTML = $(this).parent().siblings(".coverageColumn").children().first().html();
+            var decoded = elem.value;
+            if ($(this).val().length == 0) {
+                pipchoiceLimits = pipchoiceLimits + decoded + "&;&" + 0 + "&;;&";
+                $(this).val("0");
+                //$(this).val($('#totalBudgetConfirm').val());
+            }
+            else {
+                pipchoiceLimits = pipchoiceLimits + decoded + "&;&" + $(this).val() + "&;;&";
+            }
 
-        //var tempLimit = $("#totalBudgetInput").val().replace(/\$|,/g, '')
-        //console.log("LIMIT AMOUNT1 === " + tempLimit)
-        //if(riskChosen === "Film Projects With Cast (No Work Comp)"){
-        //    tempLimit = parseInt($("#totalBudgetInput").val().replace(/\$|,/g, ''));
-        //    tempLimit = Math.ceil(tempLimit / 1000) * 1000;
-        //}
-        //console.log("LIMIT AMOUNT === " + tempLimit)
+            //var tempLimit = $("#totalBudgetInput").val().replace(/\$|,/g, '')
+            //console.log("LIMIT AMOUNT1 === " + tempLimit)
+            //if(riskChosen === "Film Projects With Cast (No Work Comp)"){
+            //    tempLimit = parseInt($("#totalBudgetInput").val().replace(/\$|,/g, ''));
+            //    tempLimit = Math.ceil(tempLimit / 1000) * 1000;
+            //}
+            //console.log("LIMIT AMOUNT === " + tempLimit)
 
-        if (decoded === "Miscellaneous Rented Equipment") {
-            pipChoiceMisc = $(this).val();
-        }
-        else if (decoded === "Extra Expense") {
-            pipChoiceExtra = $(this).val();
-        }
-        else if (decoded === "Props, Sets & Wardrobe") {
-            pipChoiceProps = $(this).val();
-        }
-        else if (decoded === "Third Party Prop Damage Liab") {
-            pipChoiceThird = $(this).val();
-        }
-        else if (decoded === "Hired Auto Physical Damage") {
-            pipChoiceNOHA = $(this).val();
-        }
-        else if (decoded === "Cast Insurance") {
-            pipChoiceCast = $(this).val();
-        }
-        else if (decoded === "Cast Essential") {
-            pipChoiceCastEssential = $(this).val();
-        }
-    });
-    //console.log(pipChoiceMisc);
-    $('.CPKNOHALimitsInput').each(function(index) {
-        elem.innerHTML = $(this).parent().siblings(".coverageColumn").children().first().html();
-        var decoded = elem.value;
-        if (decoded === "Hired Auto Physical Damage") {
-            CGLNOALLimit = $(this).val();
-        }
-    });
-    //console.log(pipchoiceLimits);
-    //alert(productsSelected)
-    //alert(additionalProducts)
-    if (productsSelected.length > 0 && parseFloat($("#totalBudgetConfirm").val().replace(/\$|,/g, '')) > 0) {
-        //console.log($('#costOfHireInput').val());
-        //alert(pipchoiceLimits)
+            if (decoded === "Miscellaneous Rented Equipment") {
+                pipChoiceMisc = $(this).val();
+            }
+            else if (decoded === "Extra Expense") {
+                pipChoiceExtra = $(this).val();
+            }
+            else if (decoded === "Props, Sets & Wardrobe") {
+                pipChoiceProps = $(this).val();
+            }
+            else if (decoded === "Third Party Prop Damage Liab") {
+                pipChoiceThird = $(this).val();
+            }
+            else if (decoded === "Hired Auto Physical Damage") {
+                pipChoiceNOHA = $(this).val();
+            }
+            else if (decoded === "Cast Insurance") {
+                pipChoiceCast = $(this).val();
+            }
+            else if (decoded === "Cast Essential") {
+                pipChoiceCastEssential = $(this).val();
+            }
+        });
+        //console.log(pipChoiceMisc);
+        $('.CPKNOHALimitsInput').each(function(index) {
+            elem.innerHTML = $(this).parent().siblings(".coverageColumn").children().first().html();
+            var decoded = elem.value;
+            if (decoded === "Hired Auto Physical Damage") {
+                CGLNOALLimit = $(this).val();
+            }
+        });
+        //console.log(pipchoiceLimits);
+        //alert(productsSelected)
+        //alert(additionalProducts)
 
-        $.ajax({
-                method: "POST",
-                url: "/Async/ratePremiums",
-                //url: "/Async/newRatePremiums",
-                data: {
-                    riskType: riskChosen,
-                    productsSelected: productsSelected,
-                    pipChoiOptions: pipChoiOptions,
-                    pipChoiceLimits: pipchoiceLimits.replace(/\$|,/g, ''),
-                    additionalProducts: additionalProducts,
-                    totalBudget: $("#totalBudgetConfirm").val().replace(/\$|,/g, ''),
-                    proposedTermLength: $("#proposedTermLength").val(),
-                    costOfHire: $('#costOfHireInput').val().replace(/\$|,/g, ''),
-                    castEssentialNum: $('#castEssentialInput').val(),
-                    rateMap: JSON.stringify(rateMap)
+        if (productsSelected.length > 0 && parseFloat($("#totalBudgetConfirm").val().replace(/\$|,/g, '')) > 0) {
+            if (riskChosen === "Film Projects Without Cast (With Work Comp)" || riskChosen === "Film Projects With Cast (With Work Comp)") {
 
-                }
-            })
-            .done(function(msg) {
-                //alert(msg);
-                //alert( "Data Saved: " + msg );
-                responseJSON = JSON.parse(msg);
-                //alert(responseJSON.coverages.length);
-
-                if ($('#runRatesButton').length > 0) { //IF IN REVIEW PANEL AND RERUNNING RATES
-                    var tempRateMap = {}
-                    ////PIP1 RATING
-                    //submissionRateMap["pip1_negativeFilmVideoRateMinPrem"] = pip1_negativeFilmVideoRateMinPrem
-                    //submissionRateMap["pip1_faultyStockCameraProcessingRateMinPrem"] = pip1_faultyStockCameraProcessingRateMinPrem
-                    //submissionRateMap["pip1_miscRentedEquipRateMinPrem"] = pip1_miscRentedEquipRateMinPrem
-                    //submissionRateMap["pip1_propsSetWardrobeRateMinPrem"] = pip1_propsSetWardrobeRateMinPrem
-                    //submissionRateMap["pip1_thirdPartyPropDamageRateMinPrem"] = pip1_thirdPartyPropDamageRateMinPrem
-                    //submissionRateMap["pip1_extraExpenseRateMinPrem"] = pip1_extraExpenseRateMinPrem
-                    //submissionRateMap["pip1_minPremium"] = pip1_minPremium
-                    for (var i = 0; i < responseJSON.coverages.length; i++) {
-                        if (responseJSON.coverages[i].coverageCode === "EPKG") {
-                            $('#PIPCHOIRatesRow').css('display', 'none');
-                            $('#PIP1RatesRow').css('display', 'none');
-                            $('#PIP2RatesRow').css('display', 'none');
-                            $('#PIP3RatesRow').css('display', 'none');
-                            $('#PIP4RatesRow').css('display', 'none');
-                            $('#PIP5RatesRow').css('display', 'none');
-                            tempRateMap = responseJSON.coverages[i].submissionRateMap;
-                            if (responseJSON.coverages[i].productCode === "PIP CHOI") {
-                                $('#PIPCHOIRatesRow').css('display', '')
-
-                            }
-                            else if (responseJSON.coverages[i].productCode === "PIP 1") {
-
-                                $('#PIP1RatesRow').css('display', '')
-                            }
-                            else if (responseJSON.coverages[i].productCode === "PIP 2") {
-
-                                $('#PIP2RatesRow').css('display', '')
-                            }
-                            else if (responseJSON.coverages[i].productCode === "PIP 3") {
-
-                                $('#PIP3RatesRow').css('display', '')
-                            }
-                            else if (responseJSON.coverages[i].productCode === "PIP 4") {
-
-                                $('#PIP4RatesRow').css('display', '')
-                            }
-                            else if (responseJSON.coverages[i].productCode === "PIP 4") {
-
-                                $('#PIP5RatesRow').css('display', '')
-                            }
-                            $('#PIPCHOI_miscRate').val(tempRateMap['pipChoice_miscRentedEquipRateMinPrem'][0]);
-                            $('#PIPCHOI_miscMP').val(tempRateMap['pipChoice_miscRentedEquipRateMinPrem'][1]);
-                            $('#PIPCHOI_propsRate').val(tempRateMap['pipChoice_propsSetWardrobeRateMinPrem'][0]);
-                            $('#PIPCHOI_propsMP').val(tempRateMap['pipChoice_propsSetWardrobeRateMinPrem'][1]);
-                            $('#PIPCHOI_thirdRate').val(tempRateMap['pipChoice_thirdPartyPropDamageRateMinPrem'][0]);
-                            $('#PIPCHOI_thirdMP').val(tempRateMap['pipChoice_thirdPartyPropDamageRateMinPrem'][1]);
-                            $('#PIPCHOI_extraRate').val(tempRateMap['pipChoice_extraExpenseRateMinPrem'][0]);
-                            $('#PIPCHOI_extraMP').val(tempRateMap['pipChoice_extraExpenseRateMinPrem'][1]);
-                            $('#PIPCHOI_NOHARate').val(tempRateMap['pipChoice_NOHARateMinPrem'][0]);
-                            $('#PIPCHOI_NOHAMP').val(tempRateMap['pipChoice_NOHARateMinPrem'][1]);
-
-                            $('#PIP1_Rate').val("flat");
-                            $('#PIP1_MP').val(tempRateMap['pip1_minPremium']);
-
-                            $('#PIP2_Rate').val("flat");
-                            $('#PIP2_MP').val(tempRateMap['pip2_PIP2premium']);
-                            $('#PIP2_NOHARate').val(tempRateMap['pip2_NOHARateMinPrem'][0]);
-                            $('#PIP2_NOHAMP').val(tempRateMap['pip2_NOHARateMinPrem'][1]);
-
-                            $('#PIP3_Rate').val(tempRateMap['pip3_negativeFilmVideoRateMinPrem'][0]);
-                            $('#PIP3_MP').val(tempRateMap['pip3_negativeFilmVideoRateMinPrem'][1]);
-
-                            $('#PIP4_Rate').val(tempRateMap['pip4_negativeFilmVideoRateMinPrem'][0]);
-                            $('#PIP4_MP').val(tempRateMap['pip4_negativeFilmVideoRateMinPrem'][1]);
-
-                            $('#PIP5_Rate').val(tempRateMap['pip5_negativeFilmVideoRateMinPrem'][0]);
-                            $('#PIP5_MP').val(tempRateMap['pip5_negativeFilmVideoRateMinPrem'][1]);
-
-
-
-
-
-
-
-
-
-                        }
-                    }
-
-
-
-                    //
-                    //
-
-                    //
-                    ////PIP2 RATING
-                    //submissionRateMap["pip2_PIP2premium"] = pip2_PIP2premium
-                    //submissionRateMap["pip2_negativeFilmVideoRateMinPrem"] = pip2_negativeFilmVideoRateMinPrem
-                    //submissionRateMap["pip2_faultyStockCameraProcessingRateMinPrem"] = pip2_faultyStockCameraProcessingRateMinPrem
-                    //submissionRateMap["pip2_miscRentedEquipRateMinPrem"] = pip2_miscRentedEquipRateMinPrem
-                    //submissionRateMap["pip2_propsSetWardrobeRateMinPrem"] = pip2_propsSetWardrobeRateMinPrem
-                    //submissionRateMap["pip2_thirdPartyPropDamageRateMinPrem"] = pip2_thirdPartyPropDamageRateMinPrem
-                    //submissionRateMap["pip2_extraExpenseRateMinPrem"] = pip2_extraExpenseRateMinPrem
-                    //submissionRateMap["pip2_officeContentsRateMinPrem"] = pip2_officeContentsRateMinPrem
-                    //submissionRateMap["pip2_NOHARateMinPrem"] = pip2_NOHARateMinPrem
-                    //
-                    ////PIP3 RATING
-                    //submissionRateMap["pip3_negativeFilmVideoRateMinPrem"] = pip3_negativeFilmVideoRateMinPrem
-                    //
-                    ////PIP4
-                    //submissionRateMap["pip4_negativeFilmVideoRateMinPrem"] = pip4_negativeFilmVideoRateMinPrem
-                    //
-                    ////PIP5
-                    //submissionRateMap["pip5_negativeFilmVideoRateMinPrem"] =pip5_negativeFilmVideoRateMinPrem
-                    //submissionRateMap["pip5_civilAuthority100Limit"] = pip5_civilAuthority100Limit
-                    //submissionRateMap["pip5_civilAuthority500Limit"] = pip5_civilAuthority500Limit
-                }
-
-                var limitDeductibleString = "";
-                var lobDistString = "";
-                var CPKincluded = false;
-                var EPKGincluded = false;
-                var termsInsert = "";
-                var beginTerms = "";
-                var endorseInsert = "";
-                for (var i = 0; i < responseJSON.coverages.length; i++) {
-                    if (responseJSON.coverages[i].coverageCode === "CPK") {
-                        CPKincluded = true;
-                        beginTerms = responseJSON.coverages[i].beginTerms;
-                    }
-                    if (responseJSON.coverages[i].coverageCode === "EPKG") {
-                        EPKGincluded = true;
-                        beginTerms = responseJSON.coverages[i].beginTerms;
-                    }
-                }
-                for (var i = 0; i < responseJSON.coverages.length; i++) {
-                    //alert(Object.keys(responseJSON.coverages[i].limits));
-                    if (responseJSON.coverages[i].coverageCode === "NOHA") {
-                        continue;
-                    }
-
-                    limitDeductibleString = limitDeductibleString + "<div class='row coverageCodeRow'>" +
-                        "<div class='col-xs-6 ' >";
-                    if (responseJSON.coverages[i].coverageCode === "NOAL" && CPKincluded) {
-                        limitDeductibleString = limitDeductibleString + "<strong class='coverageCodeString' style='font-size:13px'>" + "NOAL" + "</strong>";
-                        limitDeductibleString = limitDeductibleString + "</div>" +
-                            "<div class='col-xs-2 ' >" +
-                            "<span'>" + "-" + "</span>" +
-                            "</div>" +
-                            "<div class='col-xs-2 ' >" +
-                            "<strong style='font-size:13px'>" + "</strong>" +
-                            "</div>" +
-                            "<div class='col-xs-2 ' >" +
-                            "<span'>" + "-" + "</span>" +
-                            "</div>" +
-                            "</div>";
-                    }
-                    else if (responseJSON.coverages[i].coverageCode === "EPKG") {
-                        if (responseJSON.coverages[i].productCode === "PIP CHOI") {
-                            limitDeductibleString = limitDeductibleString + "<strong class='coverageCodeString' style='font-size:13px'>" + "EPKG" + "</strong>";
-                            limitDeductibleString = limitDeductibleString +
-                                "<span class='productID_pull' id='" + responseJSON.coverages[i].productCode.replace(/ /g, "") + "' data-cov='" + responseJSON.coverages[i].coverageCode + "' style='display:none'>" + responseJSON.coverages[i].productCode + "</span>";
-
-                            limitDeductibleString = limitDeductibleString + "</div>" +
-                                "<div class='col-xs-2 ' >" +
-                                "<span style='font-size:9px;'>" + "*Max $1,000,000" + "</span>" +
-                                "</div>" +
-                                "<div class='col-xs-2 ' >" +
-                                "<strong style='font-size:13px'>" + "</strong>" +
-                                "</div>" +
-                                "<div class='col-xs-2 ' >" +
-                                "<span>" + "-" + "</span>" +
-                                "</div>" +
-                                "</div>";
-                        }
-                        else if (responseJSON.coverages[i].productCode === "PIP 1") {
-                            limitDeductibleString = limitDeductibleString + "<strong class='coverageCodeString' style='font-size:13px'>" + "EPKG" + "</strong>";
-                            limitDeductibleString = limitDeductibleString +
-                                "<span class='productID_pull' id='" + responseJSON.coverages[i].productCode.replace(/ /g, "") + "' data-cov='" + responseJSON.coverages[i].coverageCode + "' style='display:none'>" + responseJSON.coverages[i].productCode + "</span>";
-                            limitDeductibleString = limitDeductibleString + "</div>" +
-                                "<div class='col-xs-2 ' >" +
-                                "<span style='font-size:9px;'>" + "" + "</span>" +
-                                "</div>" +
-                                "<div class='col-xs-2 ' >" +
-                                "<strong style='font-size:13px'>" + "</strong>" +
-                                "</div>" +
-                                "<div class='col-xs-2 ' >" +
-                                "<span>" + "-" + "</span>" +
-                                "</div>" +
-                                "</div>";
-                        }
-                        else {
-                            limitDeductibleString = limitDeductibleString + "<strong class='coverageCodeString' style='font-size:13px'>" + responseJSON.coverages[i].coverageCode + "</strong>";
-                            limitDeductibleString = limitDeductibleString +
-                                "<span class='productID_pull' id='" + responseJSON.coverages[i].productCode.replace(/ /g, "") + "' data-cov='" + responseJSON.coverages[i].coverageCode + "' style='display:none'>" + responseJSON.coverages[i].productCode + "</span>";
-                            limitDeductibleString = limitDeductibleString + "</div>" +
-                                "<div class='col-xs-2 ' >" +
-                                "<span'>" + "-" + "</span>" +
-                                "</div>" +
-                                "<div class='col-xs-2 ' >" +
-                                "<strong style='font-size:13px'>" + "</strong>" +
-                                "</div>" +
-                                "<div class='col-xs-2 ' >" +
-                                "<span'>" + "-" + "</span>" +
-                                "</div>" +
-                                "</div>";
-                        }
+            }
+            else{
+                $.ajax({
+                    method: "POST",
+                    url: "/Async/ratePremiums",
+                    //url: "/Async/newRatePremiums",
+                    data: {
+                        riskType: riskChosen,
+                        productsSelected: productsSelected,
+                        pipChoiOptions: pipChoiOptions,
+                        pipChoiceLimits: pipchoiceLimits.replace(/\$|,/g, ''),
+                        additionalProducts: additionalProducts,
+                        totalBudget: $("#totalBudgetConfirm").val().replace(/\$|,/g, ''),
+                        proposedTermLength: $("#proposedTermLength").val(),
+                        costOfHire: $('#costOfHireInput').val().replace(/\$|,/g, ''),
+                        castEssentialNum: $('#castEssentialInput').val(),
+                        rateMap: JSON.stringify(rateMap)
 
                     }
-                    else if (responseJSON.coverages[i].coverageCode === "CPK") {
-                        limitDeductibleString = limitDeductibleString + "<strong class='coverageCodeString' style='font-size:13px'>" + "CGL" + "</strong>";
-                        limitDeductibleString = limitDeductibleString +
-                            "<span class='productID_pull' id='" + responseJSON.coverages[i].productCode.replace(/ /g, "") + "' data-cov='" + responseJSON.coverages[i].coverageCode + "' style='display:none'>" + responseJSON.coverages[i].productCode + "</span>";
-                        limitDeductibleString = limitDeductibleString + "</div>" +
-                            "<div class='col-xs-2 ' >" +
-                            "<span>" + "-" + "</span>" +
-                            "</div>" +
-                            "<div class='col-xs-2 ' >" +
-                            "<strong style='font-size:13px'>" + "</strong>" +
-                            "</div>" +
-                            "<div class='col-xs-2 ' >" +
-                            "<span>" + "-" + "</span>" +
-                            "</div>" +
-                            "</div>";
-                    }
-                    else {
-                        limitDeductibleString = limitDeductibleString + "<strong class='coverageCodeString' style='font-size:13px'>" + responseJSON.coverages[i].coverageCode + "</strong>";
-                        limitDeductibleString = limitDeductibleString +
-                            "<span class='productID_pull' id='" + responseJSON.coverages[i].productCode.replace(/ /g, "") + "' data-cov='" + responseJSON.coverages[i].coverageCode + "' style='display:none'>" + responseJSON.coverages[i].productCode + "</span>";
-                        limitDeductibleString = limitDeductibleString + "</div>" +
-                            "<div class='col-xs-2 ' >" +
-                            "<span'>" + "-" + "</span>" +
-                            "</div>" +
-                            "<div class='col-xs-2 ' >" +
-                            "<strong style='font-size:13px'>" + "</strong>" +
-                            "</div>" +
-                            "<div class='col-xs-2 ' >" +
-                            "<span'>" + "-" + "</span>" +
-                            "</div>" +
-                            "</div>";
-                    }
+                })
+                    .done(function(msg) {
+                        //alert(msg);
+                        //alert( "Data Saved: " + msg );
+                        responseJSON = JSON.parse(msg);
+                        //alert(responseJSON.coverages.length);
 
+                        if ($('#runRatesButton').length > 0) { //IF IN REVIEW PANEL AND RERUNNING RATES
+                            var tempRateMap = {}
+                            ////PIP1 RATING
+                            //submissionRateMap["pip1_negativeFilmVideoRateMinPrem"] = pip1_negativeFilmVideoRateMinPrem
+                            //submissionRateMap["pip1_faultyStockCameraProcessingRateMinPrem"] = pip1_faultyStockCameraProcessingRateMinPrem
+                            //submissionRateMap["pip1_miscRentedEquipRateMinPrem"] = pip1_miscRentedEquipRateMinPrem
+                            //submissionRateMap["pip1_propsSetWardrobeRateMinPrem"] = pip1_propsSetWardrobeRateMinPrem
+                            //submissionRateMap["pip1_thirdPartyPropDamageRateMinPrem"] = pip1_thirdPartyPropDamageRateMinPrem
+                            //submissionRateMap["pip1_extraExpenseRateMinPrem"] = pip1_extraExpenseRateMinPrem
+                            //submissionRateMap["pip1_minPremium"] = pip1_minPremium
+                            for (var i = 0; i < responseJSON.coverages.length; i++) {
+                                if (responseJSON.coverages[i].coverageCode === "EPKG") {
+                                    $('#PIPCHOIRatesRow').css('display', 'none');
+                                    $('#PIP1RatesRow').css('display', 'none');
+                                    $('#PIP2RatesRow').css('display', 'none');
+                                    $('#PIP3RatesRow').css('display', 'none');
+                                    $('#PIP4RatesRow').css('display', 'none');
+                                    $('#PIP5RatesRow').css('display', 'none');
+                                    tempRateMap = responseJSON.coverages[i].submissionRateMap;
+                                    if (responseJSON.coverages[i].productCode === "PIP CHOI") {
+                                        $('#PIPCHOIRatesRow').css('display', '')
 
-                    var limitLines = Object.keys(responseJSON.coverages[i].limits);
-                    if (responseJSON.coverages[i].coverageCode === "EPKG") {
-                        if (limitLines.indexOf("Cast Insurance") > -1) {
-                            limitLines.splice(limitLines.indexOf("Cast Insurance"), 1);
-                            limitLines.push("Cast Insurance");
-                        }
-                        if (limitLines.indexOf("Cast Essential") > -1) {
-                            limitLines.splice(limitLines.indexOf("Cast Essential"), 1);
-                            limitLines.push("Cast Essential");
-                        }
-                        if (limitLines.indexOf("Negative Film & Videotape") > -1) {
-                            limitLines.splice(limitLines.indexOf("Negative Film & Videotape"), 1);
-                            limitLines.push("Negative Film & Videotape");
-                        }
-                        if (limitLines.indexOf("Faulty Stock & Camera Processing") > -1) {
-                            limitLines.splice(limitLines.indexOf("Faulty Stock & Camera Processing"), 1);
-                            limitLines.push("Faulty Stock & Camera Processing");
-                        }
-                        if (limitLines.indexOf("Miscellaneous Rented Equipment") > -1) {
-                            limitLines.splice(limitLines.indexOf("Miscellaneous Rented Equipment"), 1);
-                            limitLines.push("Miscellaneous Rented Equipment");
-                        }
-                        if (limitLines.indexOf("INC:Non-Owned Auto Physical Damage") > -1) {
-                            limitLines.splice(limitLines.indexOf("INC:Non-Owned Auto Physical Damage"), 1);
-                            limitLines.push("INC:Non-Owned Auto Physical Damage");
-                        }
-                        if (limitLines.indexOf("Extra Expense") > -1) {
-                            limitLines.splice(limitLines.indexOf("Extra Expense"), 1);
-                            limitLines.push("Extra Expense");
-                        }
-                        if (limitLines.indexOf("Props, Sets & Wardrobe") > -1) {
-                            limitLines.splice(limitLines.indexOf("Props, Sets & Wardrobe"), 1);
-                            limitLines.push("Props, Sets & Wardrobe");
-                        }
-                        if (limitLines.indexOf("Third Party Prop Damage Liab") > -1) {
-                            limitLines.splice(limitLines.indexOf("Third Party Prop Damage Liab"), 1);
-                            limitLines.push("Third Party Prop Damage Liab");
-                        }
-                        if (limitLines.indexOf("Office Contents") > -1) {
-                            limitLines.splice(limitLines.indexOf("Office Contents"), 1);
-                            limitLines.push("Office Contents");
-                        }
-                        if (limitLines.indexOf("Money & Securities") > -1) {
-                            limitLines.splice(limitLines.indexOf("Money & Securities"), 1);
-                            limitLines.push("Money & Securities");
-                        }
-                        if (limitLines.indexOf("Civil Authority (US Only)") > -1) {
-                            limitLines.splice(limitLines.indexOf("Civil Authority (US Only)"), 1);
-                            limitLines.push("Civil Authority (US Only)");
-                        }
-                        if (limitLines.indexOf("Money and Currency") > -1) {
-                            limitLines.splice(limitLines.indexOf("Money and Currency"), 1);
-                            limitLines.push("Money and Currency");
-                        }
-                        if (limitLines.indexOf("Furs, Jewelry, Art & Antiques") > -1) {
-                            limitLines.splice(limitLines.indexOf("Furs, Jewelry, Art & Antiques"), 1);
-                            limitLines.push("Furs, Jewelry, Art & Antiques");
-                        }
-                        if (limitLines.indexOf("Talent and Non Budgeted Costs") > -1) {
-                            limitLines.splice(limitLines.indexOf("Talent and Non Budgeted Costs"), 1);
-                            limitLines.push("Talent and Non Budgeted Costs");
-                        }
-                        if (limitLines.indexOf("Administrative Costs") > -1) {
-                            limitLines.splice(limitLines.indexOf("Administrative Costs"), 1);
-                            limitLines.push("Administrative Costs");
-                        }
-                        if (limitLines.indexOf("Hardware") > -1) {
-                            limitLines.splice(limitLines.indexOf("Hardware"), 1);
-                            limitLines.push("Hardware");
-                        }
-                        if (limitLines.indexOf("Data and Media") > -1) {
-                            limitLines.splice(limitLines.indexOf("Data and Media"), 1);
-                            limitLines.push("Data and Media");
-                        }
-                        if (limitLines.indexOf("Electronic Data Extra Expense") > -1) {
-                            limitLines.splice(limitLines.indexOf("Electronic Data Extra Expense"), 1);
-                            limitLines.push("Electronic Data Extra Expense");
-                        }
-                        //
-                        if (limitLines.indexOf("Animal Mortality") > -1) {
-                            limitLines.splice(limitLines.indexOf("Animal Mortality"), 1);
-                            limitLines.push("Animal Mortality");
-                        }
+                                    }
+                                    else if (responseJSON.coverages[i].productCode === "PIP 1") {
 
-                        if (limitLines.indexOf("Animal Mortality Under Cast Insurance (Domestic Birds/Fish)") > -1) {
-                            limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (Domestic Birds/Fish)"), 1);
-                            limitLines.push("Animal Mortality Under Cast Insurance (Domestic Birds/Fish)");
-                        }
-                        if (limitLines.indexOf("Animal Mortality Under Cast Insurance (Dogs w/ Breed Exceptions)") > -1) {
-                            limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (Dogs w/ Breed Exceptions)"), 1);
-                            limitLines.push("Animal Mortality Under Cast Insurance (Dogs w/ Breed Exceptions)");
-                        }
-                        if (limitLines.indexOf("Animal Mortality Under Cast Insurance (Reptiles (Non-Venomous))") > -1) {
-                            limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (Reptiles (Non-Venomous))"), 1);
-                            limitLines.push("Animal Mortality Under Cast Insurance (Reptiles (Non-Venomous))");
-                        }
-                        if (limitLines.indexOf("Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))") > -1) {
-                            limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))"), 1);
-                            limitLines.push("Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))");
-                        }
-                        if (limitLines.indexOf("Animal Mortality Under Cast Insurance (Farm Animals)") > -1) {
-                            limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (Farm Animals)"), 1);
-                            limitLines.push("Animal Mortality Under Cast Insurance (Farm Animals)");
-                        }
-                        if (limitLines.indexOf("Animal Mortality Under Cast Insurance (Wild Cats (Caged))") > -1) {
-                            limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (Wild Cats (Caged))"), 1);
-                            limitLines.push("Animal Mortality Under Cast Insurance (Wild Cats (Caged))");
-                        }
-                        if (limitLines.indexOf("Animal Mortality Under Cast Insurance (All Others - Refer Only)") > -1) {
-                            limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (All Others - Refer Only)"), 1);
-                            limitLines.push("Animal Mortality Under Cast Insurance (All Others - Refer Only)");
-                        }
+                                        $('#PIP1RatesRow').css('display', '')
+                                    }
+                                    else if (responseJSON.coverages[i].productCode === "PIP 2") {
 
-                        if (limitLines.indexOf("Animal Mortality (Birds or Fish)") > -1) {
-                            limitLines.splice(limitLines.indexOf("Animal Mortality (Birds or Fish)"), 1);
-                            limitLines.push("Animal Mortality (Birds or Fish)");
-                        }
-                        if (limitLines.indexOf("Animal Mortality (Dogs w/ Breed Exceptions)") > -1) {
-                            limitLines.splice(limitLines.indexOf("Animal Mortality (Dogs w/ Breed Exceptions)"), 1);
-                            limitLines.push("Animal Mortality (Dogs w/ Breed Exceptions)");
-                        }
-                        if (limitLines.indexOf("Animal Mortality (Reptiles Non-Venomous)") > -1) {
-                            limitLines.splice(limitLines.indexOf("Animal Mortality (Reptiles Non-Venomous)"), 1);
-                            limitLines.push("Animal Mortality (Reptiles Non-Venomous)");
-                        }
-                        if (limitLines.indexOf("Animal Mortality (Small Domestic Animals - Other)") > -1) {
-                            limitLines.splice(limitLines.indexOf("Animal Mortality (Small Domestic Animals - Other)"), 1);
-                            limitLines.push("Animal Mortality (Small Domestic Animals - Other)");
-                        }
-                        if (limitLines.indexOf("Animal Mortality (Farm Animals)") > -1) {
-                            limitLines.splice(limitLines.indexOf("Animal Mortality (Farm Animals)"), 1);
-                            limitLines.push("Animal Mortality (Farm Animals)");
-                        }
-                        if (limitLines.indexOf("Animal Mortality (Wild Cats - Caged)") > -1) {
-                            limitLines.splice(limitLines.indexOf("Animal Mortality (Wild Cats - Caged)"), 1);
-                            limitLines.push("Animal Mortality (Wild Cats - Caged)");
-                        }
-                        if (limitLines.indexOf("Animal Mortality (All Others - Refer Only)") > -1) {
-                            limitLines.splice(limitLines.indexOf("Animal Mortality (All Others - Refer Only)"), 1);
-                            limitLines.push("Animal Mortality (All Others - Refer Only)");
-                        }
+                                        $('#PIP2RatesRow').css('display', '')
+                                    }
+                                    else if (responseJSON.coverages[i].productCode === "PIP 3") {
 
+                                        $('#PIP3RatesRow').css('display', '')
+                                    }
+                                    else if (responseJSON.coverages[i].productCode === "PIP 4") {
 
+                                        $('#PIP4RatesRow').css('display', '')
+                                    }
+                                    else if (responseJSON.coverages[i].productCode === "PIP 4") {
 
-                        if (limitLines.indexOf("Hired Auto Physical Damage") > -1) {
-                            limitLines.splice(limitLines.indexOf("Hired Auto Physical Damage"), 1);
-                            limitLines.push("Hired Auto Physical Damage");
-                        }
-                    }
-                    else if (responseJSON.coverages[i].coverageCode === "CPK" || responseJSON.coverages[i].coverageCode === "CGL") {
-                        if (limitLines.indexOf("Each Occurrence") > -1) {
-                            limitLines.splice(limitLines.indexOf("Each Occurrence"), 1);
-                            limitLines.push("Each Occurrence");
-                        }
-                        if (limitLines.indexOf("General Aggregate Limit") > -1) {
-                            limitLines.splice(limitLines.indexOf("General Aggregate Limit"), 1);
-                            limitLines.push("General Aggregate Limit");
-                        }
-                        if (limitLines.indexOf("Products & Completed Operations") > -1) {
-                            limitLines.splice(limitLines.indexOf("Products & Completed Operations"), 1);
-                            limitLines.push("Products & Completed Operations");
-                        }
-                        if (limitLines.indexOf("Personal & Advertising Injury") > -1) {
-                            limitLines.splice(limitLines.indexOf("Personal & Advertising Injury"), 1);
-                            limitLines.push("Personal & Advertising Injury");
-                        }
-                        if (limitLines.indexOf("Fire Damage (Any One Fire)") > -1) {
-                            limitLines.splice(limitLines.indexOf("Fire Damage (Any One Fire)"), 1);
-                            limitLines.push("Fire Damage (Any One Fire)");
-                        }
+                                        $('#PIP5RatesRow').css('display', '')
+                                    }
+                                    $('#PIPCHOI_miscRate').val(tempRateMap['pipChoice_miscRentedEquipRateMinPrem'][0]);
+                                    $('#PIPCHOI_miscMP').val(tempRateMap['pipChoice_miscRentedEquipRateMinPrem'][1]);
+                                    $('#PIPCHOI_propsRate').val(tempRateMap['pipChoice_propsSetWardrobeRateMinPrem'][0]);
+                                    $('#PIPCHOI_propsMP').val(tempRateMap['pipChoice_propsSetWardrobeRateMinPrem'][1]);
+                                    $('#PIPCHOI_thirdRate').val(tempRateMap['pipChoice_thirdPartyPropDamageRateMinPrem'][0]);
+                                    $('#PIPCHOI_thirdMP').val(tempRateMap['pipChoice_thirdPartyPropDamageRateMinPrem'][1]);
+                                    $('#PIPCHOI_extraRate').val(tempRateMap['pipChoice_extraExpenseRateMinPrem'][0]);
+                                    $('#PIPCHOI_extraMP').val(tempRateMap['pipChoice_extraExpenseRateMinPrem'][1]);
+                                    $('#PIPCHOI_NOHARate').val(tempRateMap['pipChoice_NOHARateMinPrem'][0]);
+                                    $('#PIPCHOI_NOHAMP').val(tempRateMap['pipChoice_NOHARateMinPrem'][1]);
 
-                        if (limitLines.indexOf("Medical Payments (Per Person)") > -1) {
-                            limitLines.splice(limitLines.indexOf("Medical Payments (Per Person)"), 1);
-                            limitLines.push("Medical Payments (Per Person)");
-                        }
-                        if (limitLines.indexOf("Increased Agg Limit") > -1) {
-                            limitLines.splice(limitLines.indexOf("Increased Agg Limit"), 1);
-                            limitLines.push("Increased Agg Limit");
-                        }
-                        if (limitLines.indexOf("Blanket Additional Insured Endorsement") > -1) {
-                            limitLines.splice(limitLines.indexOf("Blanket Additional Insured Endorsement"), 1);
-                            limitLines.push("Blanket Additional Insured Endorsement");
-                        }
-                        if (limitLines.indexOf("Waiver of Subrogation") > -1) {
-                            limitLines.splice(limitLines.indexOf("Waiver of Subrogation"), 1);
-                            limitLines.push("Waiver of Subrogation");
-                        }
-                        if (limitLines.indexOf("Additional Charge to Include Medical Payments") > -1) {
-                            limitLines.splice(limitLines.indexOf("Additional Charge to Include Medical Payments"), 1);
-                            limitLines.push("Additional Charge to Include Medical Payments");
-                        }
+                                    $('#PIP1_Rate').val("flat");
+                                    $('#PIP1_MP').val(tempRateMap['pip1_minPremium']);
 
+                                    $('#PIP2_Rate').val("flat");
+                                    $('#PIP2_MP').val(tempRateMap['pip2_PIP2premium']);
+                                    $('#PIP2_NOHARate').val(tempRateMap['pip2_NOHARateMinPrem'][0]);
+                                    $('#PIP2_NOHAMP').val(tempRateMap['pip2_NOHARateMinPrem'][1]);
 
-                        if (limitLines.indexOf("Non-Owned & Hired Auto Liability") > -1) {
-                            limitLines.splice(limitLines.indexOf("Non-Owned & Hired Auto Liability"), 1);
-                            limitLines.push("Non-Owned & Hired Auto Liability");
-                        }
+                                    $('#PIP3_Rate').val(tempRateMap['pip3_negativeFilmVideoRateMinPrem'][0]);
+                                    $('#PIP3_MP').val(tempRateMap['pip3_negativeFilmVideoRateMinPrem'][1]);
 
-                        //PUSH IN FRONT
+                                    $('#PIP4_Rate').val(tempRateMap['pip4_negativeFilmVideoRateMinPrem'][0]);
+                                    $('#PIP4_MP').val(tempRateMap['pip4_negativeFilmVideoRateMinPrem'][1]);
 
-                    }
-
-
-                    limitLines.forEach(function(key, index) {
-                        //alert.log(e);
-                        if (key === "Non-Owned Auto Physical Damage" && (responseJSON.coverages[i].productCode === "PIP 5" ||
-                                responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")) {
-                            return;
-                        }
-                        var premiumForCoverageLine = "";
-                        if (responseJSON.coverages[i].premiums[key]) {
-                            premiumForCoverageLine = responseJSON.coverages[i].premiums[key][1];
-                            //console.log("Premium: " + premiumForCoverageLine);
-                        }
-                        else {
-                            premiumForCoverageLine = "undefined";
-                        }
-
-                        limitDeductibleString = limitDeductibleString + "<div class='row lobRow " +
-                            responseJSON.coverages[i].productCode.replace(/ /g, "_") + " " +
-                            responseJSON.coverages[i].coverageCode + " " +
-                            responseJSON.coverages[i].coverageCode + "_LOBRow'";
-                        if (index % 2 == 0) {
-                            if (key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
-                                    responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")) {
-                                limitDeductibleString = limitDeductibleString + " style= 'background-color: rgba(38, 80, 159, 0.13); height:44px'";
-                            }
-                            else {
-                                limitDeductibleString = limitDeductibleString + " style= 'background-color: rgba(38, 80, 159, 0.13)'";
-                            }
-
-                        }
-                        limitDeductibleString = limitDeductibleString + ">" +
-                            "<div class='col-xs-6 coverageColumn' style='padding-left:20px'>";
-
-                        if (key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
-                                responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")) {
-                            limitDeductibleString = limitDeductibleString + "<span>" + key + "</span>" + "<br><span>Non-Owned Auto Physical Damage</span>" +
-                                "</div>" +
-                                "<div class='col-xs-2 limitColumn'>";
-                        }
-                        else if (key === "INC:Non-Owned Auto Physical Damage") {
-                            limitDeductibleString = limitDeductibleString + "<span>" + key.split(":")[1] + "</span>" +
-                                "</div>" +
-                                "<div class='col-xs-2 limitColumn' style='line-height: 1.3'>";
-                        }
-                        else if (key === "Cast Essential") {
-                            limitDeductibleString = limitDeductibleString + "<span>" + key + "</span>" +
-                                "</div>" +
-                                "<div class='col-xs-2 limitColumn' style='line-height: 1.3'>";
-                        }
-                        else {
-                            limitDeductibleString = limitDeductibleString + "<span>" + key + "</span>" +
-                                "</div>" +
-                                "<div class='col-xs-2 limitColumn'>";
-                        }
-
-
-
-                        if (responseJSON.coverages[i].productCode === "PIP CHOI") {
-                            if (key === "Hired Auto Physical Damage") {
-                                limitDeductibleString = limitDeductibleString + "<span class='limit'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
-                            }
-                            else if (key === "Cast Essential") {
-                                limitDeductibleString = limitDeductibleString + "<span class='limit' style='font-size:9px'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
-                            }
-                            else {
-                                limitDeductibleString = limitDeductibleString + "<input class='form-control limit PIPCHOILimitsInput " + key.replace(/\s+/g, '').replace(/[^a-zA-Z-]/g, '') + "' type='text' placeholder = '$' name='numBuildings' " +
-                                    "style='font-size: 12px;padding: 2px;margin-top: 3px; margin-bottom:3px; height: 20px;'/>";
-                            }
-
-                        }
-                        else if (key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
-                                responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")) {
-                            limitDeductibleString = limitDeductibleString + "<span class='limit'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span> <br><span></span>";
-                        }
-                        else if (responseJSON.coverages[i].coverageCode === "NOAL" && CPKincluded) {
-                            limitDeductibleString = limitDeductibleString + "<span class='limit'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
-                        }
-                        else {
-                            if (key === "Cast Essential") {
-                                limitDeductibleString = limitDeductibleString + "<span class='limit' style='font-size:11px'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
-                            }
-                            else if (key === "INC:Non-Owned Auto Physical Damage") {
-                                limitDeductibleString = limitDeductibleString + "<span class='limit' style='font-size:11px;'>" + formatMoney(responseJSON.coverages[i].limits[key].split(":")[0]) + "</span>";
-                            }
-                            else {
-                                limitDeductibleString = limitDeductibleString + "<span class='limit'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
-                            }
-
-                        }
-
-
-
-
-                        limitDeductibleString = limitDeductibleString + "</div>";
-
-
-                        if (key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
-                                responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")) {
-                            limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 premiumColumn'>" +
-                                "<span class='premium " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "PremiumLine' >" + formatMoney(premiumForCoverageLine) + "</span> <br><span></span>" +
-                                "</div>";
-                        }
-                        else if (key === "Cast Essential") {
-                            limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 premiumColumn' style=''>" +
-                                "<span class='premium " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "PremiumLine' >" + formatMoney(premiumForCoverageLine) + "</span>" +
-                                "</div>";
-                        }
-                        else {
-                            limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 premiumColumn'>" +
-                                "<span class='premium " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "PremiumLine' >" + formatMoney(premiumForCoverageLine) + "</span>" +
-                                "</div>";
-                        }
-
-                        if (key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
-                                responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")) {
-                            limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 deductibleColumn'>" +
-                                "<span class='deductible " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "DeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles[key]) +
-                                "</span><br>" +
-                                "<span class='deductible NOHADeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles["Non-Owned Auto Physical Damage"]) +
-                                "</span>";
-                        }
-                        else if (key === "Cast Essential") {
-                            limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 deductibleColumn' style=''>" +
-                                "<span class='deductible " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "DeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles[key]) +
-                                "</span>";
-                        }
-                        else {
-                            limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 deductibleColumn'>" +
-                                "<span class='deductible " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "DeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles[key]) +
-                                "</span>";
-                        }
-                        limitDeductibleString = limitDeductibleString + "</div>" +
-                            "</div>";
-                    });
-                    limitDeductibleString = limitDeductibleString + "<div class='row' style='border-top: 1px solid rgba(0, 0, 0, 0.19);'>" +
-                        "<div class='col-xs-6 ' >" +
-                        "<strong style='font-size:13px'>" + "</strong>" +
-                        "</div>" +
-                        "<div class='col-xs-2 ' >" +
-                        "<span'>" + "-" + "</span>" +
-                        "</div>" +
-                        "<div class='col-xs-2 ' >" +
-                        "<strong style='font-size:13px' class='" + responseJSON.coverages[i].productCode.replace(/ /g, '_') + " productTotalPremium" +
-                        "' id='" + responseJSON.coverages[i].productCode.replace(/ /g, '') + "PremiumTotal'>" + formatMoney(responseJSON.coverages[i].productTotalPremium) + "</strong>" +
-                        "</div>" +
-                        "<div class='col-xs-2 ' >" +
-                        "<span'>" + "-" + "</span>" +
-                        "</div>" +
-                        "</div>";
-                    limitDeductibleString = limitDeductibleString + "<span id='" + responseJSON.coverages[i].coverageCode + "_RateInfo' style='display:none'>" +
-                        responseJSON.coverages[i].rateInfo + "</span>";
-                    limitDeductibleString = limitDeductibleString + "<br>";
-
-                    var lobLines = Object.keys(responseJSON.coverages[i].lobDist);
-                    lobLines.forEach(function(key, index) {
-                        for (var k = 0; k < responseJSON.coverages[i].lobDist[key].split(";").length; k++) {
-                            if (responseJSON.coverages[i].lobDist[key].split(";")[k].length > 0) {
-                                lobDistString = lobDistString + "<div class='row'";
-                                if (index % 2 == 0) {
-                                    lobDistString = lobDistString + " style= 'background-color: rgba(38, 80, 159, 0.13)'";
+                                    $('#PIP5_Rate').val(tempRateMap['pip5_negativeFilmVideoRateMinPrem'][0]);
+                                    $('#PIP5_MP').val(tempRateMap['pip5_negativeFilmVideoRateMinPrem'][1]);
                                 }
-                                lobDistString = lobDistString + ">" +
-                                    "<div class='col-xs-4'>" +
-                                    "<span class='lineOfBusinessSpan'>" + responseJSON.coverages[i].lobDist[key].split(";")[k].split(",")[0] + "</span>" +
+                            }
+
+                        }
+
+                        var limitDeductibleString = "";
+                        var lobDistString = "";
+                        var CPKincluded = false;
+                        var EPKGincluded = false;
+                        var termsInsert = "";
+                        var beginTerms = "";
+                        var endorseInsert = "";
+                        for (var i = 0; i < responseJSON.coverages.length; i++) {
+                            if (responseJSON.coverages[i].coverageCode === "CPK") {
+                                CPKincluded = true;
+                                beginTerms = responseJSON.coverages[i].beginTerms;
+                            }
+                            if (responseJSON.coverages[i].coverageCode === "EPKG") {
+                                EPKGincluded = true;
+                                beginTerms = responseJSON.coverages[i].beginTerms;
+                            }
+                        }
+                        for (var i = 0; i < responseJSON.coverages.length; i++) {
+                            //alert(Object.keys(responseJSON.coverages[i].limits));
+                            if (responseJSON.coverages[i].coverageCode === "NOHA") {
+                                continue;
+                            }
+
+                            limitDeductibleString = limitDeductibleString + "<div class='row coverageCodeRow'>" +
+                                "<div class='col-xs-6 ' >";
+                            if (responseJSON.coverages[i].coverageCode === "NOAL" && CPKincluded) {
+                                limitDeductibleString = limitDeductibleString + "<strong class='coverageCodeString' style='font-size:13px'>" + "NOAL" + "</strong>";
+                                limitDeductibleString = limitDeductibleString + "</div>" +
+                                    "<div class='col-xs-2 ' >" +
+                                    "<span'>" + "-" + "</span>" +
                                     "</div>" +
-                                    "<div class='col-xs-3'>" +
-                                    "<span class='premiumSpan' id='" + responseJSON.coverages[i].coverageCode + "PremiumLOBTotal'>" + formatMoney(responseJSON.coverages[i].lobDist[key].split(";")[k].split(",")[1]) + "</span>" +
+                                    "<div class='col-xs-2 ' >" +
+                                    "<strong style='font-size:13px'>" + "</strong>" +
                                     "</div>" +
-                                    "<div class='col-xs-3'>" +
-                                    "<span class='agentPercentSpan'>" + responseJSON.coverages[i].lobDist[key].split(";")[k].split(",")[3] + "</span>" +
+                                    "<div class='col-xs-2 ' >" +
+                                    "<span'>" + "-" + "</span>" +
                                     "</div>" +
                                     "</div>";
                             }
+                            else if (responseJSON.coverages[i].coverageCode === "EPKG") {
+                                if (responseJSON.coverages[i].productCode === "PIP CHOI") {
+                                    limitDeductibleString = limitDeductibleString + "<strong class='coverageCodeString' style='font-size:13px'>" + "EPKG" + "</strong>";
+                                    limitDeductibleString = limitDeductibleString +
+                                        "<span class='productID_pull' id='" + responseJSON.coverages[i].productCode.replace(/ /g, "") + "' data-cov='" + responseJSON.coverages[i].coverageCode + "' style='display:none'>" + responseJSON.coverages[i].productCode + "</span>";
+
+                                    limitDeductibleString = limitDeductibleString + "</div>" +
+                                        "<div class='col-xs-2 ' >" +
+                                        "<span style='font-size:9px;'>" + "*Max $1,000,000" + "</span>" +
+                                        "</div>" +
+                                        "<div class='col-xs-2 ' >" +
+                                        "<strong style='font-size:13px'>" + "</strong>" +
+                                        "</div>" +
+                                        "<div class='col-xs-2 ' >" +
+                                        "<span>" + "-" + "</span>" +
+                                        "</div>" +
+                                        "</div>";
+                                }
+                                else if (responseJSON.coverages[i].productCode === "PIP 1") {
+                                    limitDeductibleString = limitDeductibleString + "<strong class='coverageCodeString' style='font-size:13px'>" + "EPKG" + "</strong>";
+                                    limitDeductibleString = limitDeductibleString +
+                                        "<span class='productID_pull' id='" + responseJSON.coverages[i].productCode.replace(/ /g, "") + "' data-cov='" + responseJSON.coverages[i].coverageCode + "' style='display:none'>" + responseJSON.coverages[i].productCode + "</span>";
+                                    limitDeductibleString = limitDeductibleString + "</div>" +
+                                        "<div class='col-xs-2 ' >" +
+                                        "<span style='font-size:9px;'>" + "" + "</span>" +
+                                        "</div>" +
+                                        "<div class='col-xs-2 ' >" +
+                                        "<strong style='font-size:13px'>" + "</strong>" +
+                                        "</div>" +
+                                        "<div class='col-xs-2 ' >" +
+                                        "<span>" + "-" + "</span>" +
+                                        "</div>" +
+                                        "</div>";
+                                }
+                                else {
+                                    limitDeductibleString = limitDeductibleString + "<strong class='coverageCodeString' style='font-size:13px'>" + responseJSON.coverages[i].coverageCode + "</strong>";
+                                    limitDeductibleString = limitDeductibleString +
+                                        "<span class='productID_pull' id='" + responseJSON.coverages[i].productCode.replace(/ /g, "") + "' data-cov='" + responseJSON.coverages[i].coverageCode + "' style='display:none'>" + responseJSON.coverages[i].productCode + "</span>";
+                                    limitDeductibleString = limitDeductibleString + "</div>" +
+                                        "<div class='col-xs-2 ' >" +
+                                        "<span'>" + "-" + "</span>" +
+                                        "</div>" +
+                                        "<div class='col-xs-2 ' >" +
+                                        "<strong style='font-size:13px'>" + "</strong>" +
+                                        "</div>" +
+                                        "<div class='col-xs-2 ' >" +
+                                        "<span'>" + "-" + "</span>" +
+                                        "</div>" +
+                                        "</div>";
+                                }
+
+                            }
+                            else if (responseJSON.coverages[i].coverageCode === "CPK") {
+                                limitDeductibleString = limitDeductibleString + "<strong class='coverageCodeString' style='font-size:13px'>" + "CGL" + "</strong>";
+                                limitDeductibleString = limitDeductibleString +
+                                    "<span class='productID_pull' id='" + responseJSON.coverages[i].productCode.replace(/ /g, "") + "' data-cov='" + responseJSON.coverages[i].coverageCode + "' style='display:none'>" + responseJSON.coverages[i].productCode + "</span>";
+                                limitDeductibleString = limitDeductibleString + "</div>" +
+                                    "<div class='col-xs-2 ' >" +
+                                    "<span>" + "-" + "</span>" +
+                                    "</div>" +
+                                    "<div class='col-xs-2 ' >" +
+                                    "<strong style='font-size:13px'>" + "</strong>" +
+                                    "</div>" +
+                                    "<div class='col-xs-2 ' >" +
+                                    "<span>" + "-" + "</span>" +
+                                    "</div>" +
+                                    "</div>";
+                            }
+                            else {
+                                limitDeductibleString = limitDeductibleString + "<strong class='coverageCodeString' style='font-size:13px'>" + responseJSON.coverages[i].coverageCode + "</strong>";
+                                limitDeductibleString = limitDeductibleString +
+                                    "<span class='productID_pull' id='" + responseJSON.coverages[i].productCode.replace(/ /g, "") + "' data-cov='" + responseJSON.coverages[i].coverageCode + "' style='display:none'>" + responseJSON.coverages[i].productCode + "</span>";
+                                limitDeductibleString = limitDeductibleString + "</div>" +
+                                    "<div class='col-xs-2 ' >" +
+                                    "<span'>" + "-" + "</span>" +
+                                    "</div>" +
+                                    "<div class='col-xs-2 ' >" +
+                                    "<strong style='font-size:13px'>" + "</strong>" +
+                                    "</div>" +
+                                    "<div class='col-xs-2 ' >" +
+                                    "<span'>" + "-" + "</span>" +
+                                    "</div>" +
+                                    "</div>";
+                            }
+
+
+                            var limitLines = Object.keys(responseJSON.coverages[i].limits);
+                            if (responseJSON.coverages[i].coverageCode === "EPKG") {
+                                if (limitLines.indexOf("Cast Insurance") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Cast Insurance"), 1);
+                                    limitLines.push("Cast Insurance");
+                                }
+                                if (limitLines.indexOf("Cast Essential") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Cast Essential"), 1);
+                                    limitLines.push("Cast Essential");
+                                }
+                                if (limitLines.indexOf("Negative Film & Videotape") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Negative Film & Videotape"), 1);
+                                    limitLines.push("Negative Film & Videotape");
+                                }
+                                if (limitLines.indexOf("Faulty Stock & Camera Processing") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Faulty Stock & Camera Processing"), 1);
+                                    limitLines.push("Faulty Stock & Camera Processing");
+                                }
+                                if (limitLines.indexOf("Miscellaneous Rented Equipment") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Miscellaneous Rented Equipment"), 1);
+                                    limitLines.push("Miscellaneous Rented Equipment");
+                                }
+                                if (limitLines.indexOf("INC:Non-Owned Auto Physical Damage") > -1) {
+                                    limitLines.splice(limitLines.indexOf("INC:Non-Owned Auto Physical Damage"), 1);
+                                    limitLines.push("INC:Non-Owned Auto Physical Damage");
+                                }
+                                if (limitLines.indexOf("Extra Expense") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Extra Expense"), 1);
+                                    limitLines.push("Extra Expense");
+                                }
+                                if (limitLines.indexOf("Props, Sets & Wardrobe") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Props, Sets & Wardrobe"), 1);
+                                    limitLines.push("Props, Sets & Wardrobe");
+                                }
+                                if (limitLines.indexOf("Third Party Prop Damage Liab") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Third Party Prop Damage Liab"), 1);
+                                    limitLines.push("Third Party Prop Damage Liab");
+                                }
+                                if (limitLines.indexOf("Office Contents") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Office Contents"), 1);
+                                    limitLines.push("Office Contents");
+                                }
+                                if (limitLines.indexOf("Money & Securities") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Money & Securities"), 1);
+                                    limitLines.push("Money & Securities");
+                                }
+                                if (limitLines.indexOf("Civil Authority (US Only)") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Civil Authority (US Only)"), 1);
+                                    limitLines.push("Civil Authority (US Only)");
+                                }
+                                if (limitLines.indexOf("Money and Currency") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Money and Currency"), 1);
+                                    limitLines.push("Money and Currency");
+                                }
+                                if (limitLines.indexOf("Furs, Jewelry, Art & Antiques") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Furs, Jewelry, Art & Antiques"), 1);
+                                    limitLines.push("Furs, Jewelry, Art & Antiques");
+                                }
+                                if (limitLines.indexOf("Talent and Non Budgeted Costs") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Talent and Non Budgeted Costs"), 1);
+                                    limitLines.push("Talent and Non Budgeted Costs");
+                                }
+                                if (limitLines.indexOf("Administrative Costs") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Administrative Costs"), 1);
+                                    limitLines.push("Administrative Costs");
+                                }
+                                if (limitLines.indexOf("Hardware") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Hardware"), 1);
+                                    limitLines.push("Hardware");
+                                }
+                                if (limitLines.indexOf("Data and Media") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Data and Media"), 1);
+                                    limitLines.push("Data and Media");
+                                }
+                                if (limitLines.indexOf("Electronic Data Extra Expense") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Electronic Data Extra Expense"), 1);
+                                    limitLines.push("Electronic Data Extra Expense");
+                                }
+                                //
+                                if (limitLines.indexOf("Animal Mortality") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Animal Mortality"), 1);
+                                    limitLines.push("Animal Mortality");
+                                }
+
+                                if (limitLines.indexOf("Animal Mortality Under Cast Insurance (Domestic Birds/Fish)") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (Domestic Birds/Fish)"), 1);
+                                    limitLines.push("Animal Mortality Under Cast Insurance (Domestic Birds/Fish)");
+                                }
+                                if (limitLines.indexOf("Animal Mortality Under Cast Insurance (Dogs w/ Breed Exceptions)") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (Dogs w/ Breed Exceptions)"), 1);
+                                    limitLines.push("Animal Mortality Under Cast Insurance (Dogs w/ Breed Exceptions)");
+                                }
+                                if (limitLines.indexOf("Animal Mortality Under Cast Insurance (Reptiles (Non-Venomous))") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (Reptiles (Non-Venomous))"), 1);
+                                    limitLines.push("Animal Mortality Under Cast Insurance (Reptiles (Non-Venomous))");
+                                }
+                                if (limitLines.indexOf("Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))"), 1);
+                                    limitLines.push("Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))");
+                                }
+                                if (limitLines.indexOf("Animal Mortality Under Cast Insurance (Farm Animals)") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (Farm Animals)"), 1);
+                                    limitLines.push("Animal Mortality Under Cast Insurance (Farm Animals)");
+                                }
+                                if (limitLines.indexOf("Animal Mortality Under Cast Insurance (Wild Cats (Caged))") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (Wild Cats (Caged))"), 1);
+                                    limitLines.push("Animal Mortality Under Cast Insurance (Wild Cats (Caged))");
+                                }
+                                if (limitLines.indexOf("Animal Mortality Under Cast Insurance (All Others - Refer Only)") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (All Others - Refer Only)"), 1);
+                                    limitLines.push("Animal Mortality Under Cast Insurance (All Others - Refer Only)");
+                                }
+
+                                if (limitLines.indexOf("Animal Mortality (Birds or Fish)") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Animal Mortality (Birds or Fish)"), 1);
+                                    limitLines.push("Animal Mortality (Birds or Fish)");
+                                }
+                                if (limitLines.indexOf("Animal Mortality (Dogs w/ Breed Exceptions)") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Animal Mortality (Dogs w/ Breed Exceptions)"), 1);
+                                    limitLines.push("Animal Mortality (Dogs w/ Breed Exceptions)");
+                                }
+                                if (limitLines.indexOf("Animal Mortality (Reptiles Non-Venomous)") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Animal Mortality (Reptiles Non-Venomous)"), 1);
+                                    limitLines.push("Animal Mortality (Reptiles Non-Venomous)");
+                                }
+                                if (limitLines.indexOf("Animal Mortality (Small Domestic Animals - Other)") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Animal Mortality (Small Domestic Animals - Other)"), 1);
+                                    limitLines.push("Animal Mortality (Small Domestic Animals - Other)");
+                                }
+                                if (limitLines.indexOf("Animal Mortality (Farm Animals)") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Animal Mortality (Farm Animals)"), 1);
+                                    limitLines.push("Animal Mortality (Farm Animals)");
+                                }
+                                if (limitLines.indexOf("Animal Mortality (Wild Cats - Caged)") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Animal Mortality (Wild Cats - Caged)"), 1);
+                                    limitLines.push("Animal Mortality (Wild Cats - Caged)");
+                                }
+                                if (limitLines.indexOf("Animal Mortality (All Others - Refer Only)") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Animal Mortality (All Others - Refer Only)"), 1);
+                                    limitLines.push("Animal Mortality (All Others - Refer Only)");
+                                }
+
+
+
+                                if (limitLines.indexOf("Hired Auto Physical Damage") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Hired Auto Physical Damage"), 1);
+                                    limitLines.push("Hired Auto Physical Damage");
+                                }
+                            }
+                            else if (responseJSON.coverages[i].coverageCode === "CPK" || responseJSON.coverages[i].coverageCode === "CGL") {
+                                if (limitLines.indexOf("Each Occurrence") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Each Occurrence"), 1);
+                                    limitLines.push("Each Occurrence");
+                                }
+                                if (limitLines.indexOf("General Aggregate Limit") > -1) {
+                                    limitLines.splice(limitLines.indexOf("General Aggregate Limit"), 1);
+                                    limitLines.push("General Aggregate Limit");
+                                }
+                                if (limitLines.indexOf("Products & Completed Operations") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Products & Completed Operations"), 1);
+                                    limitLines.push("Products & Completed Operations");
+                                }
+                                if (limitLines.indexOf("Personal & Advertising Injury") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Personal & Advertising Injury"), 1);
+                                    limitLines.push("Personal & Advertising Injury");
+                                }
+                                if (limitLines.indexOf("Fire Damage (Any One Fire)") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Fire Damage (Any One Fire)"), 1);
+                                    limitLines.push("Fire Damage (Any One Fire)");
+                                }
+
+                                if (limitLines.indexOf("Medical Payments (Per Person)") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Medical Payments (Per Person)"), 1);
+                                    limitLines.push("Medical Payments (Per Person)");
+                                }
+                                if (limitLines.indexOf("Increased Agg Limit") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Increased Agg Limit"), 1);
+                                    limitLines.push("Increased Agg Limit");
+                                }
+                                if (limitLines.indexOf("Blanket Additional Insured Endorsement") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Blanket Additional Insured Endorsement"), 1);
+                                    limitLines.push("Blanket Additional Insured Endorsement");
+                                }
+                                if (limitLines.indexOf("Waiver of Subrogation") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Waiver of Subrogation"), 1);
+                                    limitLines.push("Waiver of Subrogation");
+                                }
+                                if (limitLines.indexOf("Additional Charge to Include Medical Payments") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Additional Charge to Include Medical Payments"), 1);
+                                    limitLines.push("Additional Charge to Include Medical Payments");
+                                }
+
+
+                                if (limitLines.indexOf("Non-Owned & Hired Auto Liability") > -1) {
+                                    limitLines.splice(limitLines.indexOf("Non-Owned & Hired Auto Liability"), 1);
+                                    limitLines.push("Non-Owned & Hired Auto Liability");
+                                }
+
+                                //PUSH IN FRONT
+
+                            }
+
+
+                            limitLines.forEach(function(key, index) {
+                                //alert.log(e);
+                                if (key === "Non-Owned Auto Physical Damage" && (responseJSON.coverages[i].productCode === "PIP 5" ||
+                                    responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")) {
+                                    return;
+                                }
+                                var premiumForCoverageLine = "";
+                                if (responseJSON.coverages[i].premiums[key]) {
+                                    premiumForCoverageLine = responseJSON.coverages[i].premiums[key][1];
+                                    //console.log("Premium: " + premiumForCoverageLine);
+                                }
+                                else {
+                                    premiumForCoverageLine = "undefined";
+                                }
+
+                                limitDeductibleString = limitDeductibleString + "<div class='row lobRow " +
+                                    responseJSON.coverages[i].productCode.replace(/ /g, "_") + " " +
+                                    responseJSON.coverages[i].coverageCode + " " +
+                                    responseJSON.coverages[i].coverageCode + "_LOBRow'";
+                                if (index % 2 == 0) {
+                                    if (key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
+                                        responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")) {
+                                        limitDeductibleString = limitDeductibleString + " style= 'background-color: rgba(38, 80, 159, 0.13); height:44px'";
+                                    }
+                                    else {
+                                        limitDeductibleString = limitDeductibleString + " style= 'background-color: rgba(38, 80, 159, 0.13)'";
+                                    }
+
+                                }
+                                limitDeductibleString = limitDeductibleString + ">" +
+                                    "<div class='col-xs-6 coverageColumn' style='padding-left:20px'>";
+
+                                if (key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
+                                    responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")) {
+                                    limitDeductibleString = limitDeductibleString + "<span>" + key + "</span>" + "<br><span>Non-Owned Auto Physical Damage</span>" +
+                                        "</div>" +
+                                        "<div class='col-xs-2 limitColumn'>";
+                                }
+                                else if (key === "INC:Non-Owned Auto Physical Damage") {
+                                    limitDeductibleString = limitDeductibleString + "<span>" + key.split(":")[1] + "</span>" +
+                                        "</div>" +
+                                        "<div class='col-xs-2 limitColumn' style='line-height: 1.3'>";
+                                }
+                                else if (key === "Cast Essential") {
+                                    limitDeductibleString = limitDeductibleString + "<span>" + key + "</span>" +
+                                        "</div>" +
+                                        "<div class='col-xs-2 limitColumn' style='line-height: 1.3'>";
+                                }
+                                else {
+                                    limitDeductibleString = limitDeductibleString + "<span>" + key + "</span>" +
+                                        "</div>" +
+                                        "<div class='col-xs-2 limitColumn'>";
+                                }
+
+
+
+                                if (responseJSON.coverages[i].productCode === "PIP CHOI") {
+                                    if (key === "Hired Auto Physical Damage") {
+                                        limitDeductibleString = limitDeductibleString + "<span class='limit'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
+                                    }
+                                    else if (key === "Cast Essential") {
+                                        limitDeductibleString = limitDeductibleString + "<span class='limit' style='font-size:9px'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
+                                    }
+                                    else {
+                                        limitDeductibleString = limitDeductibleString + "<input class='form-control limit PIPCHOILimitsInput " + key.replace(/\s+/g, '').replace(/[^a-zA-Z-]/g, '') + "' type='text' placeholder = '$' name='numBuildings' " +
+                                            "style='font-size: 12px;padding: 2px;margin-top: 3px; margin-bottom:3px; height: 20px;'/>";
+                                    }
+
+                                }
+                                else if (key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
+                                    responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")) {
+                                    limitDeductibleString = limitDeductibleString + "<span class='limit'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span> <br><span></span>";
+                                }
+                                else if (responseJSON.coverages[i].coverageCode === "NOAL" && CPKincluded) {
+                                    limitDeductibleString = limitDeductibleString + "<span class='limit'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
+                                }
+                                else {
+                                    if (key === "Cast Essential") {
+                                        limitDeductibleString = limitDeductibleString + "<span class='limit' style='font-size:11px'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
+                                    }
+                                    else if (key === "INC:Non-Owned Auto Physical Damage") {
+                                        limitDeductibleString = limitDeductibleString + "<span class='limit' style='font-size:11px;'>" + formatMoney(responseJSON.coverages[i].limits[key].split(":")[0]) + "</span>";
+                                    }
+                                    else {
+                                        limitDeductibleString = limitDeductibleString + "<span class='limit'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
+                                    }
+
+                                }
+
+
+
+
+                                limitDeductibleString = limitDeductibleString + "</div>";
+
+
+                                if (key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
+                                    responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")) {
+                                    limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 premiumColumn'>" +
+                                        "<span class='premium " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "PremiumLine' >" + formatMoney(premiumForCoverageLine) + "</span> <br><span></span>" +
+                                        "</div>";
+                                }
+                                else if (key === "Cast Essential") {
+                                    limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 premiumColumn' style=''>" +
+                                        "<span class='premium " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "PremiumLine' >" + formatMoney(premiumForCoverageLine) + "</span>" +
+                                        "</div>";
+                                }
+                                else {
+                                    limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 premiumColumn'>" +
+                                        "<span class='premium " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "PremiumLine' >" + formatMoney(premiumForCoverageLine) + "</span>" +
+                                        "</div>";
+                                }
+
+                                if (key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
+                                    responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")) {
+                                    limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 deductibleColumn'>" +
+                                        "<span class='deductible " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "DeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles[key]) +
+                                        "</span><br>" +
+                                        "<span class='deductible NOHADeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles["Non-Owned Auto Physical Damage"]) +
+                                        "</span>";
+                                }
+                                else if (key === "Cast Essential") {
+                                    limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 deductibleColumn' style=''>" +
+                                        "<span class='deductible " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "DeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles[key]) +
+                                        "</span>";
+                                }
+                                else {
+                                    limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 deductibleColumn'>" +
+                                        "<span class='deductible " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "DeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles[key]) +
+                                        "</span>";
+                                }
+                                limitDeductibleString = limitDeductibleString + "</div>" +
+                                    "</div>";
+                            });
+                            limitDeductibleString = limitDeductibleString + "<div class='row' style='border-top: 1px solid rgba(0, 0, 0, 0.19);'>" +
+                                "<div class='col-xs-6 ' >" +
+                                "<strong style='font-size:13px'>" + "</strong>" +
+                                "</div>" +
+                                "<div class='col-xs-2 ' >" +
+                                "<span'>" + "-" + "</span>" +
+                                "</div>" +
+                                "<div class='col-xs-2 ' >" +
+                                "<strong style='font-size:13px' class='" + responseJSON.coverages[i].productCode.replace(/ /g, '_') + " productTotalPremium" +
+                                "' id='" + responseJSON.coverages[i].productCode.replace(/ /g, '') + "PremiumTotal'>" + formatMoney(responseJSON.coverages[i].productTotalPremium) + "</strong>" +
+                                "</div>" +
+                                "<div class='col-xs-2 ' >" +
+                                "<span'>" + "-" + "</span>" +
+                                "</div>" +
+                                "</div>";
+                            limitDeductibleString = limitDeductibleString + "<span id='" + responseJSON.coverages[i].coverageCode + "_RateInfo' style='display:none'>" +
+                                responseJSON.coverages[i].rateInfo + "</span>";
+                            limitDeductibleString = limitDeductibleString + "<br>";
+
+                            var lobLines = Object.keys(responseJSON.coverages[i].lobDist);
+                            lobLines.forEach(function(key, index) {
+                                for (var k = 0; k < responseJSON.coverages[i].lobDist[key].split(";").length; k++) {
+                                    if (responseJSON.coverages[i].lobDist[key].split(";")[k].length > 0) {
+                                        lobDistString = lobDistString + "<div class='row'";
+                                        if (index % 2 == 0) {
+                                            lobDistString = lobDistString + " style= 'background-color: rgba(38, 80, 159, 0.13)'";
+                                        }
+                                        lobDistString = lobDistString + ">" +
+                                            "<div class='col-xs-4'>" +
+                                            "<span class='lineOfBusinessSpan'>" + responseJSON.coverages[i].lobDist[key].split(";")[k].split(",")[0] + "</span>" +
+                                            "</div>" +
+                                            "<div class='col-xs-3'>" +
+                                            "<span class='premiumSpan' id='" + responseJSON.coverages[i].coverageCode + "PremiumLOBTotal'>" + formatMoney(responseJSON.coverages[i].lobDist[key].split(";")[k].split(",")[1]) + "</span>" +
+                                            "</div>" +
+                                            "<div class='col-xs-3'>" +
+                                            "<span class='agentPercentSpan'>" + responseJSON.coverages[i].lobDist[key].split(";")[k].split(",")[3] + "</span>" +
+                                            "</div>" +
+                                            "</div>";
+                                    }
+                                }
+
+
+                            });
+
+                            if (responseJSON.coverages[i].coverageCode != "NOAL") {
+                                //termsInsert = termsInsert +
+                                //    responseJSON.coverages[i].coverageCode + " - " + responseJSON.coverages[i].productCode + "\n"  +  responseJSON.coverages[i].terms + "\n\n\n";
+                                endorseInsert = endorseInsert +
+                                    "<span id='" + responseJSON.coverages[i].coverageCode + "_EndorsementForms'>" +
+                                    responseJSON.coverages[i].coverageCode + " - " + responseJSON.coverages[i].productCode + "\n" +
+                                    responseJSON.coverages[i].endorse + "\n\n\n" +
+                                    "</span>"
+                                ;
+                            }
+
+
+
+
+
+
+
+                            if (responseJSON.coverages[i].productCode === "PIP CHOI") {
+                                $('#limitsHeader').html("Please Enter Desired Limits");
+                            }
                         }
 
+                        $("#limitsDeductPremiumInsert").html(limitDeductibleString);
+                        $("#premDistributionInsert").html(lobDistString);
+                        $("#termsInsert").html(beginTerms + termsInsert);
+                        $("#endorseInsert").html(endorseInsert);
+                        var disclaimerInsert = "*TRIA is rejected as per form LMA 5091 U.S. Terrorism Risk Insurance Act 2002.  " +
+                            "TRIA can be afforded for an additional premium charge equal to 1% of the total premium indication.";
+                        $("#disclaimerInsert").html(disclaimerInsert);
+
+                        //$("#premDistributionInsert").html(lobDistString);
+
+                        //Add NOAL to CPK if valid
+                        //console.log("lENGTH = " + $('.NOAL01PremiumTotal').length)
+                        if ($('#NOAL01PremiumTotal').length > 0) {
+                            var noalPrem = $('#NOAL01PremiumTotal').html();
+                            var cpkPrem = $('#BARCPKGCPremiumTotal').html();
+
+                            var v1 = noalPrem;
+                            v1 = v1.replace("$", "");
+                            v1 = v1.replace(/,/g, "");
+
+                            var v2 = cpkPrem;
+                            v2 = v2.replace("$", "");
+                            v2 = v2.replace(/,/g, "");
+
+                            $("#CPKPremiumLOBTotal").html(formatMoney(parseFloat(v1) + parseFloat(v2)));
+
+
+
+
+                        }
+
+                        $('.PIPCHOILimitsInput').maskMoney({
+                            prefix: '$',
+                            precision: "0"
+                        });
+
+                        //var tempLimit = parseInt($("#totalBudgetInput").val().replace(/\$|,/g, ''));
+                        //console.log("LIMIT AMOUNT1 === " + tempLimit)
+                        //if(riskChosen === "Film Projects With Cast (No Work Comp)"){
+                        //    tempLimit = Math.ceil(tempLimit / 1000) * 1000;
+                        //}
+                        //console.log("LIMIT AMOUNT === " + tempLimit / 1000)
+
+                        $('.PIPCHOILimitsInput').val($("#totalBudgetInput").val());
+                        if (pipChoiceMisc.length > 0) {
+                            $(".MiscellaneousRentedEquipment").val(pipChoiceMisc);
+                        }
+                        if (pipChoiceExtra.length > 0) {
+                            $(".ExtraExpense").val(pipChoiceExtra);
+                        }
+                        if (pipChoiceProps.length > 0) {
+                            $(".PropsSetsWardrobe").val(pipChoiceProps);
+                        }
+                        if (pipChoiceThird.length > 0) {
+                            $(".ThirdPartyPropDamageLiab").val(pipChoiceThird);
+                        }
+                        if (pipChoiceNOHA.length > 0) {
+                            $(".HiredAutoPhysicalDamage").val(pipChoiceNOHA);
+                        }
+                        if (pipChoiceCast.length > 0) {
+                            $(".CastInsurance").val(pipChoiceCast);
+                        }
+                        if (pipChoiceCastEssential.length > 0) {
+                            $(".CastEssential").val(pipChoiceCastEssential);
+                        }
+
+                        $('.PIPCHOILimitsInput').trigger("keyup");
+                        $('.CPKNOHALimitsInput').maskMoney({
+                            prefix: '$',
+                            precision: "0"
+                        });
+                        $('.CPKNOHALimitsInput').val($("#totalBudgetConfirm").val().split(".")[0]);
+                        if (CGLNOALLimit.length > 0) {
+                            $(".HiredAutoPhysicalDamage").val(CGLNOALLimit);
+                        }
+                        $('.CPKNOHALimitsInput').trigger("keyup");
+                        getTaxInfo();
+                        totalUpPremiumAndTax();
+                        addOverflowTransitionClass();
+                        $('#castInsuranceRequiredCheckBox').trigger('change');
 
                     });
 
-                    if (responseJSON.coverages[i].coverageCode != "NOAL") {
-                        //termsInsert = termsInsert +
-                        //    responseJSON.coverages[i].coverageCode + " - " + responseJSON.coverages[i].productCode + "\n"  +  responseJSON.coverages[i].terms + "\n\n\n";
-                        endorseInsert = endorseInsert +
-                                "<span id='" + responseJSON.coverages[i].coverageCode + "_EndorsementForms'>" +
-                            responseJSON.coverages[i].coverageCode + " - " + responseJSON.coverages[i].productCode + "\n" +
-                            responseJSON.coverages[i].endorse + "\n\n\n" +
-                            "</span>"
-                        ;
+            }
+
+
+        }
+        else {
+            //alert("clear all");
+            $("#limitsDeductPremiumInsert").html("");
+            $("#premDistributionInsert").html("");
+            $("#termsInsert").html("");
+            $("#endorseInsert").html("");
+            $("#taxRows").html("");
+            $("#premiumAllLOBTotal").html("");
+            $("#disclaimerInsert").html("");
+        }
+
+    }
+
+}
+
+function ratePremiumsSGP(){
+    var numProductSelected = $('.productOptionRadio:checked').length
+
+    var dataMap = getPremiumInfoMapSGP();
+    if ( numProductSelected > 0 && parseFloat($("#totalBudgetConfirm").val().replace(/\$|,/g, '')) > 0) {
+        $.ajax({
+            method: "POST",
+            url: "/Async/ratePremiumsSGP",
+            //url: "/Async/newRatePremiums",
+            data: {
+                riskType: riskChosen,
+                dataMap: JSON.stringify(dataMap)
+
+            }
+        })
+            .done(function(msg) {
+            // alert(msg);
+            //alert( "Data Saved: " + msg );
+            var responseJSON = JSON.parse(msg);
+            //alert(responseJSON.coverages.length);
+
+            if ($('#runRatesButton').length > 0) { //IF IN REVIEW PANEL AND RERUNNING RATES
+                var tempRateMap = {}
+                ////PIP1 RATING
+                //submissionRateMap["pip1_negativeFilmVideoRateMinPrem"] = pip1_negativeFilmVideoRateMinPrem
+                //submissionRateMap["pip1_faultyStockCameraProcessingRateMinPrem"] = pip1_faultyStockCameraProcessingRateMinPrem
+                //submissionRateMap["pip1_miscRentedEquipRateMinPrem"] = pip1_miscRentedEquipRateMinPrem
+                //submissionRateMap["pip1_propsSetWardrobeRateMinPrem"] = pip1_propsSetWardrobeRateMinPrem
+                //submissionRateMap["pip1_thirdPartyPropDamageRateMinPrem"] = pip1_thirdPartyPropDamageRateMinPrem
+                //submissionRateMap["pip1_extraExpenseRateMinPrem"] = pip1_extraExpenseRateMinPrem
+                //submissionRateMap["pip1_minPremium"] = pip1_minPremium
+                for (var i = 0; i < responseJSON.coverages.length; i++) {
+                    if (responseJSON.coverages[i].coverageCode === "EPKG") {
+                        $('#PIPCHOIRatesRow').css('display', 'none');
+                        $('#PIP1RatesRow').css('display', 'none');
+                        $('#PIP2RatesRow').css('display', 'none');
+                        $('#PIP3RatesRow').css('display', 'none');
+                        $('#PIP4RatesRow').css('display', 'none');
+                        $('#PIP5RatesRow').css('display', 'none');
+                        tempRateMap = responseJSON.coverages[i].submissionRateMap;
+                        if (responseJSON.coverages[i].productCode === "PIP CHOI") {
+                            $('#PIPCHOIRatesRow').css('display', '')
+
+                        }
+                        else if (responseJSON.coverages[i].productCode === "PIP 1") {
+
+                            $('#PIP1RatesRow').css('display', '')
+                        }
+                        else if (responseJSON.coverages[i].productCode === "PIP 2") {
+
+                            $('#PIP2RatesRow').css('display', '')
+                        }
+                        else if (responseJSON.coverages[i].productCode === "PIP 3") {
+
+                            $('#PIP3RatesRow').css('display', '')
+                        }
+                        else if (responseJSON.coverages[i].productCode === "PIP 4") {
+
+                            $('#PIP4RatesRow').css('display', '')
+                        }
+                        else if (responseJSON.coverages[i].productCode === "PIP 4") {
+
+                            $('#PIP5RatesRow').css('display', '')
+                        }
+                        $('#PIPCHOI_miscRate').val(tempRateMap['pipChoice_miscRentedEquipRateMinPrem'][0]);
+                        $('#PIPCHOI_miscMP').val(tempRateMap['pipChoice_miscRentedEquipRateMinPrem'][1]);
+                        $('#PIPCHOI_propsRate').val(tempRateMap['pipChoice_propsSetWardrobeRateMinPrem'][0]);
+                        $('#PIPCHOI_propsMP').val(tempRateMap['pipChoice_propsSetWardrobeRateMinPrem'][1]);
+                        $('#PIPCHOI_thirdRate').val(tempRateMap['pipChoice_thirdPartyPropDamageRateMinPrem'][0]);
+                        $('#PIPCHOI_thirdMP').val(tempRateMap['pipChoice_thirdPartyPropDamageRateMinPrem'][1]);
+                        $('#PIPCHOI_extraRate').val(tempRateMap['pipChoice_extraExpenseRateMinPrem'][0]);
+                        $('#PIPCHOI_extraMP').val(tempRateMap['pipChoice_extraExpenseRateMinPrem'][1]);
+                        $('#PIPCHOI_NOHARate').val(tempRateMap['pipChoice_NOHARateMinPrem'][0]);
+                        $('#PIPCHOI_NOHAMP').val(tempRateMap['pipChoice_NOHARateMinPrem'][1]);
+
+                        $('#PIP1_Rate').val("flat");
+                        $('#PIP1_MP').val(tempRateMap['pip1_minPremium']);
+
+                        $('#PIP2_Rate').val("flat");
+                        $('#PIP2_MP').val(tempRateMap['pip2_PIP2premium']);
+                        $('#PIP2_NOHARate').val(tempRateMap['pip2_NOHARateMinPrem'][0]);
+                        $('#PIP2_NOHAMP').val(tempRateMap['pip2_NOHARateMinPrem'][1]);
+
+                        $('#PIP3_Rate').val(tempRateMap['pip3_negativeFilmVideoRateMinPrem'][0]);
+                        $('#PIP3_MP').val(tempRateMap['pip3_negativeFilmVideoRateMinPrem'][1]);
+
+                        $('#PIP4_Rate').val(tempRateMap['pip4_negativeFilmVideoRateMinPrem'][0]);
+                        $('#PIP4_MP').val(tempRateMap['pip4_negativeFilmVideoRateMinPrem'][1]);
+
+                        $('#PIP5_Rate').val(tempRateMap['pip5_negativeFilmVideoRateMinPrem'][0]);
+                        $('#PIP5_MP').val(tempRateMap['pip5_negativeFilmVideoRateMinPrem'][1]);
+                    }
+                }
+
+            }
+
+            var limitDeductibleString = "";
+            var lobDistString = "";
+            var CPKincluded = false;
+            var EPKGincluded = false;
+            var termsInsert = "";
+            var beginTerms = "";
+            var endorseInsert = "";
+
+            for (var i = 0; i < responseJSON.coverages.length; i++) {
+                limitDeductibleString = limitDeductibleString + "<div class='row coverageCodeRow'>" +
+                    "<div class='col-xs-6 ' >";
+                limitDeductibleString = limitDeductibleString + "<strong class='coverageCodeString' style='font-size:13px'>" + responseJSON.coverages[i].coverageCode + "</strong>";
+                limitDeductibleString = limitDeductibleString +
+                    "<span class='productID_pull' id='" + responseJSON.coverages[i].productCode.replace(/ /g, "") + "' data-cov='" + responseJSON.coverages[i].coverageCode + "' style='display:none'>" + responseJSON.coverages[i].productCode + "</span>";
+                limitDeductibleString = limitDeductibleString + "</div>" +
+                    "<div class='col-xs-2 ' >" +
+                    "<span'>" + "-" + "</span>" +
+                    "</div>" +
+                    "<div class='col-xs-2 ' >" +
+                    "<span style='font-size:13px'>"  + "</span>" +
+                    "</div>" +
+                    "<div class='col-xs-2 ' >" +
+                    "<span'>" + "-" + "</span>" +
+                    "</div>" +
+                    "</div>";
+
+                var lobLines = Object.keys(responseJSON.coverages[i].lobDist);
+                if (responseJSON.coverages[i].coverageCode === "EPKG") {
+                    if (lobLines.indexOf("Cast Insurance") > -1) {
+                        lobLines.splice(lobLines.indexOf("Cast Insurance"), 1);
+                        lobLines.push("Cast Insurance");
+                    }
+                    if (lobLines.indexOf("Cast Essential") > -1) {
+                        lobLines.splice(lobLines.indexOf("Cast Essential"), 1);
+                        lobLines.push("Cast Essential");
+                    }
+                    if (lobLines.indexOf("Negative Film & Videotape") > -1) {
+                        lobLines.splice(lobLines.indexOf("Negative Film & Videotape"), 1);
+                        lobLines.push("Negative Film & Videotape");
+                    }
+                    if (lobLines.indexOf("Faulty Stock & Camera Processing") > -1) {
+                        lobLines.splice(lobLines.indexOf("Faulty Stock & Camera Processing"), 1);
+                        lobLines.push("Faulty Stock & Camera Processing");
+                    }
+                    if (lobLines.indexOf("Miscellaneous Rented Equipment") > -1) {
+                        lobLines.splice(lobLines.indexOf("Miscellaneous Rented Equipment"), 1);
+                        lobLines.push("Miscellaneous Rented Equipment");
+                    }
+                    if (lobLines.indexOf("INC:Non-Owned Auto Physical Damage") > -1) {
+                        lobLines.splice(lobLines.indexOf("INC:Non-Owned Auto Physical Damage"), 1);
+                        lobLines.push("INC:Non-Owned Auto Physical Damage");
+                    }
+                    if (lobLines.indexOf("Extra Expense") > -1) {
+                        lobLines.splice(lobLines.indexOf("Extra Expense"), 1);
+                        lobLines.push("Extra Expense");
+                    }
+                    if (lobLines.indexOf("Props, Sets & Wardrobe") > -1) {
+                        lobLines.splice(lobLines.indexOf("Props, Sets & Wardrobe"), 1);
+                        lobLines.push("Props, Sets & Wardrobe");
+                    }
+                    if (lobLines.indexOf("Third Party Prop Damage Liab") > -1) {
+                        lobLines.splice(lobLines.indexOf("Third Party Prop Damage Liab"), 1);
+                        lobLines.push("Third Party Prop Damage Liab");
+                    }
+                    if (lobLines.indexOf("Office Contents") > -1) {
+                        lobLines.splice(lobLines.indexOf("Office Contents"), 1);
+                        lobLines.push("Office Contents");
+                    }
+                    if (lobLines.indexOf("Money & Securities") > -1) {
+                        lobLines.splice(lobLines.indexOf("Money & Securities"), 1);
+                        lobLines.push("Money & Securities");
+                    }
+                    if (lobLines.indexOf("Civil Authority (US Only)") > -1) {
+                        lobLines.splice(lobLines.indexOf("Civil Authority (US Only)"), 1);
+                        lobLines.push("Civil Authority (US Only)");
+                    }
+                    if (lobLines.indexOf("Money and Currency") > -1) {
+                        lobLines.splice(lobLines.indexOf("Money and Currency"), 1);
+                        lobLines.push("Money and Currency");
+                    }
+                    if (lobLines.indexOf("Furs, Jewelry, Art & Antiques") > -1) {
+                        lobLines.splice(lobLines.indexOf("Furs, Jewelry, Art & Antiques"), 1);
+                        lobLines.push("Furs, Jewelry, Art & Antiques");
+                    }
+                    if (lobLines.indexOf("Talent and Non Budgeted Costs") > -1) {
+                        lobLines.splice(lobLines.indexOf("Talent and Non Budgeted Costs"), 1);
+                        lobLines.push("Talent and Non Budgeted Costs");
+                    }
+                    if (lobLines.indexOf("Administrative Costs") > -1) {
+                        lobLines.splice(lobLines.indexOf("Administrative Costs"), 1);
+                        lobLines.push("Administrative Costs");
+                    }
+                    if (lobLines.indexOf("Hardware") > -1) {
+                        lobLines.splice(lobLines.indexOf("Hardware"), 1);
+                        lobLines.push("Hardware");
+                    }
+                    if (lobLines.indexOf("Data and Media") > -1) {
+                        lobLines.splice(lobLines.indexOf("Data and Media"), 1);
+                        lobLines.push("Data and Media");
+                    }
+                    if (lobLines.indexOf("Electronic Data Extra Expense") > -1) {
+                        lobLines.splice(lobLines.indexOf("Electronic Data Extra Expense"), 1);
+                        lobLines.push("Electronic Data Extra Expense");
+                    }
+                    //
+                    if (lobLines.indexOf("Animal Mortality") > -1) {
+                        lobLines.splice(lobLines.indexOf("Animal Mortality"), 1);
+                        lobLines.push("Animal Mortality");
+                    }
+
+                    if (lobLines.indexOf("Animal Mortality Under Cast Insurance (Domestic Birds/Fish)") > -1) {
+                        lobLines.splice(lobLines.indexOf("Animal Mortality Under Cast Insurance (Domestic Birds/Fish)"), 1);
+                        lobLines.push("Animal Mortality Under Cast Insurance (Domestic Birds/Fish)");
+                    }
+                    if (lobLines.indexOf("Animal Mortality Under Cast Insurance (Dogs w/ Breed Exceptions)") > -1) {
+                        lobLines.splice(lobLines.indexOf("Animal Mortality Under Cast Insurance (Dogs w/ Breed Exceptions)"), 1);
+                        lobLines.push("Animal Mortality Under Cast Insurance (Dogs w/ Breed Exceptions)");
+                    }
+                    if (lobLines.indexOf("Animal Mortality Under Cast Insurance (Reptiles (Non-Venomous))") > -1) {
+                        lobLines.splice(lobLines.indexOf("Animal Mortality Under Cast Insurance (Reptiles (Non-Venomous))"), 1);
+                        lobLines.push("Animal Mortality Under Cast Insurance (Reptiles (Non-Venomous))");
+                    }
+                    if (lobLines.indexOf("Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))") > -1) {
+                        lobLines.splice(lobLines.indexOf("Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))"), 1);
+                        lobLines.push("Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))");
+                    }
+                    if (lobLines.indexOf("Animal Mortality Under Cast Insurance (Farm Animals)") > -1) {
+                        lobLines.splice(lobLines.indexOf("Animal Mortality Under Cast Insurance (Farm Animals)"), 1);
+                        lobLines.push("Animal Mortality Under Cast Insurance (Farm Animals)");
+                    }
+                    if (lobLines.indexOf("Animal Mortality Under Cast Insurance (Wild Cats (Caged))") > -1) {
+                        lobLines.splice(lobLines.indexOf("Animal Mortality Under Cast Insurance (Wild Cats (Caged))"), 1);
+                        lobLines.push("Animal Mortality Under Cast Insurance (Wild Cats (Caged))");
+                    }
+                    if (lobLines.indexOf("Animal Mortality Under Cast Insurance (All Others - Refer Only)") > -1) {
+                        lobLines.splice(lobLines.indexOf("Animal Mortality Under Cast Insurance (All Others - Refer Only)"), 1);
+                        lobLines.push("Animal Mortality Under Cast Insurance (All Others - Refer Only)");
+                    }
+
+                    if (lobLines.indexOf("Animal Mortality (Birds or Fish)") > -1) {
+                        lobLines.splice(lobLines.indexOf("Animal Mortality (Birds or Fish)"), 1);
+                        lobLines.push("Animal Mortality (Birds or Fish)");
+                    }
+                    if (lobLines.indexOf("Animal Mortality (Dogs w/ Breed Exceptions)") > -1) {
+                        lobLines.splice(lobLines.indexOf("Animal Mortality (Dogs w/ Breed Exceptions)"), 1);
+                        lobLines.push("Animal Mortality (Dogs w/ Breed Exceptions)");
+                    }
+                    if (lobLines.indexOf("Animal Mortality (Reptiles Non-Venomous)") > -1) {
+                        lobLines.splice(lobLines.indexOf("Animal Mortality (Reptiles Non-Venomous)"), 1);
+                        lobLines.push("Animal Mortality (Reptiles Non-Venomous)");
+                    }
+                    if (lobLines.indexOf("Animal Mortality (Small Domestic Animals - Other)") > -1) {
+                        lobLines.splice(lobLines.indexOf("Animal Mortality (Small Domestic Animals - Other)"), 1);
+                        lobLines.push("Animal Mortality (Small Domestic Animals - Other)");
+                    }
+                    if (lobLines.indexOf("Animal Mortality (Farm Animals)") > -1) {
+                        lobLines.splice(lobLines.indexOf("Animal Mortality (Farm Animals)"), 1);
+                        lobLines.push("Animal Mortality (Farm Animals)");
+                    }
+                    if (lobLines.indexOf("Animal Mortality (Wild Cats - Caged)") > -1) {
+                        lobLines.splice(lobLines.indexOf("Animal Mortality (Wild Cats - Caged)"), 1);
+                        lobLines.push("Animal Mortality (Wild Cats - Caged)");
+                    }
+                    if (lobLines.indexOf("Animal Mortality (All Others - Refer Only)") > -1) {
+                        lobLines.splice(lobLines.indexOf("Animal Mortality (All Others - Refer Only)"), 1);
+                        lobLines.push("Animal Mortality (All Others - Refer Only)");
                     }
 
 
-
-
-
-
-
-                    if (responseJSON.coverages[i].productCode === "PIP CHOI") {
-                        $('#limitsHeader').html("Please Enter Desired Limits");
+                    if (lobLines.indexOf("Hired Auto Physical Damage") > -1) {
+                        lobLines.splice(lobLines.indexOf("Hired Auto Physical Damage"), 1);
+                        lobLines.push("Hired Auto Physical Damage");
                     }
                 }
 
-                $("#limitsDeductPremiumInsert").html(limitDeductibleString);
-                $("#premDistributionInsert").html(lobDistString);
-                $("#termsInsert").html(beginTerms + termsInsert);
-                $("#endorseInsert").html(endorseInsert);
-                var disclaimerInsert = "*TRIA is rejected as per form LMA 5091 U.S. Terrorism Risk Insurance Act 2002.  " +
-                    "TRIA can be afforded for an additional premium charge equal to 1% of the total premium indication.";
-                $("#disclaimerInsert").html(disclaimerInsert);
+                else if (responseJSON.coverages[i].coverageCode === "CPK" || responseJSON.coverages[i].coverageCode === "CGL") {
+                    if (lobLines.indexOf("General Aggregate Limit") > -1) {
+                        // alert("in")
+                        lobLines.splice(lobLines.indexOf("General Aggregate Limit"), 1);
+                        lobLines.push("General Aggregate Limit");
+                    }
+                    if (lobLines.indexOf("Products & Completed Operations Agg Limit") > -1) {
+                        lobLines.splice(lobLines.indexOf("Products & Completed Operations Agg Limit"), 1);
+                        lobLines.push("Products & Completed Operations Agg Limit");
+                    }
+                    if (lobLines.indexOf("Personal & Advertising Injury (Any One Person or Organization)") > -1) {
+                        lobLines.splice(lobLines.indexOf("Personal & Advertising Injury (Any One Person or Organization)"), 1);
+                        lobLines.push("Personal & Advertising Injury (Any One Person or Organization)");
+                    }
+                    if (lobLines.indexOf("Each Occurrence Limit") > -1) {
+                        lobLines.splice(lobLines.indexOf("Each Occurrence Limit"), 1);
+                        lobLines.push("Each Occurrence Limit");
+                    }
+                    if (lobLines.indexOf("Damage to Premises Rented to You Limit") > -1) {
+                        lobLines.splice(lobLines.indexOf("Damage to Premises Rented to You Limit"), 1);
+                        lobLines.push("Damage to Premises Rented to You Limit");
+                    }
 
-                //$("#premDistributionInsert").html(lobDistString);
+                    if (lobLines.indexOf("Increased Agg Limit") > -1) {
+                        lobLines.splice(lobLines.indexOf("Increased Agg Limit"), 1);
+                        lobLines.push("Increased Agg Limit");
+                    }
+                    if (lobLines.indexOf("General Liability Terrorism") > -1) {
+                        lobLines.splice(lobLines.indexOf("General Liability Terrorism"), 1);
+                        lobLines.push("General Liability Terrorism");
+                    }
+                    if (lobLines.indexOf("Blanket Additional Insured") > -1) {
+                        lobLines.splice(lobLines.indexOf("Blanket Additional Insured"), 1);
+                        lobLines.push("Blanket Additional Insured");
+                    }
+                    if (lobLines.indexOf("Waiver of Subrogation") > -1) {
+                        lobLines.splice(lobLines.indexOf("Waiver of Subrogation"), 1);
+                        lobLines.push("Waiver of Subrogation");
+                    }
+                    if (lobLines.indexOf("Medical Expense") > -1) {
+                        lobLines.splice(lobLines.indexOf("Medical Expense"), 1);
+                        lobLines.push("Medical Expense");
+                    }
+                    if (lobLines.indexOf("Miscellaneous Equipment Limit") > -1) {
+                        lobLines.splice(lobLines.indexOf("Miscellaneous Equipment Limit"), 1);
+                        lobLines.push("Miscellaneous Equipment Limit");
+                    }
 
-                //Add NOAL to CPK if valid
-                //console.log("lENGTH = " + $('.NOAL01PremiumTotal').length)
-                if ($('#NOAL01PremiumTotal').length > 0) {
-                    var noalPrem = $('#NOAL01PremiumTotal').html();
-                    var cpkPrem = $('#BARCPKGCPremiumTotal').html();
-
-                    var v1 = noalPrem;
-                    v1 = v1.replace("$", "");
-                    v1 = v1.replace(/,/g, "");
-
-                    var v2 = cpkPrem;
-                    v2 = v2.replace("$", "");
-                    v2 = v2.replace(/,/g, "");
-
-                    $("#CPKPremiumLOBTotal").html(formatMoney(parseFloat(v1) + parseFloat(v2)));
-
-
-
+                    //PUSH IN FRONT
 
                 }
+                // alert(lobLines)
 
-                $('.PIPCHOILimitsInput').maskMoney({
-                    prefix: '$',
-                    precision: "0"
+                lobLines.forEach(function (key, index) {
+                    var premiumForCoverageLine = "";
+                    if (responseJSON.coverages[i].premiums[key]) {
+                        premiumForCoverageLine = responseJSON.coverages[i].premiums[key];
+                    }
+                    else {
+                        premiumForCoverageLine = "";
+                    }
+
+                    limitDeductibleString = limitDeductibleString + "<div class='row lobRow " +
+                        responseJSON.coverages[i].productCode.replace(/ /g, "_") + " " +
+                        responseJSON.coverages[i].coverageCode + " " +
+                        responseJSON.coverages[i].coverageCode + "_LOBRow'";
+                    if (index % 2 == 0) {
+                        limitDeductibleString = limitDeductibleString + " style= 'background-color: rgba(38, 80, 159, 0.13)'";
+                    }
+                    limitDeductibleString = limitDeductibleString + ">" +
+                        "<div class='col-xs-6 coverageColumn' style='padding-left:20px'>";
+
+                    limitDeductibleString = limitDeductibleString + "<span>" + key + "</span>" +
+                        "</div>" +
+                        "<div class='col-xs-2 limitColumn'>";
+
+                    limitDeductibleString = limitDeductibleString + "<span class='limit'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
+                    limitDeductibleString = limitDeductibleString + "</div>";
+
+
+                    limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 premiumColumn'>" +
+                        "<span class='premium " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "PremiumLine' >" + formatMoney(premiumForCoverageLine) + "</span>" +
+                        "</div>";
+
+                    limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 deductibleColumn'>" +
+                        "<span class='deductible " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "DeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles[key]) +
+                        "</span>";
+
+                    limitDeductibleString = limitDeductibleString + "</div>" +
+                        "</div>";
                 });
+                limitDeductibleString = limitDeductibleString + "<div class='row' style='border-top: 1px solid rgba(0, 0, 0, 0.19);'>" +
+                    "<div class='col-xs-6 ' >" +
+                    "<strong style='font-size:13px'>" + "</strong>" +
+                    "</div>" +
+                    "<div class='col-xs-2 ' >" +
+                    "<span'>" + "-" + "</span>" +
+                    "</div>" +
+                    "<div class='col-xs-2 ' >" +
+                    "<strong style='font-size:13px' class='" + responseJSON.coverages[i].productCode.replace(/ /g, '_') + " productTotalPremium" +
+                    "' id='" + responseJSON.coverages[i].productCode.replace(/ /g, '') + "PremiumTotal'>" + formatMoney(responseJSON.coverages[i].productTotalPremium) + "</strong>" +
+                    "</div>" +
+                    "<div class='col-xs-2 ' >" +
+                    "<span'>" + "-" + "</span>" +
+                    "</div>" +
+                    "</div>";
+                limitDeductibleString = limitDeductibleString + "<span id='" + responseJSON.coverages[i].coverageCode + "_RateInfo' style='display:none'>" +
+                    responseJSON.coverages[i].rateInfo + "</span>";
+                limitDeductibleString = limitDeductibleString + "<br>";
 
-                //var tempLimit = parseInt($("#totalBudgetInput").val().replace(/\$|,/g, ''));
-                //console.log("LIMIT AMOUNT1 === " + tempLimit)
-                //if(riskChosen === "Film Projects With Cast (No Work Comp)"){
-                //    tempLimit = Math.ceil(tempLimit / 1000) * 1000;
-                //}
-                //console.log("LIMIT AMOUNT === " + tempLimit / 1000)
-
-                $('.PIPCHOILimitsInput').val($("#totalBudgetInput").val());
-                if (pipChoiceMisc.length > 0) {
-                    $(".MiscellaneousRentedEquipment").val(pipChoiceMisc);
-                }
-                if (pipChoiceExtra.length > 0) {
-                    $(".ExtraExpense").val(pipChoiceExtra);
-                }
-                if (pipChoiceProps.length > 0) {
-                    $(".PropsSetsWardrobe").val(pipChoiceProps);
-                }
-                if (pipChoiceThird.length > 0) {
-                    $(".ThirdPartyPropDamageLiab").val(pipChoiceThird);
-                }
-                if (pipChoiceNOHA.length > 0) {
-                    $(".HiredAutoPhysicalDamage").val(pipChoiceNOHA);
-                }
-                if (pipChoiceCast.length > 0) {
-                    $(".CastInsurance").val(pipChoiceCast);
-                }
-                if (pipChoiceCastEssential.length > 0) {
-                    $(".CastEssential").val(pipChoiceCastEssential);
-                }
-
-                $('.PIPCHOILimitsInput').trigger("keyup");
-                $('.CPKNOHALimitsInput').maskMoney({
-                    prefix: '$',
-                    precision: "0"
+                
+                lobLines.forEach(function (key, index) {
+                    for (var k = 0; k < responseJSON.coverages[i].lobDist[key].split(";").length; k++) {
+                        if (responseJSON.coverages[i].lobDist[key].split(";")[k].length > 0) {
+                            lobDistString = lobDistString + "<div class='row'";
+                            if (index % 2 == 0) {
+                                lobDistString = lobDistString + " style= 'background-color: rgba(38, 80, 159, 0.13)'";
+                            }
+                            lobDistString = lobDistString + ">" +
+                                "<div class='col-xs-4'>" +
+                                "<span class='lineOfBusinessSpan'>" + responseJSON.coverages[i].lobDist[key].split(";")[k].split(",")[0] + "</span>" +
+                                "</div>" +
+                                "<div class='col-xs-3'>" +
+                                "<span class='premiumSpan' id='" + responseJSON.coverages[i].coverageCode + "PremiumLOBTotal'>" + formatMoney(responseJSON.coverages[i].lobDist[key].split(";")[k].split(",")[1]) + "</span>" +
+                                "</div>" +
+                                "<div class='col-xs-3'>" +
+                                "<span class='agentPercentSpan'>" + responseJSON.coverages[i].lobDist[key].split(";")[k].split(",")[3] + "</span>" +
+                                "</div>" +
+                                "</div>";
+                        }
+                    }
                 });
-                $('.CPKNOHALimitsInput').val($("#totalBudgetConfirm").val().split(".")[0]);
-                if (CGLNOALLimit.length > 0) {
-                    $(".HiredAutoPhysicalDamage").val(CGLNOALLimit);
-                }
-                $('.CPKNOHALimitsInput').trigger("keyup");
-                getTaxInfo();
-                totalUpPremiumAndTax();
-                addOverflowTransitionClass();
-                $('#castInsuranceRequiredCheckBox').trigger('change');
+            }
 
+            $("#limitsDeductPremiumInsert").html(limitDeductibleString);
+            $("#premDistributionInsert").html(lobDistString);
+            $("#termsInsert").html(beginTerms + termsInsert);
+            $("#endorseInsert").html(endorseInsert);
+            var disclaimerInsert = "*TRIA is rejected as per form LMA 5091 U.S. Terrorism Risk Insurance Act 2002.  " +
+                "TRIA can be afforded for an additional premium charge equal to 1% of the total premium indication.";
+            $("#disclaimerInsert").html(disclaimerInsert);
+
+            //$("#premDistributionInsert").html(lobDistString);
+
+            //Add NOAL to CPK if valid
+            //console.log("lENGTH = " + $('.NOAL01PremiumTotal').length)
+            if ($('#NOAL01PremiumTotal').length > 0) {
+                var noalPrem = $('#NOAL01PremiumTotal').html();
+                var cpkPrem = $('#BARCPKGCPremiumTotal').html();
+
+                var v1 = noalPrem;
+                v1 = v1.replace("$", "");
+                v1 = v1.replace(/,/g, "");
+
+                var v2 = cpkPrem;
+                v2 = v2.replace("$", "");
+                v2 = v2.replace(/,/g, "");
+
+                $("#CPKPremiumLOBTotal").html(formatMoney(parseFloat(v1) + parseFloat(v2)));
+
+
+
+
+            }
+
+            $('.PIPCHOILimitsInput').maskMoney({
+                prefix: '$',
+                precision: "0"
             });
 
-    }
-    else {
-        //alert("clear all");
-        $("#limitsDeductPremiumInsert").html("");
-        $("#premDistributionInsert").html("");
-        $("#termsInsert").html("");
-        $("#endorseInsert").html("");
-        $("#taxRows").html("");
-        $("#premiumAllLOBTotal").html("");
-        $("#disclaimerInsert").html("");
-    }
-    //alert("");
+            //var tempLimit = parseInt($("#totalBudgetInput").val().replace(/\$|,/g, ''));
+            //console.log("LIMIT AMOUNT1 === " + tempLimit)
+            //if(riskChosen === "Film Projects With Cast (No Work Comp)"){
+            //    tempLimit = Math.ceil(tempLimit / 1000) * 1000;
+            //}
+            //console.log("LIMIT AMOUNT === " + tempLimit / 1000)
 
+            $('.PIPCHOILimitsInput').val($("#totalBudgetInput").val());
+            if (pipChoiceMisc.length > 0) {
+                $(".MiscellaneousRentedEquipment").val(pipChoiceMisc);
+            }
+            if (pipChoiceExtra.length > 0) {
+                $(".ExtraExpense").val(pipChoiceExtra);
+            }
+            if (pipChoiceProps.length > 0) {
+                $(".PropsSetsWardrobe").val(pipChoiceProps);
+            }
+            if (pipChoiceThird.length > 0) {
+                $(".ThirdPartyPropDamageLiab").val(pipChoiceThird);
+            }
+            if (pipChoiceNOHA.length > 0) {
+                $(".HiredAutoPhysicalDamage").val(pipChoiceNOHA);
+            }
+            if (pipChoiceCast.length > 0) {
+                $(".CastInsurance").val(pipChoiceCast);
+            }
+            if (pipChoiceCastEssential.length > 0) {
+                $(".CastEssential").val(pipChoiceCastEssential);
+            }
+
+            $('.PIPCHOILimitsInput').trigger("keyup");
+            $('.CPKNOHALimitsInput').maskMoney({
+                prefix: '$',
+                precision: "0"
+            });
+            $('.CPKNOHALimitsInput').val($("#totalBudgetConfirm").val().split(".")[0]);
+
+            $('.CPKNOHALimitsInput').trigger("keyup");
+            getTaxInfo();
+            totalUpPremiumAndTax();
+            addOverflowTransitionClass();
+            $('#castInsuranceRequiredCheckBox').trigger('change');
+
+        });
+    }
 }
 
 function addOverflowTransitionClass() {
@@ -2329,269 +2798,3 @@ function buildProductIDArray(data, termLength) {
     return productID;
 }
 
-//function buildReview() {
-//    $("#reviewRiskType").html($("li.active").children("a.riskOptionLink").html().trim());
-//    //alert($("#namedInsured").html());
-//    $("#reviewNamedInsured").html($("#namedInsured").val());
-//    $("#reviewMailingAddress").html($("#googleAutoAddress").val());
-//    $("#reviewMailingCity").html($("#cityMailing").val());
-//    $("#reviewMailingZipcode").html($("#zipCodeMailing").val());
-//    $("#reviewMailingState").html($("#stateMailing").val());
-//    $("#reviewPhoneNumber").html($("#phoneNumber").val());
-//    $("#reviewEmail").html($("#namedInsuredEmail").val());
-//    $("#reviewWebsite").html($("#website").val());
-//
-//    $("#reviewTotalBudget").html($("#totalBudgetConfirm").val());
-//    $("#reviewPrincipalPhotographyDates").html($("#principalPhotographyDateStart").val() + " to " + $("#principalPhotographyDateEnd").val());
-//    $("#reviewProposedEffective").html($("#proposedEffectiveDate").val());
-//    $("#reviewProposedExpiration").html($("#proposedExpirationDate").val());
-//    $("#reviewProposedTerm").html($("#proposedTermLength").val());
-//    $("#reviewSubject").html($("#endorseInsert").html());
-//
-//
-//    $("#reviewNameProduction").html($("#titleOfProduction").val());
-//    $("#reviewNameProductionCompany").html($("#nameOfProductionCompany").val());
-//    $("#reviewNamePrincipals").html($("#nameOfPrincipal").val());
-//    $("#reviewNumberYearsExperience").html($("#numberOfYearsOfExperience").val());
-//    $("#reviewPriorLosses").html($("#listOfPriorLosses").val());
-//
-//    var limitValueArray = [];
-//    $("#limitsDeductPremiumInsert").find('.limitColumn').each(function () {
-//        if ($(this).find('input').length) {
-//            limitValueArray.push($(this).find('input').val());
-//        }
-//    });
-//    var htmlString = $("#limitsDeductPremiumInsert").html();
-//    var object = $('<div/>').html(htmlString).contents();
-//    object.find('.limitColumn').each(function (index) {
-//        if ($(this).find('input').length) {
-//            $(this).html("<span>" + limitValueArray[index] + "<span>");
-//        }
-//    });
-//    $("#reviewLimitsDeducts").html(object);
-//
-//    var str = $("<div />").append($('#premDistributionInsert').clone()).html();
-//        str = str + $("<div />").append($('.TaxHeaderRow').clone()[0]).html();
-//    str = str + $("<div />").append($('#taxRows').clone()[0]).html();
-//    str = str + $("<div />").append($('.TotalPremiumRow').clone()[0]).html();
-//    $("#reviewPremDistribution").html( str);
-//    $("#reviewTerms").html($("#termsInsert").html());
-//    //$("#reviewSubject").html($("#subjectInsert").html());
-//    $("#reviewBrokerFee").html($("#brokerFeeInput").val());
-//
-//    var reviewString = "";
-//    var checkboxesReviewed = "";
-//    var blankAnswer = "To Follow"
-//    $(".showReview").each(function () {
-//        if ($(this).css("display") != "none") {
-//            if ($(this).is("select")) {
-//                // the input field is not a select
-//                var answer = "";
-//                if ($(this).find(":selected").text().length > 0) {
-//                    answer = $(this).find(":selected").text()
-//                }
-//                else {
-//                    answer = blankAnswer;
-//                }
-//                reviewString = reviewString + "<div class='row'>" +
-//                    "<div class='col-xs-3 text-left'>" +
-//                    "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
-//                    "</div>" +
-//                    "<div class='col-xs-9'>" +
-//                    "<div class='reviewSpan' id='reviewBrokerFee'>" + answer + "</div>" +
-//                    "</div>" +
-//                    "</div>";
-//                reviewString = reviewString + "<br>";
-//
-//                //STORE IN UW QUESTIONS
-//                uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
-//                uwQuestionsOrder.push($(this).attr("data-reviewName"));
-//
-//            }
-//            else if ($(this).is(':checkbox') && $(this).attr("data-reviewName")) {
-//                // the input field is not a select
-//                //alert($(this).attr("data-reviewName") + " - " + checkboxesReviewed + " - " +  checkboxesReviewed.indexOf($(this).attr("data-reviewName")));
-//                if (checkboxesReviewed.indexOf($(this).attr("data-reviewName")) == -1) {
-//                    var checkboxesCheckedString = "";
-//
-//                    var answer = "";
-//
-//
-//                    reviewString = reviewString + "<div class='row'>" +
-//                        "<div class='col-xs-3 text-left'>" +
-//                        "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
-//                        "</div>";
-//
-//                    $('input[data-reviewName="' + $(this).attr("data-reviewName") + '"]').each(function () {
-//                        if ($(this).is(":checked")) {
-//                            //alert($(this).val());
-//                            checkboxesCheckedString = checkboxesCheckedString + $(this).val() + ", ";
-//                        }
-//                    });
-//                    checkboxesCheckedString = checkboxesCheckedString.replace(/,\s*$/, "");
-//
-//                    if (checkboxesCheckedString.length > 0) {
-//                        answer = checkboxesCheckedString;
-//                    }
-//                    else {
-//                        answer = blankAnswer;
-//                    }
-//
-//                    reviewString = reviewString + "<div class='col-xs-9'>" +
-//                        "<div class='reviewSpan' id='reviewBrokerFee'>" + answer + "</div>" +
-//                        "</div>";
-//
-//                    reviewString = reviewString + "</div>";
-//                    reviewString = reviewString + "<br>";
-//                    checkboxesReviewed = checkboxesReviewed + $(this).attr("data-reviewName") + ";";
-//
-//
-//                    //STORE IN UW QUESTIONS
-//                    uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
-//                    uwQuestionsOrder.push($(this).attr("data-reviewName"));
-//                }
-//                else {
-//
-//                }
-//
-//            }
-//            else if ($(this).is(':radio') && $(this).attr("data-reviewName")) {
-//                var answer = "";
-//                if ($("input:radio[name='" + $(this).attr('name') + "']:checked").val().length > 0) {
-//                    answer = $("input:radio[name='" + $(this).attr('name') + "']:checked").val();
-//                }
-//                else {
-//                    answer = blankAnswer;
-//                }
-//
-//                reviewString = reviewString + "<div class='row'>" +
-//                    "<div class='col-xs-3 text-left'>" +
-//                    "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
-//                    "</div>" +
-//                    "<div class='col-xs-9'>" +
-//                    "<div class='reviewSpan' id='reviewBrokerFee'>" + answer + "</div>" +
-//                    "</div>" +
-//                    "</div>";
-//                reviewString = reviewString + "<br>";
-//
-//                //STORE IN UW QUESTIONS
-//                uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
-//                uwQuestionsOrder.push($(this).attr("data-reviewName"));
-//            }
-//            else if ($(this).attr("id") === "numberOfCastMembers") {
-//                var answer = "";
-//                $("#castMemberDetailContainer").find('.row').each(function(){
-//                    if ($(this).css("display") != "none") {
-//                        if($(this).find(".castMemberName").val().trim().length > 0){
-//                            answer = answer + $(this).find(".castMemberName").val() + "," + $(this).find(".castMemberAge").val() + "," + $(this).find(".castMemberRole").val() + "\n"
-//
-//                        }
-//                    }
-//
-//                });
-//
-//                if(answer === ""){
-//                    answer = "To Follow";
-//                }
-//
-//                reviewString = reviewString + "<div class='row'>" +
-//                    "<div class='col-xs-3 text-left'>" +
-//                    "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
-//                    "</div>" +
-//                    "<div class='col-xs-9'>" +
-//                    "<div class='reviewSpan' id='reviewBrokerFee'>" + answer + "</div>" +
-//                    "</div>" +
-//                    "</div>";
-//                reviewString = reviewString + "<br>";
-//
-//                //STORE IN UW QUESTIONS
-//                uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
-//                uwQuestionsOrder.push($(this).attr("data-reviewName"));
-//            }
-//            else {
-//                var answer = "";
-//                if ($(this).val().length > 0) {
-//                    answer = $(this).val()
-//                }
-//                else {
-//                    answer = blankAnswer;
-//                }
-//
-//                reviewString = reviewString + "<div class='row'>" +
-//                    "<div class='col-xs-3 text-left'>" +
-//                    "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
-//                    "</div>" +
-//                    "<div class='col-xs-9'>" +
-//                    "<div class='reviewSpan' id='reviewBrokerFee'>" + answer + "</div>" +
-//                    "</div>" +
-//                    "</div>";
-//                reviewString = reviewString + "<br>";
-//
-//                //STORE IN UW QUESTIONS
-//                uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
-//                uwQuestionsOrder.push($(this).attr("data-reviewName"));
-//            }
-//
-//            //console.log($(this).attr("data-reviewName"));
-//        }
-//
-//
-//    });
-//    //alert("review String: " + reviewString);
-//    $("#otherReviewInsert").html(reviewString);
-//
-//    //ATTACHED FILES
-//    var filesInsert = "";
-//    $(':file').each(function(){
-//        var file = this.files[0];
-//        if(file === undefined){
-//
-//        }
-//        else{
-//            var ext = $(this).val().split('.').pop().toLowerCase();
-//
-//            //alert('Only .zip, .doc, .docx, .xlsx, .xls, .pdf are permitted');
-//            var iconFilePath = "";
-//            if(ext == "zip") {
-//                iconFilePath = "zipIcon.png"
-//            }
-//            else if(ext == "doc"){
-//                iconFilePath = "docIcon.png"
-//            }
-//            else if(ext == "docx"){
-//                iconFilePath = "docxIcon.png"
-//            }
-//            else if(ext == "xls"){
-//                iconFilePath = "xlsIcon.png"
-//            }
-//            else if(ext == "xlsx"){
-//                iconFilePath = "xlsxIcon.png"
-//            }
-//            else if(ext == "pdf"){
-//                iconFilePath = "pdfIcon.png"
-//            }
-//            else if(ext == "txt"){
-//                iconFilePath = "txtIcon.png"
-//            }
-//            else{
-//                iconFilePath = "fileIcon.png"
-//            }
-//
-//           //console.log("Change: " + file);
-//
-//            var name = file.name;
-//            var size = file.size;
-//            var type = file.type;
-//            filesInsert = filesInsert +
-//                "<div class='row'>" +
-//                "<div class='col-xs-12 text-left'>" +
-//                "<div class='reviewSpan' id='review'><img src='/images/" + iconFilePath + "' height='16' width='16' style='margin-right:10px'/>" + name + "</div>" +
-//                "</div>" +
-//                "</div>";
-//        }
-//
-//    });
-//
-//    $('#reviewAttachedFilesInsert').html(filesInsert);
-//
-//}
