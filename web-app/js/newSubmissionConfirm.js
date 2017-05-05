@@ -12,7 +12,7 @@ $(document).ready(function () {
     })
         .done(function (msg) {
             // alert(msg);
-            var countFiles = 0 ;
+            var count = 0 ;
             var htmlString = "<strong class='col-xs-3'>Attachments </strong> <div class='col-xs-9'> <div>";
 
             var attachmentArray = msg.split("&;&");

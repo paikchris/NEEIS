@@ -31,67 +31,75 @@ function initializeBORFunctions(){
                           }
                       })
                       .done(function(msg) {
-                          matchNum = 0;
-                          matchingnamesArray = "";
-                          //MSG RETURNS THE NUMBER OF MATCHES IN NAMEDINSURED AND ZIPCODE
-                          matchNum = msg.split("&;&")[0];
-                          matchingnamesArray = msg.split("&;&")[1].split("&,&");
-                          if (parseInt(matchNum) > 0) { //if THERE IS AT LEAST ONE MATCH
-                              namedInsuredConflict = true;
-                              //console.log("check show error")
+                          if(msg.startsWith("RENEWAL:")){
+                              var matchingSubmissionsArray = msg.replace("RENEWAL:" , "").split("&;;&");
+                              fillRenewalFields();
+                              $("#renewalModal").modal('show');
+                          }
+                          else{
+                              matchNum = 0;
+                              matchingnamesArray = "";
+                              //MSG RETURNS THE NUMBER OF MATCHES IN NAMEDINSURED AND ZIPCODE
+                              matchNum = msg.split("&;&")[0];
+                              matchingnamesArray = msg.split("&;&")[1].split("&,&");
+                              if (parseInt(matchNum) > 0) { //if THERE IS AT LEAST ONE MATCH
+                                  namedInsuredConflict = true;
+                                  //console.log("check show error")
 
-                              $("#namedInsured").closest(".form-group").addClass("has-error");
-                              $("#namedInsured").siblings(".glyphicon-remove").css("display", "");
+                                  $("#namedInsured").closest(".form-group").addClass("has-error");
+                                  $("#namedInsured").siblings(".glyphicon-remove").css("display", "");
 
-                              $("#namedInsured").closest(".form-group").removeClass("has-success");
-                              $("#namedInsured").siblings(".glyphicon-ok").css("display", "none");
-                              $("#namedInsured").siblings(".glyphicon-list-alt").css("display", "none");
+                                  $("#namedInsured").closest(".form-group").removeClass("has-success");
+                                  $("#namedInsured").siblings(".glyphicon-ok").css("display", "none");
+                                  $("#namedInsured").siblings(".glyphicon-list-alt").css("display", "none");
 
-                              $('#namedInsured').attr("data-original-title", "Named Insured already exists");
+                                  $('#namedInsured').attr("data-original-title", "Named Insured already exists");
 
 
-                              //fill resolve Named Insured Modal
-                              //alert($('#googleAutoAddress').val())
-                              $('#resolveNamedInsured').val($('#namedInsured').val())
-                              $('#resolveStreet').val($('#googleAutoAddress').val());
-                              $('#resolveCity').val($('#cityMailing').val());
-                              $('#resolveState').val($('#stateMailing').val());
-                              $('#resolveZip').val($('#zipCodeMailing').val());
+                                  //fill resolve Named Insured Modal
+                                  //alert($('#googleAutoAddress').val())
+                                  $('#resolveNamedInsured').val($('#namedInsured').val())
+                                  $('#resolveStreet').val($('#googleAutoAddress').val());
+                                  $('#resolveCity').val($('#cityMailing').val());
+                                  $('#resolveState').val($('#stateMailing').val());
+                                  $('#resolveZip').val($('#zipCodeMailing').val());
 
-                              var htmlString = "";
-                              for (var i = 0; i < matchingnamesArray.length; i++) {
-                                  if (matchingnamesArray[i].trim().length > 0) {
-                                      htmlString = htmlString + "<div class='row col-xs-12'><span class='col-xs-8' style='color:red'>" + matchingnamesArray[i] + "</span>" +
-                                          "<span class='col-xs-4' style='color:red'>Broker of Record Needed</span></div>";
+                                  var htmlString = "";
+                                  for (var i = 0; i < matchingnamesArray.length; i++) {
+                                      if (matchingnamesArray[i].trim().length > 0) {
+                                          htmlString = htmlString + "<div class='row col-xs-12'><span class='col-xs-8' style='color:red'>" + matchingnamesArray[i] + "</span>" +
+                                              "<span class='col-xs-4' style='color:red'>Broker of Record Needed</span></div>";
+                                      }
+
+                                  }
+                                  $('#matchingSubmissionsContainer').html(htmlString);
+
+                                  if (currentStep == 3) {
+                                      $('#checkNamedInsuredModal').modal({
+                                          backdrop: 'static',
+                                          keyboard: false
+                                      });
+                                      $("#resolveNamedInsured").trigger('change');
                                   }
 
                               }
-                              $('#matchingSubmissionsContainer').html(htmlString);
+                              else if (parseInt(matchNum) == 0) { //IF NAME IS GOOD AND UNIQUE
+                                  //console.log("check no error")
 
-                              if (currentStep == 3) {
-                                  $('#checkNamedInsuredModal').modal({
-                                      backdrop: 'static',
-                                      keyboard: false
-                                  });
-                                  $("#resolveNamedInsured").trigger('change');
+                                  $("#namedInsured").closest(".form-group").removeClass("has-error");
+                                  $("#namedInsured").siblings(".glyphicon-remove").css("display", "none");
+                                  $("#namedInsured").siblings(".glyphicon-list-alt").css("display", "none");
+
+
+                                  $("#namedInsured").closest(".form-group").addClass("has-success");
+                                  $("#namedInsured").siblings(".glyphicon-ok").css("display", "");
+                                  $('#namedInsured').attr("data-original-title", "Name is unique");
+                                  BORrequested = false;
+                                  $('#BORRequestNotification').css('display', "none");
+                                  namedInsuredConflict = false;
                               }
-
                           }
-                          else if (parseInt(matchNum) == 0) { //IF NAME IS GOOD AND UNIQUE
-                              //console.log("check no error")
 
-                              $("#namedInsured").closest(".form-group").removeClass("has-error");
-                              $("#namedInsured").siblings(".glyphicon-remove").css("display", "none");
-                              $("#namedInsured").siblings(".glyphicon-list-alt").css("display", "none");
-
-
-                              $("#namedInsured").closest(".form-group").addClass("has-success");
-                              $("#namedInsured").siblings(".glyphicon-ok").css("display", "");
-                              $('#namedInsured').attr("data-original-title", "Name is unique");
-                              BORrequested = false;
-                              $('#BORRequestNotification').css('display', "none");
-                              namedInsuredConflict = false;
-                          }
                       });
               }
               else {
@@ -132,52 +140,60 @@ function initializeBORFunctions(){
                           }
                       })
                       .done(function(msg) {
-                          namedInsuredConflict = true;
-                          matchNum = 0;
-                          matchingnamesArray = "";
-                          //MSG RETURNS THE NUMBER OF MATCHES IN NAMEDINSURED AND ZIPCODE
-                          matchNum = msg.split("&;&")[0];
-                          matchingnamesArray = msg.split("&;&")[1].split("&,&");
-                          if (parseInt(matchNum) > 0) { //if THERE IS AT LEAST ONE MATCH
-                              //console.log("resolve show error")
-                              $("#resolveNamedInsured").closest(".form-group").addClass("has-error");
-                              $("#resolveNamedInsured").siblings(".glyphicon-remove").css("display", "");
+                          if(msg.startsWith("RENEWAL:")){
+                              var matchingSubmissionsArray = msg.replace("RENEWAL:" , "").split("&;;&");
+                              fillRenewalFields();
+                              $("#renewalModal").modal('show');
+                          }
+                          else{
+                              namedInsuredConflict = true;
+                              matchNum = 0;
+                              matchingnamesArray = "";
+                              //MSG RETURNS THE NUMBER OF MATCHES IN NAMEDINSURED AND ZIPCODE
+                              matchNum = msg.split("&;&")[0];
+                              matchingnamesArray = msg.split("&;&")[1].split("&,&");
+                              if (parseInt(matchNum) > 0) { //if THERE IS AT LEAST ONE MATCH
+                                  //console.log("resolve show error")
+                                  $("#resolveNamedInsured").closest(".form-group").addClass("has-error");
+                                  $("#resolveNamedInsured").siblings(".glyphicon-remove").css("display", "");
 
-                              $("#resolveNamedInsured").closest(".form-group").removeClass("has-success");
-                              $("#resolveNamedInsured").siblings(".glyphicon-ok").css("display", "none");
-                              $('#resolveNamedInsured').attr("data-original-title", "Named Insured already exists");
+                                  $("#resolveNamedInsured").closest(".form-group").removeClass("has-success");
+                                  $("#resolveNamedInsured").siblings(".glyphicon-ok").css("display", "none");
+                                  $('#resolveNamedInsured').attr("data-original-title", "Named Insured already exists");
 
-                              var htmlString = "";
-                              for (var i = 0; i < matchingnamesArray.length; i++) {
-                                  if (matchingnamesArray[i].trim().length > 0) {
-                                      htmlString = htmlString + "<div class='row col-xs-12'><span class='col-xs-8' style='color:red'>" + matchingnamesArray[i] + "</span>" +
-                                          "<span class='col-xs-4' style='color:red'>Broker of Record Needed</span></div>";
+                                  var htmlString = "";
+                                  for (var i = 0; i < matchingnamesArray.length; i++) {
+                                      if (matchingnamesArray[i].trim().length > 0) {
+                                          htmlString = htmlString + "<div class='row col-xs-12'><span class='col-xs-8' style='color:red'>" + matchingnamesArray[i] + "</span>" +
+                                              "<span class='col-xs-4' style='color:red'>Broker of Record Needed</span></div>";
+                                      }
+
                                   }
+                                  $('#matchingSubmissionsContainer').html(htmlString);
+                                  $('#conflictExistsDiv').css('display', '');
+                                  document.getElementById("resolveConflictBOR").disabled = false;
+
 
                               }
-                              $('#matchingSubmissionsContainer').html(htmlString);
-                              $('#conflictExistsDiv').css('display', '');
-                              document.getElementById("resolveConflictBOR").disabled = false;
+                              else if (parseInt(matchNum) == 0) { //IF NAME IS GOOD AND UNIQUE
+                                  //console.log("resolve no error")
+                                  $("#resolveNamedInsured").closest(".form-group").removeClass("has-error");
+                                  $("#resolveNamedInsured").siblings(".glyphicon-remove").css("display", "none");
 
+                                  $("#resolveNamedInsured").closest(".form-group").addClass("has-success");
+                                  $("#resolveNamedInsured").siblings(".glyphicon-ok").css("display", "");
+                                  $('#resolveNamedInsured').attr("data-original-title", "Name is unique");
 
+                                  $('#matchingSubmissionsContainer').html("");
+                                  $('#conflictExistsDiv').css('display', 'none');
+                                  BORrequested = false;
+                                  $('#BORRequestNotification').css('display', "none");
+                                  namedInsuredConflict = false;
+                                  document.getElementById("resolveConflictBOR").disabled = true;
+
+                              }
                           }
-                          else if (parseInt(matchNum) == 0) { //IF NAME IS GOOD AND UNIQUE
-                              //console.log("resolve no error")
-                              $("#resolveNamedInsured").closest(".form-group").removeClass("has-error");
-                              $("#resolveNamedInsured").siblings(".glyphicon-remove").css("display", "none");
 
-                              $("#resolveNamedInsured").closest(".form-group").addClass("has-success");
-                              $("#resolveNamedInsured").siblings(".glyphicon-ok").css("display", "");
-                              $('#resolveNamedInsured').attr("data-original-title", "Name is unique");
-
-                              $('#matchingSubmissionsContainer').html("");
-                              $('#conflictExistsDiv').css('display', 'none');
-                              BORrequested = false;
-                              $('#BORRequestNotification').css('display', "none");
-                              namedInsuredConflict = false;
-                              document.getElementById("resolveConflictBOR").disabled = true;
-
-                          }
                       });
               }
               else {
@@ -311,5 +327,33 @@ function initializeBORFunctions(){
 
       });
 
+
+
+
+    //RENEWAL FUNCTIONS
+    $("#yesRenewalButton").on("click", function() {
+        $('#renewalModal').modal('hide');
+        // $('#BORRequestNotification').css('display', "none");
+        $('#renewalNotification').css('display', "");
+
+    });
+    $("#noRenewalButton").on("click", function() {
+        $('#namedInsured').val("");
+
+        $('#googleAutoAddress').val("");
+        $('#cityMailing').val("");
+        $('#stateMailing').val("invalid");
+        $('#zipCodeMailing').val("");
+
+        $('#renewalModal').modal('hide');
+        // $('#BORRequestNotification').css('display', "none");
+        $('#renewalNotification').css('display', "none");
+    });
+
+}
+
+function fillRenewalFields(){
+    $('#namedInsuredRenewalSpan').html($('#namedInsured').val());
+    $('#agencyRenewalSpan').html($('#userDetails-company').html().trim());
 
 }

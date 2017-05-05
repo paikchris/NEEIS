@@ -64,6 +64,7 @@
 
     <div class="row" style="text-align: center;">
         <span class="label label-info" id="BORRequestNotification" style="display:none; ">BOR Requested</span>
+        <span class="label label-info" id="renewalNotification" style="display:none; ">Renewal</span>
     </div>
     <br>
     <div class="stepwizard">
@@ -1825,6 +1826,31 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-primary" id="saveAsButton" type="button"  >Save</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" tabindex="-1" role="dialog" id="renewalModal">
+    <div class="modal-dialog" role="document" style="">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Is This A Renewal?</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <span>"<strong id="namedInsuredRenewalSpan"></strong>" matches a existing Active Policy in our system.
+                        Submitted by <strong id="agencyRenewalSpan"></strong>.</span>
+                        <br>
+                        <span>Is this a renewal? </span>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="yesRenewalButton" type="button"  >Yes</button>
+                <button class="btn btn-default" id="noRenewalButton" type="button"  >No</button>
+
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->

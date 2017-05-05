@@ -281,6 +281,8 @@ class MainController {
         def countP = 0;
         def countM =0;
         def matchingSubmissions = "";
+        def producerIDMatch = false;
+        def matchingQuoteIDs = "";
         aimsql.eachRow( "SELECT * FROM dvSearchInsured_v2 WITH (NOLOCK) WHERE (NamedInsured LIKE '%" + params.checkName + "%')" +
                 " AND (Zip = '" + params.zipCodeMailing + "')") {
             log.info "HELLOO"
@@ -288,38 +290,35 @@ class MainController {
             int lfd = Utils.levenshteinDistance(params.checkName, it.NamedInsured)
             String s1 = params.checkName;
             String s2 = it.NamedInsured;
+
             double ratio = ((double) lfd) / (Math.max(s1.length(), s2.length()));
 
             log.info params.checkName + " - " + "$it.NamedInsured" + " " + ratio;
             matchingSubmissions = matchingSubmissions + it.NamedInsured + "&,&"
             if(ratio <0.05){
-                countM++
+                if(it.producerID == session.user.company){
+                    aimsql.eachRow( "SELECT * FROM Quote WITH (NOLOCK) WHERE  (InsuredID = '" + it.InsuredID + "') " +
+                            "AND (ActivePolicyFlag = 'Y')" ) {
+                        matchingQuoteIDs = matchingQuoteIDs + it.QuoteID + "&;&" + it.NamedInsured + "&;&" + it.ProducerID + "&;;&";
+                    }
+                }
+                else{
+                    countM++
+                }
             }
         }
-//        aimsql.eachRow( "SELECT * FROM dvSearchInsured_v2 WITH (NOLOCK) WHERE (NamedInsured LIKE '%" + params.checkName + "%')" +
-//                " AND (Zip = '" + params.zipCodePhysical + "')") {
-//            //LEVENSHTEIN ALGORITHM TO DETERMINE HOW ALIKE TWO STRINGS ARE
-//            int lfd = Utils.levenshteinDistance(params.checkName, it.NamedInsured)
-//            String s1 = params.checkName;
-//            String s2 = it.NamedInsured;
-//            double ratio = ((double) lfd) / (Math.max(s1.length(), s2.length()));
-//
-//            log.info params.checkName + " - " + "$it.NamedInsured" + " " + ratio;
-//            if(ratio <0.1){
-//                countP++
-//            }
-//        }
 
 
         def renderString = "";
          //Implement this later
-        if(countM > countP){
+        if(countM > 0){ //IF NAMED INSURED MATCHES OTHER INSUREDS IN SYSTEM
             renderString = countM
+            renderString = renderString + "&;&" + matchingSubmissions
         }
-        else{
-            renderString = countP
+        else{ //IF NAMED INSURED IS A POSSIBLE RENEWAL BY THE SAME COMPANY
+            renderString = "RENEWAL:" + matchingQuoteIDs
         }
-        renderString = renderString + "&;&" + matchingSubmissions
+
         log.info "Render: " + renderString
         render renderString
 
