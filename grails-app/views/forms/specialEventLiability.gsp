@@ -1455,7 +1455,7 @@
 
                             <div class="col-xs-3 limitColumn">
                                 <span class="limit">Not Covered</span>
-                            </div>
+                        </div>
 
                         </div>
 

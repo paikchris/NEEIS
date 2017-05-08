@@ -2521,26 +2521,6 @@ class AsyncController {
 
                             //IF FILM WITH CAST AND NO WC, ROUND LIMITS TO NEAREST 1000'S
                             def tempLimit = params.totalBudget.toDouble()
-//                            if(params.riskType == "Film Projects With Cast (No Work Comp)"){
-//                                tempLimit = Math.ceil(tempLimit / 1000) * 1000;
-//                                limitsMap["Negative Film & Videotape"] = "\$" + String.format("%.0f", tempLimit.trunc())
-//                                limitsMap["Faulty Stock & Camera Processing"] = "\$" + String.format("%.0f", tempLimit.trunc())
-//
-//                                if (params.additionalProducts.contains("EPKGCASTAdditionalCoverage")) {
-//                                    def castPremium = (params.totalBudget.toDouble() *  1.1) / 100
-//                                    premiumsMap["Cast Insurance"] = ["flat", castPremium];
-//                                    deductsMap["Cast Insurance"] = "Nil";
-//                                    limitsMap["Cast Insurance"] = "\$" + String.format("%.0f", tempLimit.trunc());
-//                                    productTotalPremium = productTotalPremium + castPremium;
-//                                }
-//                                if (params.additionalProducts.contains("EPKGCASTEssentialAdditionalCoverage")) {
-//                                    def castPremium = (params.totalBudget.toDouble() *  1.1) / 100
-//                                    premiumsMap["Cast Essential"] = ["flat", "incl"];
-//                                    deductsMap["Cast Essential"] = "Nil";
-//                                    limitsMap["Cast Essential"] = "Incl. Under Cast" ;
-//                                    productTotalPremium = productTotalPremium + castPremium;
-//                                }
-//                            }
                             deductsMap.remove("Miscellaneous Rented Equipment*")
                             deductsMap.remove("*Hired Auto Physical Damage")
                             if (true) {
@@ -2558,6 +2538,64 @@ class AsyncController {
                             } else {
                                 limitsMap.remove("Hired Auto Physical Damage")
                                 deductsMap.remove("Hired Auto Physical Damage")
+                            }
+
+
+
+                            if (params.additionalProducts.contains("moneyCurrencyCheckbox")) {
+                                premiumsMap["Money and Currency"] = ["flat", "incl"];
+                                deductsMap["Money and Currency"] = "\$2,500";
+                                limitsMap["Money and Currency"] = "\$2,500";
+                                productTotalPremium = productTotalPremium + 0;
+                                rateInfo = rateInfo + "EPKG\tflat\tincl\tMoney and Currency\t\n";
+                            }
+
+                            if (params.additionalProducts.contains("fursJewelryCheckbox")) {
+                                premiumsMap["Furs, Jewelry, Art & Antiques"] = ["flat", "incl"];
+                                deductsMap["Furs, Jewelry, Art & Antiques"] = "\$2,500";
+                                limitsMap["Furs, Jewelry, Art & Antiques"] = "\$2,500";
+                                productTotalPremium = productTotalPremium + 0;
+                                rateInfo = rateInfo + "EPKG\tflat\tincl\tFurs, Jewelry, Art & Antiques\t\n";
+                            }
+
+                            if (params.additionalProducts.contains("talentNonBudgetCheckbox")) {
+                                premiumsMap["Talent and Non Budgeted Costs"] = ["flat", "incl"];
+                                deductsMap["Talent and Non Budgeted Costs"] = "\$2,500";
+                                limitsMap["Talent and Non Budgeted Costs"] = "\$2,500";
+                                productTotalPremium = productTotalPremium + 0;
+                                rateInfo = rateInfo + "EPKG\tflat\tincl\tTalent and Non Budgeted Costs\t\n";
+                            }
+
+                            if (params.additionalProducts.contains("adminCostCheckbox")) {
+                                premiumsMap["Administrative Costs"] = ["flat", "incl"];
+                                deductsMap["Administrative Costs"] = "\$2,500";
+                                limitsMap["Administrative Costs"] = "\$2,500";
+                                productTotalPremium = productTotalPremium + 0;
+                                rateInfo = rateInfo + "EPKG\tflat\tincl\tAdministrative Costs\t\n";
+                            }
+
+                            if (params.additionalProducts.contains("hardwareElectronicDataCheckbox")) {
+                                premiumsMap["Hardware"] = ["flat", "incl"];
+                                deductsMap["Hardware"] = "\$2,500";
+                                limitsMap["Hardware"] = "\$2,500";
+                                productTotalPremium = productTotalPremium + 0;
+                                rateInfo = rateInfo + "EPKG\tflat\tincl\tHardware\t\n";
+                            }
+
+                            if (params.additionalProducts.contains("dataMediaElectronicDataCheckbox")) {
+                                premiumsMap["Data and Media"] = ["flat", "incl"];
+                                deductsMap["Data and Media"] = "\$2,500";
+                                limitsMap["Data and Media"] = "\$2,500";
+                                productTotalPremium = productTotalPremium + 0;
+                                rateInfo = rateInfo + "EPKG\tflat\tincl\tData and Media\t\n";
+                            }
+
+                            if (params.additionalProducts.contains("extraExpenseElectronicDataCheckbox")) {
+                                premiumsMap["Electronic Data Extra Expense"] = ["flat", "incl"];
+                                deductsMap["Electronic Data Extra Expense"] = "\$2,500";
+                                limitsMap["Electronic Data Extra Expense"] = "\$2,500";
+                                productTotalPremium = productTotalPremium + 0;
+                                rateInfo = rateInfo + "EPKG\tflat\tincl\tExtra Expense\t\n";
                             }
                         }
                         else if (productID == "PIP 4") {
@@ -2621,6 +2659,64 @@ class AsyncController {
                                 limitsMap.remove("Hired Auto Physical Damage")
                                 deductsMap.remove("Hired Auto Physical Damage")
                             }
+
+
+
+                            if (params.additionalProducts.contains("moneyCurrencyCheckbox")) {
+                                premiumsMap["Money and Currency"] = ["flat", "incl"];
+                                deductsMap["Money and Currency"] = "\$2,500";
+                                limitsMap["Money and Currency"] = "\$2,500";
+                                productTotalPremium = productTotalPremium + 0;
+                                rateInfo = rateInfo + "EPKG\tflat\tincl\tMoney and Currency\t\n";
+                            }
+
+                            if (params.additionalProducts.contains("fursJewelryCheckbox")) {
+                                premiumsMap["Furs, Jewelry, Art & Antiques"] = ["flat", "incl"];
+                                deductsMap["Furs, Jewelry, Art & Antiques"] = "\$2,500";
+                                limitsMap["Furs, Jewelry, Art & Antiques"] = "\$2,500";
+                                productTotalPremium = productTotalPremium + 0;
+                                rateInfo = rateInfo + "EPKG\tflat\tincl\tFurs, Jewelry, Art & Antiques\t\n";
+                            }
+
+                            if (params.additionalProducts.contains("talentNonBudgetCheckbox")) {
+                                premiumsMap["Talent and Non Budgeted Costs"] = ["flat", "incl"];
+                                deductsMap["Talent and Non Budgeted Costs"] = "\$2,500";
+                                limitsMap["Talent and Non Budgeted Costs"] = "\$2,500";
+                                productTotalPremium = productTotalPremium + 0;
+                                rateInfo = rateInfo + "EPKG\tflat\tincl\tTalent and Non Budgeted Costs\t\n";
+                            }
+
+                            if (params.additionalProducts.contains("adminCostCheckbox")) {
+                                premiumsMap["Administrative Costs"] = ["flat", "incl"];
+                                deductsMap["Administrative Costs"] = "\$2,500";
+                                limitsMap["Administrative Costs"] = "\$2,500";
+                                productTotalPremium = productTotalPremium + 0;
+                                rateInfo = rateInfo + "EPKG\tflat\tincl\tAdministrative Costs\t\n";
+                            }
+
+                            if (params.additionalProducts.contains("hardwareElectronicDataCheckbox")) {
+                                premiumsMap["Hardware"] = ["flat", "incl"];
+                                deductsMap["Hardware"] = "\$2,500";
+                                limitsMap["Hardware"] = "\$2,500";
+                                productTotalPremium = productTotalPremium + 0;
+                                rateInfo = rateInfo + "EPKG\tflat\tincl\tHardware\t\n";
+                            }
+
+                            if (params.additionalProducts.contains("dataMediaElectronicDataCheckbox")) {
+                                premiumsMap["Data and Media"] = ["flat", "incl"];
+                                deductsMap["Data and Media"] = "\$2,500";
+                                limitsMap["Data and Media"] = "\$2,500";
+                                productTotalPremium = productTotalPremium + 0;
+                                rateInfo = rateInfo + "EPKG\tflat\tincl\tData and Media\t\n";
+                            }
+
+                            if (params.additionalProducts.contains("extraExpenseElectronicDataCheckbox")) {
+                                premiumsMap["Electronic Data Extra Expense"] = ["flat", "incl"];
+                                deductsMap["Electronic Data Extra Expense"] = "\$2,500";
+                                limitsMap["Electronic Data Extra Expense"] = "\$2,500";
+                                productTotalPremium = productTotalPremium + 0;
+                                rateInfo = rateInfo + "EPKG\tflat\tincl\tExtra Expense\t\n";
+                            }
                         }
                         else if (productID == "PIP 5") {
                             def premium = 0.0
@@ -2666,7 +2762,7 @@ class AsyncController {
                             //IF FILM WITH CAST AND NO WC, ROUND LIMITS TO NEAREST 1000'S
                             def tempLimit = params.totalBudget.toDouble()
 
-                            def tempDeductsMap = [:];
+//                            def deductsMap = [:];
 
 
 
@@ -2732,6 +2828,63 @@ class AsyncController {
                                 deductsMap["Animal Mortality Under Cast Insurance (All Others - Refer Only)"] = "\$1500";
                                 limitsMap["Animal Mortality Under Cast Insurance (All Others - Refer Only)"] = "\$25000";
                                 rateInfo = rateInfo + "EPKG\tflat\tRefer\tAnimal Mortality Under Cast Insurance (All Others - Refer Only)\t\n";
+                            }
+
+
+                            if (params.additionalProducts.contains("moneyCurrencyCheckbox")) {
+                                premiumsMap["Money and Currency"] = ["flat", "incl"];
+                                deductsMap["Money and Currency"] = "\$2,500";
+                                limitsMap["Money and Currency"] = "\$2,500";
+                                productTotalPremium = productTotalPremium + 0;
+                                rateInfo = rateInfo + "EPKG\tflat\tincl\tMoney and Currency\t\n";
+                            }
+
+                            if (params.additionalProducts.contains("fursJewelryCheckbox")) {
+                                premiumsMap["Furs, Jewelry, Art & Antiques"] = ["flat", "incl"];
+                                deductsMap["Furs, Jewelry, Art & Antiques"] = "\$2,500";
+                                limitsMap["Furs, Jewelry, Art & Antiques"] = "\$2,500";
+                                productTotalPremium = productTotalPremium + 0;
+                                rateInfo = rateInfo + "EPKG\tflat\tincl\tFurs, Jewelry, Art & Antiques\t\n";
+                            }
+
+                            if (params.additionalProducts.contains("talentNonBudgetCheckbox")) {
+                                premiumsMap["Talent and Non Budgeted Costs"] = ["flat", "incl"];
+                                deductsMap["Talent and Non Budgeted Costs"] = "\$2,500";
+                                limitsMap["Talent and Non Budgeted Costs"] = "\$2,500";
+                                productTotalPremium = productTotalPremium + 0;
+                                rateInfo = rateInfo + "EPKG\tflat\tincl\tTalent and Non Budgeted Costs\t\n";
+                            }
+
+                            if (params.additionalProducts.contains("adminCostCheckbox")) {
+                                premiumsMap["Administrative Costs"] = ["flat", "incl"];
+                                deductsMap["Administrative Costs"] = "\$2,500";
+                                limitsMap["Administrative Costs"] = "\$2,500";
+                                productTotalPremium = productTotalPremium + 0;
+                                rateInfo = rateInfo + "EPKG\tflat\tincl\tAdministrative Costs\t\n";
+                            }
+
+                            if (params.additionalProducts.contains("hardwareElectronicDataCheckbox")) {
+                                premiumsMap["Hardware"] = ["flat", "incl"];
+                                deductsMap["Hardware"] = "\$2,500";
+                                limitsMap["Hardware"] = "\$2,500";
+                                productTotalPremium = productTotalPremium + 0;
+                                rateInfo = rateInfo + "EPKG\tflat\tincl\tHardware\t\n";
+                            }
+
+                            if (params.additionalProducts.contains("dataMediaElectronicDataCheckbox")) {
+                                premiumsMap["Data and Media"] = ["flat", "incl"];
+                                deductsMap["Data and Media"] = "\$2,500";
+                                limitsMap["Data and Media"] = "\$2,500";
+                                productTotalPremium = productTotalPremium + 0;
+                                rateInfo = rateInfo + "EPKG\tflat\tincl\tData and Media\t\n";
+                            }
+
+                            if (params.additionalProducts.contains("extraExpenseElectronicDataCheckbox")) {
+                                premiumsMap["Electronic Data Extra Expense"] = ["flat", "incl"];
+                                deductsMap["Electronic Data Extra Expense"] = "\$2,500";
+                                limitsMap["Electronic Data Extra Expense"] = "\$2,500";
+                                productTotalPremium = productTotalPremium + 0;
+                                rateInfo = rateInfo + "EPKG\tflat\tincl\tExtra Expense\t\n";
                             }
 
                             if (true) {
