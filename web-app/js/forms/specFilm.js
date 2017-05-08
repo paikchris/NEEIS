@@ -266,15 +266,6 @@ $(document).ready(function() {
     });
 
 
-    //$(document.body).on('change', '#productionInvolvesNoneAbove' ,function(){
-    //    //alert("NONE");
-    //    if($("#productionInvolvesNoneAbove").is(':checked')) {
-    //
-    //    }
-    //    else{
-    //
-    //    }
-    //});
 
     $(document.body).on('change', '#otherProductionType', function() {
         if ($("#otherProductionType").is(':checked')) {
@@ -387,10 +378,6 @@ $(document).ready(function() {
         precision: "0"
     });
 
-    $(document.body).on('change', '#totalBudgetInput, #totalBudgetConfirm', function() {
-        //alert("Budget change");
-
-    });
 
     $(document.body).on('change', '#principalPhotographyDateStart, #principalPhotographyDateEnd', function() {
         var datesAreValid = false;
@@ -434,52 +421,7 @@ $(document).ready(function() {
         }
 
     });
-    //$(document.body).on('change', '#principalPhotographyDateStart, #principalPhotographyDateEnd' ,function(){
-    //    //alert("Budget change");
-    //    var termLength;
-    //    var datesAreValid = true;
-    //    var today = new Date();
-    //    today.setHours(0, 0, 0, 0);
-    //    var mdyEffective = $('#principalPhotographyDateStart').val().split('/');
-    //    var mdyEffectiveDateObject = new Date(mdyEffective[2], mdyEffective[0]-1, mdyEffective[1]);
-    //
-    //    var mdyProposedEffective =  $('#proposedEffectiveDate').val().split('/');
-    //    var mdyProposedEffectiveObject = new Date(mdyProposedEffective[2], mdyProposedEffective[0]-1, mdyProposedEffective[1]);
-    //
-    //    if (mdyEffectiveDateObject.getTime() < today.getTime()) {
-    //        alert("Effective Date must be a present or future date");
-    //        $(this).val("");
-    //        datesAreValid = false;
-    //    }
-    //
-    //
-    //    var riskChosen = $("li.active").children("a.riskOptionLink").html().trim();
-    //
-    //
-    //        if($(this).attr("id") === "principalPhotographyDateStart"  && mdyEffectiveDateObject.getTime() >= today.getTime()
-    //            && mdyEffectiveDateObject.getTime() >= mdyProposedEffectiveObject.getTime()   ){
-    //            //alert(mdyEffectiveDateObject);
-    //            var day = mdyEffectiveDateObject.getDate();
-    //            if (day < 10) { day = '0' + day; }
-    //            var monthIndex = mdyEffectiveDateObject.getMonth() + 1;
-    //            if (monthIndex < 10) { monthIndex = '0' + monthIndex; }
-    //            var year = mdyEffectiveDateObject.getFullYear() + 1;
-    //            $("#principalPhotographyDateEnd").val( (monthIndex) + "/" + day + "/" + year);
-    //            $("#proposedEffectiveDate").val($("#principalPhotographyDateStart").val());
-    //            $("#proposedExpirationDate").val($("#principalPhotographyDateEnd").val());
-    //            $('#proposedTermLength').val(365 + " Days")
-    //        }
-    //        else{
-    //            //alert("not valid");
-    //            $("#principalPhotographyDateStart").val( "");
-    //            $("#principalPhotographyDateEnd").val( "");
-    //            $("#proposedEffectiveDate").val("");
-    //            $("#proposedExpirationDate").val("");
-    //            $('#proposedTermLength').val("")
-    //        }
-    //
-    //
-    //});
+
     $(document.body).on('change', '#ksd', function() {
         //alert("Budget change");
         var date = $(this).val();
@@ -553,6 +495,7 @@ $(document).ready(function() {
     // add and remove filming location
     $(document.body).on('change', '#PIP1InputRadio, #PIP2InputRadio, #PIP3InputRadio, #PIP4InputRadio, #PIP5InputRadio, #PIPChoiceInputRadio', function() {
         //alert($('#PIP3InputRadio').is(':checked'));
+        console.log("RADIO BUTTON CHANGE")
         if ($("li.active").length > 0) {
             riskChosen = getRiskTypeChosen();
         }
@@ -560,6 +503,7 @@ $(document).ready(function() {
             riskChosen = reviewRiskChosen; //FROM REVIEW SUBMISSION MODAL
         }
         $("#EPKGoptions").css("display", "");
+        $('.AnnualOptions').css("display", "none");
 
 
         if (riskChosen === "Film Projects With Cast (No Work Comp)") {
@@ -576,6 +520,8 @@ $(document).ready(function() {
             $('#PIP5InputRadio').is(':checked') || $('#PIPChoiceInputRadio').is(':checked')) {
             $('#EPKGcoverage').prop("checked", true);
             $("#EPKGoptions").css("display", "");
+
+
             if ($('#PIP5InputRadio').is(':checked') == false) {
                 $('.PIP5Options').css("display", "none");
                 $('#EPKGCIVIL100AdditionalCoverage').prop("checked", false);
@@ -588,6 +534,8 @@ $(document).ready(function() {
                 $("#EPKGNOHAOption").css("display", "none");
                 $('#EPKGNOHAAdditionalCoverage').prop("checked", false);
             }
+
+
 
 
         }
@@ -658,8 +606,22 @@ $(document).ready(function() {
 
             }
             else {
-                $("#EPKGoptions").css("display", "");
-                $("#EPKGNOHAOption").css("display", "");
+                if($('#PIP3InputRadio').is(':checked') || $('#PIP4InputRadio').is(':checked') || $('#PIP5InputRadio').is(':checked')){
+                    // console.log("PIP 5 HIDE NOHA")
+                    // $("#EPKGoptions").css("display", "none");
+                    $("#EPKGNOHAOption").css("display", "none");
+                    if($('#PIP5InputRadio').is(':checked')){
+                        $("#EPKGoptions").css("display", "");
+                    }
+                    else{
+                        $("#EPKGoptions").css("display", "none");
+                    }
+                }
+                else{
+                    $("#EPKGoptions").css("display", "");
+                    $("#EPKGNOHAOption").css("display", "");
+                }
+
             }
 
             $('#EPKGNOHAAdditionalCoverage').prop("checked", false);
@@ -667,6 +629,7 @@ $(document).ready(function() {
 
         }
         else if ($('#PIP5InputRadio').is(':checked')) {
+
             $("#EPKGoptions").css("display", "");
             $('.PIP5Options').css("display", "");
             $("#EPKGNOHAOption").css("display", "none");
@@ -680,6 +643,8 @@ $(document).ready(function() {
 
     $(document.body).on('change', '#EPKGcoverage', function() {
         //alert();
+        console.log("EPKGCOVERAGE BUTTON CHANGE")
+
         if ($('#EPKGcoverage').is(':checked')) {
             if (riskChosen === "Film Projects With Cast (No Work Comp)") {
                 $(".FILMWITHCASTNOWCOptions").css("display", "");
@@ -761,6 +726,7 @@ $(document).ready(function() {
             }
         }
     });
+
     $(document.body).on('change', '#CPKCGLcoverage', function() {
         if ($('#CPKCGLcoverage').is(':checked')) {
             $('#CPKInputRadio').prop("checked", true);
@@ -997,19 +963,19 @@ $(document).ready(function() {
                 //IF ANNUAL POLICY SHOW ANNUAL OPTIONS
                 if ($('#EPKGcoverage').is(':checked')) {
                     if ($('#PIPChoiceInputRadio').is(':checked')) {
-                        if (termLength >= 365) {
-                            $('.AnnualOptions').css("display", "");
-                        }
-                        else {
-                            $('.AnnualOptions').css("display", "none");
-                        }
+                        // if (termLength >= 365) {
+                        //     $('.AnnualOptions').css("display", "");
+                        // }
+                        // else {
+                        //     $('.AnnualOptions').css("display", "none");
+                        // }
                     }
                     else {
                         if (termLength >= 365) {
-                            $('.AnnualOptions').css("display", "");
+                            // $('.AnnualOptions').css("display", "");
                         }
                         else {
-                            $('.AnnualOptions').css("display", "none");
+                            // $('.AnnualOptions').css("display", "none");
                         }
                     }
                 }
@@ -1024,19 +990,6 @@ $(document).ready(function() {
             //alert();
         });
 
-    //$(document.body).on('change', '.PIPCHOILimitsInput' ,function(){
-    //    //alert();
-    //    var tempLimit = parseInt($(this).val().replace(/\$|,/g, ''));
-    //    //console.log("LIMIT AMOUNT1 === " + tempLimit)
-    //    if(riskChosen === "Film Projects With Cast (No Work Comp)"){
-    //        tempLimit = Math.ceil(tempLimit / 1000) * 1000;
-    //        //limitAmount = tempLimit
-    //    }
-    //    //console.log("LIMIT AMOUNT === " + tempLimit)
-    //    $(this).val(formatMoney(tempLimit));
-    //    $(this).trigger('keyup');
-    //
-    //});
 
 
     $(document.body).on('keyup', '.PIPCHOILimitsInput', function() {

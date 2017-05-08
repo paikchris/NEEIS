@@ -87,6 +87,55 @@ class AsyncController {
 
                         }
                         else{
+                            aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
+                                    "FROM lkpProduct with (NOLOCK) " +
+                                    "WHERE (ProductID = 'PIP CHOI') AND (ActiveFlag = 'Y')") {
+                                renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
+                            }
+                            aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
+                                    "FROM lkpProduct with (NOLOCK) " +
+                                    "WHERE (ProductID = 'PIP 5') AND (ActiveFlag = 'Y')") {
+                                renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
+                            }
+                            if ((params.totalGrossBudget.toFloat() <= 100000)) {
+                                aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
+                                        "FROM lkpProduct with (NOLOCK) " +
+                                        "WHERE (ProductID = 'PIP 1') AND (ActiveFlag = 'Y')") {
+                                    renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
+                                }
+                            }
+                            if ((params.totalGrossBudget.toFloat() > 100000 && params.totalGrossBudget.toFloat() <= 200000)) {
+                                aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
+                                        "FROM lkpProduct with (NOLOCK) " +
+                                        "WHERE (ProductID = 'PIP 2') AND (ActiveFlag = 'Y')") {
+                                    renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
+                                }
+                            }
+                            if ((params.totalGrossBudget.toFloat() > 200000 && params.totalGrossBudget.toFloat() <= 300000)) {
+                                aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
+                                        "FROM lkpProduct with (NOLOCK) " +
+                                        "WHERE (ProductID = 'PIP 3') AND (ActiveFlag = 'Y')") {
+                                    renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
+                                }
+                            }
+                            if ((params.totalGrossBudget.toFloat() > 300000 && params.totalGrossBudget.toFloat() <= 400000)) {
+                                aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
+                                        "FROM lkpProduct with (NOLOCK) " +
+                                        "WHERE (ProductID = 'PIP 4') AND (ActiveFlag = 'Y')") {
+                                    renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
+                                }
+                            }
+                            if ((params.totalGrossBudget.toFloat() > 400000)) {
+                                aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
+                                        "FROM lkpProduct with (NOLOCK) " +
+                                        "WHERE (ProductID = 'PIP 4') AND (ActiveFlag = 'Y')") {
+                                    renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
+                                }
+                            }
+
+
+
+                            /*
                             if (params.totalGrossBudget.toFloat() <= 500000) {
                                 aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
                                         "FROM lkpProduct with (NOLOCK) " +
@@ -158,6 +207,7 @@ class AsyncController {
 
 
                             }
+                            */
                         }
 
 
@@ -2542,61 +2592,6 @@ class AsyncController {
 
 
 
-                            if (params.additionalProducts.contains("moneyCurrencyCheckbox")) {
-                                premiumsMap["Money and Currency"] = ["flat", "incl"];
-                                deductsMap["Money and Currency"] = "\$2,500";
-                                limitsMap["Money and Currency"] = "\$25,000";
-                                productTotalPremium = productTotalPremium + 0;
-                                rateInfo = rateInfo + "EPKG\tflat\tincl\tMoney and Currency\t\n";
-                            }
-
-                            if (params.additionalProducts.contains("fursJewelryCheckbox")) {
-                                premiumsMap["Furs, Jewelry, Art & Antiques"] = ["flat", "incl"];
-                                deductsMap["Furs, Jewelry, Art & Antiques"] = "\$2,500";
-                                limitsMap["Furs, Jewelry, Art & Antiques"] = "\$25,000";
-                                productTotalPremium = productTotalPremium + 0;
-                                rateInfo = rateInfo + "EPKG\tflat\tincl\tFurs, Jewelry, Art & Antiques\t\n";
-                            }
-
-                            if (params.additionalProducts.contains("talentNonBudgetCheckbox")) {
-                                premiumsMap["Talent and Non Budgeted Costs"] = ["flat", "incl"];
-                                deductsMap["Talent and Non Budgeted Costs"] = "\$2,500";
-                                limitsMap["Talent and Non Budgeted Costs"] = "\$25,000";
-                                productTotalPremium = productTotalPremium + 0;
-                                rateInfo = rateInfo + "EPKG\tflat\tincl\tTalent and Non Budgeted Costs\t\n";
-                            }
-
-                            if (params.additionalProducts.contains("adminCostCheckbox")) {
-                                premiumsMap["Administrative Costs"] = ["flat", "incl"];
-                                deductsMap["Administrative Costs"] = "\$2,500";
-                                limitsMap["Administrative Costs"] = "\$25,000";
-                                productTotalPremium = productTotalPremium + 0;
-                                rateInfo = rateInfo + "EPKG\tflat\tincl\tAdministrative Costs\t\n";
-                            }
-
-                            if (params.additionalProducts.contains("hardwareElectronicDataCheckbox")) {
-                                premiumsMap["Hardware"] = ["flat", "incl"];
-                                deductsMap["Hardware"] = "\$2,500";
-                                limitsMap["Hardware"] = "\$25,000";
-                                productTotalPremium = productTotalPremium + 0;
-                                rateInfo = rateInfo + "EPKG\tflat\tincl\tHardware\t\n";
-                            }
-
-                            if (params.additionalProducts.contains("dataMediaElectronicDataCheckbox")) {
-                                premiumsMap["Data and Media"] = ["flat", "incl"];
-                                deductsMap["Data and Media"] = "\$2,500";
-                                limitsMap["Data and Media"] = "\$25,000";
-                                productTotalPremium = productTotalPremium + 0;
-                                rateInfo = rateInfo + "EPKG\tflat\tincl\tData and Media\t\n";
-                            }
-
-                            if (params.additionalProducts.contains("extraExpenseElectronicDataCheckbox")) {
-                                premiumsMap["Electronic Data Extra Expense"] = ["flat", "incl"];
-                                deductsMap["Electronic Data Extra Expense"] = "\$2,500";
-                                limitsMap["Electronic Data Extra Expense"] = "\$25,000";
-                                productTotalPremium = productTotalPremium + 0;
-                                rateInfo = rateInfo + "EPKG\tflat\tincl\tExtra Expense\t\n";
-                            }
                         }
                         else if (productID == "PIP 4") {
                             def premium = 0.0
@@ -2660,63 +2655,6 @@ class AsyncController {
                                 deductsMap.remove("Hired Auto Physical Damage")
                             }
 
-
-
-                            if (params.additionalProducts.contains("moneyCurrencyCheckbox")) {
-                                premiumsMap["Money and Currency"] = ["flat", "incl"];
-                                deductsMap["Money and Currency"] = "\$2,500";
-                                limitsMap["Money and Currency"] = "\$25,000";
-                                productTotalPremium = productTotalPremium + 0;
-                                rateInfo = rateInfo + "EPKG\tflat\tincl\tMoney and Currency\t\n";
-                            }
-
-                            if (params.additionalProducts.contains("fursJewelryCheckbox")) {
-                                premiumsMap["Furs, Jewelry, Art & Antiques"] = ["flat", "incl"];
-                                deductsMap["Furs, Jewelry, Art & Antiques"] = "\$2,500";
-                                limitsMap["Furs, Jewelry, Art & Antiques"] = "\$25,000";
-                                productTotalPremium = productTotalPremium + 0;
-                                rateInfo = rateInfo + "EPKG\tflat\tincl\tFurs, Jewelry, Art & Antiques\t\n";
-                            }
-
-                            if (params.additionalProducts.contains("talentNonBudgetCheckbox")) {
-                                premiumsMap["Talent and Non Budgeted Costs"] = ["flat", "incl"];
-                                deductsMap["Talent and Non Budgeted Costs"] = "\$2,500";
-                                limitsMap["Talent and Non Budgeted Costs"] = "\$25,000";
-                                productTotalPremium = productTotalPremium + 0;
-                                rateInfo = rateInfo + "EPKG\tflat\tincl\tTalent and Non Budgeted Costs\t\n";
-                            }
-
-                            if (params.additionalProducts.contains("adminCostCheckbox")) {
-                                premiumsMap["Administrative Costs"] = ["flat", "incl"];
-                                deductsMap["Administrative Costs"] = "\$2,500";
-                                limitsMap["Administrative Costs"] = "\$25,000";
-                                productTotalPremium = productTotalPremium + 0;
-                                rateInfo = rateInfo + "EPKG\tflat\tincl\tAdministrative Costs\t\n";
-                            }
-
-                            if (params.additionalProducts.contains("hardwareElectronicDataCheckbox")) {
-                                premiumsMap["Hardware"] = ["flat", "incl"];
-                                deductsMap["Hardware"] = "\$2,500";
-                                limitsMap["Hardware"] = "\$25,000";
-                                productTotalPremium = productTotalPremium + 0;
-                                rateInfo = rateInfo + "EPKG\tflat\tincl\tHardware\t\n";
-                            }
-
-                            if (params.additionalProducts.contains("dataMediaElectronicDataCheckbox")) {
-                                premiumsMap["Data and Media"] = ["flat", "incl"];
-                                deductsMap["Data and Media"] = "\$2,500";
-                                limitsMap["Data and Media"] = "\$25,000";
-                                productTotalPremium = productTotalPremium + 0;
-                                rateInfo = rateInfo + "EPKG\tflat\tincl\tData and Media\t\n";
-                            }
-
-                            if (params.additionalProducts.contains("extraExpenseElectronicDataCheckbox")) {
-                                premiumsMap["Electronic Data Extra Expense"] = ["flat", "incl"];
-                                deductsMap["Electronic Data Extra Expense"] = "\$2,500";
-                                limitsMap["Electronic Data Extra Expense"] = "\$25,000";
-                                productTotalPremium = productTotalPremium + 0;
-                                rateInfo = rateInfo + "EPKG\tflat\tincl\tExtra Expense\t\n";
-                            }
                         }
                         else if (productID == "PIP 5") {
                             def premium = 0.0
@@ -2830,62 +2768,47 @@ class AsyncController {
                                 rateInfo = rateInfo + "EPKG\tflat\tRefer\tAnimal Mortality Under Cast Insurance (All Others - Refer Only)\t\n";
                             }
 
-
-                            if (params.additionalProducts.contains("moneyCurrencyCheckbox")) {
                                 premiumsMap["Money and Currency"] = ["flat", "incl"];
                                 deductsMap["Money and Currency"] = "\$2,500";
                                 limitsMap["Money and Currency"] = "\$25,000";
                                 productTotalPremium = productTotalPremium + 0;
                                 rateInfo = rateInfo + "EPKG\tflat\tincl\tMoney and Currency\t\n";
-                            }
 
-                            if (params.additionalProducts.contains("fursJewelryCheckbox")) {
                                 premiumsMap["Furs, Jewelry, Art & Antiques"] = ["flat", "incl"];
                                 deductsMap["Furs, Jewelry, Art & Antiques"] = "\$2,500";
                                 limitsMap["Furs, Jewelry, Art & Antiques"] = "\$25,000";
                                 productTotalPremium = productTotalPremium + 0;
                                 rateInfo = rateInfo + "EPKG\tflat\tincl\tFurs, Jewelry, Art & Antiques\t\n";
-                            }
 
-                            if (params.additionalProducts.contains("talentNonBudgetCheckbox")) {
                                 premiumsMap["Talent and Non Budgeted Costs"] = ["flat", "incl"];
                                 deductsMap["Talent and Non Budgeted Costs"] = "\$2,500";
                                 limitsMap["Talent and Non Budgeted Costs"] = "\$25,000";
                                 productTotalPremium = productTotalPremium + 0;
                                 rateInfo = rateInfo + "EPKG\tflat\tincl\tTalent and Non Budgeted Costs\t\n";
-                            }
 
-                            if (params.additionalProducts.contains("adminCostCheckbox")) {
                                 premiumsMap["Administrative Costs"] = ["flat", "incl"];
                                 deductsMap["Administrative Costs"] = "\$2,500";
                                 limitsMap["Administrative Costs"] = "\$25,000";
                                 productTotalPremium = productTotalPremium + 0;
                                 rateInfo = rateInfo + "EPKG\tflat\tincl\tAdministrative Costs\t\n";
-                            }
 
-                            if (params.additionalProducts.contains("hardwareElectronicDataCheckbox")) {
                                 premiumsMap["Hardware"] = ["flat", "incl"];
                                 deductsMap["Hardware"] = "\$2,500";
                                 limitsMap["Hardware"] = "\$25,000";
                                 productTotalPremium = productTotalPremium + 0;
                                 rateInfo = rateInfo + "EPKG\tflat\tincl\tHardware\t\n";
-                            }
 
-                            if (params.additionalProducts.contains("dataMediaElectronicDataCheckbox")) {
                                 premiumsMap["Data and Media"] = ["flat", "incl"];
                                 deductsMap["Data and Media"] = "\$2,500";
                                 limitsMap["Data and Media"] = "\$25,000";
                                 productTotalPremium = productTotalPremium + 0;
                                 rateInfo = rateInfo + "EPKG\tflat\tincl\tData and Media\t\n";
-                            }
 
-                            if (params.additionalProducts.contains("extraExpenseElectronicDataCheckbox")) {
                                 premiumsMap["Electronic Data Extra Expense"] = ["flat", "incl"];
                                 deductsMap["Electronic Data Extra Expense"] = "\$2,500";
                                 limitsMap["Electronic Data Extra Expense"] = "\$25,000";
                                 productTotalPremium = productTotalPremium + 0;
                                 rateInfo = rateInfo + "EPKG\tflat\tincl\tExtra Expense\t\n";
-                            }
 
                             if (true) {
                                 def NOHARateMinPrem = ["flat", "incl"];

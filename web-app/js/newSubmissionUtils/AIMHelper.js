@@ -93,6 +93,7 @@ function getProductsForRisk() {
                                 //$('.PIP5Options').css("display", "");
                                 if ($('#EPKGcoverage').is(':checked')) {
                                     $('#PIP5InputRadio').prop("checked", true);
+                                    $('#PIP5InputRadio').trigger('change');
                                     $(".PIP5Options").css('display', "");
                                     $('.PIPCHOIOption').prop("checked", false);
                                 }
@@ -120,7 +121,21 @@ function getProductsForRisk() {
                                     $("#EPKGNOHAOption").css("display", "none");
                                 }
                                 else {
-                                    $("#EPKGNOHAOption").css("display", "");
+                                    if($('#PIP3InputRadio').is(':checked') || $('#PIP4InputRadio').is(':checked') || $('#PIP5InputRadio').is(':checked')){
+                                        // console.log("PIP 5 HIDE NOHA")
+                                        // $("#EPKGoptions").css("display", "none");
+                                        $("#EPKGNOHAOption").css("display", "none");
+                                        if($('#PIP5InputRadio').is(':checked')){
+                                            $("#EPKGoptions").css("display", "");
+                                        }
+                                        else{
+                                            $("#EPKGoptions").css("display", "none");
+                                        }
+                                    }
+                                    else{
+                                        $("#EPKGoptions").css("display", "");
+                                        $("#EPKGNOHAOption").css("display", "");
+                                    }
                                 }
                             }
                             //
