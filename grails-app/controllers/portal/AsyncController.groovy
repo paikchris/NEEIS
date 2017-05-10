@@ -3322,7 +3322,7 @@ class AsyncController {
                                 if(params.riskType == "Film Projects With Cast (No Work Comp)"){
                                     tempPremiumsMap["Blanket Additional Insured Endorsement"] = ["flat", 500];
                                     tempDeductsMap["Blanket Additional Insured Endorsement"] = "";
-                                    tempLimitsMap["Blanket Additional Insured Endorsement"] = ""
+                                    tempLimitsMap["Blanket Additional Insured Endorsement"] = "Included"
                                     productTotalPremium = productTotalPremium + 500
                                     rateInfo = rateInfo + "${coverageID}\tflat\t\$500\tBlanket Additional Insured Endorsement\t\n";
                                     indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Blanket Additional Insured Endorsement\t\$500\n";
@@ -3331,7 +3331,7 @@ class AsyncController {
                                 else{
                                     tempPremiumsMap["Blanket Additional Insured Endorsement"] = ["flat", 100];
                                     tempDeductsMap["Blanket Additional Insured Endorsement"] = "";
-                                    tempLimitsMap["Blanket Additional Insured Endorsement"] = ""
+                                    tempLimitsMap["Blanket Additional Insured Endorsement"] = "Included"
                                     productTotalPremium = productTotalPremium + 100
                                     rateInfo = rateInfo + "${coverageID}\tflat\t\$100\tBlanket Additional Insured Endorsement\t\n";
                                     indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Blanket Additional Insured Endorsement\t\$100\n";
@@ -3341,7 +3341,7 @@ class AsyncController {
                             if (params.additionalProducts.contains("WOSAdditionalCoverage")) {
                                 tempPremiumsMap["Waiver of Subrogation"] = ["flat", 100];
                                 tempDeductsMap["Waiver of Subrogation"] = "";
-                                tempLimitsMap["Waiver of Subrogation"] = ""
+                                tempLimitsMap["Waiver of Subrogation"] = "Included"
                                 productTotalPremium = productTotalPremium + 100
                                 rateInfo = rateInfo + "${coverageID}\tflat\t\$100\tWaiver of Subrogation\t\n";
                                 indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Waiver of Subrogation\t\$100\n";
@@ -3367,14 +3367,14 @@ class AsyncController {
                                 if(params.riskType == "Film Projects With Cast (No Work Comp) test"){
                                     tempPremiumsMap["Increased Agg Limit"] = ["flat", ""];
                                     tempDeductsMap["Increased Agg Limit"] = "";
-                                    tempLimitsMap["Increased Agg Limit"] = ""
+                                    tempLimitsMap["Increased Agg Limit"] = "Included"
 //                                    productTotalPremium = productTotalPremium + 250
                                     rateInfo = rateInfo + "${coverageID}\t\t\tIncreased Agg Limit\t\n";
 
                                 }
                                 else{
                                     tempDeductsMap["Increased Agg Limit"] = "";
-                                    tempLimitsMap["Increased Agg Limit"] = ""
+                                    tempLimitsMap["Increased Agg Limit"] = "Included"
                                     if(termLength <= 90){
                                         tempPremiumsMap["Increased Agg Limit"] = ["flat", 0];
                                         productTotalPremium = productTotalPremium + 0
@@ -3944,7 +3944,7 @@ class AsyncController {
                 "                      AcctgEMail, AcctgContactKey_FK, ContactKey_FK, DateIRFileCreated, FinanceMapCode, FlagExportToFinance, CountryID, MailCountryID, AcctgCountryID, \n" +
                 "                      MembershipKey_FK, MembershipExp, Membership2Key_FK, Membership2Exp, Membership3Key_FK, Membership3Exp, NPR, DandB\n" +
                 "FROM         Producer with (NOLOCK)\n" +
-                "WHERE         ProducerID='${params.agencyID}'\n" +
+                "WHERE         (ProducerID='${params.agencyID}) AND (ActiveFlag = 'Y')'\n" +
                 "ORDER BY Name") {
             log.info "Result: " + it.Name
             string = it.Name

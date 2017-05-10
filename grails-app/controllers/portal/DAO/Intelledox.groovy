@@ -96,9 +96,13 @@ class Intelledox {
                 soapXML = soapXML + """
 \t\t<brokerCompanyAddressZip>${brokerCompanyZip}</brokerCompanyAddressZip>"""
             }
+            if(brokerCompanyPhone != null){
+                soapXML = soapXML + """
+\t\t<brokerCompanyPhone>${brokerCompanyPhone}</brokerCompanyPhone>"""
+            }
             if(brokerCompanyLicense != null){
                 soapXML = soapXML + """
-\t\t<brokerCompanyLicenseNumber> CALicNo:${brokerCompanyLicense}</brokerCompanyLicenseNumber>"""
+\t\t<brokerCompanyLicenseNumber>CALicNo:${brokerCompanyLicense}</brokerCompanyLicenseNumber>"""
             }
 
             soapXML = soapXML + """
@@ -289,6 +293,8 @@ class Intelledox {
 
             if(jsonSerial.getAt("epkgLOB").length() > 1){
                 jsonSerial.getAt("endorseInsertEPKG").split("\n").eachWithIndex { row, index ->
+
+
                     if (row.length() > 0) {
                         if(index ==0){
                             soapXML = soapXML + """
@@ -298,11 +304,21 @@ class Intelledox {
 """
                         }
                         else{
-                            soapXML = soapXML + """
+                            if(row.split(" - ").size() > 1){
+                                soapXML = soapXML + """
 \t\t\t\t<policyFormEndorsement policyFormEndorsementCode="${XmlUtil.escapeXml(row.split(" - ")[0])}">
 \t\t\t\t\t\t<policyFormEndorsementName>${XmlUtil.escapeXml(row.split(" - ")[1].replaceAll(".*:", ""))}</policyFormEndorsementName>
 \t\t\t\t</policyFormEndorsement>
 """
+                            }
+                            else{
+                                soapXML = soapXML + """
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="${XmlUtil.escapeXml(row)}">
+\t\t\t\t\t\t<policyFormEndorsementName></policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+"""
+                            }
+
                         }
                     }
                 }
@@ -323,11 +339,21 @@ class Intelledox {
 """
                         }
                         else{
-                            soapXML = soapXML + """
+                            if(row.split(" - ").size() > 1){
+                                soapXML = soapXML + """
 \t\t\t\t<policyFormEndorsement policyFormEndorsementCode="${XmlUtil.escapeXml(row.split(" - ")[0])}">
 \t\t\t\t\t\t<policyFormEndorsementName>${XmlUtil.escapeXml(row.split(" - ")[1].replaceAll(".*:", ""))}</policyFormEndorsementName>
 \t\t\t\t</policyFormEndorsement>
 """
+                            }
+                            else{
+                                soapXML = soapXML + """
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="${XmlUtil.escapeXml(row)}">
+\t\t\t\t\t\t<policyFormEndorsementName></policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+"""
+                            }
+
                         }
                     }
                 }
@@ -347,11 +373,21 @@ class Intelledox {
 """
                         }
                         else{
-                            soapXML = soapXML + """
+                            if(row.split(" - ").size() > 1){
+                                soapXML = soapXML + """
 \t\t\t\t<policyFormEndorsement policyFormEndorsementCode="${XmlUtil.escapeXml(row.split(" - ")[0])}">
 \t\t\t\t\t\t<policyFormEndorsementName>${XmlUtil.escapeXml(row.split(" - ")[1].replaceAll(".*:", ""))}</policyFormEndorsementName>
 \t\t\t\t</policyFormEndorsement>
 """
+                            }
+                            else{
+                                soapXML = soapXML + """
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="${XmlUtil.escapeXml(row)}">
+\t\t\t\t\t\t<policyFormEndorsementName></policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+"""
+                            }
+
                         }
                     }
                 }
@@ -703,6 +739,10 @@ class Intelledox {
                 soapXML = soapXML + """
 \\t\\t<brokerCompanyAddressZip>${brokerCompanyZip}</brokerCompanyAddressZip>"""
             }
+            if(brokerCompanyPhone != null){
+                soapXML = soapXML + """
+\t\t<brokerCompanyPhone>${brokerCompanyPhone}</brokerCompanyPhone>"""
+            }
             if (brokerCompanyLicense != null) {
                 soapXML = soapXML + """
 \\t\\t<brokerCompanyLicenseNumber> CALicNo:${brokerCompanyLicense}</brokerCompanyLicenseNumber>"""
@@ -828,6 +868,7 @@ class Intelledox {
 \t\t<coverageRow>""";
                 jsonSerial.getAt("cglLOB").split("\n").each {
                     if (it.length() > 0) {
+                        log.info ("CGLLOB TESTING ===== " + it)
                         soapXML = soapXML + """
 \t\t<coverage coveragePackage="${it.split("\t")[0]}">
 \t\t\t<coverageLimit> ${it.split("\t")[1]} </coverageLimit>

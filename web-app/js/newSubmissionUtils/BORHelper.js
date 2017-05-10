@@ -338,13 +338,6 @@ function initializeBORFunctions(){
 
     });
     $("#noRenewalButton").on("click", function() {
-        $('#namedInsured').val("");
-
-        $('#googleAutoAddress').val("");
-        $('#cityMailing').val("");
-        $('#stateMailing').val("invalid");
-        $('#zipCodeMailing').val("");
-
         $('#renewalModal').modal('hide');
         // $('#BORRequestNotification').css('display', "none");
         $('#renewalNotification').css('display', "none");

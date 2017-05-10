@@ -1991,10 +1991,42 @@ function ratePremiums(thisObj) {
                             if (responseJSON.coverages[i].coverageCode != "NOAL") {
                                 //termsInsert = termsInsert +
                                 //    responseJSON.coverages[i].coverageCode + " - " + responseJSON.coverages[i].productCode + "\n"  +  responseJSON.coverages[i].terms + "\n\n\n";
+                                var prefix = "ALL:";
+                                var find = prefix;
+                                var re = new RegExp(find, 'g');
+                                var endorseBody = responseJSON.coverages[i].endorse;
+
+                                endorseBody = endorseBody.replace(re, '');
+
+                                prefix = "EPKG:";
+                                find = prefix;
+                                re = new RegExp(find, 'g');
+                                endorseBody = endorseBody.replace(re, '');
+
+                                prefix = "CPK:";
+                                find = prefix;
+                                re = new RegExp(find, 'g');
+                                endorseBody = endorseBody.replace(re, '');
+
+                                prefix = "CGL:";
+                                find = prefix;
+                                re = new RegExp(find, 'g');
+                                endorseBody = endorseBody.replace(re, '');
+
+                                prefix = "NOAL:";
+                                find = prefix;
+                                re = new RegExp(find, 'g');
+                                endorseBody = endorseBody.replace(re, '');
+
+                                prefix = "NOHA:";
+                                find = prefix;
+                                re = new RegExp(find, 'g');
+                                endorseBody = endorseBody.replace(re, '');
+
                                 endorseInsert = endorseInsert +
                                     "<span id='" + responseJSON.coverages[i].coverageCode + "_EndorsementForms'>" +
                                     responseJSON.coverages[i].coverageCode + " - " + responseJSON.coverages[i].productCode + "\n" +
-                                    responseJSON.coverages[i].endorse + "\n\n\n" +
+                                    endorseBody + "\n\n\n" +
                                     "</span>"
                                 ;
                             }
