@@ -550,10 +550,60 @@ function getSubmissionMap() {
             productArray.push("EPKG37");
         }
         submissionMap.EPKGRateInfo = $('#EPKG_RateInfo').html();
+        submissionMap.EPKGIndicationRateInfo = $('#EPKG_IndicationRateInfo').html();
+
     }
     else {
         if ($('#PIPChoiceInputRadio').is(':checked')) {
             productArray.push("PIP CHOI");
+
+            var indicationRateInfo = "";
+            $('div#reviewLimitsDeducts div.EPKG_LOBRow').each(function() {
+                var cov = $(this).find('.coverageColumn').children().first().html();
+                var lim = $(this).find('.limitColumn').children().first().html();
+                var ded = $(this).find('.deductibleColumn').children().first().html();
+                var prem = $(this).find('.premiumColumn').children().first().html();
+                var twoSpaces = "  ";
+
+                if(cov.trim() === "Miscellaneous Rented Equipment"){
+                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + "Miscellaneous Rented Equipment\t\n";
+                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Rate\t0.5\n";
+                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Limit\t" + lim + "\n";
+                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Min Premium\t\$100\n";
+                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Rated Premium\t" + prem + "\n";
+                }
+                if(cov.trim() === "Extra Expense"){
+                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + "Extra Expense\t\n";
+                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Rate\t0.1\n";
+                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Limit\t" + lim + "\n";
+                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Min Premium\t\$100\n";
+                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Rated Premium\t" + prem + "\n";
+                }
+                if(cov.trim() === "Props, Sets &amp; Wardrobe"){
+                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + "Props, Sets & Wardrobe\t\n";
+                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Rate\t0.5\n";
+                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Limit\t" + lim + "\n";
+                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Min Premium\t\$100\n";
+                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Rated Premium\t" + prem + "\n";
+                }
+                if(cov.trim() === "Third Party Prop Damage Liab"){
+                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + "Third Party Prop Damage Liab\t\n";
+                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Rate\t0.5\n";
+                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Limit\t" + lim + "\n";
+                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Min Premium\t\$100\n";
+                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Rated Premium\t" + prem + "\n";
+                }
+                if(cov.trim() === "Hired Auto Physical Damage"){
+                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + "Hired Auto Physical Damage\t\n";
+                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Rate\tflat\n";
+                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Premium\t" + prem + "\n";
+                }
+
+            });
+
+            indicationRateInfo = indicationRateInfo + "Entertainment Package Premium\t" + $('#PIPCHOIPremiumTotal').html().trim() + "\n";
+
+            $('#EPKG_IndicationRateInfo').html(indicationRateInfo);
         }
         if ($('#PIP1InputRadio').is(':checked')) {
             productArray.push("PIP 1");
@@ -572,6 +622,7 @@ function getSubmissionMap() {
         }
         if ($('#EPKGcoverage').is(':checked')) {
             submissionMap.EPKGRateInfo = $('#EPKG_RateInfo').html();
+            submissionMap.EPKGIndicationRateInfo = $('#EPKG_IndicationRateInfo').html();
         }
 
     }
@@ -584,6 +635,8 @@ function getSubmissionMap() {
             productArray.push("BARCPKGC");
         }
         submissionMap.CPKRateInfo = $('#CPK_RateInfo').html() + $('#NOAL_RateInfo').html();
+        submissionMap.CPKIndicationRateInfo = $('#CPK_IndicationRateInfo').html();
+
 
     }
     if ($('#CGLInputRadio').is(':checked')) {
@@ -596,6 +649,8 @@ function getSubmissionMap() {
             productArray.push("BARCPKGC");
         }
         submissionMap.CGLRateInfo = $('#CGL_RateInfo').html();
+        submissionMap.CGLIndicationRateInfo = $('#CGL_IndicationRateInfo').html();
+
     }
     if (productArray.length === 0) {
         validSubmission = false;

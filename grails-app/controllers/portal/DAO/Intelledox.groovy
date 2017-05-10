@@ -53,6 +53,15 @@ class Intelledox {
             }
 
 
+            //BROKER HEADER STUFF
+            def brokerCompanyName = XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyName'));
+            def brokerCompanyAddress = XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyAddress'));
+            def brokerCompanyAddressCity = XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyCity'));
+            def brokerCompanyState = XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyState'));
+            def brokerCompanyZip = XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyZip'));
+            def brokerCompanyPhone = XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyPhone'));
+            def brokerCompanyLicense = XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyLicense'));
+
 
             def soapXML = """<x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:int="http://services.dpm.com.au/intelledox/">
     <x:Header/>
@@ -69,13 +78,30 @@ class Intelledox {
 \t<basicInfo>
 \t\t<logo>c:\\IntelledoxLogo\\trumanVanDyke.png</logo>
 \t\t<nameOfInsured>${XmlUtil.escapeXml(jsonSerial.getAt('namedInsured'))}</nameOfInsured>
-\t\t<brokerCompanyName>${XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyName'))}</brokerCompanyName>
-\t\t<brokerCompanyAddress>${XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyAddress'))}</brokerCompanyAddress>
-\t\t<brokerCompanyAddressCity>${XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyCity'))}</brokerCompanyAddressCity>
-\t\t<brokerCompanyAddressState>${XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyState'))}</brokerCompanyAddressState>
-\t\t<brokerCompanyAddressZip>${XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyZip'))}</brokerCompanyAddressZip>
-\t\t<brokerCompanyPhone>${XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyPhone'))}</brokerCompanyPhone>
-\t\t<brokerCompanyLicenseNumber>${XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyLicense'))}</brokerCompanyLicenseNumber>
+\t\t<brokerCompanyName>${brokerCompanyName}</brokerCompanyName>"""
+
+            if(brokerCompanyAddress != null){
+                soapXML = soapXML + """
+\t\t<brokerCompanyAddress>${brokerCompanyAddress}</brokerCompanyAddress>"""
+            }
+            if(brokerCompanyAddressCity != null){
+                soapXML = soapXML + """
+\t\t<brokerCompanyAddressCity>${brokerCompanyAddressCity}</brokerCompanyAddressCity>"""
+            }
+            if(brokerCompanyState != null){
+                soapXML = soapXML + """
+\t\t<brokerCompanyAddressState>,${brokerCompanyState}</brokerCompanyAddressState>"""
+            }
+            if(brokerCompanyZip != null){
+                soapXML = soapXML + """
+\t\t<brokerCompanyAddressZip>${brokerCompanyZip}</brokerCompanyAddressZip>"""
+            }
+            if(brokerCompanyLicense != null){
+                soapXML = soapXML + """
+\t\t<brokerCompanyLicenseNumber> CALicNo:${brokerCompanyLicense}</brokerCompanyLicenseNumber>"""
+            }
+
+            soapXML = soapXML + """
 \t\t<agentName>${XmlUtil.escapeXml(jsonSerial.getAt('attention'))}</agentName>
 \t\t<agentLicenseNumber>${ XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyLicense')) ? XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyLicense')) : ""}</agentLicenseNumber>
 \t\t<agentEmail>${XmlUtil.escapeXml(jsonSerial.getAt('brokerEmail'))}</agentEmail>
@@ -274,7 +300,7 @@ class Intelledox {
                         else{
                             soapXML = soapXML + """
 \t\t\t\t<policyFormEndorsement policyFormEndorsementCode="${XmlUtil.escapeXml(row.split(" - ")[0])}">
-\t\t\t\t\t\t<policyFormEndorsementName>${XmlUtil.escapeXml(row.split(" - ")[1])}</policyFormEndorsementName>
+\t\t\t\t\t\t<policyFormEndorsementName>${XmlUtil.escapeXml(row.split(" - ")[1].replaceAll(".*:", ""))}</policyFormEndorsementName>
 \t\t\t\t</policyFormEndorsement>
 """
                         }
@@ -299,7 +325,7 @@ class Intelledox {
                         else{
                             soapXML = soapXML + """
 \t\t\t\t<policyFormEndorsement policyFormEndorsementCode="${XmlUtil.escapeXml(row.split(" - ")[0])}">
-\t\t\t\t\t\t<policyFormEndorsementName>${XmlUtil.escapeXml(row.split(" - ")[1])}</policyFormEndorsementName>
+\t\t\t\t\t\t<policyFormEndorsementName>${XmlUtil.escapeXml(row.split(" - ")[1].replaceAll(".*:", ""))}</policyFormEndorsementName>
 \t\t\t\t</policyFormEndorsement>
 """
                         }
@@ -323,7 +349,7 @@ class Intelledox {
                         else{
                             soapXML = soapXML + """
 \t\t\t\t<policyFormEndorsement policyFormEndorsementCode="${XmlUtil.escapeXml(row.split(" - ")[0])}">
-\t\t\t\t\t\t<policyFormEndorsementName>${XmlUtil.escapeXml(row.split(" - ")[1])}</policyFormEndorsementName>
+\t\t\t\t\t\t<policyFormEndorsementName>${XmlUtil.escapeXml(row.split(" - ")[1].replaceAll(".*:", ""))}</policyFormEndorsementName>
 \t\t\t\t</policyFormEndorsement>
 """
                         }
@@ -355,37 +381,82 @@ class Intelledox {
 
             soapXML = soapXML + """
 \t<ratingTable>
+\t\t<ratingHeader>Rating</ratingHeader>
 \t"""
 
-            if(jsonSerial.getAt("EPKGRateInfo") != null){
+            if(jsonSerial.getAt("EPKGIndicationRateInfo") != null){
                 soapXML = soapXML + """
-\t
-\t
-\t\t<ratingHeader>Rating</ratingHeader>
 \t\t<ratingRow>
 \t\t\t<rating ratingName="Entertainment Package">
-\t\t\t\t<ratingPrice>${XmlUtil.escapeXml(jsonSerial.getAt("EPKGRateInfo"))}</ratingPrice>
-\t\t\t</rating>
+\t\t\t\t<ratingPrice>  </ratingPrice>
+\t\t\t</rating>"""
+
+                jsonSerial.getAt("EPKGIndicationRateInfo").split("\n").eachWithIndex{ row, index ->
+                    log.info("ROW: " + row)
+                    if(row.split("\t").size()>1){
+                        soapXML = soapXML + """
+\t\t\t<rating ratingName="${row.split("\t")[0]}">
+\t\t\t\t<ratingPrice> ${XmlUtil.escapeXml(row.split("\t")[1])}</ratingPrice>
+\t\t\t</rating>"""
+                    }
+                    else{
+                        soapXML = soapXML + """
+\t\t\t<rating ratingName="${row.split("\t")[0]}">
+\t\t\t\t<ratingPrice></ratingPrice>
+\t\t\t</rating>"""
+                    }
+                }
+                soapXML = soapXML + """
 \t\t</ratingRow>"""
             }
-            if(jsonSerial.getAt("CPKRateInfo") != null){
+            if(jsonSerial.getAt("CPKIndicationRateInfo") != null){
                 soapXML = soapXML + """
-\t
-\t
 \t\t<ratingRow>
 \t\t\t<rating ratingName="Commercial Package">
-\t\t\t\t<ratingPrice>${XmlUtil.escapeXml(jsonSerial.getAt("CPKRateInfo"))}</ratingPrice>
-\t\t\t</rating>
+\t\t\t\t<ratingPrice>  </ratingPrice>
+\t\t\t</rating>"""
+
+                jsonSerial.getAt("CPKIndicationRateInfo").split("\n").eachWithIndex{ row, index ->
+                    log.info("ROW: " + row)
+                    if(row.split("\t").size()>1){
+                        soapXML = soapXML + """
+\t\t\t<rating ratingName="${row.split("\t")[0]}">
+\t\t\t\t<ratingPrice> ${XmlUtil.escapeXml(row.split("\t")[1])}</ratingPrice>
+\t\t\t</rating>"""
+                    }
+                    else{
+                        soapXML = soapXML + """
+\t\t\t<rating ratingName="${row.split("\t")[0]}">
+\t\t\t\t<ratingPrice></ratingPrice>
+\t\t\t</rating>"""
+                    }
+                }
+                soapXML = soapXML + """
 \t\t</ratingRow>"""
             }
-            else if(jsonSerial.getAt("CGLRateInfo") != null){
+            else if(jsonSerial.getAt("CGLIndicationRateInfo") != null){
                 soapXML = soapXML + """
-\t
-\t
 \t\t<ratingRow>
 \t\t\t<rating ratingName="Commercial General Liability">
-\t\t\t\t<ratingPrice>${XmlUtil.escapeXml(jsonSerial.getAt("CGLRateInfo"))}</ratingPrice>
-\t\t\t</rating>
+\t\t\t\t<ratingPrice>  </ratingPrice>
+\t\t\t</rating>"""
+
+                jsonSerial.getAt("CGLIndicationRateInfo").split("\n").eachWithIndex{ row, index ->
+                    log.info("ROW: " + row)
+                    if(row.split("\t").size()>1){
+                        soapXML = soapXML + """
+\t\t\t<rating ratingName="${row.split("\t")[0]}">
+\t\t\t\t<ratingPrice> ${XmlUtil.escapeXml(row.split("\t")[1])}</ratingPrice>
+\t\t\t</rating>"""
+                    }
+                    else{
+                        soapXML = soapXML + """
+\t\t\t<rating ratingName="${row.split("\t")[0]}">
+\t\t\t\t<ratingPrice></ratingPrice>
+\t\t\t</rating>"""
+                    }
+                }
+                soapXML = soapXML + """
 \t\t</ratingRow>"""
             }
 
@@ -588,6 +659,15 @@ class Intelledox {
                 coverages = coverages + "NOAL "
             }
 
+            //BROKER HEADER STUFF
+            def brokerCompanyName = XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyName'));
+            def brokerCompanyAddress = XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyAddress'));
+            def brokerCompanyAddressCity = XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyCity'));
+            def brokerCompanyState = XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyState'));
+            def brokerCompanyZip = XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyZip'));
+            def brokerCompanyPhone = XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyPhone'));
+            def brokerCompanyLicense = XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyLicense'));
+
 
 
             def soapXML = """<x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:int="http://services.dpm.com.au/intelledox/">
@@ -605,13 +685,30 @@ class Intelledox {
 \t<basicInfo>
 \t\t<logo>c:\\IntelledoxLogo\\proSight.png</logo>
 \t\t<nameOfInsured>${XmlUtil.escapeXml(jsonSerial.getAt('namedInsured'))}</nameOfInsured>
-\t\t<brokerCompanyName>${XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyName'))}</brokerCompanyName>
-\t\t<brokerCompanyAddress>${XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyAddress'))}</brokerCompanyAddress>
-\t\t<brokerCompanyAddressCity>${XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyCity'))}</brokerCompanyAddressCity>
-\t\t<brokerCompanyAddressState>${XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyState'))}</brokerCompanyAddressState>
-\t\t<brokerCompanyAddressZip>${XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyZip'))}</brokerCompanyAddressZip>
-\t\t<brokerCompanyPhone>${XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyPhone'))}</brokerCompanyPhone>
-\t\t<brokerCompanyLicenseNumber>${XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyLicense'))}</brokerCompanyLicenseNumber>
+\t\t<brokerCompanyName>${XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyName'))}</brokerCompanyName>"""
+
+            if (brokerCompanyAddress != null) {
+                soapXML = soapXML + """
+\\t\\t<brokerCompanyAddress>${brokerCompanyAddress}</brokerCompanyAddress>"""
+            }
+            if (brokerCompanyAddressCity != null) {
+                soapXML = soapXML + """
+\\t\\t<brokerCompanyAddressCity>${brokerCompanyAddressCity}</brokerCompanyAddressCity>"""
+            }
+            if (brokerCompanyState != null) {
+                soapXML = soapXML + """
+\\t\\t<brokerCompanyAddressState>,${brokerCompanyState}</brokerCompanyAddressState>"""
+            }
+            if (brokerCompanyZip != null) {
+                soapXML = soapXML + """
+\\t\\t<brokerCompanyAddressZip>${brokerCompanyZip}</brokerCompanyAddressZip>"""
+            }
+            if (brokerCompanyLicense != null) {
+                soapXML = soapXML + """
+\\t\\t<brokerCompanyLicenseNumber> CALicNo:${brokerCompanyLicense}</brokerCompanyLicenseNumber>"""
+            }
+
+            soapXML = soapXML + """
 \t\t<agentName>${XmlUtil.escapeXml(jsonSerial.getAt('attention'))}</agentName>
 \t\t<agentLicenseNumber>${ XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyLicense')) ? XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyLicense')) : ""}</agentLicenseNumber>
 \t\t<agentEmail>${XmlUtil.escapeXml(jsonSerial.getAt('brokerEmail'))}</agentEmail>
@@ -649,15 +746,15 @@ class Intelledox {
 \t\t<namedInsuredHeader>Named Insured</namedInsuredHeader>
 \t\t<namedInsuredRow>
 \t\t\t<nameInsured nameInsuredColOne="${XmlUtil.escapeXml(jsonSerial.getAt("namedInsured"))}"></nameInsured>
-\t\t\t<nameInsuredColTwo>Contact: ${XmlUtil.escapeXml(jsonSerial.getAt("principalName"))}</nameInsuredColTwo>
+\t\t\t<nameInsuredColTwo></nameInsuredColTwo>
 \t\t</namedInsuredRow>
 \t\t<namedInsuredRow>
 \t\t\t<nameInsured nameInsuredColOne="${XmlUtil.escapeXml(jsonSerial.getAt('streetNameMailing'))}"></nameInsured>
-\t\t\t<nameInsuredColTwo>Email: ${XmlUtil.escapeXml(jsonSerial.getAt("principalEmail"))}</nameInsuredColTwo>
+\t\t\t<nameInsuredColTwo></nameInsuredColTwo>
 \t\t</namedInsuredRow>
 \t\t<namedInsuredRow>
 \t\t\t<nameInsured nameInsuredColOne="${XmlUtil.escapeXml(jsonSerial.getAt('cityMailing'))}, ${XmlUtil.escapeXml(jsonSerial.getAt('stateMailing'))} ${XmlUtil.escapeXml(jsonSerial.getAt('zipCodeMailing'))}"></nameInsured>
-\t\t\t<nameInsuredColTwo>Phone: ${XmlUtil.escapeXml(jsonSerial.getAt("principalPhone"))}</nameInsuredColTwo>
+\t\t\t<nameInsuredColTwo></nameInsuredColTwo>
 \t\t</namedInsuredRow>
 \t</namedInsuredTable>
 \t

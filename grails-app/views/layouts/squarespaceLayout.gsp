@@ -35,18 +35,19 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" id="squarespaceBrandText" href="https://christopher-paik.squarespace.com">NEW EMPIRE</a>
+            <a class="navbar-brand" id="squarespaceBrandText" href="https://www.neeisins.com">NEW EMPIRE</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="#">Home</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Products</a></li>
-                <li><a href="#">Blog</a></li>
-                <li><a href="#">Contact Us</a></li>
+                <li><a href="https://www.neeisins.com">Home</a></li>
+                <li><a href="https://www.neeisins.com/about/">About</a></li>
+                <li><a href="https://www.neeisins.com/intro-2/">Services</a></li>
+                <li><a href="https://neeis.epaypolicy.com/">Epay</a></li>
+                <li><a href="https://neeis.epaypolicy.com">NE Portal</a></li>
+                <li><a href="https://www.neeisins.com/new-page/">Contact Us</a></li>
 
 
 

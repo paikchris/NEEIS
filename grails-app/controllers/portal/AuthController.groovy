@@ -58,9 +58,57 @@ class AuthController {
         User u;
         try{
             def userReferenceID = 0;
-            aimsql.call("{call dbo.GetKeyField(${Sql.INTEGER}, 'ReferenceID')}") { num ->
-                log.info "userReferenceID $num"
-                userReferenceID = num
+            def userExistsInAIM = false;
+            Sql aimsql = new Sql(dataSource_aim)
+
+            aimsql.eachRow("SELECT     NameKeyPK, Name, IDCode, NameTypeID, TypeID, Address1, Address2, City, State, PostalCode, AddressKey, Country, MailAddress1, MailAddress2, MailCity, \n" +
+                    "                      MailState, MailPostalCode, MailAddressKey, Phone, Extension, Fax, PhoneAltType, Home, PhoneAltType2, Remarks, Title, OwnerKey_FK, Email, URL, StatusID, \n" +
+                    "                      ActiveFlag, SSN_TaxID, FlagPhysicalAddr, FlagAccountingAddr, FlagPrimaryContact, FlagCompany, PositionID, TitleID, Salutation, CreatedByID, DateAdded, \n" +
+                    "                      DateModified, SortName, OwnerID, CustomGrpID, FlagContact, PreviousPhone, PreviousFax, AcctExec, CsrID, AcctExecName, CsrName, OtherGroupID, \n" +
+                    "                      FlagUseOwnerPhone, FlagUseOwnerFax, FlagUseOwnerAddress, MktRepID, MktRepName, CommMethodID, AcctgEMail, MobilePhone, PhoneOther, ExchangeKey_FK, \n" +
+                    "                      FlagPhoneBookOnly, LicenseNbr, UserField1, ModifiedByID, MapToID, NameTypeSubID, AcctgAddress1, AcctgAddress2, AcctgCity, AcctgPostalCode, AcctgState, \n" +
+                    "                      Flag1099, GLAcct, DefaultInvAmt, Terms, DefaultInvDescription, Contact, AcctgPhone, AcctgFax, DefaultInvBasis, FlagMonthlyPayment, FlagOneTime, \n" +
+                    "                      LastStatementKey_FK, CountryID, MailCountryID\n" +
+                    "FROM         taaNameMaster\n" +
+                    "WHERE     (Email = '${params.email}')") {
+                log.info it.email
+                log.info "Broker is in AIM"
+                userExistsInAIM = true;
+                userReferenceID = it.NameKeyPK
+            }
+
+            if(userExistsInAIM){
+            }
+            else{
+                aimsql.call("{call dbo.GetKeyField(${Sql.INTEGER}, 'ReferenceID')}") { num ->
+                    log.info "userReferenceID $num"
+                    userReferenceID = num
+                }
+                def now = new Date()
+                def timestamp = now.format(dateFormat, timeZone)
+
+                aimsql.execute "insert into taaNameMaster\n" +
+                        "  (Name, NameTypeID, NameKeyPK, IDCode, TypeID, Address1, Address2, City, \n" +
+                        "   State, PostalCode, AddressKey, Country, MailAddress1, MailAddress2, \n" +
+                        "   MailCity, MailState, MailPostalCode, MailAddressKey, Phone, Extension, \n" +
+                        "   Fax, PhoneAltType, Home, PhoneAltType2, MobilePhone, PhoneOther, Remarks, \n" +
+                        "   Title, OwnerKey_FK, Email, URL, StatusID, ActiveFlag, SSN_TaxID, FlagPhysicalAddr, \n" +
+                        "   FlagAccountingAddr, FlagPrimaryContact, FlagCompany, PositionID, TitleID, \n" +
+                        "   Salutation, CreatedByID, DateAdded, DateModified, SortName, OwnerID, \n" +
+                        "   FlagContact, FlagUseOwnerPhone, FlagUseOwnerFax, FlagUseOwnerAddress, \n" +
+                        "   CommMethodID, FlagPhoneBookOnly, LicenseNbr, UserField1)\n" +
+                        "values\n" +
+                        "  ('${params.firstName} ${params.lastName}', 'I', ${userReferenceID}, '${params.agencyID}', 'A', NULL, NULL, \n" +
+                        "   NULL, NULL, NULL, NULL, NULL, NULL, NULL, \n" +
+                        "   NULL, NULL, NULL, NULL, NULL, NULL, \n" +
+                        "   NULL, NULL, NULL, NULL, NULL, NULL, \n" +
+                        "   '', NULL, ${params.agencyPIN}, NULL, NULL, NULL, 'Y', \n" +
+                        "   NULL, NULL, NULL, NULL, \n" +
+                        "   NULL, NULL, NULL, '${params.firstName}', 'jason', '${timestamp}', \n" +
+                        "   '${timestamp}', NULL, NULL, NULL, NULL, \n" +
+                        "   NULL, NULL, NULL, 'N', \n" +
+                        "   NULL, NULL)"
+                aimsql.commit();
             }
 
             u = new portal.User(userRole:userRole, email:params.email, password:params.password,
@@ -68,45 +116,16 @@ class AuthController {
             u.save(flush: true, failOnError: true)
 
 
-            def now = new Date()
-            def timestamp = now.format(dateFormat, timeZone)
 
-            Sql aimsql = new Sql(dataSource_aim)
-
-
-
-            aimsql.execute "insert into taaNameMaster\n" +
-                    "  (Name, NameTypeID, NameKeyPK, IDCode, TypeID, Address1, Address2, City, \n" +
-                    "   State, PostalCode, AddressKey, Country, MailAddress1, MailAddress2, \n" +
-                    "   MailCity, MailState, MailPostalCode, MailAddressKey, Phone, Extension, \n" +
-                    "   Fax, PhoneAltType, Home, PhoneAltType2, MobilePhone, PhoneOther, Remarks, \n" +
-                    "   Title, OwnerKey_FK, Email, URL, StatusID, ActiveFlag, SSN_TaxID, FlagPhysicalAddr, \n" +
-                    "   FlagAccountingAddr, FlagPrimaryContact, FlagCompany, PositionID, TitleID, \n" +
-                    "   Salutation, CreatedByID, DateAdded, DateModified, SortName, OwnerID, \n" +
-                    "   FlagContact, FlagUseOwnerPhone, FlagUseOwnerFax, FlagUseOwnerAddress, \n" +
-                    "   CommMethodID, FlagPhoneBookOnly, LicenseNbr, UserField1)\n" +
-                    "values\n" +
-                    "  ('${params.firstName} ${params.lastName}', 'I', ${userReferenceID}, '${params.agencyID}', 'A', NULL, NULL, \n" +
-                    "   NULL, NULL, NULL, NULL, NULL, NULL, NULL, \n" +
-                    "   NULL, NULL, NULL, NULL, NULL, NULL, \n" +
-                    "   NULL, NULL, NULL, NULL, NULL, NULL, \n" +
-                    "   '', NULL, ${params.agencyPIN}, NULL, NULL, NULL, 'Y', \n" +
-                    "   NULL, NULL, NULL, NULL, \n" +
-                    "   NULL, NULL, NULL, '${params.firstName}', 'jason', '${timestamp}', \n" +
-                    "   '${timestamp}', NULL, NULL, NULL, NULL, \n" +
-                    "   NULL, NULL, NULL, 'N', \n" +
-                    "   NULL, NULL)"
-            aimsql.commit();
-
-            def http = new HTTPBuilder( 'http://104.131.41.129:3000/register' )
-            def postBody = [email: params.email, pw: params.password, producerID: params.company, nameKeyPK: userReferenceID] // will be url-encoded
-
-            http.post( path: '/register', body: postBody,
-                    requestContentType: URLENC ) { resp ->
-
-                log.info "POST Success: ${resp.statusLine}"
-//                assert resp.statusLine.statusCode == 201
-            }
+//            def http = new HTTPBuilder( 'http://104.131.41.129:3000/register' )
+//            def postBody = [email: params.email, pw: params.password, producerID: params.company, nameKeyPK: userReferenceID] // will be url-encoded
+//
+//            http.post( path: '/register', body: postBody,
+//                    requestContentType: URLENC ) { resp ->
+//
+//                log.info "POST Success: ${resp.statusLine}"
+////                assert resp.statusLine.statusCode == 201
+//            }
         }
         catch(Exception e){
             error=true;
@@ -241,5 +260,18 @@ class AuthController {
         }
 
         render "good"
+    }
+
+    def checkEmail(){
+        log.info "CHECKING EMAIL"
+        log.info params
+        def renderString = "";
+        if(User.findWhere(email:params.email) ){
+            renderString = "Error:User with that email already exists."
+        }
+        else{
+            renderString = "OK:Email/Username is available"
+        }
+        render renderString;
     }
 }

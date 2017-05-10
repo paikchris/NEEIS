@@ -52,12 +52,19 @@ $(document).ready(function () {
         })
     });
 
-// MIN MAX LIMITS
+// MIN MAX LIMITS EVENT DAYS
     $(document.body).on('change', 'input[name="howManyDaysIsTheEvent"]', function () {
         //alert();
         var value, min, max
         validate(value, min, max)
     });
+
+// MIN MAX LIMITS ATTENDANCE
+//     $(document.body).on('change', 'input[name="estimatedTotalAttendance"]', function () {
+//         //alert();
+//         var value, min, max
+//         validate(value, min, max)
+//     });
 
 // TOTAL PREMIUM COST !@#
 
@@ -79,10 +86,33 @@ $(document).ready(function () {
             // alert ("step one" + attendance)
             // alert ("step two" + eventDays)
             CGLPremium = getCGLPremium(totalPremiumCGL)
-            $("#commercialGeneralLiabilityPremiumCost").html("$" + CGLPremium);
+            temptermLenghtDays = $("#proposedTermLength").val().split(" ")[0]
+            termLenghtDays = parseInt(temptermLenghtDays)
 
-            $("#termsInsert").css('display', "");
-            $("#endorseInsert").css('display', "");
+            if (termLenghtDays > 0 && termLenghtDays < 365) {
+
+                $("#commercialGeneralLiabilityPremiumCost").html("$" + CGLPremium);
+                $("#termsInsert").css('display', "");
+                $("#endorseInsert").css('display', "");
+            }
+            else if (termLenghtDays = 365) {
+
+                CGLPremiumInt = parseInt(CGLPremium)
+                if (CGLPremiumInt < 1000) {
+                    var minCGLPremium = 1000
+
+                    $("#commercialGeneralLiabilityPremiumCost").html("$" + minCGLPremium);
+                    $("#termsInsert").css('display', "");
+                    $("#endorseInsert").css('display', "");
+                }
+                else if (CGLPremiumInt >= 1000) {
+                    CGLPremium = getCGLPremium(totalPremiumCGL)
+
+                    $("#commercialGeneralLiabilityPremiumCost").html("$" + CGLPremium);
+                    $("#termsInsert").css('display', "");
+                    $("#endorseInsert").css('display', "");
+                }
+            }
         }
     });
 // ALCOHOL PREMIUM
@@ -164,11 +194,13 @@ $(document).ready(function () {
         //alert();
         if ($(this).attr("value") == "Yes") {
             $("#commercialGeneralLiabilityRequestedContainer").css('display', "");
+            $(".additionalCoverageContainer").css('display', "");
             $("#commercialGeneralLiabilityRequestedExplain").css('display', "");
             $(".tableCGL").addClass("showReviewTable");
         }
         if ($(this).attr("value") == "No") {
             $("#commercialGeneralLiabilityRequestedContainer").css('display', "none");
+            $(".additionalCoverageContainer").css('display', "none");
             $("#commercialGeneralLiabilityRequestedExplain").css('display', "none");
             $(".tableCGL").removeClass("showReviewTable");
         }
@@ -620,6 +652,173 @@ $(document).ready(function () {
 
 
 // YES NO CHECK BOX HIDDEN QUESTIONS / TABLES
+
+
+
+    // ADDITIONAL COVERAGES
+    // SELECT MISC EQUIPMENT CONTAINER ADDITIONAL QUESTION
+    $(document.body).on('change', '.miscCheckbox' ,function(){
+        var clickedElement = $(this)
+        $(".miscCheckbox").each(function(){
+            if (clickedElement == $(this)){
+                $(this).prop('checked', true);
+            }
+            else{
+                $(this).prop('checked', false);
+            }
+        })
+
+        $(this).prop('checked', true);
+
+        if($(".miscCheckbox").is(':checked')) {
+            $('.miscContainer').css("display", "");
+            $('.inlandMarineContainer').css("display", "");
+            $('.miscLimitContainer').css("display", "");
+            $(".miscLimit").addClass("effectsTotal");
+        }
+        else{
+            $('.miscContainer').css("display", "none");
+            $('.inlandMarineContainer').css("display", "none");
+            $('.miscLimitContainer').css("display", "none");
+            $(".miscLimit").remove("effectsTotal");
+        }
+    });
+    $(document.body).on('change', '.limitMiscellaneous' ,function(){
+        getMiscellaneousEquipmentDeductible()
+        getMiscellaneousEquipmentRating();
+    });
+
+
+
+
+    // SELECT THIRD PARTY PROPERTY DAMAGE CONTAINER ADDITIONAL QUESTION
+    $(document.body).on('change', '#thirdPartyCheckbox' ,function(){
+        if($("#thirdPartyCheckbox").is(':checked')) {
+            $('.thirdPartyContainer').css("display", "");
+            $('.inlandMarineContainer').css("display", "");
+        }
+        else{
+            $('.thirdPartyContainer').css("display", "none");
+            $('.inlandMarineContainer').css("display", "none");
+        }
+    });
+
+    // LIMITS
+    // GENERAL AGGREGATE LIMIT
+    $('.generalAggregateLimit').change(function() {
+        // $(document.body).on('change', '#securityType' ,function () {
+        var option = $(this).find('option:selected').val();
+        // alert(option);
+        if  (option == "additional") {
+            $(".genLiabLimitContainer").css('display', "");
+            $(".genLiabLimit").addClass("effectsTotal");
+            $(".premiumGenAgg").html("$" + "250");
+            var premium
+            totalPremiumTotal = getTotalPremium(premium)
+            $("#totalSalePremiumCost").html("$" + totalPremiumTotal);
+        }
+        if  (option == "standard") {
+            $(".genLiabLimitContainer").css('display', "none");
+            $(".genLiabLimit").removeClass("effectsTotal");
+            $(".premiumGenAgg").html("");
+            var premium
+            totalPremiumTotal = getTotalPremium(premium)
+            $("#totalSalePremiumCost").html("$" + totalPremiumTotal);
+        }
+    });
+    // PRODUCT AND COMPLETED OPERATION LIMIT
+    $('.productAndCompletedOperationsLimit').change(function() {
+        // $(document.body).on('change', '#securityType' ,function () {
+        var option = $(this).find('option:selected').val();
+        // alert(option);
+        if  (option == "additional") {
+            $(".productsCompletedWorkTotalLimitContainer").css('display', "");
+            $(".productLimit").addClass("effectsTotal");
+            $(".premiumProduct").html("$" + "250");
+            var premium
+            totalPremiumTotal = getTotalPremium(premium)
+            $("#totalSalePremiumCost").html("$" + totalPremiumTotal);
+        }
+        if  (option == "standard") {
+            $(".productsCompletedWorkTotalLimitContainer").css('display', "none");
+            $(".productLimit").removeClass("effectsTotal");
+            $(".premiumProduct").html("");
+            var premium
+            totalPremiumTotal = getTotalPremium(premium)
+            $("#totalSalePremiumCost").html("$" + totalPremiumTotal);
+        }
+    });
+    // PREMISES DAMAGE LIMIT
+    $('.premisesDamageLimit').change(function() {
+        // $(document.body).on('change', '#securityType' ,function () {
+        var option = $(this).find('option:selected').val();
+        // alert(option);
+        if  (option == "additional") {
+            $(".premisesContainer").css('display', "");
+            $(".premisesLimit").addClass("effectsTotal");
+
+            temptermLenghtDays = $("#proposedTermLength").val().split(" ")[0]
+            termLenghtDays = parseInt(temptermLenghtDays)
+
+            if (termLenghtDays > 0 && termLenghtDays <= 90) {
+
+                var premisesAdditionalCost = 100
+                $(".premisesLimit").html("$" + premisesAdditionalCost);
+                $(".premiumPremises").html("$" + "100");
+            }
+
+            else if (termLenghtDays > 91 && termLenghtDays <= 180) {
+
+                var premisesAdditionalCost = 250
+                $(".premisesLimit").html("$" + premisesAdditionalCost);
+                $(".premiumPremises").html("$" + "250");
+            }
+
+            else if (termLenghtDays > 181) {
+
+                var premisesAdditionalCost = 450
+                $(".premisesLimit").html("$" + premisesAdditionalCost);
+                $(".premiumPremises").html("$" + "450");
+            }
+
+            var premium
+            totalPremiumTotal = getTotalPremium(premium)
+            $("#totalSalePremiumCost").html("$" + totalPremiumTotal);
+        }
+        if  (option == "standard") {
+            $(".premisesContainer").css('display', "none");
+            $(".premisesLimit").removeClass("effectsTotal");
+            $(".premiumPremises").html("");
+
+            var premium
+            totalPremiumTotal = getTotalPremium(premium)
+            $("#totalSalePremiumCost").html("$" + totalPremiumTotal);
+        }
+    });
+    // MEDICAL LIMIT
+    $('.medicalExpensesLimit').change(function() {
+        // $(document.body).on('change', '#securityType' ,function () {
+        var option = $(this).find('option:selected').val();
+        // alert(option);
+        if  (option == "additional") {
+            alert ("MEDICAL EXPENSE COVERAGE MUST BE REQUIRED BY CONTRACT IF SELECTED")
+            $(".medicalLimitContainer").css('display', "");
+            $(".medicalLimit").addClass("effectsTotal");
+            $(".premiumMedical").html("$" + "250");
+            var premium
+            totalPremiumTotal = getTotalPremium(premium)
+            $("#totalSalePremiumCost").html("$" + totalPremiumTotal);
+        }
+        if  (option == "standard") {
+            $(".medicalLimitContainer").css('display', "none");
+            $(".medicalLimit").removeClass("effectsTotal");
+            $(".premiumMedical").html("");
+            var premium
+            totalPremiumTotal = getTotalPremium(premium)
+            $("#totalSalePremiumCost").html("$" + totalPremiumTotal);
+        }
+    });
+
 });
 
 
@@ -901,6 +1100,7 @@ function inputMoneyFormat() {
     $('.costVehicles').maskMoney({prefix: '$', precision: "0"});
     $('.totalReceipts').maskMoney({prefix: '$', precision: "0"});
     $('.totalPayroll').maskMoney({prefix: '$', precision: "0"});
+    $('.limitMiscellaneous').maskMoney({prefix: '$', precision: "0"});
 };
 function getCGLPremium(totalPremiumCGL) {
     var totalPremium
@@ -1556,7 +1756,7 @@ function getTotalPremium(premium){
 
     $(".effectsTotal").each(function() {
         if($(this).html().length > 0 ){
-            var tempVal = parseFloat($(this).html().replace('$',''));
+            var tempVal = parseFloat($(this).html().replace('$','').replace(/,/g , ''));
             // var totalPremiumValue = parseFloat $(this)
             totalPremium = totalPremium + tempVal
             // alert (totalPremium)
@@ -1593,3 +1793,85 @@ function alcoholPercentage(totalPercent){
     return total
     // alert(total)
 }
+
+// FUNCTIONS FOR MISC EQUIPMENT DEDUCTIBLE AND PREMIUM
+function getMiscellaneousEquipmentDeductible() {
+    var tempMiscellaneousDeductible = $("#limitMiscellaneous").val()
+    // alert (tempMiscellaneousDeductible)
+    tempMiscellaneousDeductible = tempMiscellaneousDeductible.replace('$','').replace(/,/g , '')
+
+    // alert (tempMiscellaneousDeductible)
+    var miscellaneousDeductible = parseInt(tempMiscellaneousDeductible)
+
+    //
+    //
+    // alert (miscellaneousDeductible)
+
+    if (miscellaneousDeductible > 0 && miscellaneousDeductible <= 50000 ){
+        $(".deductibleMiscellaneous").html("$" + "1000");
+    }
+    else if (miscellaneousDeductible > 50000 && miscellaneousDeductible <= 150000 ){
+        $(".deductibleMiscellaneous").html("$" + "1500");
+    }
+    else if (miscellaneousDeductible > 150000 && miscellaneousDeductible <= 350000 ){
+        $(".deductibleMiscellaneous").html("$" + "2000");
+    }
+    else if (miscellaneousDeductible > 350000 && miscellaneousDeductible <= 1000000 ){
+        $(".deductibleMiscellaneous").html("$" + "2500");
+    }
+    else if (miscellaneousDeductible > 1000001 ){
+        alert("refer to company")
+    }
+}
+function getMiscellaneousEquipmentRating() {
+    var inlandRate = 0
+    var eventDay = parseFloat($("#howManyDaysIsTheEvent").val());
+    var tempMiscellaneousLimit = $("#limitMiscellaneous").val()
+    tempMiscellaneousLimit = tempMiscellaneousLimit.replace('$','').replace(/,/g , '')
+    var tempLimit = parseFloat(tempMiscellaneousLimit)
+    // alert(tempLimit)
+
+    if($("#miscUsaCheckbox").is(':checked')) {
+        if (eventDay > 0 && eventDay <= 30) {
+            var tempDividedLimit = tempLimit / 100
+            var limit = tempDividedLimit * 0.50
+            $(".miscLimit").html("$" + limit);
+        }
+        else if (eventDay > 31 && eventDay <= 90) {
+            var tempDividedLimit = tempLimit / 100
+            var limit = tempDividedLimit * 0.75
+            $(".miscLimit").html("$" + limit);
+        }
+    }
+    else if($("#miscWorldCheckbox").is(':checked')) {
+        if (eventDay > 0 && eventDay <= 30) {
+            var tempDividedLimit = tempLimit / 100
+            var limit = tempDividedLimit * 0.63
+            $(".miscLimit").html("$" + limit);
+        }
+        else if (eventDay > 31 && eventDay <= 90) {
+            var tempDividedLimit = tempLimit / 100
+            var limit = tempDividedLimit * 0.94
+            $(".miscLimit").html("$" + limit);
+        }
+    }
+}
+// function uncheck(check)
+// {
+//     var usa = document.getElementById("miscUsaCheckbox");
+//     var world = document.getElementById("miscWorldCheckbox");
+//     if (usa.checked == true && world.checked == true)
+//     {
+//         if(check == "miscellaneousUsaEquipment")
+//         {
+//             world.checked = false;
+//             checkRefresh();
+//         }
+//         else if(check == "miscellaneousWorldEquipment")
+//         {
+//             usa.checked = false;
+//             checkRefresh();
+//         }
+//     }
+//
+// }

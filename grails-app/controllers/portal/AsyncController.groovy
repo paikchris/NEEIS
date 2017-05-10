@@ -2145,6 +2145,8 @@ class AsyncController {
                     def grossPct = "";
                     def additionaLOBString = "";
                     def rateInfo = "";
+                    def indicationRateInfo = "";
+                    def twoSpaces = "  ";
 
                     //GET DEFAULT LIMITS, DEDUCTIBLES, AND TERMS FOR PRODUCT IN DMU AIM
 
@@ -2189,9 +2191,9 @@ class AsyncController {
                         grossPct = "";
                     }
 
-                    log.info("ORIGINAL LOB STRING = " + lobString)
                     if (coverageID == "EPKG") {
                         if (productID == "PIP CHOI") {
+
 
                             /*
                             def pipChoice_miscRentedEquipRateMinPrem = [0.5, 100];
@@ -2229,16 +2231,11 @@ class AsyncController {
                                 minPremium = miscRentedEquipRateMinPrem[1];
 
                                 log.info((params.totalBudget.toDouble() * rate))
-
-
                                 if (pipChoiceLimitsMap["Miscellaneous Rented Equipment"]) {
                                     tempLimit = pipChoiceLimitsMap["Miscellaneous Rented Equipment"].toDouble();
-
                                 } else {
                                     tempLimit = params.totalBudget.toDouble();
-
                                 }
-
 
                                 if(termLength <= 30){
                                     premium = ((premium/365) * termLength) * 10
@@ -2259,8 +2256,10 @@ class AsyncController {
                                 premiumsMap["Miscellaneous Rented Equipment"] = [rate, premium];
 
 
+
 //                                log.info(formatter.format(amt));
                                 rateInfo = rateInfo + "EPKG\t${rate}\t${moneyFormat.format(premium)}\tMiscellaneous Rented Equipment\t${moneyFormat.format(minPremium)}\n";
+
                             }
                             else{
                                 limitsMap.remove("Miscellaneous Rented Equipment")
@@ -2272,14 +2271,26 @@ class AsyncController {
                             if(params.pipChoiOptions.contains("PIPChoice_Props")){
                                 rate = propsSetWardrobeRateMinPrem[0];
                                 minPremium = propsSetWardrobeRateMinPrem[1];
-                                if (((params.totalBudget.toDouble() * rate) / 100) > minPremium) {
-                                    premium = (params.totalBudget.toDouble() * rate) / 100;
+
+                                if (pipChoiceLimitsMap["Props, Sets & Wardrobe"]) {
+                                    tempLimit = pipChoiceLimitsMap["Props, Sets & Wardrobe"].toDouble();
+                                } else {
+                                    tempLimit = params.totalBudget.toDouble();
+                                }
+
+                                premium = (tempLimit * rate) / 100;
+                                if (premium > minPremium) {
+                                    premium = (tempLimit * rate) / 100;
                                 } else {
                                     premium = minPremium
                                 }
+
                                 tempDeductiblesMap["Props, Sets & Wardrobe"] = calcPIP3Deductibles(params.totalBudget.toDouble())
                                 productTotalPremium = productTotalPremium + premium;
                                 premiumsMap["Props, Sets & Wardrobe"] = [rate, premium];
+
+
+
                                 rateInfo = rateInfo + "EPKG\t${rate}\t${moneyFormat.format(premium)}\tProps, Sets & Wardrobe\t${moneyFormat.format(minPremium)}\n";
 
                             }
@@ -2293,16 +2304,28 @@ class AsyncController {
                             if(params.pipChoiOptions.contains("PIPChoice_ThirdParty")){
                                 rate = thirdPartyPropDamageRateMinPrem[0];
                                 minPremium = thirdPartyPropDamageRateMinPrem[1];
-                                if (((params.totalBudget.toDouble() * rate) / 100) > minPremium) {
-                                    premium = (params.totalBudget.toDouble() * rate) / 100;
+
+                                if (pipChoiceLimitsMap["Third Party Prop Damage Liab"]) {
+                                    tempLimit = pipChoiceLimitsMap["Third Party Prop Damage Liab"].toDouble();
+
+                                } else {
+                                    tempLimit = params.totalBudget.toDouble();
+                                }
+
+                                premium = (tempLimit * rate) / 100;
+                                if (premium > minPremium) {
+                                    premium = (tempLimit * rate) / 100;
                                 } else {
                                     premium = minPremium
                                 }
+
                                 tempDeductiblesMap["Third Party Prop Damage Liab"] = calcPIP3Deductibles(params.totalBudget.toDouble())
                                 productTotalPremium = productTotalPremium + premium;
                                 premiumsMap["Third Party Prop Damage Liab"] = [rate, premium];
-                                rateInfo = rateInfo + "EPKG\t${rate}\t${moneyFormat.format(premium)}\tThird Party Prop Damage Liab\t${moneyFormat.format(minPremium)}\n";
 
+
+
+                                rateInfo = rateInfo + "EPKG\t${rate}\t${moneyFormat.format(premium)}\tThird Party Prop Damage Liab\t${moneyFormat.format(minPremium)}\n";
                             }
                             else{
                                 limitsMap.remove("Third Party Prop Damage Liab")
@@ -2314,16 +2337,27 @@ class AsyncController {
                             if(params.pipChoiOptions.contains("PIPChoice_ExtraExpense")){
                                 rate = extraExpenseRateMinPrem[0];
                                 minPremium = extraExpenseRateMinPrem[1];
-                                if (((params.totalBudget.toDouble() * rate) / 100) > minPremium) {
-                                    premium = (params.totalBudget.toDouble() * rate) / 100;
+
+                                if (pipChoiceLimitsMap["Extra Expense"]) {
+                                    tempLimit = pipChoiceLimitsMap["Extra Expense"].toDouble();
+                                } else {
+                                    tempLimit = params.totalBudget.toDouble();
+                                }
+
+                                premium = (tempLimit * rate) / 100;
+                                if (premium > minPremium) {
+                                    premium = (tempLimit * rate) / 100;
                                 } else {
                                     premium = minPremium
                                 }
+
                                 tempDeductiblesMap["Extra Expense"] = calcPIP3Deductibles(params.totalBudget.toDouble())
                                 productTotalPremium = productTotalPremium + premium;
                                 premiumsMap["Extra Expense"] = [rate, premium];
-                                rateInfo = rateInfo + "EPKG\t${rate}\t${moneyFormat.format(premium)}\tExtra Expense\t${moneyFormat.format(minPremium)}\n";
 
+
+
+                                rateInfo = rateInfo + "EPKG\t${rate}\t${moneyFormat.format(premium)}\tExtra Expense\t${moneyFormat.format(minPremium)}\n";
                             }
                             else{
                                 limitsMap.remove("Extra Expense")
@@ -2368,7 +2402,6 @@ class AsyncController {
                             }
                             deductsMap = tempDeductiblesMap;
 
-
                         }
                         else if (productID == "PIP 1") {
 
@@ -2399,32 +2432,11 @@ class AsyncController {
                             rateInfo = rateInfo + "EPKG\tflat\tincl\tThird Party Prop Damage Liab\t\n";
                             rateInfo = rateInfo + "EPKG\tflat\tincl\tExtra Expense\t\n";
 
+                            indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Rate\tFlat\n";
+                            indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Premium\t\$500\n";
 
 
-
-
-//                          IF FILM WITH CAST AND NO WC, ROUND LIMITS TO NEAREST 1000'S
                             def tempLimit = params.totalBudget.toDouble()
-//                            if(params.riskType == "Film Projects With Cast (No Work Comp)"){
-//                                tempLimit = Math.ceil(tempLimit / 1000) * 1000;
-//                                limitsMap["Negative Film & Videotape"] = "\$" + String.format("%.0f", tempLimit.trunc())
-//                                limitsMap["Faulty Stock & Camera Processing"] = "\$" + String.format("%.0f", tempLimit.trunc())
-//
-//                                if (params.additionalProducts.contains("EPKGCASTAdditionalCoverage")) {
-//                                    def castPremium = (params.totalBudget.toDouble() *  1.1) / 100
-//                                    premiumsMap["Cast Insurance"] = ["flat", castPremium];
-//                                    deductsMap["Cast Insurance"] = "Nil";
-//                                    limitsMap["Cast Insurance"] = "\$" + String.format("%.0f", tempLimit.trunc());
-//                                    productTotalPremium = productTotalPremium + castPremium;
-//                                }
-//                                if (params.additionalProducts.contains("EPKGCASTEssentialAdditionalCoverage")) {
-//                                    def castPremium = (params.totalBudget.toDouble() *  1.1) / 100
-//                                    premiumsMap["Cast Essential"] = ["flat", "incl"];
-//                                    deductsMap["Cast Essential"] = "Nil";
-//                                    limitsMap["Cast Essential"] = "Incl. Under Cast" ;
-//                                    productTotalPremium = productTotalPremium + castPremium;
-//                                }
-//                            }
 
 
                             if (params.productsSelected.contains("NOHA")) {
@@ -2434,17 +2446,20 @@ class AsyncController {
                                 deductsMap["Hired Auto Physical Damage"] = "10% of Loss (\$1,500 Min / \$10,000)";
                                 limitsMap["Hired Auto Physical Damage"] = "\$1,000,000"
                                 productTotalPremium = productTotalPremium + NOHARateMinPrem[1]
+
                                 rateInfo = rateInfo + "EPKG\tflat\t\$500\tHired Auto Physical Damage\t\n";
+
+                                indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Hired Auto Physical Damage\t\n";
+                                indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}${twoSpaces}Rate\t${NOHARateMinPrem[0]}\n";
+                                indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}${twoSpaces}Premium\t${NOHARateMinPrem[1]}\n";
+
                             } else {
                                 limitsMap.remove("Hired Auto Physical Damage")
                                 deductsMap.remove("Hired & Non-Owned Auto Physical Damage")
                             }
-//
+                            indicationRateInfo = indicationRateInfo + "Entertainment Package Premium\t${moneyFormat.format(productTotalPremium)}\n";
                         }
                         else if (productID == "PIP 2") {
-
-
-
                             def PIP2premium = pip2_PIP2premium;
                             def negativeFilmVideoRateMinPrem = pip2_negativeFilmVideoRateMinPrem;
                             def faultyStockCameraProcessingRateMinPrem = pip2_faultyStockCameraProcessingRateMinPrem;
@@ -2477,29 +2492,10 @@ class AsyncController {
                             rateInfo = rateInfo + "EPKG\tflat\tincl\tExtra Expense\t\n";
                             rateInfo = rateInfo + "EPKG\tflat\tincl\tOffice Contents\t\n";
 
-                            //IF FILM WITH CAST AND NO WC, ROUND LIMITS TO NEAREST 1000'S
-                            def tempLimit = params.totalBudget.toDouble()
-//                            if(params.riskType == "Film Projects With Cast (No Work Comp)"){
-//                                tempLimit = Math.ceil(tempLimit / 1000) * 1000;
-//                                limitsMap["Negative Film & Videotape"] = "\$" + String.format("%.0f", tempLimit.trunc())
-//                                limitsMap["Faulty Stock & Camera Processing"] = "\$" + String.format("%.0f", tempLimit.trunc())
-//
-//                                if (params.additionalProducts.contains("EPKGCASTAdditionalCoverage")) {
-//                                    def castPremium = (params.totalBudget.toDouble() *  1.1) / 100
-//                                    premiumsMap["Cast Insurance"] = ["flat", castPremium];
-//                                    deductsMap["Cast Insurance"] = "Nil";
-//                                    limitsMap["Cast Insurance"] = "\$" + String.format("%.0f", tempLimit.trunc());
-//                                    productTotalPremium = productTotalPremium + castPremium;
-//                                }
-//                                if (params.additionalProducts.contains("EPKGCASTEssentialAdditionalCoverage")) {
-//                                    def castPremium = (params.totalBudget.toDouble() *  1.1) / 100
-//                                    premiumsMap["Cast Essential"] = ["flat", "incl"];
-//                                    deductsMap["Cast Essential"] = "Nil";
-//                                    limitsMap["Cast Essential"] = "Incl. Under Cast" ;
-//                                    productTotalPremium = productTotalPremium + castPremium;
-//                                }
-//                            }
+                            indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Rate\tFlat\n";
+                            indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Premium\t\$1000\n";
 
+                            def tempLimit = params.totalBudget.toDouble()
 
                             if (params.productsSelected.contains("NOHA")) {
                                 def NOHARateMinPrem = pip2_NOHARateMinPrem;
@@ -2509,25 +2505,17 @@ class AsyncController {
                                 limitsMap["Hired Auto Physical Damage"] = "\$1,000,000"
                                 productTotalPremium = productTotalPremium + NOHARateMinPrem[1]
                                 rateInfo = rateInfo + "EPKG\tflat\t\$500\tHired Auto Physical Damage\t\n";
+
+                                indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Hired Auto Physical Damage\t\n";
+                                indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}${twoSpaces}Rate\t${NOHARateMinPrem[0]}\n";
+                                indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}${twoSpaces}Premium\t${NOHARateMinPrem[1]}\n";
                             } else {
                                 limitsMap.remove("Hired Auto Physical Damage")
                                 deductsMap.remove("Hired & Non-Owned Auto Physical Damage")
                             }
-//                            if(params.productsSelected.contains("NOHA")){
-//                                def NOHARateMinPrem = ["flat",500];
-//
-//                                limitsMap.remove("Hired Auto Physical Damage")
-//                                deductsMap.remove("Hired & Non-Owned Auto Physical Damage")
-//
-//                                NOHAPremiumsMap["Hired Auto Physical Damage"] = NOHARateMinPrem
-//                                NOHALimitsMap["Hired Auto Physical Damage"] =  "Up to \$1,000,000"
-//                                NOHADeductsMap["Hired Auto Physical Damage"] = "10% of Loss (\$3,500 Min / \$10,000)"
-//                                NOHALOB = "Hired Auto Physical Damage" + "\t" + 500 + "\t" + "-\t" + "-\r"
-//                            }
-//                            else{
-//                                limitsMap.remove("Hired Auto Physical Damage")
-//                                deductsMap.remove("Hired Auto Physical Damage")
-//                            }
+
+                            indicationRateInfo = indicationRateInfo + "Entertainment Package Premium\t${moneyFormat.format(productTotalPremium)}\n";
+
                         }
                         else if (productID == "PIP 3") {
                             def premium = 0.0;
@@ -2568,6 +2556,10 @@ class AsyncController {
                             rateInfo = rateInfo + "EPKG\t\tincl\tThird Party Prop Damage Liab\t\n";
                             rateInfo = rateInfo + "EPKG\t\tincl\tExtra Expense\t\n";
                             rateInfo = rateInfo + "EPKG\t\tincl\tOffice Contents\t\n";
+
+                            indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Rate\t${rate}\n";
+                            indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Min Premium\t${moneyFormat.format(minPremium)}\n";
+                            indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Rated Premium\t${moneyFormat.format(productTotalPremium)}\n";
 
                             //IF FILM WITH CAST AND NO WC, ROUND LIMITS TO NEAREST 1000'S
                             def tempLimit = params.totalBudget.toDouble()
@@ -2632,6 +2624,10 @@ class AsyncController {
                             rateInfo = rateInfo + "EPKG\t\tincl\tExtra Expense\t\n";
                             rateInfo = rateInfo + "EPKG\t\tincl\tOffice Contents\t\n";
 
+                            indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Rate\t${rate}\n";
+                            indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Min Premium\t${moneyFormat.format(minPremium)}\n";
+                            indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Rated Premium\t${moneyFormat.format(productTotalPremium)}\n";
+
 
                             deductsMap["Miscellaneous Rented Equipment"] = "\$3,500";
                             deductsMap.remove("Miscellaneous Rented Equipment*")
@@ -2692,6 +2688,9 @@ class AsyncController {
                             rateInfo = rateInfo + "EPKG\t\tincl\tExtra Expense\t\n";
                             rateInfo = rateInfo + "EPKG\t\tincl\tOffice Contents\t\n";
 
+                            indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Rate\t${rate}\n";
+                            indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Min Premium\t${moneyFormat.format(minPremium)}\n";
+
 
 //                            deductsMap["Miscellaneous Rented Equipment"] = deductsMap["Miscellaneous Rented Equipment*"]
                             deductsMap["Miscellaneous Rented Equipment"] = "\$3,500";
@@ -2710,12 +2709,15 @@ class AsyncController {
                                 limitsMap["Civil Authority (US Only)"] = "\$100000";
                                 productTotalPremium = productTotalPremium + civilAuthority100Limit[1];
                                 rateInfo = rateInfo + "EPKG\tflat\t\$250\tCivil Authority (US Only)\t\n";
+                                indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Civil Authority (US Only)\t\$250\n";
+
                             } else if (params.additionalProducts.contains("EPKGCIVIL500AdditionalCoverage")) {
                                 premiumsMap["Civil Authority (US Only)"] = civilAuthority500Limit;
                                 deductsMap["Civil Authority (US Only)"] = "\$5000";
                                 limitsMap["Civil Authority (US Only)"] = "\$500000";
                                 productTotalPremium = productTotalPremium + civilAuthority500Limit[1];
                                 rateInfo = rateInfo + "EPKG\tflat\t\$500\tCivil Authority (US Only)\t\n";
+                                indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Civil Authority (US Only)\t\$500\n";
                             }
 
                             if (params.additionalProducts.contains("EPKGBirdsFishAdditionalCoverage")) {
@@ -2724,6 +2726,7 @@ class AsyncController {
                                 limitsMap["Animal Mortality Under Cast Insurance (Domestic Birds/Fish)"] = "\$25000";
                                 productTotalPremium = productTotalPremium + 100;
                                 rateInfo = rateInfo + "EPKG\tflat\t\$100\tAnimal Mortality Under Cast Insurance (Domestic Birds/Fish)\t\n";
+                                indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Animal Mortality Under Cast Insurance (Domestic Birds/Fish)\t\$100\n";
                             }
                             if (params.additionalProducts.contains("EPKGDogsAdditionalCoverage")) {
                                 premiumsMap["Animal Mortality Under Cast Insurance (Dogs w/ Breed Exceptions)"] = ["flat", 150];
@@ -2731,6 +2734,7 @@ class AsyncController {
                                 limitsMap["Animal Mortality Under Cast Insurance (Dogs w/ Breed Exceptions)"] = "\$25000";
                                 productTotalPremium = productTotalPremium + 150;
                                 rateInfo = rateInfo + "EPKG\tflat\t\$150\tAnimal Mortality Under Cast Insurance (Dogs w/ Breed Exceptions)\t\n";
+                                indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Animal Mortality Under Cast Insurance (Dogs w/ Breed Exceptions)\t\$150\n";
 
                             }
                             if (params.additionalProducts.contains("EPKGReptilesAdditionalCoverage")) {
@@ -2739,6 +2743,8 @@ class AsyncController {
                                 limitsMap["Animal Mortality Under Cast Insurance (Reptiles (Non-Venomous))"] = "\$25000";
                                 productTotalPremium = productTotalPremium + 150;
                                 rateInfo = rateInfo + "EPKG\tflat\t\$150\tAnimal Mortality Under Cast Insurance (Reptiles (Non-Venomous))\t\n";
+                                indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Animal Mortality Under Cast Insurance (Reptiles (Non-Venomous))\t\$150\n";
+
                             }
                             if (params.additionalProducts.contains("EPKGSmallOtherAdditionalCoverage")) {
                                 premiumsMap["Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))"] = ["flat", 200];
@@ -2746,6 +2752,8 @@ class AsyncController {
                                 limitsMap["Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))"] = "\$25000";
                                 productTotalPremium = productTotalPremium + 200;
                                 rateInfo = rateInfo + "EPKG\tflat\t\$200\tAnimal Mortality Under Cast Insurance (Small Domestic Animals (Other))\t\n";
+                                indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))\t\$200\n";
+
                             }
                             if (params.additionalProducts.contains("EPKGFarmAnimalsAdditionalCoverage")) {
                                 premiumsMap["Animal Mortality Under Cast Insurance (Farm Animals)"] = ["flat", 250];
@@ -2753,6 +2761,8 @@ class AsyncController {
                                 limitsMap["Animal Mortality Under Cast Insurance (Farm Animals)"] = "\$25000";
                                 productTotalPremium = productTotalPremium + 250;
                                 rateInfo = rateInfo + "EPKG\tflat\t\$250\tAnimal Mortality Under Cast Insurance (Farm Animals)\t\n";
+                                indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Animal Mortality Under Cast Insurance (Farm Animals)\t\$250\n";
+
                             }
                             if (params.additionalProducts.contains("EPKGWildCatsAdditionalCoverage")) {
                                 premiumsMap["Animal Mortality Under Cast Insurance (Wild Cats (Caged))"] = ["flat", 500];
@@ -2760,12 +2770,16 @@ class AsyncController {
                                 limitsMap["Animal Mortality Under Cast Insurance (Wild Cats (Caged))"] = "\$25000";
                                 productTotalPremium = productTotalPremium + 500;
                                 rateInfo = rateInfo + "EPKG\tflat\t\$500\tAnimal Mortality Under Cast Insurance (Wild Cats (Caged))\t\n";
+                                indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Animal Mortality Under Cast Insurance (Wild Cats (Caged))\t\$500\n";
+
                             }
                             if (params.additionalProducts.contains("EPKGOtherReferAdditionalCoverage")) {
                                 premiumsMap["Animal Mortality Under Cast Insurance (All Others - Refer Only)"] = ["flat", "Refer"];
                                 deductsMap["Animal Mortality Under Cast Insurance (All Others - Refer Only)"] = "\$1500";
                                 limitsMap["Animal Mortality Under Cast Insurance (All Others - Refer Only)"] = "\$25000";
                                 rateInfo = rateInfo + "EPKG\tflat\tRefer\tAnimal Mortality Under Cast Insurance (All Others - Refer Only)\t\n";
+                                indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Animal Mortality Under Cast Insurance (All Others - Refer Only)\tRefer\n";
+
                             }
 
                                 premiumsMap["Money and Currency"] = ["flat", "incl"];
@@ -2834,6 +2848,7 @@ class AsyncController {
                                 productTotalPremium = minPremium
                             }
                             rateInfo = rateInfo + "EPKG\t${rate}\t${moneyFormat.format(productTotalPremium)}\t\t${moneyFormat.format(minPremium)}\n";
+                            indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Rated Premium\t${moneyFormat.format(productTotalPremium)}\n";
 
                         }
                         else if (productID == "EPKG37"){
@@ -2921,6 +2936,9 @@ class AsyncController {
                                 rateInfo = rateInfo + "EPKG\t\tincl\tOffice Contents\t\n";
                                 rateInfo = rateInfo + "EPKG\t\tincl\tNon-Owned Auto Physical Damage\t\n";
                                 rateInfo = rateInfo + "EPKG\t\tincl\tMoney & Securities\t\n";
+
+                                indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Rate\t${rate}\n";
+                                indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Min Premium\t${moneyFormat.format(minPremium)}\n";
 
                                 if (params.additionalProducts.contains("EPKGCASTEssentialAdditionalCoverage")) {
                                     def castPremium = (params.totalBudget.toDouble() *  1.1) / 100
@@ -3085,6 +3103,8 @@ class AsyncController {
                                 deductsMap = tempDeductsMap
                                 premiumsMap = tempPremiumsMap
                             }
+                            indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Rated Premium\t${moneyFormat.format(productTotalPremium)}\n";
+
                         }
                     }
                     else if (coverageID == "CGL" || coverageID == "CPK") {
@@ -3292,8 +3312,10 @@ class AsyncController {
                         rateInfo = rateInfo + "${coverageID}\t\tincl\tPersonal & Advertising Injury\t\n";;
                         rateInfo = rateInfo + "${coverageID}\t\tincl\tEach Occurrence\t\n";
                         rateInfo = rateInfo + "${coverageID}\t\tincl\tFire Damage (Any One Fire)\t\n";
-
                         rateInfo = rateInfo + "${coverageID}\t\tincl\tMedical Expense Limit (Any One Person)\t\n";
+
+                        indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Rate\t${rate}\n";
+                        indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Min Premium\t${moneyFormat.format(minPremium)}\n";
 
                         if (params.additionalProducts) {
                             if (params.additionalProducts.contains("BAIAdditionalCoverage")) {
@@ -3303,6 +3325,8 @@ class AsyncController {
                                     tempLimitsMap["Blanket Additional Insured Endorsement"] = ""
                                     productTotalPremium = productTotalPremium + 500
                                     rateInfo = rateInfo + "${coverageID}\tflat\t\$500\tBlanket Additional Insured Endorsement\t\n";
+                                    indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Blanket Additional Insured Endorsement\t\$500\n";
+
                                 }
                                 else{
                                     tempPremiumsMap["Blanket Additional Insured Endorsement"] = ["flat", 100];
@@ -3310,6 +3334,7 @@ class AsyncController {
                                     tempLimitsMap["Blanket Additional Insured Endorsement"] = ""
                                     productTotalPremium = productTotalPremium + 100
                                     rateInfo = rateInfo + "${coverageID}\tflat\t\$100\tBlanket Additional Insured Endorsement\t\n";
+                                    indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Blanket Additional Insured Endorsement\t\$100\n";
                                 }
 
                             }
@@ -3319,6 +3344,7 @@ class AsyncController {
                                 tempLimitsMap["Waiver of Subrogation"] = ""
                                 productTotalPremium = productTotalPremium + 100
                                 rateInfo = rateInfo + "${coverageID}\tflat\t\$100\tWaiver of Subrogation\t\n";
+                                indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Waiver of Subrogation\t\$100\n";
                             }
                             if (params.additionalProducts.contains("EAIAdditionalCoverage")) {
                                 tempPremiumsMap["Additional Charge to Include Medical Payments"] = ["flat", 100];
@@ -3326,6 +3352,8 @@ class AsyncController {
                                 tempLimitsMap["Additional Charge to Include Medical Payments"] = "\$5,000"
                                 productTotalPremium = productTotalPremium + 100
                                 rateInfo = rateInfo + "${coverageID}\tflat\t\$100\tAdditional Charge to Include Medical Payments\t\n";
+                                indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Additional Charge to Include Medical Payments\t\$100\n";
+
                             }
                             if (params.additionalProducts.contains("MEDAdditionalCoverage")) {
                                 tempPremiumsMap["Medical Payments (Per Person)"] = ["flat", 25];
@@ -3333,7 +3361,7 @@ class AsyncController {
                                 tempLimitsMap["Medical Payments (Per Person)"] = "\$5,000"
                                 productTotalPremium = productTotalPremium + 25
                                 rateInfo = rateInfo + "${coverageID}\tflat\t\$25\tMedical Payments (Per Person)\t\n";
-
+                                indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Medical Payments (Per Person)\t\$25\n";
                             }
                             if (params.additionalProducts.contains("AGGAdditionalCoverage")) {
                                 if(params.riskType == "Film Projects With Cast (No Work Comp) test"){
@@ -3356,6 +3384,8 @@ class AsyncController {
                                         tempPremiumsMap["Increased Agg Limit"] = ["flat", 250];
                                         productTotalPremium = productTotalPremium + 250
                                         rateInfo = rateInfo + "${coverageID}\tflat\t\$250\tIncreased Agg Limit\t\n";
+                                        indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Increased Agg Limit\t\$250\n";
+
                                     }
 
                                 }
@@ -3366,6 +3396,7 @@ class AsyncController {
                         limitsMap = tempLimitsMap
                         deductsMap = tempDeductsMap
                         premiumsMap = tempPremiumsMap
+                        indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Rated Premium\t${moneyFormat.format(productTotalPremium)}\n";
 
 
                     } else if (coverageID == "NOHA" || coverageID == "NOAL") {
@@ -3404,6 +3435,14 @@ class AsyncController {
                             limitsMap["Non-Owned & Hired Auto Liability"] = "\$1,000,000"
                             productTotalPremium = productTotalPremium + NOHApremium
                             rateInfo = rateInfo + "${coverageID}\t${NOHArate}\t${moneyFormat.format(NOHApremium)}\tNon-Owned & Hired Auto Liability\t\n";
+                            indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Non-Owned & Hired Auto Liability\t\n";
+                            indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Rate\t${NOHArate}\n";
+                            indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Min Premium\t${moneyFormat.format(NOHAminPremium)}\n";
+                            indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Min Premium\t${moneyFormat.format(NOHApremium)}\n";
+
+
+
+
 
                             limitsMap.remove("Hired Auto Physical Damage")
                             deductsMap.remove("Hired Auto Physical Damage")
@@ -3492,6 +3531,7 @@ class AsyncController {
                             endorse: endorseString,
                             beginTerms: beginTerms,
                             rateInfo: rateInfo,
+                            indicationRateInfo: indicationRateInfo,
                             submissionRateMap: new JsonSlurper().parseText(submissionRateMapJson)
                     )
                     arrayOfCoverageDetails.add(new JsonSlurper().parseText(coverageJson))
@@ -3597,8 +3637,8 @@ class AsyncController {
             //ADDITIONAL INFORMATION NECESSARY FOR INDICATION PDF
             Sql aimsql = new Sql(dataSource_aim)
             aimsql.eachRow("SELECT     *\n" +
-                    "FROM         Company with (NOLOCK)\n" +
-                    "WHERE     CompanyID='${session.user.company}'" ) {
+                    "FROM         Producer with (NOLOCK)\n" +
+                    "WHERE     ProducerID='${session.user.company}'" ) {
 
                 dataMap.brokerCompanyName = it.Name
                 dataMap.brokerCompanyAddress = it.Address1
@@ -3692,8 +3732,8 @@ class AsyncController {
             //ADDITIONAL INFORMATION NECESSARY FOR INDICATION PDF
             Sql aimsql = new Sql(dataSource_aim)
             aimsql.eachRow("SELECT     *\n" +
-                    "FROM         Company with (NOLOCK)\n" +
-                    "WHERE     CompanyID='${session.user.company}'" ) {
+                    "FROM         Producer with (NOLOCK)\n" +
+                    "WHERE     ProducerID='${session.user.company}'" ) {
 
                 dataMap.brokerCompanyName = it.Name
                 dataMap.brokerCompanyAddress = it.Address1

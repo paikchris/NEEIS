@@ -996,89 +996,89 @@
             </div>
             %{--PARKING CONTAINER --}%
             <div id="parkingMainContainer" style="display:none">
-            %{--ARE YOU RESPONSIBLE FOR PARKING? Y/N --}%
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label>Are you responsible for Parking?</label><br>
-                    <input type="radio" name="responsibleForParking" class="parkingReview" value="Yes"
-                           data-reviewname="Are you responsible for Parking?"
-                           id="responsibleForParkingYes_RadioButton" checked="checked"> Yes
-                    <input type="radio" name="responsibleForParking" class="" value="No"
-                           data-reviewname="Are you responsible for Parking?"
-                           id="responsibleForParkingNo_RadioButton"> No
-                </div>
-            </div>
-            %{--PARKING CONTAINER NO --}%
-            <div id="parkingContainer" style="display:none">
-                %{--N IS APPLICANT INDEMNIFIED BY WRITTEN CONTRACT PARKING Y/N--}%
+                %{--ARE YOU RESPONSIBLE FOR PARKING? Y/N --}%
                 <div class="col-xs-12">
                     <div class="form-group">
-                        <label>Is applicant indemnified by written contract? (parking)</label><br>
-                        <input type="radio" name="parkingIndemnified"
-                               class="parkingIndemnifiedReview"
-                               value="Yes"
-                               data-reviewName="Is applicant indemnified by written contract (parking)?"
-                               id="parkingIndemnifiedYes_RadioButton"> Yes
-                        <input type="radio" name="parkingIndemnified"
-                               class=""
-                               value="No"
-                               data-reviewName="Is applicant indemnified by written contract (parking)?"
-                               id="parkingIndemnifiedNo_RadioButton"
-                               checked="checked"> No
+                        <label>Are you responsible for Parking?</label><br>
+                        <input type="radio" name="responsibleForParking" class="parkingReview" value="Yes"
+                               data-reviewname="Are you responsible for Parking?"
+                               id="responsibleForParkingYes_RadioButton" checked="checked"> Yes
+                        <input type="radio" name="responsibleForParking" class="" value="No"
+                               data-reviewname="Are you responsible for Parking?"
+                               id="responsibleForParkingNo_RadioButton"> No
                     </div>
                 </div>
-                %{--ATTACHMENT CONTAINER PARKING--}%
-                <div class="row" id="parkingAttachContainer" style="margin-bottom: 20px; display:none">
-                    <div class="col-xs-3" style="margin-left:20px">
-                        <form enctype="multipart/form-data">
-                            <div class="fileUpload btn btn-primary">
-                                <span>Attach File</span>
-                                <input name="parkingFile" type="file" class="file" id="parkingFile"
-                                       style="width:120px"/>
-                            </div>
-                        </form>
+                %{--PARKING CONTAINER NO --}%
+                <div id="parkingContainer" style="display:none">
+                    %{--N IS APPLICANT INDEMNIFIED BY WRITTEN CONTRACT PARKING Y/N--}%
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label>Is applicant indemnified by written contract? (parking)</label><br>
+                            <input type="radio" name="parkingIndemnified"
+                                   class="parkingIndemnifiedReview"
+                                   value="Yes"
+                                   data-reviewName="Is applicant indemnified by written contract (parking)?"
+                                   id="parkingIndemnifiedYes_RadioButton"> Yes
+                            <input type="radio" name="parkingIndemnified"
+                                   class=""
+                                   value="No"
+                                   data-reviewName="Is applicant indemnified by written contract (parking)?"
+                                   id="parkingIndemnifiedNo_RadioButton"
+                                   checked="checked"> No
+                        </div>
                     </div>
+                    %{--ATTACHMENT CONTAINER PARKING--}%
+                    <div class="row" id="parkingAttachContainer" style="margin-bottom: 20px; display:none">
+                        <div class="col-xs-3" style="margin-left:20px">
+                            <form enctype="multipart/form-data">
+                                <div class="fileUpload btn btn-primary">
+                                    <span>Attach File</span>
+                                    <input name="parkingFile" type="file" class="file" id="parkingFile"
+                                           style="width:120px"/>
+                                </div>
+                            </form>
+                        </div>
 
-                    <div class="col-xs-8">
-                        <small>Provide Certificate adding Applicant as Additional Insured</small>
-                    </div>
+                        <div class="col-xs-8">
+                            <small>Provide Certificate adding Applicant as Additional Insured</small>
+                        </div>
 
+                    </div>
+                </div>
+                %{--IS THERE VALET PARKING?--}%
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label>Is there valet parking?</label><br>
+                        <input type="radio" name="valetParking" class="parkingReview" value="Yes"
+                               data-reviewname="Is there valet parking?"
+                               id="valetParkingYes_RadioButton"> Yes
+                        <input type="radio" name="valetParking" class="" value="No"
+                               data-reviewname="Is there valet parking?"
+                               id="valetParkingNo_RadioButton" checked="checked"> No
+                    </div>
+                </div>
+                %{--PATROLLED BY SECURITY?--}%
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label>Parking secured and well maintained with 24 hr security guards?</label><br>
+                        <input type="radio" name="patrolledParking" class="parkingReview" value="Yes"
+                               data-reviewname="Parking secured and well maintained with 24 hr security guards?"
+                               id="patrolledParkingYes_RadioButton"> Yes
+                        <input type="radio" name="patrolledParking" class="" value="No"
+                               data-reviewname="Parking secured and well maintained with 24 hr security guards?"
+                               id="patrolledParkingNo_RadioButton" checked="checked"> No
+                    </div>
+                </div>
+                %{--WHAT IS THE SQUARE FOOTAGE OF THE PARKING AREA--}%
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label for="parkingSquareFoot">What is the square footage of the parking area?</label>
+                        <input type="text" class="form-control parkingReview" name="parkingSquareFoot" placeholder=""
+                               data-reviewname="What is the square footage of the parking area?"
+                               id="parkingSquareFoot">
+                    </div>
                 </div>
             </div>
-            %{--IS THERE VALET PARKING?--}%
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label>Is there valet parking?</label><br>
-                    <input type="radio" name="valetParking" class="parkingReview" value="Yes"
-                           data-reviewname="Is there valet parking?"
-                           id="valetParkingYes_RadioButton"> Yes
-                    <input type="radio" name="valetParking" class="" value="No"
-                           data-reviewname="Is there valet parking?"
-                           id="valetParkingNo_RadioButton" checked="checked"> No
-                </div>
-            </div>
-            %{--PATROLLED BY SECURITY?--}%
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label>Parking secured and well maintained with 24 hr security guards?</label><br>
-                    <input type="radio" name="patrolledParking" class="parkingReview" value="Yes"
-                           data-reviewname="Parking secured and well maintained with 24 hr security guards?"
-                           id="patrolledParkingYes_RadioButton"> Yes
-                    <input type="radio" name="patrolledParking" class="" value="No"
-                           data-reviewname="Parking secured and well maintained with 24 hr security guards?"
-                           id="patrolledParkingNo_RadioButton" checked="checked"> No
-                </div>
-            </div>
-            %{--WHAT IS THE SQUARE FOOTAGE OF THE PARKING AREA--}%
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label for="parkingSquareFoot">What is the square footage of the parking area?</label>
-                    <input type="text" class="form-control parkingReview" name="parkingSquareFoot" placeholder=""
-                           data-reviewname="What is the square footage of the parking area?"
-                           id="parkingSquareFoot">
-                </div>
-            </div>
-        </div>
             %{--WEATHER HEADER--}%
             <div class="col-xs-12">
                 <label for="weatherHeader"><b>Weather:</b></label>
@@ -1168,23 +1168,31 @@
     <div class="panel-body row" id="undefined_panelBody">
         %{--COVERAGE OPTION TABLE HEADER--}%
         <div id="coverageTableContainer">
-            <div class="col-xs-6">
+            <div class="col-xs-4">
                 <label class="control-label">Please select the Coverages being requested:</label>
             </div>
 
-            <div class="col-xs-6">
-                <div class="col-xs-9">
+            <div class="col-xs-8">
+                <div class="col-xs-6 coverageColumn">
                     <label class="control-label"><u>Coverages:</u></label>
                 </div>
 
-                <div class="col-xs-3">
+                <div class="col-xs-2 limitColumn">
                     <label class="control-label"><u>Limits:</u></label>
+                </div>
+
+                <div class="col-xs-2 premiumColumn">
+                    <label class="control-label"><u>Premium:</u></label>
+                </div>
+
+                <div class="col-xs-2 deductibleColumn">
+                    <label class="control-label"><u>Deductible:</u></label>
                 </div>
             </div>
         </div>
         %{--COMMERCIAL GENERAL LIABILITY--}%
         <div class="row">
-            <div class="col-xs-6">
+            <div class="col-xs-4">
                 %{--COMMERCIAL GENERAL LIABILITY REQUESTED Y/N--}%
                 <div class="form-group col-xs-12">
                     <label>Commercial General Liability Limits Requested?</label><br>
@@ -1199,6 +1207,30 @@
                            data-reviewName="Commercial General Liability Limits Requested?"
                            id="commercialGeneralLiabilityRequestedNo_RadioButton"
                            checked="checked"> No
+                </div>
+
+                %{--CHECK BOXES FOR ADDITIONAL COVERAGE--}%
+                <div class="additionalCoverageContainer col-xs-12" style="display:none">
+                    <p class="control-label col-xs-12"><input type="checkbox"
+                                                              class="productionInvolvesCheckbox miscCheckbox showReview"
+                                                              data-reviewName="Additional Coverages Requested"
+                                                              name="miscellaneousEquipment"
+                                                              id="miscUsaCheckbox"
+                                                              value="miscellaneousUsaEquipment"/> Miscellaneous Equipment including props, sets, and wardrobe coverage requested?(USA Only)</p>
+
+                    <p class="control-label col-xs-12"><input type="checkbox"
+                                                              class="productionInvolvesCheckbox miscCheckbox showReview"
+                                                              data-reviewName="Additional Coverages Requested"
+                                                              name="miscellaneousEquipment"
+                                                              id="miscWorldCheckbox"
+                                                              value="miscellaneousWorldEquipment"/> Miscellaneous Equipment including props, sets, and wardrobe coverage requested?(Worldwide)</p>
+
+                    <p class="control-label col-xs-12"><input type="checkbox"
+                                                              class="productionInvolvesCheckbox showReview"
+                                                              data-reviewName="Additional Coverages Requested"
+                                                              name="thirdPartyPropertyDamage"
+                                                              id="thirdPartyCheckbox"
+                                                              value="thirdPartyPropertyDamage"/> Third Party Property damage coverage requested?</p>
                 </div>
                 %{--ALCOHOL REQUESTED Y/N--}%
                 <div class="form-group col-xs-12">
@@ -1324,138 +1356,276 @@
 
             </div>
 
-            <div class="col-xs-6">
+            <div class="col-xs-8">
                 %{--TABLE CGL--}%
                 <div id="commercialGeneralLiabilityRequestedContainer" style="display:none">
                     <div class="tableCGL" id="commercialGeneralLiabilityProduct">
                         <div class="row">
-                            <div class="col-xs-9 ">
+                            <div class="col-xs-6 ">
                                 <strong class="coverageCodeString"
                                         style="font-size:13px">Commercial General Liability</strong>
                                 <span class="productID_pull" data-cov="CGL" style="display:none">SPEVENTS</span>
                             </div>
 
-                            <div class="col-xs-3">
+                            <div class="col-xs-2">
                                 <span>-</span>
                             </div>
+
+                            <div class="col-xs-2">
+                                <span>-</span>
+                            </div>
+
+                            <div class="col-xs-2">
+                                <span>-</span>
+                            </div>
+
                         </div>
 
                         <div class="row lobRow SPEVENTS CGL" style="background-color: rgba(38, 80, 159, 0.13)">
-                            <div class="col-xs-9 coverageColumn" style="padding-left:20px">
-                                <span class="lob">CGL:General Aggregate Limit</span>
+                            <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                <span class="lob">General Aggregate Limit</span>
                             </div>
 
-                            <div class="col-xs-3 limitColumn">
-                                <span class="limit">$2,000,000</span>
+                            <div class="limitColumn col-xs-2">
+                                <select class="limit generalAggregateLimit">
+                                    <option value="standard">$1,000,000</option>
+                                    <option value="additional">$2,000,000</option>
+                                </select>
+                            </div>
+
+                            <div class="col-xs-2 premiumColumn">
+                                <span class="premiumGenAgg premium"></span>
+                            </div>
+
+                            <div class="col-xs-2 deductibleColumn">
+                                <span class="deductible"></span>
                             </div>
                         </div>
 
                         <div class="row lobRow SPEVENTS CGL">
-                            <div class="col-xs-9 coverageColumn" style="padding-left:20px">
-                                <span class="lob">CGL:Products & Completed Work Total Limit</span>
+                            <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                <span class="lob">Products & Completed Work Total Limit</span>
                             </div>
 
-                            <div class="col-xs-3 limitColumn">
+                            <div class="limitColumn col-xs-2">
+                                <select class="limit productAndCompletedOperationsLimit">
+                                    <option value="standard">$1,000,000</option>
+                                    <option value="additional">$2,000,000</option>
+                                </select>
+                            </div>
+
+                            <div class="col-xs-2 premiumColumn">
+                                <span class="premiumProduct premium"></span>
+                            </div>
+
+                            <div class="col-xs-2 deductibleColumn">
+                                <span class="deductible"></span>
+                            </div>
+                        </div>
+
+                        <div class="row lobRow SPEVENTS CGL"
+                             style="background-color: rgba(38, 80, 159, 0.13)">
+                            <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                <span class="lob">Personal Injury (Each Person Limit)</span>
+                            </div>
+
+                            <div class="col-xs-2 limitColumn">
                                 <span class="limit">$1,000,000</span>
                             </div>
-                        </div>
 
-                        <div class="row lobRow SPEVENTS CGL"
-                             style="background-color: rgba(38, 80, 159, 0.13)">
-                            <div class="col-xs-9 coverageColumn" style="padding-left:20px">
-                                <span class="lob">CGL:Personal Injury (Each Person Limit)</span>
+                            <div class="col-xs-2 premiumColumn">
+                                <span class="premium"></span>
                             </div>
 
-                            <div class="col-xs-3 limitColumn">
+                            <div class="col-xs-2 deductibleColumn">
+                                <span class="deductible"></span>
+                            </div>
+
+                        </div>
+
+                        <div class="row lobRow SPEVENTS CGL">
+                            <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                <span class="lob">Advertising Injury (Each Person Limit)</span>
+                            </div>
+
+                            <div class="col-xs-2 limitColumn">
                                 <span class="limit">$1,000,000</span>
                             </div>
 
-                        </div>
-
-                        <div class="row lobRow SPEVENTS CGL">
-                            <div class="col-xs-9 coverageColumn" style="padding-left:20px">
-                                <span class="lob">CGL:Advertising Injury (Each Person Limit)</span>
+                            <div class="col-xs-2 premiumColumn">
+                                <span class="premium"></span>
                             </div>
 
-                            <div class="col-xs-3 limitColumn">
-                                <span class="limit">$1,000,000</span>
+                            <div class="col-xs-2 deductibleColumn">
+                                <span class="deductible"></span>
                             </div>
                         </div>
 
                         <div class="row lobRow SPEVENTS CGL"
                              style="background-color: rgba(38, 80, 159, 0.13)">
-                            <div class="col-xs-9 coverageColumn" style="padding-left:20px">
-                                <span class="lob">CGL:Each Event Limit</span>
+                            <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                <span class="lob">Each Event Limit</span>
                             </div>
 
-                            <div class="col-xs-3 limitColumn">
+                            <div class="col-xs-2 limitColumn">
                                 <span class="limit">$1,000,000</span>
                             </div>
 
-                        </div>
-
-                        <div class="row lobRow SPEVENTS CGL">
-                            <div class="col-xs-9 coverageColumn" style="padding-left:20px">
-                                <span class="lob">CGL:Each Event (Premises Damage Limit)</span>
+                            <div class="col-xs-2 premiumColumn">
+                                <span class="premium"></span>
                             </div>
 
-                            <div class="col-xs-3 limitColumn">
-                                <span class="limit">$100,000</span>
-                            </div>
-                        </div>
-
-                        <div class="row lobRow SPEVENTS CGL"
-                             style="background-color: rgba(38, 80, 159, 0.13)">
-                            <div class="col-xs-9 coverageColumn" style="padding-left:20px">
-                                <span class="lob">CGL:Each Event (Medical Expense Limit)</span>
-                            </div>
-
-                            <div class="col-xs-3 limitColumn">
-                                <span class="limit">Excluded</span>
+                            <div class="col-xs-2 deductibleColumn">
+                                <span class="deductible"></span>
                             </div>
 
                         </div>
 
                         <div class="row lobRow SPEVENTS CGL">
-                            <div class="col-xs-9 coverageColumn" style="padding-left:20px">
-                                <span class="lob">EFLTR:Miscellaneous Unscheduled Equipment (Rented)</span>
+                            <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                <span class="lob">Each Event (Premises Damage Limit)</span>
                             </div>
 
-                            <div class="col-xs-3 limitColumn">
-                                <span class="limit">Not Covered</span>
+                            %{--<div class="col-xs-3 limitColumn">--}%
+                            %{--<span class="limit">$100,000</span>--}%
+                            %{--</div>--}%
+                            <div class="limitColumn col-xs-2">
+                                <select class="limit premisesDamageLimit">
+                                    <option value="standard">$100,000</option>
+                                    <option value="additional">$1,000,000</option>
+                                </select>
+                            </div>
+
+                            <div class="col-xs-2 premiumColumn">
+                                <span class="premiumPremises premium"></span>
+                            </div>
+
+                            <div class="col-xs-2 deductibleColumn">
+                                <span class="deductible"></span>
                             </div>
                         </div>
 
                         <div class="row lobRow SPEVENTS CGL"
                              style="background-color: rgba(38, 80, 159, 0.13)">
-                            <div class="col-xs-9 coverageColumn" style="padding-left:20px">
-                                <span class="lob">EFLTR:Third Party Property Damage Liability</span>
+                            <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                <span class="lob">Each Event (Medical Expense Limit)</span>
                             </div>
 
-                            <div class="col-xs-3 limitColumn">
-                                <span class="limit">Not Covered</span>
+                            <div class="limitColumn col-xs-2">
+                                <select class="limit medicalExpensesLimit">
+                                    <option value="standard">Excluded</option>
+                                    <option value="additional">$5,000</option>
+                                </select>
+                            </div>
+
+                            <div class="col-xs-2 premiumColumn">
+                                <span class="premiumMedical premium"></span>
+                            </div>
+
+                            <div class="col-xs-2 deductibleColumn">
+                                <span class="deductible"></span>
+                            </div>
+                        </div>
+
+
+                        <div class="row inlandMarineContainer" style="display:none">
+                            <div class="col-xs-6 ">
+                                <strong class="coverageCodeString"
+                                        style="font-size:13px">Inland Marine</strong>
+                                <span class="productID_pull" data-cov="CGL" style="display:none">SPEVENTS</span>
+                            </div>
+
+                            <div class="col-xs-2">
+                                <span></span>
+                            </div>
+
+                            <div class="col-xs-2">
+                                <span></span>
+                            </div>
+
+                            <div class="col-xs-2">
+                                <span></span>
+                            </div>
+
+                        </div>
+
+
+                        <div class="row lobRow miscContainer SPEVENTS CGL" style="display:none">
+                            <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                <span class="lob">Miscellaneous Unscheduled Equipment (Rented)</span>
+                            </div>
+
+                            <div class="col-xs-2 limitColumn">
+                                <input type="text" id="limitMiscellaneous" class="limit limitMiscellaneous form-control"
+                                       placeholder="Enter Limit"
+                                       style="font-size: 12px;padding: 2px;margin-top: 3px; margin-bottom:3px; height: 20px;">
+                            </div>
+
+                            <div class="col-xs-2 premiumColumn">
+                                <span class="premium"></span>
+                            </div>
+
+                            <div class="col-xs-2 deductibleColumn">
+                                <span class="deductible deductibleMiscellaneous"></span>
+                            </div>
+
+                        </div>
+
+                        <div class="row lobRow thirdPartyContainer SPEVENTS CGL"
+                             style="background-color: rgba(38, 80, 159, 0.13); display:none">
+                            <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                <span class="lob">Third Party Property Damage Liability</span>
+                            </div>
+
+                            <div class="col-xs-2 limitColumn">
+                                <span class="limit">$1,000,000</span>
+                            </div>
+
+                            <div class="col-xs-2 premiumColumn">
+                                <span class="premium"></span>
+                            </div>
+
+                            <div class="col-xs-2 deductibleColumn">
+                                <span class="deductible deductibleThirdParty"></span>
                             </div>
 
                         </div>
 
                         <div class="row lobRow SPEVENTS CGL">
-                            <div class="col-xs-9 coverageColumn" style="padding-left:20px">
-                                <span class="lob">NOAL:Hired & Non-Owned Auto Liability</span>
+                            <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                <span class="lob">Hired & Non-Owned Auto Liability</span>
                             </div>
 
-                            <div class="col-xs-3 limitColumn">
+                            <div class="col-xs-2 limitColumn">
                                 <span class="limit">Not Covered</span>
                             </div>
+
+                            <div class="col-xs-2 premiumColumn">
+                                <span class="premium"></span>
+                            </div>
+
+                            <div class="col-xs-2 deductibleColumn">
+                                <span class="deductible"></span>
+                            </div>
                         </div>
+
                         <div class="row lobRow SPEVENTS CGL"
                              style="background-color: rgba(38, 80, 159, 0.13)">
-                            <div class="col-xs-9 coverageColumn" style="padding-left:20px">
-                                <span class="lob">NOAPD:Hired Auto Physical Damage</span>
+                            <div class="col-xs-6 coverageColumn" style="padding-left:20px">
+                                <span class="lob">Hired Auto Physical Damage</span>
                             </div>
 
-                            <div class="col-xs-3 limitColumn">
+                            <div class="col-xs-2 limitColumn">
                                 <span class="limit">Not Covered</span>
-                        </div>
+                            </div>
+
+                            <div class="col-xs-2 premiumColumn">
+                                <span class="premium"></span>
+                            </div>
+
+                            <div class="col-xs-2 deductibleColumn">
+                                <span class="deductible"></span>
+                            </div>
 
                         </div>
 
@@ -1471,34 +1641,58 @@
                 <div class="alcoholSaleTableContainer" style="display:none">
                     <div class="tableAlcohol" id="alcoholSaleProduct">
                         <div class="row">
-                            <div class="col-xs-9 ">
+                            <div class="col-xs-6 ">
                                 <strong class="coverageCodeString"
                                         style="font-size:13px">Liquor Liability</strong>
                                 <span class="productID_pull" data-cov="ALCOHOL" style="display:none">SPEVENTS</span>
                             </div>
 
-                            <div class="col-xs-3">
+                            <div class="col-xs-2 limitColumn">
                                 <span>-</span>
+                            </div>
+
+                            <div class="col-xs-2 premiumColumn">
+                                <span class="premium"></span>
+                            </div>
+
+                            <div class="col-xs-2 deductibleColumn">
+                                <span class="deductible"></span>
                             </div>
                         </div>
 
                         <div class="row lobRow SPEVENTS ALCOHOL" style="background-color: rgba(38, 80, 159, 0.13)">
-                            <div class="col-xs-9 coverageColumn" style="padding-left:20px">
+                            <div class="col-xs-6 coverageColumn" style="padding-left:20px">
                                 <span class="lob">Each common cause</span>
                             </div>
 
-                            <div class="col-xs-3 limitColumn">
+                            <div class="col-xs-2 limitColumn">
                                 <span class="limit">$1,000,000</span>
+                            </div>
+
+                            <div class="col-xs-2 premiumColumn">
+                                <span class="premium"></span>
+                            </div>
+
+                            <div class="col-xs-2 deductibleColumn">
+                                <span class="deductible"></span>
                             </div>
                         </div>
 
                         <div class="row lobRow SPEVENTS ALCOHOL">
-                            <div class="col-xs-9 coverageColumn" style="padding-left:20px">
+                            <div class="col-xs-6 coverageColumn" style="padding-left:20px">
                                 <span class="lob">Aggregate limit</span>
                             </div>
 
-                            <div class="col-xs-3 limitColumn">
+                            <div class="col-xs-2 limitColumn">
                                 <span class="limit">$1,000,000</span>
+                            </div>
+
+                            <div class="col-xs-2 premiumColumn">
+                                <span class="premium"></span>
+                            </div>
+
+                            <div class="col-xs-2 deductibleColumn">
+                                <span class="deductible"></span>
                             </div>
                         </div>
 
@@ -1540,6 +1734,82 @@
                                     <div class="col-xs-3">
                                         <span class="premiumSpan effectsTotal"
                                               id="commercialGeneralLiabilityPremiumCost"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        %{--gen aggregate limit--}%
+                        <div class="premDistributionInsert genLiabLimitContainer" style="display:none">
+                            <div class="policyFeeContainer">
+                                <div class="row" style="background-color: rgba(38, 80, 159, 0.13)">
+                                    <div class="col-xs-4">
+                                        <span class="lineOfBusinessSpan">General Aggregate Limit</span>
+                                    </div>
+
+                                    <div class="col-xs-3">
+                                        <span class="premiumSpan genLiabLimit">$250</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        %{--production limit--}%
+                        <div class="premDistributionInsert productsCompletedWorkTotalLimitContainer"
+                             style="display:none">
+                            <div class="policyFeeContainer">
+                                <div class="row" style="background-color: rgba(38, 80, 159, 0.13)">
+                                    <div class="col-xs-4">
+                                        <span class="lineOfBusinessSpan">Products & Completed Work Total additional Limit</span>
+                                    </div>
+
+                                    <div class="col-xs-3">
+                                        <span class="premiumSpan productLimit">$250</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        %{--premises limit--}%
+                        <div class="premDistributionInsert premisesContainer" style="display:none">
+                            <div class="policyFeeContainer">
+                                <div class="row" style="background-color: rgba(38, 80, 159, 0.13)">
+                                    <div class="col-xs-4">
+                                        <span class="lineOfBusinessSpan">Each Event (Premises Damage additional Limit)</span>
+                                    </div>
+
+                                    <div class="col-xs-3">
+                                        <span class="premiumSpan premisesLimit"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        %{--medical limit--}%
+                        <div class="premDistributionInsert medicalLimitContainer" style="display:none">
+                            <div class="">
+                                <div class="row" style="background-color: rgba(38, 80, 159, 0.13)">
+                                    <div class="col-xs-4">
+                                        <span class="lineOfBusinessSpan">Each Event (Medical Expense additional Limit)</span>
+                                    </div>
+
+                                    <div class="col-xs-3">
+                                        <span class="premiumSpan medicalLimit">$250</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        %{--miscellanous equipment limit--}%
+                        <div class="premDistributionInsert">
+                            <div class="miscLimitContainer" style="display:none">
+                                <div class="row">
+                                    <div class="col-xs-4">
+                                        <span class="lineOfBusinessSpan">Miscellaneous Unscheduled Equipment (Rented)</span>
+                                    </div>
+
+                                    <div class="col-xs-3">
+                                        <span class="premiumSpan miscLimit"></span>
                                     </div>
                                 </div>
                             </div>
@@ -1651,47 +1921,47 @@
             <h5>Endorse</h5>
             <span class="spEndorsements" id="endorseInsert"
                   style="font-size: 12px; white-space: pre-line; display:none">Commercial General Liability
-IM 01 24 (10 10) - EFLTR:Commercial Inland Marine Coverage Part Declarations
-IM 00 49 (06 10) - EFLTR:Electronic Data Processing
-IM 01 30 (10 10) - EFLTR:Personal Property Floater Policy Supplemental Declarations
-IM 00 85 (06 10) - EFLTR:Personal Property Floater Policy
-IM 01 10 (06 10) - EFLTR:Third Party Property Damage Coverage
-IL 09 35 (07 02) - EFLTR:Exclusion of Certain Computer-Related Losses
-IL 01 02 (05 05) - EFLTR:California Changes, Actual Cash Value
-IL 01 04 (09 07) - EFLTR:California Changes
+IM 01 24 (10 10) - Commercial Inland Marine Coverage Part Declarations
+IM 00 49 (06 10) - Electronic Data Processing
+IM 01 30 (10 10) - Personal Property Floater Policy Supplemental Declarations
+IM 00 85 (06 10) - Personal Property Floater Policy
+IM 01 10 (06 10) - Third Party Property Damage Coverage
+IL 09 35 (07 02) - Exclusion of Certain Computer-Related Losses
+IL 01 02 (05 05) - California Changes, Actual Cash Value
+IL 01 04 (09 07) - California Changes
 
-CG DS 01 (10 01) - CGL:Commercial General Liability Declarations
-CG 00 01 (12 07) - CGL:Commercial General Liability Coverage Form
-CG 00 68 (05 09) - CGL:Recording and Distribution of Material or Information in Violation of Law Exclusion
-CG 21 46 (07 98) - CGL:Abuse or Molestation Exclusion
-CG 21 47 (12 07) - CGL:Employment Related Practices Endorsement
-CG 21 67 (12 04) - CGL:Fungi or Bacteria Exclusion
-CG 21 96 (03 05) - CGL:Silica or Silica-Related Dust Exclusion
-CG 20 34 (07 04) - CGL:Additional Insured Lessor of Leased Equipment Automatic Status When Required in Lease Agreement With You
-CG 20 23 (10 93) - CGL:Additional Insured Executors, Administrators, Trustees or Beneficiaries.
-CG 20 26 (07 04) - CGL:Additional Insured Designated Person or Organization Any person or organization when you and such person or organization have agreed in writing in a contract or agreement that such person or organization be added as an additional insured on your policy prior to performance of the agreement.
-CG 21 44 (07 98) - CGL:Limitation of Coverage to Designated Premises or Project: DICE and Commercial Media
-CG 21 71 (06 08) - CGL:Exclusion Of Other Acts Of Terrorism Committed Outside The United States; Cap On Losses From Certified Acts Of Terrorism
-CG 21 84 (01 08) - CGL:Exclusion of Certified Acts of Nuclear, Biological, Chemical Acts.
-CG 21 76 (01 08) - CGL:Exclusion of Punitive Damages Related to a Certified Act of Terrorism
-CG 21 75 (06 08) - CGL:Exclusion Certified Acts of Terrorism and Exclusion of Other Acts of Terrorism Committed Outside the United States
-GL 00 01 (06 10) - CGL:Absolute Asbestos Exclusion
-GL 00 02 (06 10) - CGL:Absolute Lead Exclusion
-GL 00 08 (06 10) - CGL:Amendment of Employment Definition (Temporary Employee)
-GL 00 19 (06 10) - CGL:Cross Liability Exclusion
-GL 00 29 (06 10) - CGL:Exclusion Designated Activity
+CG DS 01 (10 01) - Commercial General Liability Declarations
+CG 00 01 (12 07) - Commercial General Liability Coverage Form
+CG 00 68 (05 09) - Recording and Distribution of Material or Information in Violation of Law Exclusion
+CG 21 46 (07 98) - Abuse or Molestation Exclusion
+CG 21 47 (12 07) - Employment Related Practices Endorsement
+CG 21 67 (12 04) - Fungi or Bacteria Exclusion
+CG 21 96 (03 05) - Silica or Silica-Related Dust Exclusion
+CG 20 34 (07 04) - Additional Insured Lessor of Leased Equipment Automatic Status When Required in Lease Agreement With You
+CG 20 23 (10 93) - Additional Insured Executors, Administrators, Trustees or Beneficiaries.
+CG 20 26 (07 04) - Additional Insured Designated Person or Organization Any person or organization when you and such person or organization have agreed in writing in a contract or agreement that such person or organization be added as an additional insured on your policy prior to performance of the agreement.
+CG 21 44 (07 98) - Limitation of Coverage to Designated Premises or Project: DICE and Commercial Media
+CG 21 71 (06 08) - Exclusion Of Other Acts Of Terrorism Committed Outside The United States; Cap On Losses From Certified Acts Of Terrorism
+CG 21 84 (01 08) - Exclusion of Certified Acts of Nuclear, Biological, Chemical Acts.
+CG 21 76 (01 08) - Exclusion of Punitive Damages Related to a Certified Act of Terrorism
+CG 21 75 (06 08) - Exclusion Certified Acts of Terrorism and Exclusion of Other Acts of Terrorism Committed Outside the United States
+GL 00 01 (06 10) - Absolute Asbestos Exclusion
+GL 00 02 (06 10) - Absolute Lead Exclusion
+GL 00 08 (06 10) - Amendment of Employment Definition (Temporary Employee)
+GL 00 19 (06 10) - Cross Liability Exclusion
+GL 00 29 (06 10) - Exclusion Designated Activity
 
-CA DS 03 (03-10) - NOAL:Business Auto Declarations
-AU 0011 (09-10) - NOAL:Explanation of Premium Basis
-AU 0013 (09-10) - NOAL:Mexico Endorsement
-AU 0017 (09-10) - NOAL:Who is an Insured Endorsement
-CA 0001 (03-10) - NOAL:Business Auto Coverage Form
-CA 2384 (01-06) - NOAL:Exclusion of Terrorism
-CA 2054 (10-01) - NOAL:Employee Hired Autos
-IL 0003 (04-98) - ALL:Calculation of Premium
-IL 0001 (10-10) - ALL:Signature Page
-IL 0017 (11-98) - ALL:Common Policy Conditions
-IL 0021 (09-08) - ALL:Nuclear Energy Liability Exclusion Endorsement
+CA DS 03 (03-10) - Business Auto Declarations
+AU 0011 (09-10) - Explanation of Premium Basis
+AU 0013 (09-10) - Mexico Endorsement
+AU 0017 (09-10) - Who is an Insured Endorsement
+CA 0001 (03-10) - Business Auto Coverage Form
+CA 2384 (01-06) - Exclusion of Terrorism
+CA 2054 (10-01) - Employee Hired Autos
+IL 0003 (04-98) - Calculation of Premium
+IL 0001 (10-10) - Signature Page
+IL 0017 (11-98) - Common Policy Conditions
+IL 0021 (09-08) - Nuclear Energy Liability Exclusion Endorsement
 x - ALL:Nuclear, Biological or Chemical Terrosim
 x - ALL:Mandatory State Forms Will be Attached Subject to State of Domicile of Named Insured(s)</span>
         </div>

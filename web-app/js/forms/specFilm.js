@@ -1100,10 +1100,11 @@ $(document).ready(function() {
         $(this).parent().siblings(".deductibleColumn").find(".PIPCHOIDeductLine").html(formatMoney(deductAmount));
 
         var totalPremium = 0;
-        $(".PIPCHOIPremiumLine").each(function() {
+
+        $('div#coverageOptionsReview div#limitsDeductPremiumInsert span.PIPCHOIPremiumLine').each(function() {
             totalPremium = totalPremium + parseInt($(this).html().replace(/\$|,/g, ''));
         });
-
+        console.log("PIPCHOI: " + totalPremium);
         $("#PIPCHOIPremiumTotal").html(formatMoney(totalPremium));
         $("#EPKGPremiumLOBTotal").html(formatMoney(totalPremium));
 
@@ -1958,6 +1959,8 @@ function ratePremiums(thisObj) {
                                 "</div>";
                             limitDeductibleString = limitDeductibleString + "<span id='" + responseJSON.coverages[i].coverageCode + "_RateInfo' style='display:none'>" +
                                 responseJSON.coverages[i].rateInfo + "</span>";
+                            limitDeductibleString = limitDeductibleString + "<span id='" + responseJSON.coverages[i].coverageCode + "_IndicationRateInfo' style='display:none'>" +
+                                responseJSON.coverages[i].indicationRateInfo + "</span>";
                             limitDeductibleString = limitDeductibleString + "<br>";
 
                             var lobLines = Object.keys(responseJSON.coverages[i].lobDist);
@@ -2623,16 +2626,18 @@ function totalUpPremiumAndTax() {
     //alert();
 
     var totalPremium = 0.0;
-    $('.premiumSpan, .taxSpan').each(function() {
-        //console.log("TOTALING === " + $(this).html())
+    $('div#coverageInfoPanel .premiumSpan, div#coverageInfoPanel .taxSpan').each(function() {
+
         if ($.isNumeric($(this).html())) {
+            // console.log("TOTALING === " + parseFloat($(this).html()));
             totalPremium = totalPremium + parseFloat($(this).html());
         }
         else if ($(this).html().substring(0, 1) === "\$") {
+            // console.log("TOTALING === " + $(this).html())
             var v = $(this).html();
             v = v.replace("$", "");
             v = v.replace(/,/g, "");
-            //console.log("PREMIUM LINE ===== " + v);
+            // console.log("TOTALING ===== " + v);
             //v = ("$"+v+"").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             totalPremium = totalPremium + parseFloat(v);
         }

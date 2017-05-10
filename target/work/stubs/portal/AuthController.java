@@ -36,4 +36,5 @@ public  java.lang.Object login() { return null;}
 public  java.lang.Object logout() { return null;}
 public  java.lang.Object insertUserIntoAIMPhoneBook() { return null;}
 public  java.lang.Object createSessionForLegacyNeeis() { return null;}
+public  java.lang.Object checkEmail() { return null;}
 }
