@@ -281,44 +281,140 @@ class MainController {
         def countP = 0;
         def countM =0;
         def matchingSubmissions = "";
+
         def producerIDMatch = false;
         def matchingQuoteIDs = "";
-        aimsql.eachRow( "SELECT * FROM dvSearchInsured_v2 WITH (NOLOCK) WHERE (NamedInsured LIKE '%" + params.checkName + "%')" +
+        def possibleRenewal = false;
+
+        def matchingNamedInsureds = "";
+        def matchingRenewals = "";
+        def matchingInactivePolicies ="";
+        def exactMatch = false;
+        def potentialMatch = false;
+        def renderString = "";
+
+        //IF EXACT MATCH
+        log.info("CHECKING EXACT MATCHES")
+        aimsql.eachRow( "SELECT * FROM dvSearchInsured_v2 WITH (NOLOCK) WHERE (NamedInsured = '" + params.checkName + "')" +
                 " AND (Zip = '" + params.zipCodeMailing + "')") {
-            log.info "HELLOO"
-            //LEVENSHTEIN ALGORITHM TO DETERMINE HOW ALIKE TWO STRINGS ARE
-            int lfd = Utils.levenshteinDistance(params.checkName, it.NamedInsured)
-            String s1 = params.checkName;
-            String s2 = it.NamedInsured;
+            log.info(params.checkName + "(" + params.zipCodeMailing + ") EXACTLY Matches " + "&;&" + it.NamedInsured + "&;&" + it.Zip)
+            exactMatch = true;
+            matchingNamedInsureds = matchingNamedInsureds  + it.NamedInsured + "&;;&"
 
-            double ratio = ((double) lfd) / (Math.max(s1.length(), s2.length()));
-
-            log.info params.checkName + " - " + "$it.NamedInsured" + " " + ratio;
-            matchingSubmissions = matchingSubmissions + it.NamedInsured + "&,&"
-            if(ratio <0.05){
-                if(it.producerID == session.user.company){
-                    aimsql.eachRow( "SELECT * FROM Quote WITH (NOLOCK) WHERE  (InsuredID = '" + it.InsuredID + "') " +
-                            "AND (ActivePolicyFlag = 'Y')" ) {
-                        matchingQuoteIDs = matchingQuoteIDs + it.QuoteID + "&;&" + it.NamedInsured + "&;&" + it.ProducerID + "&;;&";
+            if(it.ProducerID == session.user.company){
+                aimsql.eachRow( "SELECT * FROM Quote WITH (NOLOCK) WHERE  (InsuredID = '" + it.InsuredID + "')" ) {
+                    possibleRenewal = true;
+                    if(it.ActivePolicyFlag == "Y"){
+                        matchingRenewals = matchingRenewals + it.QuoteID + "&;&" + it.NamedInsured + "&;&" + it.ProducerID + "&;&" + it.ActivePolicyFlag + "&;;&";
+                        log.info("Matched Active Policy: " + it.QuoteID + "&;&" + it.NamedInsured + "&;&" + it.ProducerID + "&;&" + it.ActivePolicyFlag );
+                    }
+                    else{
+                        matchingRenewals = matchingRenewals + it.QuoteID + "&;&" + it.NamedInsured + "&;&" + it.ProducerID + "&;&" + it.ActivePolicyFlag + "&;;&";
+                        log.info("Matched NON Active Policy: " + it.QuoteID + "&;&" + it.NamedInsured + "&;&" + it.ProducerID + "&;&" + it.ActivePolicyFlag );
                     }
                 }
-                else{
-                    countM++
+                if(possibleRenewal == true){
+                    log.info("MATCHES EXACTLY TO A EXISTING POLICY FROM THIS AGENCY")
+                    renderString = "RENEWAL&;;&" + matchingRenewals
                 }
+                else{
+                    log.info("MATCHES EXACTLY TO A NAMED INSURED FROM THIS AGENCY BUT NO EXISTING POLICY/QUOTE")
+                    renderString = "OK&;;&" + matchingNamedInsureds
+                }
+
+            }
+            else{
+                log.info("MATCHES EXACTLY TO A NAMED INSURED FROM A DIFFERENT AGENCY")
+                renderString = "BOR&;;&" + matchingNamedInsureds
             }
         }
 
-
-        def renderString = "";
-         //Implement this later
-        if(countM > 0){ //IF NAMED INSURED MATCHES OTHER INSUREDS IN SYSTEM
-            renderString = countM
-            renderString = renderString + "&;&" + matchingSubmissions
+        if(exactMatch){
+//            render renderString
         }
-        else{ //IF NAMED INSURED IS A POSSIBLE RENEWAL BY THE SAME COMPANY
-            renderString = "RENEWAL:" + matchingQuoteIDs
+        else{
+            //IF THERE ARE NO EXACT MATCHES CHECK IF SIMILAR IF GIVEN NAME IS LONGER THAN 4 CHAR
+            if(params.checkName.length() >= 3){
+                log.info("CHECKING SIMILAR MATCHES")
+                aimsql.eachRow( "SELECT * FROM dvSearchInsured_v2 WITH (NOLOCK) WHERE (NamedInsured LIKE '%" + params.checkName + "%')" +
+                        " AND (Zip = '" + params.zipCodeMailing + "')") {
+                    log.info(params.checkName + "(" + params.zipCodeMailing + ") SIMILAR Matches " + "&;&" + it.NamedInsured + "&;&" + it.Zip)
+                    potentialMatch = true;
+                    matchingNamedInsureds = matchingNamedInsureds  + it.NamedInsured + "&;;&"
+                    if(it.ProducerID == session.user.company){
+                        aimsql.eachRow( "SELECT * FROM Quote WITH (NOLOCK) WHERE  (InsuredID = '" + it.InsuredID + "')" ) {
+                            possibleRenewal = true;
+                            if(it.ActivePolicyFlag == "Y"){
+                                matchingRenewals = matchingRenewals + it.QuoteID + "&;&" + it.NamedInsured + "&;&" + it.ProducerID + "&;&" + it.ActivePolicyFlag + "&;;&";
+                                log.info("Matched Active Policy: " + it.QuoteID + "&;&" + it.NamedInsured + "&;&" + it.ProducerID + "&;&" + it.ActivePolicyFlag );
+                            }
+                            else{
+                                matchingRenewals = matchingRenewals + it.QuoteID + "&;&" + it.NamedInsured + "&;&" + it.ProducerID + "&;&" + it.ActivePolicyFlag + "&;;&";
+                                log.info("Matched NON Active Policy: " + it.QuoteID + "&;&" + it.NamedInsured + "&;&" + it.ProducerID + "&;&" + it.ActivePolicyFlag );
+                            }
+                        }
+                        if(possibleRenewal == true){
+                            log.info("MATCHES SIMILARLY TO A EXISTING POLICY FROM THIS AGENCY")
+                            renderString = "RENEWAL&;;&" + matchingRenewals
+                        }
+                        else{
+                            log.info("MATCHES SIMILARLY TO A NAMED INSURED FROM THIS AGENCY BUT NO EXISTING POLICY/QUOTE")
+                            renderString = "OK&;;&" + matchingNamedInsureds
+                        }
+
+                    }
+                    else{
+                        log.info("MATCHES EXACTLY TO A NAMED INSURED FROM A DIFFERENT AGENCY")
+                        renderString = "BOR&;;&" + matchingNamedInsureds
+                    }
+                }
+            }
+            else{
+                log.info("NAMED INSURED IS NOT LONGER THAN NEEDED CHAR LENGTH, SKIPPING SIMILAR MATCHES")
+            }
         }
 
+        if(potentialMatch == false && exactMatch == false && possibleRenewal == false){
+            renderString = "OK"
+        }
+//
+//        aimsql.eachRow( "SELECT * FROM dvSearchInsured_v2 WITH (NOLOCK) WHERE (NamedInsured LIKE '%" + params.checkName + "%')" +
+//                " AND (Zip = '" + params.zipCodeMailing + "')") {
+//            log.info "HELLOO"
+//            //LEVENSHTEIN ALGORITHM TO DETERMINE HOW ALIKE TWO STRINGS ARE
+//            int lfd = Utils.levenshteinDistance(params.checkName, it.NamedInsured)
+//            String s1 = params.checkName;
+//            String s2 = it.NamedInsured;
+//
+//            double ratio = ((double) lfd) / (Math.max(s1.length(), s2.length()));
+//
+//            log.info params.checkName + " - " + "$it.NamedInsured" + " " + ratio;
+//            matchingSubmissions = matchingSubmissions + it.NamedInsured + "&,&"
+//            if(ratio <0.05){
+//                if(it.producerID == session.user.company){
+//                    aimsql.eachRow( "SELECT * FROM Quote WITH (NOLOCK) WHERE  (InsuredID = '" + it.InsuredID + "') " +
+//                            "AND (ActivePolicyFlag = 'Y')" ) {
+//                        possibleRenewal = true;
+//                        matchingQuoteIDs = matchingQuoteIDs + it.QuoteID + "&;&" + it.NamedInsured + "&;&" + it.ProducerID + "&;;&";
+//                    }
+//                }
+//                else{
+//                    countM++
+//                }
+//            }
+//        }
+//
+//
+//
+//         //Implement this later
+//        if(countM > 0){ //IF NAMED INSURED MATCHES OTHER INSUREDS IN SYSTEM
+//            renderString = countM
+//            renderString = renderString + "&;&" + matchingSubmissions
+//        }
+//        else if(possibleRenewal){ //IF NAMED INSURED IS A POSSIBLE RENEWAL BY THE SAME COMPANY
+//            renderString = "RENEWAL:" + matchingQuoteIDs
+//        }
+//
         log.info "Render: " + renderString
         render renderString
 

@@ -112,7 +112,7 @@ class AuthController {
             }
 
             u = new portal.User(userRole:userRole, email:params.email, password:params.password,
-                    company:params.company, firstName: params.firstName, lastName: params.lastName, phoneNumber: params.phoneNumber, aimContactID:userReferenceID)
+                    company:params.company, firstName: params.firstName, lastName: params.lastName, phoneNumber: params.phoneNumber, defaultUnderwriter: "",aimContactID:userReferenceID)
             u.save(flush: true, failOnError: true)
 
 

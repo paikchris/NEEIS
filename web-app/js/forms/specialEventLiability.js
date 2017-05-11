@@ -4,10 +4,8 @@ var rate
 var eventDays
 var minimumPremium
 var liquorRate
-var CGLPremium
 var brokerPremium
 var liquorPremium
-var totalPremiumTotal
 var riskRate
 // RATES BASED OFF RISK TYPE
 var classOne = 0.25
@@ -51,7 +49,6 @@ $(document).ready(function () {
             $(this).val( value );
         })
     });
-
 // MIN MAX LIMITS EVENT DAYS
     $(document.body).on('change', 'input[name="howManyDaysIsTheEvent"]', function () {
         //alert();
@@ -59,15 +56,7 @@ $(document).ready(function () {
         validate(value, min, max)
     });
 
-// MIN MAX LIMITS ATTENDANCE
-//     $(document.body).on('change', 'input[name="estimatedTotalAttendance"]', function () {
-//         //alert();
-//         var value, min, max
-//         validate(value, min, max)
-//     });
-
-// TOTAL PREMIUM COST !@#
-
+// TOTAL PREMIUM COST
 // STATE RATE SELECT
     $("#selectState").change(function () {
         var state = this.value;
@@ -76,43 +65,25 @@ $(document).ready(function () {
     });
 // COMMERCIAL GENERAL LIABILITY PREMIUM
     $(document.body).on('change', ".effectsTotalCGL", function () {
+
         attendance = $("#estimatedTotalAttendance").val()
         eventDays = $("#howManyDaysIsTheEvent").val()
         var attendanceValue = parseFloat(attendance)
         var eventDaysValue = parseFloat(eventDays)
-        // var rateValue = parseFloat(rate)
+
         if (attendance.length > 0 && eventDays.length > 0) {
-            var totalPremiumCGL
-            // alert ("step one" + attendance)
-            // alert ("step two" + eventDays)
-            CGLPremium = getCGLPremium(totalPremiumCGL)
-            temptermLenghtDays = $("#proposedTermLength").val().split(" ")[0]
-            termLenghtDays = parseInt(temptermLenghtDays)
+            var a
+            getCGLPremium(a)
+            checkCGLAnnual(a)
+        }
 
-            if (termLenghtDays > 0 && termLenghtDays < 365) {
-
-                $("#commercialGeneralLiabilityPremiumCost").html("$" + CGLPremium);
-                $("#termsInsert").css('display', "");
-                $("#endorseInsert").css('display', "");
-            }
-            else if (termLenghtDays = 365) {
-
-                CGLPremiumInt = parseInt(CGLPremium)
-                if (CGLPremiumInt < 1000) {
-                    var minCGLPremium = 1000
-
-                    $("#commercialGeneralLiabilityPremiumCost").html("$" + minCGLPremium);
-                    $("#termsInsert").css('display', "");
-                    $("#endorseInsert").css('display', "");
-                }
-                else if (CGLPremiumInt >= 1000) {
-                    CGLPremium = getCGLPremium(totalPremiumCGL)
-
-                    $("#commercialGeneralLiabilityPremiumCost").html("$" + CGLPremium);
-                    $("#termsInsert").css('display', "");
-                    $("#endorseInsert").css('display', "");
-                }
-            }
+    });
+    $(document.body).on('change', ".effectsTotal", function () {
+        if($(this).html().length > 0 ) {
+            var a
+            var PremiumCGL = getCGLTotalPremium(a)
+            $(".commercialGeneralLiabilityPremiumCost").html("$" + PremiumCGL);
+            $(".effectsTotalPremium").trigger("change")
         }
     });
 // ALCOHOL PREMIUM
@@ -120,6 +91,8 @@ $(document).ready(function () {
         var totalPremiumLiquor
         liquorPremium = getLiquorPremium(totalPremiumLiquor)
         $("#alcoholSalePremiumCost").html("$" + liquorPremium);
+        $(".effectsTotalPremiumPlaceholder").addClass("effectsTotalPremium");
+        $(".effectsTotalPremium").trigger("change")
     });
     // ALCOHOL TYPE PERCENTAGE
     $(document.body).on('change', ".whatKindOfLiquorIsServed", function () {
@@ -157,12 +130,6 @@ $(document).ready(function () {
             }
         }
     });
-
-// POLICY PREMIUM
-    $(document.body).on('change', ".effectsTotalCGL", function () {
-        var policyFee = 25
-        $("#policyFeePremiumCost").html("$" + policyFee);
-    });
 // TOTAL SALES
     $(document.body).on('change', ".effectsTotalPremium", function () {
         attendance = $("#estimatedTotalAttendance").val()
@@ -171,8 +138,9 @@ $(document).ready(function () {
         var eventDaysValue = parseFloat(eventDays)
         // var rateValue = parseFloat(rate)
         if (attendance.length > 0 && eventDays.length > 0) {
-            var premium
-            totalPremiumTotal = getTotalPremium(premium)
+            var totalPremiumTotal = 0
+            var a
+            totalPremiumTotal = getTotalPremium(a)
             $("#totalSalePremiumCost").html("$" + totalPremiumTotal);
         }
     });
@@ -182,13 +150,10 @@ $(document).ready(function () {
         brokerPremium = getBrokerPremium(brokerFeeTotal)
         $("#brokerFeePremiumCost").html("$" + brokerPremium);
     });
-
-// TOTAL PREMIUM COST !@#
-
+// TOTAL PREMIUM COST
 
 
-// YES NO CHECK BOX HIDDEN QUESTIONS / TABLES
-
+// STEP 1
 // CGL TABLE
     $(document.body).on('change', 'input[name="commercialGeneralLiabilityRequested?"]', function () {
         //alert();
@@ -197,54 +162,14 @@ $(document).ready(function () {
             $(".additionalCoverageContainer").css('display', "");
             $("#commercialGeneralLiabilityRequestedExplain").css('display', "");
             $(".tableCGL").addClass("showReviewTable");
+            $("#policyFeePremiumCost").html("$" + 25);
+            $(".effectsTotalPremium").trigger("change")
         }
         if ($(this).attr("value") == "No") {
             $("#commercialGeneralLiabilityRequestedContainer").css('display', "none");
             $(".additionalCoverageContainer").css('display', "none");
             $("#commercialGeneralLiabilityRequestedExplain").css('display', "none");
             $(".tableCGL").removeClass("showReviewTable");
-        }
-    });
-// WORK COMP TABLE / ADDITIONAL HIDDEN QUESTIONS
-    $(document.body).on('change', 'input[name="workCompCoverageRequested"]', function () {
-        //alert();
-        if ($(this).attr("value") == "Yes") {
-            $("#workCompCoverageRequestedContainer").css('display', "");
-            $("#workCompCoverageRequestedExplain").css('display', "");
-            $(".tableWC").addClass("showReviewTable");
-        }
-        if ($(this).attr("value") == "No") {
-            $("#workCompCoverageRequestedContainer").css('display', "none");
-            $("#workCompCoverageRequestedExplain").css('display', "none");
-            $(".tableWC").removeClass("showReviewTable");
-        }
-    });
-// AUTO LIABILITY TABLE / ADDITIONAL HIDDEN QUESTIONS
-    $(document.body).on('change', 'input[name="autoLiability"]', function () {
-        //alert();
-        if ($(this).attr("value") == "Yes") {
-            $(".costRentedVehiclesContainer").css('display', "");
-            $(".costRentedVehiclesExplain").css('display', "");
-            $(".tableNOAL").addClass("showReviewTable");
-        }
-        if ($(this).attr("value") == "No") {
-            $(".costRentedVehiclesContainer").css('display', "none");
-            $(".costRentedVehiclesExplain").css('display', "none");
-            $(".tableNOAL").removeClass("showReviewTable");
-        }
-    });
-// UMBRELLA TABLE
-    $(document.body).on('change', 'input[name="umbrellaLimitRequested"]', function () {
-        //alert();
-        if ($(this).attr("value") == "Yes") {
-            $("#umbrellaLimitRequestedContainer").css('display', "");
-            $("#umbrellaLimitRequestedExplain").css('display', "");
-            $(".tableCUMB").addClass("showReviewTable");
-        }
-        if ($(this).attr("value") == "No") {
-            $("#umbrellaLimitRequestedContainer").css('display', "none");
-            $("#umbrellaLimitRequestedExplain").css('display', "none");
-            $(".tableCUMB").removeClass("showReviewTable");
         }
     });
 // ALCOHOL TABLE / ADDITIONAL HIDDEN QUESTION / PREMIUMS
@@ -284,45 +209,7 @@ $(document).ready(function () {
         }
     });
 
-// INSURED CONTACT TABLE / CONTAINER
-    $(document.body).on('change', 'input[name="contactRep"]', function () {
-        //alert();
-        if ($(this).attr("value") == "Yes") {
-            $("#insuredContactInformationContainer").css('display', "");
-            $("#insuredContactInformationExplain").css('display', "");
-        }
-        if ($(this).attr("value") == "No") {
-            $("#insuredContactInformationContainer").css('display', "none");
-            $("#insuredContactInformationExplain").css('display', "none");
-        }
-    });
-// EQUIPMENT TABLE / ADDITIONAL HIDDEN QUESTIONS
-    $(document.body).on('change', 'input[name="equipmentOwnedRented"]', function () {
-        //alert();
-        if ($(this).attr("value") == "Yes") {
-            $("#equipmentOwnedRentedContainer").css('display', "");
-            $("#equipmentOwnedRentedExplain").css('display', "");
-        }
-        if ($(this).attr("value") == "No") {
-            $("#equipmentOwnedRentedContainer").css('display', "none");
-            $("#equipmentOwnedRentedExplain").css('display', "none");
-        }
-    });
-// INSURANCE BEEN CANCELLED ADDITIONAL HIDDEN QUESTIONS
-    $(document.body).on('change', 'input[name="insuranceCancelled"]', function () {
-        //alert();
-        if ($(this).attr("value") == "Yes") {
-            $("#insuranceCancelledContainer").css('display', "");
-            $("#insuranceCancelledExplain").css('display', "");
-        }
-        if ($(this).attr("value") == "No") {
-            $("#insuranceCancelledContainer").css('display', "none");
-            $("#insuranceCancelledExplain").css('display', "none");
-        }
-    });
-
-
-
+// STEP 2
 // INSURED INFO CONTAINERS
     // Y/N EVENT OUTDOORS CONTAINER ADDITIONAL QUESTION
     $(document.body).on('change', 'input[name="willEventBeHeldOutdoors"]', function () {
@@ -649,13 +536,9 @@ $(document).ready(function () {
             $(".weatherReview").removeClass("showReview");
         }
     });
-
-
 // YES NO CHECK BOX HIDDEN QUESTIONS / TABLES
 
-
-
-    // ADDITIONAL COVERAGES
+// ADDITIONAL COVERAGES
     // SELECT MISC EQUIPMENT CONTAINER ADDITIONAL QUESTION
     $(document.body).on('change', '.miscCheckbox' ,function(){
         var clickedElement = $(this)
@@ -671,26 +554,22 @@ $(document).ready(function () {
         $(this).prop('checked', true);
 
         if($(".miscCheckbox").is(':checked')) {
-            $('.miscContainer').css("display", "");
             $('.inlandMarineContainer').css("display", "");
-            $('.miscLimitContainer').css("display", "");
-            $(".miscLimit").addClass("effectsTotal");
+            $('.miscContainer').css("display", "");
+            $(".premiumMiscellaneous").addClass("effectsTotal");
+            $(".effectsTotal").trigger("change")
         }
         else{
-            $('.miscContainer').css("display", "none");
             $('.inlandMarineContainer').css("display", "none");
-            $('.miscLimitContainer').css("display", "none");
-            $(".miscLimit").remove("effectsTotal");
+            $('.miscContainer').css("display", "none");
+            $(".premiumMiscellaneous").removeClass("effectsTotal");
+            $(".effectsTotal").trigger("change")
         }
     });
     $(document.body).on('change', '.limitMiscellaneous' ,function(){
         getMiscellaneousEquipmentDeductible()
         getMiscellaneousEquipmentRating();
     });
-
-
-
-
     // SELECT THIRD PARTY PROPERTY DAMAGE CONTAINER ADDITIONAL QUESTION
     $(document.body).on('change', '#thirdPartyCheckbox' ,function(){
         if($("#thirdPartyCheckbox").is(':checked')) {
@@ -702,120 +581,88 @@ $(document).ready(function () {
             $('.inlandMarineContainer').css("display", "none");
         }
     });
-
-    // LIMITS
     // GENERAL AGGREGATE LIMIT
-    $('.generalAggregateLimit').change(function() {
+    $('.limitGeneralAggregate').change(function() {
         // $(document.body).on('change', '#securityType' ,function () {
         var option = $(this).find('option:selected').val();
         // alert(option);
         if  (option == "additional") {
-            $(".genLiabLimitContainer").css('display', "");
-            $(".genLiabLimit").addClass("effectsTotal");
-            $(".premiumGenAgg").html("$" + "250");
-            var premium
-            totalPremiumTotal = getTotalPremium(premium)
-            $("#totalSalePremiumCost").html("$" + totalPremiumTotal);
+            $(".premiumGeneralAggregate").addClass("effectsTotal");
+            $(".premiumGeneralAggregate").html("$" + "250");
+            $(".effectsTotal").trigger("change")
+
         }
         if  (option == "standard") {
-            $(".genLiabLimitContainer").css('display', "none");
-            $(".genLiabLimit").removeClass("effectsTotal");
-            $(".premiumGenAgg").html("");
-            var premium
-            totalPremiumTotal = getTotalPremium(premium)
-            $("#totalSalePremiumCost").html("$" + totalPremiumTotal);
+            $(".premiumGeneralAggregate").removeClass("effectsTotal");
+            $(".premiumGeneralAggregate").html("");
+            $(".effectsTotal").trigger("change")
         }
     });
     // PRODUCT AND COMPLETED OPERATION LIMIT
-    $('.productAndCompletedOperationsLimit').change(function() {
+    $('.limitProductAndCompletedOperations').change(function() {
         // $(document.body).on('change', '#securityType' ,function () {
         var option = $(this).find('option:selected').val();
         // alert(option);
         if  (option == "additional") {
-            $(".productsCompletedWorkTotalLimitContainer").css('display', "");
-            $(".productLimit").addClass("effectsTotal");
-            $(".premiumProduct").html("$" + "250");
-            var premium
-            totalPremiumTotal = getTotalPremium(premium)
-            $("#totalSalePremiumCost").html("$" + totalPremiumTotal);
+            $(".premiumProductAndCompletedOperations").addClass("effectsTotal");
+            $(".premiumProductAndCompletedOperations").html("$" + "250");
+            $(".effectsTotal").trigger("change")
         }
         if  (option == "standard") {
-            $(".productsCompletedWorkTotalLimitContainer").css('display', "none");
-            $(".productLimit").removeClass("effectsTotal");
-            $(".premiumProduct").html("");
-            var premium
-            totalPremiumTotal = getTotalPremium(premium)
-            $("#totalSalePremiumCost").html("$" + totalPremiumTotal);
+            $(".premiumProductAndCompletedOperations").removeClass("effectsTotal");
+            $(".premiumProductAndCompletedOperations").html("");
+            $(".effectsTotal").trigger("change")
         }
     });
     // PREMISES DAMAGE LIMIT
-    $('.premisesDamageLimit').change(function() {
+    $('.limitPremisesDamage').change(function() {
         // $(document.body).on('change', '#securityType' ,function () {
         var option = $(this).find('option:selected').val();
         // alert(option);
         if  (option == "additional") {
-            $(".premisesContainer").css('display', "");
-            $(".premisesLimit").addClass("effectsTotal");
 
-            temptermLenghtDays = $("#proposedTermLength").val().split(" ")[0]
-            termLenghtDays = parseInt(temptermLenghtDays)
+            var temptermLenghtDays = $("#proposedTermLength").val().split(" ")[0]
+            var termLenghtDays = parseInt(temptermLenghtDays)
 
             if (termLenghtDays > 0 && termLenghtDays <= 90) {
-
-                var premisesAdditionalCost = 100
-                $(".premisesLimit").html("$" + premisesAdditionalCost);
-                $(".premiumPremises").html("$" + "100");
+                $(".premiumPremisesDamage").html("$" + "100");
+                $(".premiumPremisesDamage").addClass("effectsTotal");
+                $(".effectsTotal").trigger("change")
             }
 
             else if (termLenghtDays > 91 && termLenghtDays <= 180) {
-
-                var premisesAdditionalCost = 250
-                $(".premisesLimit").html("$" + premisesAdditionalCost);
-                $(".premiumPremises").html("$" + "250");
+                $(".premiumPremisesDamage").html("$" + "250");
+                $(".premiumPremisesDamage").addClass("effectsTotal");
+                $(".effectsTotal").trigger("change")
             }
 
             else if (termLenghtDays > 181) {
-
-                var premisesAdditionalCost = 450
-                $(".premisesLimit").html("$" + premisesAdditionalCost);
-                $(".premiumPremises").html("$" + "450");
+                $(".premiumPremisesDamage").html("$" + "450");
+                $(".premiumPremisesDamage").addClass("effectsTotal");
+                $(".effectsTotal").trigger("change")
             }
-
-            var premium
-            totalPremiumTotal = getTotalPremium(premium)
-            $("#totalSalePremiumCost").html("$" + totalPremiumTotal);
         }
         if  (option == "standard") {
-            $(".premisesContainer").css('display', "none");
-            $(".premisesLimit").removeClass("effectsTotal");
-            $(".premiumPremises").html("");
-
-            var premium
-            totalPremiumTotal = getTotalPremium(premium)
-            $("#totalSalePremiumCost").html("$" + totalPremiumTotal);
+            $(".premiumPremisesDamage").removeClass("effectsTotal");
+            $(".premiumPremisesDamage").html("");
+            $(".effectsTotal").trigger("change")
         }
     });
     // MEDICAL LIMIT
-    $('.medicalExpensesLimit').change(function() {
+    $('.limitMedicalExpenses').change(function() {
         // $(document.body).on('change', '#securityType' ,function () {
         var option = $(this).find('option:selected').val();
         // alert(option);
         if  (option == "additional") {
             alert ("MEDICAL EXPENSE COVERAGE MUST BE REQUIRED BY CONTRACT IF SELECTED")
-            $(".medicalLimitContainer").css('display', "");
-            $(".medicalLimit").addClass("effectsTotal");
-            $(".premiumMedical").html("$" + "250");
-            var premium
-            totalPremiumTotal = getTotalPremium(premium)
-            $("#totalSalePremiumCost").html("$" + totalPremiumTotal);
+            $(".premiumMedicalExpenses").addClass("effectsTotal");
+            $(".premiumMedicalExpenses").html("$" + "250");
+            $(".effectsTotal").trigger("change")
         }
         if  (option == "standard") {
-            $(".medicalLimitContainer").css('display', "none");
-            $(".medicalLimit").removeClass("effectsTotal");
-            $(".premiumMedical").html("");
-            var premium
-            totalPremiumTotal = getTotalPremium(premium)
-            $("#totalSalePremiumCost").html("$" + totalPremiumTotal);
+            $(".premiumMedicalExpenses").removeClass("effectsTotal");
+            $(".premiumMedicalExpenses").html("");
+            $(".effectsTotal").trigger("change")
         }
     });
 
@@ -1102,7 +949,37 @@ function inputMoneyFormat() {
     $('.totalPayroll').maskMoney({prefix: '$', precision: "0"});
     $('.limitMiscellaneous').maskMoney({prefix: '$', precision: "0"});
 };
-function getCGLPremium(totalPremiumCGL) {
+function validate(value, min, max){
+    // MIN MAX LIMIT FOR EVENT DAYS
+    if(parseInt(value) < min || isNaN(parseInt(value))) {
+        return "";
+    }
+    else if(parseInt(value) > max) {
+        alert("Please contact your underwriter if your event exceeds 90 days");
+        return 90;
+    }
+    else return value;
+}
+function alcoholPercentage(totalPercent){
+
+    var total = 0;
+
+    $(".whatKindOfLiquorIsServed").each(function() {
+        if($(this).val().length > 0 ){
+            var tempVal = ($(this).val())
+            var tempVal = parseFloat(tempVal);
+            // alert(tempVal)
+            // var totalPremiumValue = parseFloat $(this)
+            total = total + tempVal
+            // alert (total)
+        }
+    });
+    return total
+    // alert(total)
+}
+
+// FUNCTIONS FOR MISC EQUIPMENT DEDUCTIBLE AND PREMIUM
+function getCGLPremium(a) {
     var totalPremium
     var totalPremium5Below
     var totalPremium6Above
@@ -1163,8 +1040,6 @@ function getCGLPremium(totalPremiumCGL) {
     var minimum6Premium90Class3 = 950
 // MINIMUM PREMIUM 6 DAYS AND MORE
 
-
-
     attendance = $("#estimatedTotalAttendance").val()
     eventDays = $("#howManyDaysIsTheEvent").val()
 
@@ -1173,7 +1048,6 @@ function getCGLPremium(totalPremiumCGL) {
     var rateValue = parseFloat(rate)
 
     if (attendance.length > 0 && eventDays.length > 0) {
-
         if (eventDaysValue <= 5 && attendanceValue > 0) {
 
             totalPremium5Below = attendanceValue * rateValue
@@ -1361,7 +1235,7 @@ function getCGLPremium(totalPremiumCGL) {
 
         }
         else if (eventDaysValue > 5 && attendanceValue > 0) {
-            totalPremium6Above = eventDaysValue * rateValue
+            totalPremium6Above = attendanceValue * rateValue
 
             if (eventDaysValue >= 6 && eventDaysValue <= 10) {
                 if (rate = classOne) {
@@ -1479,7 +1353,6 @@ function getCGLPremium(totalPremiumCGL) {
                     }
                 }
             }
-
             else if (eventDaysValue >= 46 && eventDaysValue <= 60) {
                 if (rate = classOne) {
                     minimumPremium = minimum6Premium60Class1
@@ -1509,7 +1382,6 @@ function getCGLPremium(totalPremiumCGL) {
                     }
                 }
             }
-
             else if (eventDaysValue >= 61 && eventDaysValue <= 75) {
                 if (rate = classOne) {
                     minimumPremium = minimum6Premium75Class1
@@ -1539,7 +1411,6 @@ function getCGLPremium(totalPremiumCGL) {
                     }
                 }
             }
-
             else if (eventDaysValue >= 76 && eventDaysValue <= 90) {
                 if (rate = classOne) {
                     minimumPremium = minimum6Premium90Class1
@@ -1570,9 +1441,80 @@ function getCGLPremium(totalPremiumCGL) {
                 }
             }
         }
-        return totalPremium;
     }
+    return totalPremium;
 }
+function checkCGLAnnual(a){
+
+    var CGLPremium = getCGLPremium(a)
+
+    var temptermLenghtDays = $("#proposedTermLength").val().split(" ")[0]
+    var termLenghtDays = parseInt(temptermLenghtDays)
+
+    if (termLenghtDays > 0 && termLenghtDays < 365) {
+
+        $(".commercialGeneralLiabilityPremiumCost").html("$" + CGLPremium);
+        $("#termsInsert").css('display', "");
+        $("#endorseInsert").css('display', "");
+        $(".effectsTotalPremiumPlaceholder").addClass("effectsTotalPremium");
+    }
+    else if (termLenghtDays = 365) {
+
+        var CGLPremiumInt = parseInt(CGLPremium)
+        if (CGLPremiumInt < 1000) {
+            CGLPremium = 1000
+
+            $(".commercialGeneralLiabilityPremiumCost").html("$" + CGLPremium);
+            $("#termsInsert").css('display', "");
+            $("#endorseInsert").css('display', "");
+            $(".effectsTotalPremiumPlaceholder").addClass("effectsTotalPremium");
+        }
+        else if (CGLPremiumInt >= 1000) {
+            CGLPremium = getCGLPremium(a)
+
+            $(".commercialGeneralLiabilityPremiumCost").html("$" + CGLPremium);
+            $("#termsInsert").css('display', "");
+            $("#endorseInsert").css('display', "");
+            $(".effectsTotalPremiumPlaceholder").addClass("effectsTotalPremium");
+        }
+    }
+    return CGLPremium;
+    alert(CGLPremium + "ONE")
+}
+function getCGLTotalPremium(a){
+
+    var checkCGLPremium = checkCGLAnnual(a)
+    alert(checkCGLPremium + "TWO")
+
+    $(".effectsTotal").each(function() {
+        if($(this).html().length > 0 ){
+            var tempCoverage = parseFloat($(this).html().replace('$','').replace(/,/g , ''));
+            // var totalPremiumValue = parseFloat $(this)
+            checkCGLPremium = checkCGLPremium + tempCoverage
+            // alert (totalPremium)
+            alert(checkCGLPremium + "WOMBO")
+        }
+    });
+    return checkCGLPremium
+    $(".commercialGeneralLiabilityPremiumCost").html("$" + checkCGLPremium);
+}
+function getTotalPremium(a){
+
+    var totalCoveragePremium = getCGLTotalPremium(a);
+
+    $(".effectsTotalPremium").each(function() {
+        if($(this).html().length > 0 ){
+            var tempVal = parseFloat($(this).html().replace('$','').replace(/,/g , ''));
+            // var totalPremiumValue = parseFloat $(this)
+            totalCoveragePremium = totalCoveragePremium + tempVal
+            // alert (totalPremium)
+        }
+    });
+    return totalCoveragePremium
+    alert("TOTALCOVERAGE" + totalCoveragePremium)
+    $("#totalSalePremiumCost").html("$" + totalCoveragePremium);
+}
+
 function getBrokerPremium(brokerFeeTotal) {
     var brokerFee
     var tempBrokerFee
@@ -1618,7 +1560,7 @@ function getLiquorPremium(totalPremiumLiquor){
 
     //this removes the first comma, but does not remove more than one
     // liquorSale = tempLiquorSale.replace('$','').replace(',', '')
-    
+
     // alert (liquorSale)
 
     var liquorSaleValue = parseFloat(liquorSale)
@@ -1750,62 +1692,10 @@ function getLiquorPremium(totalPremiumLiquor){
     }
     return liquorTotalPremium
 }
-function getTotalPremium(premium){
-
-    totalPremium = 0;
-
-    $(".effectsTotal").each(function() {
-        if($(this).html().length > 0 ){
-            var tempVal = parseFloat($(this).html().replace('$','').replace(/,/g , ''));
-            // var totalPremiumValue = parseFloat $(this)
-            totalPremium = totalPremium + tempVal
-            // alert (totalPremium)
-        }
-
-    });
-    return totalPremium
-}
-function validate(value, min, max){
-    // MIN MAX LIMIT FOR EVENT DAYS
-    if(parseInt(value) < min || isNaN(parseInt(value))) {
-        return "";
-    }
-    else if(parseInt(value) > max) {
-        alert("Please contact your underwriter if your event exceeds 90 days");
-        return 90;
-    }
-    else return value;
-}
-function alcoholPercentage(totalPercent){
-
-    var total = 0;
-
-    $(".whatKindOfLiquorIsServed").each(function() {
-        if($(this).val().length > 0 ){
-            var tempVal = ($(this).val())
-            var tempVal = parseFloat(tempVal);
-            // alert(tempVal)
-            // var totalPremiumValue = parseFloat $(this)
-            total = total + tempVal
-            // alert (total)
-        }
-    });
-    return total
-    // alert(total)
-}
-
-// FUNCTIONS FOR MISC EQUIPMENT DEDUCTIBLE AND PREMIUM
 function getMiscellaneousEquipmentDeductible() {
     var tempMiscellaneousDeductible = $("#limitMiscellaneous").val()
-    // alert (tempMiscellaneousDeductible)
     tempMiscellaneousDeductible = tempMiscellaneousDeductible.replace('$','').replace(/,/g , '')
-
-    // alert (tempMiscellaneousDeductible)
     var miscellaneousDeductible = parseInt(tempMiscellaneousDeductible)
-
-    //
-    //
-    // alert (miscellaneousDeductible)
 
     if (miscellaneousDeductible > 0 && miscellaneousDeductible <= 50000 ){
         $(".deductibleMiscellaneous").html("$" + "1000");
@@ -1829,49 +1719,124 @@ function getMiscellaneousEquipmentRating() {
     var tempMiscellaneousLimit = $("#limitMiscellaneous").val()
     tempMiscellaneousLimit = tempMiscellaneousLimit.replace('$','').replace(/,/g , '')
     var tempLimit = parseFloat(tempMiscellaneousLimit)
-    // alert(tempLimit)
 
     if($("#miscUsaCheckbox").is(':checked')) {
         if (eventDay > 0 && eventDay <= 30) {
             var tempDividedLimit = tempLimit / 100
             var limit = tempDividedLimit * 0.50
-            $(".miscLimit").html("$" + limit);
+            $(".premiumMiscellaneous").html("$" + limit);
+            $(".premiumMiscellaneous").addClass("effectsTotal");
+            $(".effectsTotal").trigger("change")
         }
         else if (eventDay > 31 && eventDay <= 90) {
             var tempDividedLimit = tempLimit / 100
             var limit = tempDividedLimit * 0.75
-            $(".miscLimit").html("$" + limit);
+            $(".premiumMiscellaneous").html("$" + limit);
+            $(".premiumMiscellaneous").addClass("effectsTotal");
+            $(".effectsTotal").trigger("change")
         }
     }
     else if($("#miscWorldCheckbox").is(':checked')) {
         if (eventDay > 0 && eventDay <= 30) {
             var tempDividedLimit = tempLimit / 100
             var limit = tempDividedLimit * 0.63
-            $(".miscLimit").html("$" + limit);
+            $(".premiumMiscellaneous").html("$" + limit);
+            $(".premiumMiscellaneous").addClass("effectsTotal");
+            $(".effectsTotal").trigger("change")
         }
         else if (eventDay > 31 && eventDay <= 90) {
             var tempDividedLimit = tempLimit / 100
             var limit = tempDividedLimit * 0.94
-            $(".miscLimit").html("$" + limit);
+            $(".premiumMiscellaneous").html("$" + limit);
+            $(".premiumMiscellaneous").addClass("effectsTotal");
+            $(".effectsTotal").trigger("change")
         }
     }
 }
-// function uncheck(check)
-// {
-//     var usa = document.getElementById("miscUsaCheckbox");
-//     var world = document.getElementById("miscWorldCheckbox");
-//     if (usa.checked == true && world.checked == true)
-//     {
-//         if(check == "miscellaneousUsaEquipment")
-//         {
-//             world.checked = false;
-//             checkRefresh();
-//         }
-//         else if(check == "miscellaneousWorldEquipment")
-//         {
-//             usa.checked = false;
-//             checkRefresh();
-//         }
-//     }
-//
-// }
+
+
+
+
+
+// OLD FUNCTIONS THAT ARE NOT BEING USED
+function oldFunctions(){
+
+    // WORK COMP TABLE / ADDITIONAL HIDDEN QUESTIONS
+    $(document.body).on('change', 'input[name="workCompCoverageRequested"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#workCompCoverageRequestedContainer").css('display', "");
+            $("#workCompCoverageRequestedExplain").css('display', "");
+            $(".tableWC").addClass("showReviewTable");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#workCompCoverageRequestedContainer").css('display', "none");
+            $("#workCompCoverageRequestedExplain").css('display', "none");
+            $(".tableWC").removeClass("showReviewTable");
+        }
+    });
+    // AUTO LIABILITY TABLE / ADDITIONAL HIDDEN QUESTIONS
+    $(document.body).on('change', 'input[name="autoLiability"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $(".costRentedVehiclesContainer").css('display', "");
+            $(".costRentedVehiclesExplain").css('display', "");
+            $(".tableNOAL").addClass("showReviewTable");
+        }
+        if ($(this).attr("value") == "No") {
+            $(".costRentedVehiclesContainer").css('display', "none");
+            $(".costRentedVehiclesExplain").css('display', "none");
+            $(".tableNOAL").removeClass("showReviewTable");
+        }
+    });
+    // UMBRELLA TABLE
+    $(document.body).on('change', 'input[name="umbrellaLimitRequested"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#umbrellaLimitRequestedContainer").css('display', "");
+            $("#umbrellaLimitRequestedExplain").css('display', "");
+            $(".tableCUMB").addClass("showReviewTable");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#umbrellaLimitRequestedContainer").css('display', "none");
+            $("#umbrellaLimitRequestedExplain").css('display', "none");
+            $(".tableCUMB").removeClass("showReviewTable");
+        }
+    });
+    // INSURED CONTACT TABLE / CONTAINER
+    $(document.body).on('change', 'input[name="contactRep"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#insuredContactInformationContainer").css('display', "");
+            $("#insuredContactInformationExplain").css('display', "");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#insuredContactInformationContainer").css('display', "none");
+            $("#insuredContactInformationExplain").css('display', "none");
+        }
+    });
+    // EQUIPMENT TABLE / ADDITIONAL HIDDEN QUESTIONS
+    $(document.body).on('change', 'input[name="equipmentOwnedRented"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#equipmentOwnedRentedContainer").css('display', "");
+            $("#equipmentOwnedRentedExplain").css('display', "");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#equipmentOwnedRentedContainer").css('display', "none");
+            $("#equipmentOwnedRentedExplain").css('display', "none");
+        }
+    });
+    // INSURANCE BEEN CANCELLED ADDITIONAL HIDDEN QUESTIONS
+    $(document.body).on('change', 'input[name="insuranceCancelled"]', function () {
+        //alert();
+        if ($(this).attr("value") == "Yes") {
+            $("#insuranceCancelledContainer").css('display', "");
+            $("#insuranceCancelledExplain").css('display', "");
+        }
+        if ($(this).attr("value") == "No") {
+            $("#insuranceCancelledContainer").css('display', "none");
+            $("#insuranceCancelledExplain").css('display', "none");
+        }
+    });
+}

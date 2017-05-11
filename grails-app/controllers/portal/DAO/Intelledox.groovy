@@ -76,7 +76,7 @@ class Intelledox {
                     <int:Data><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <application>
 \t<basicInfo>
-\t\t<logo>c:\\IntelledoxLogo\\trumanVanDyke.png</logo>
+\t\t<logo>c:\\IntelledoxLogo\\${ XmlUtil.escapeXml(jsonSerial.getAt('userCompany'))}.png</logo>
 \t\t<nameOfInsured>${XmlUtil.escapeXml(jsonSerial.getAt('namedInsured'))}</nameOfInsured>
 \t\t<brokerCompanyName>${brokerCompanyName}</brokerCompanyName>"""
 
@@ -613,8 +613,13 @@ class Intelledox {
             client.authorization = new HTTPBasicAuthorization("admin", "admin")
             def response = client.send(SOAPAction:'http://services.dpm.com.au/intelledox/GenerateWithData', soapXML)
 
-//            log.info response.text.substring(0,1500);
-            log.info response.text
+            if(response.text.length() > 1500){
+                log.info response.text.substring(0,1500);
+            }
+            else{
+                log.info response.text
+            }
+
             def fileName = "Indication A.pdf"
 
             def a = new XmlSlurper().parseText(response.text)
@@ -638,10 +643,13 @@ class Intelledox {
             return "good"
         }
         catch(Exception e){
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String exceptionAsString = sw.toString();
-            log.info("Error Details - " + exceptionAsString)
+            StringWriter writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter( writer );
+            e.printStackTrace( printWriter );
+            printWriter.flush();
+            String stackTrace = writer.toString();
+            log.info("Error Details - " + stackTrace)
+
             return "Indication Error"
         }
 
@@ -1093,7 +1101,7 @@ log.info(jsonSerial.getAt("endorseInsert"))
 \t\t<productionInformationHeader>Event Information</productionInformationHeader>
 \t\t<productionInformationRow>
 \t\t\t<productionInformationName productionInformationColOne="Types of Event:">
-\t\t\t\t<productionInformationColTwo> ${XmlUtil.escapeXml(jsonSerial.getAt("totalAttendance"))} </productionInformationColTwo>
+\t\t\t\t<productionInformationColTwo> ${XmlUtil.escapeXml(jsonSerial.getAt("proposedTermLength"))} </productionInformationColTwo>
 \t\t\t</productionInformationName>
 \t\t\t<productionInformationName productionInformationColOne="Total Attendance:">
 \t\t\t\t<productionInformationColTwo> ${XmlUtil.escapeXml(jsonSerial.getAt("totalAttendance"))} </productionInformationColTwo>
@@ -1103,9 +1111,6 @@ log.info(jsonSerial.getAt("endorseInsert"))
 \t\t</productionInformationName>
 \t\t\t<productionInformationName productionInformationColOne="Event Location:">
 \t\t\t\t<productionInformationColTwo> ${XmlUtil.escapeXml(jsonSerial.getAt("eventState"))} </productionInformationColTwo>
-\t\t</productionInformationName>
-\t\t\t<productionInformationName productionInformationColOne="Primary Business Operation:">
-\t\t\t\t<productionInformationColTwo> ${XmlUtil.escapeXml(jsonSerial.getAt("primaryBusinessOperation"))} </productionInformationColTwo>
 \t\t</productionInformationName>
 \t\t</productionInformationRow>
 \t</productionInformationTable>
@@ -1137,8 +1142,13 @@ log.info(jsonSerial.getAt("endorseInsert"))
             client.authorization = new HTTPBasicAuthorization("admin", "admin")
             def response = client.send(SOAPAction:'http://services.dpm.com.au/intelledox/GenerateWithData', soapXML)
 
-//            log.info response.text.substring(0,1500);
-            log.info response.text
+            if(response.text.length() > 1500){
+                log.info response.text.substring(0,1500);
+            }
+            else{
+                log.info response.text
+            }
+            
             def fileName = "Indication A.pdf"
 
             def a = new XmlSlurper().parseText(response.text)
@@ -1162,10 +1172,13 @@ log.info(jsonSerial.getAt("endorseInsert"))
             return "good"
         }
         catch(Exception e){
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String exceptionAsString = sw.toString();
-            log.info("Error Details - " + exceptionAsString)
+            StringWriter writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter( writer );
+            e.printStackTrace( printWriter );
+            printWriter.flush();
+            String stackTrace = writer.toString();
+            log.info("Error Details - " + stackTrace)
+
             return "Indication Error"
         }
 

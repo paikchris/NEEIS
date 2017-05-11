@@ -8,6 +8,7 @@ var loadedAutoSaveMap;
 var currentStep;
 var namedInsuredConflict = false;
 var BORrequested = false;
+var renewalRequested = false;
 var uwQuestionsMap = {};
 var uwQuestionsOrder = [];
 
@@ -1389,6 +1390,36 @@ function buildReview() {
             newHtmlString = newHtmlString + $(this).wrap('<p/>').parent().html();
         });
         var newObject = $('<div/>').html(newHtmlString).contents();
+
+
+        $(newObject).find('.limitSelect').each(function(){
+            var text = $(this).children(':selected').text()
+            var htmlString = "<span class='limit'>" + text + "</span>"
+
+            $(this).replaceWith(htmlString);
+        });
+
+        console.log ($(newObject))
+        console.log ($(newObject).find('.limitInput'))
+
+
+        $(newObject).find('.limitInput').each(function(){
+            // console.log ($(this))
+            // console.log ($(this).val())
+            var elemID = $(this).attr('id');
+            var text = $('#'+elemID).val()
+            var htmlString = "<span class='limit'>" + text + "</span>"
+            $(this).replaceWith(htmlString);
+        });
+        // $(newObject).find('#limitMiscellaneous').each(function(){
+        //     // console.log ($(this))
+        //     // console.log ($(this).val())
+        //     var text = $(this).val()
+        //     var htmlString = "<span class='limit'>" + text + "</span>"
+        //
+        //     $(this).replaceWith(htmlString);
+        // });
+
 
 
         $("#reviewLimitsDeductsSP").html(newObject);

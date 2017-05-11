@@ -17,8 +17,8 @@ public  void setMetaClass(groovy.lang.MetaClass mc) { }
 public  java.lang.Object invokeMethod(java.lang.String method, java.lang.Object arguments) { return null;}
 public  java.lang.Object getProperty(java.lang.String property) { return null;}
 public  void setProperty(java.lang.String property, java.lang.Object value) { }
-public  portal.DAO.Intelledox getAsyncController() { return (portal.DAO.Intelledox)null;}
-public  void setAsyncController(portal.DAO.Intelledox value) { }
+public  portal.DAO.Intelledox getIntelledoxController() { return (portal.DAO.Intelledox)null;}
+public  void setIntelledoxController(portal.DAO.Intelledox value) { }
 public  java.lang.Object getTimeZone() { return null;}
 public  void setTimeZone(java.lang.Object value) { }
 public  java.lang.Object getDateFormat() { return null;}

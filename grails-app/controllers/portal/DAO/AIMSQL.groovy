@@ -14,7 +14,7 @@ import sun.swing.StringUIClientPropertyKey;
 
 
 class AIMSQL {
-    Intelledox asyncController = new Intelledox();
+    Intelledox intelledoxController = new Intelledox();
 
     def timeZone = TimeZone.getTimeZone('PST')
     def dateFormat = 'yyyy-MM-dd HH:mm:ss.SSS'
@@ -644,7 +644,7 @@ class AIMSQL {
         dataMap['allQuoteIDs'] = allQuoteIDs;
         log.info("BEFORE SENDING TO INTELLEDOX = "+  dataMap['allQuoteIDs'])
 
-        asyncController.createIndicationSpecialEventsPDF(dataMap, uwQuestionsMap, uwQuestionsOrder, dataSource_aim)
+        intelledoxController.createIndicationSpecialEventsPDF(dataMap, uwQuestionsMap, uwQuestionsOrder, dataSource_aim)
 
         return allQuoteIDs
     }
@@ -1332,7 +1332,7 @@ class AIMSQL {
         testjson['allQuoteIDs'] = allQuoteIDs;
         log.info("BEFORE SENDING TO INTELLEDOX = "+  testjson['allQuoteIDs'])
 
-        def indicationStatus = asyncController.createIndicationPDF(testjson, uwQuestionsMap, uwQuestionsOrder, dataSource_aim)
+        def indicationStatus = intelledoxController.createIndicationPDF(testjson, uwQuestionsMap, uwQuestionsOrder, dataSource_aim)
 
         return allQuoteIDs + "&;&" + indicationStatus
     }
@@ -1436,7 +1436,7 @@ class AIMSQL {
     }
 
     def generateCert(){
-        asyncController.createCertificatePDF()
+        intelledoxController.createCertificatePDF()
 
         return "good"
     }

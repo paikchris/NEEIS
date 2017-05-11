@@ -3691,10 +3691,13 @@ class AsyncController {
             }
         }
         catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String exceptionAsString = sw.toString();
-            log.info("Error Details - " + exceptionAsString)
+            StringWriter writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter( writer );
+            e.printStackTrace( printWriter );
+            printWriter.flush();
+            String stackTrace = writer.toString();
+            log.info("Error Details - " + stackTrace)
+
             quoteID = "Error Details - " + e
             // testDataRecord.endStatus = "Error"
             // testDataRecord.endStatusDetail = exceptionAsString
@@ -3777,10 +3780,13 @@ class AsyncController {
             // testDataRecord.save(flush: true, failOnError: true)
         }
         catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String exceptionAsString = sw.toString();
-            log.info("Error Details - " + exceptionAsString)
+            StringWriter writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter( writer );
+            e.printStackTrace( printWriter );
+            printWriter.flush();
+            String stackTrace = writer.toString();
+            log.info("Error Details - " + stackTrace)
+
             quoteID = "Error Details - " + e
             // testDataRecord.endStatus = "Error"
             // testDataRecord.endStatusDetail = exceptionAsString
@@ -3944,7 +3950,7 @@ class AsyncController {
                 "                      AcctgEMail, AcctgContactKey_FK, ContactKey_FK, DateIRFileCreated, FinanceMapCode, FlagExportToFinance, CountryID, MailCountryID, AcctgCountryID, \n" +
                 "                      MembershipKey_FK, MembershipExp, Membership2Key_FK, Membership2Exp, Membership3Key_FK, Membership3Exp, NPR, DandB\n" +
                 "FROM         Producer with (NOLOCK)\n" +
-                "WHERE         (ProducerID='${params.agencyID}) AND (ActiveFlag = 'Y')'\n" +
+                "WHERE         (ProducerID='${params.agencyID}') AND (ActiveFlag = 'Y')\n" +
                 "ORDER BY Name") {
             log.info "Result: " + it.Name
             string = it.Name
@@ -4109,7 +4115,12 @@ class AsyncController {
             m.save(flush: true, failOnError: true)
         }
         catch (Exception e) {
-            log.info(e)
+            StringWriter writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter( writer );
+            e.printStackTrace( printWriter );
+            printWriter.flush();
+            String stackTrace = writer.toString();
+            log.info("Error Details - " + stackTrace)
         }
 
         //Need to get and update number of messages in chain
@@ -4361,7 +4372,12 @@ class AsyncController {
 
         }
         catch (Exception e) {
-            log.info(e)
+            StringWriter writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter( writer );
+            e.printStackTrace( printWriter );
+            printWriter.flush();
+            String stackTrace = writer.toString();
+            log.info("Error Details - " + stackTrace)
         }
 
         render "good"

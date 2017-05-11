@@ -63,8 +63,8 @@
     </div>
 
     <div class="row" style="text-align: center;">
-        <span class="label label-info" id="BORRequestNotification" style="display:none; ">BOR Requested</span>
-        <span class="label label-info" id="renewalNotification" style="display:none; ">Renewal</span>
+        <span class="label label-bor" id="BORRequestNotification" style="display:none; ">BOR Requested</span>
+        <span class="label label-success" id="renewalNotification" style="display:none; ">Renewal</span>
     </div>
     <br>
     <div class="stepwizard">
@@ -981,14 +981,14 @@
                                     <div class="col-xs-2">
                                         <div class="form-group" id="howManyDaysIsTheEventGroup" style="display:none">
                                             <label class="control-label">Number of Event days</label>
-                                            <input class="form-control effectsTotalCGL effectsTotalPremium" id="howManyDaysIsTheEvent" name="howManyDaysIsTheEvent" type="number"
+                                            <input class="form-control effectsTotalCGL" id="howManyDaysIsTheEvent" name="howManyDaysIsTheEvent" type="number"
                                                    onkeyup="this.value = validate(this.value, 0, 90)" style="color: black; background: white;"/>
                                         </div>
                                     </div>
                                     <div class="col-xs-2">
                                         <div class="form-group"id="estimatedTotalAttendanceGroup" style="display:none">
                                             <label class="control-label">Total Attendance</label>
-                                            <input class="form-control effectsTotalCGL effectsTotalPremium" id="estimatedTotalAttendance" name="estimatedTotalAttendance" type="number"
+                                            <input class="form-control effectsTotalCGL" id="estimatedTotalAttendance" name="estimatedTotalAttendance" type="number"
                                                    style="color: black; background: white;"/>
                                         </div>
                                     </div>
@@ -1003,7 +1003,7 @@
                                         <div class="form-group" id="selectStateGroup" style="display:none">
                                             <label class="control-label">Select Location of Event</label>
                                             %{--<input class="form-control" type="text" placeholder = "State" name="stateMailing" id="stateMailing"/>--}%
-                                            <select class="form-control effectsTotalPremium" required="required"
+                                            <select class="form-control" required="required"
                                                     id="selectState" name="selectState" type="text" style="color: black; background: white;">
                                                     <option value="invalid" selected="selected">State</option>
                                                     <option value="AL">Alabama</option>
@@ -1227,9 +1227,16 @@
                                         %{--<g:textField type="text" style="text-transform: capitalize;" class="form-control" id="namedInsured" name="namedInsured" placeholder="Name" required="required"/>--}%
                                         <g:textField type="text" style="text-transform: capitalize;" class="form-control" id="namedInsured" name="namedInsured"
                                                      placeholder="Name" title="" required="required" />
+                                        <span class="form-control-feedback" id="checkNameSpinner" style="right: 16px;top: 27px;font-size: 16px;width: 140px; display:none; color: rgba(44, 156, 255, 1)">
+                                            <span style="font-size: 12px; font-weight: 400;">Verifying Insured...</span>
+                                            <i class="fa fa-spinner fa-spin "></i>
+                                        </span>
                                         <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" style="top: 29px; right: 15px; display: none" ></span>
                                         <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" style="top: 29px; right: 15px; display: none" ></span>
-                                        <span class="glyphicon glyphicon-list-alt form-control-feedback" aria-hidden="true" style="top: 29px; right: 15px; color: #5bc0de; display: none" ></span>
+                                        <span class="namedInsuredIcon renewIcon form-control-feedback" aria-hidden="true" style="right: 16px; top: 27px; font-size: 16px; display:none;">
+                                            <i class="fa fa-retweet" aria-hidden="true"></i>
+                                        </span>
+                                        <span class="glyphicon glyphicon-list-alt form-control-feedback" aria-hidden="true" style="top: 29px; right: 15px; display: none; color: rgba(66, 161, 255, 0.76)" ></span>
                                     </div>
                                     <div class="form-group col-xs-12">
                                         <label for="phoneNumber">Phone Number <span style="color:red;">*</span></label>
@@ -1257,7 +1264,7 @@
                                         <input class="form-control" type="text" placeholder = "City" name="cityMailing" id="cityMailing" required="required" />
                                     </div>
                                     <div class="form-group col-xs-6">
-                                        <input class="form-control" type="text" placeholder = "Zip Code" name="zipCodeMailing" id="zipCodeMailing" required="required" />
+                                        <input class="form-control" type="text" placeholder = "Zip Code" name="zipCodeMailing" id="zipCodeMailing" required="required" data-lengthrequired="5"/>
                                     </div>
                                     <div class="form-group col-xs-6">
                                         %{--<input class="form-control" type="text" placeholder = "State" name="stateMailing" id="stateMailing"/>--}%
@@ -1834,17 +1841,39 @@
     <div class="modal-dialog" role="document" style="">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Is This A Renewal?</h4>
+                <h4 class="modal-title">Name Conflict</h4>
             </div>
             <div class="modal-body">
                 <div class="row">
                     <div class="col-xs-12">
-                        <span>"<strong id="namedInsuredRenewalSpan"></strong>" matches a existing Active Policy in our system.
+                        <span>"<strong id="namedInsuredRenewalSpan"></strong>" matches existing Policies in our system.
                         Submitted by <strong id="agencyRenewalSpan"></strong>.</span>
                         <br>
-                        <span>Is this a renewal? </span>
                     </div>
+                </div>
+                <div class="row" style=" margin-top:10px;">
+                    <div class="col-xs-12" style="margin-top:20px;">
+                        <div class="well">
+                            <div class="row" style="font-size: smaller;text-align: center;font-weight: 500;">
+                                <div class="col-xs-2">ID
+                                </div>
+                                <div class="col-xs-3">NAMED INSURED
+                                </div>
+                                <div class="col-xs-3">AGENCY
+                                </div>
+                                <div class="col-xs-3">ACTIVE (Y/N)
+                                </div>
+                            </div>
+                            <div id="renewalMatchesContainer">
 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 20px;margin-bottom: 20px;">
+                    <div class="col-xs-12" style="text-align: center;font-size: large;font-weight: 400;">
+                        <span>Is this submission a renewal?</span>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -1855,134 +1884,49 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-<div class="modal fade" tabindex="-1" role="dialog" id="checkNamedInsuredModal">
+<div class="modal fade" tabindex="-1" role="dialog" id="checkNamedInsuredModal" >
     <div class="modal-dialog" role="document" style="width: 820px;">
         <div class="modal-content">
             <div class="modal-header">
-                %{--<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>--}%
-                <h4 class="modal-title">Resolve Named Insured Conflict</h4>
+
+                <h4 class="modal-title">Name Conflict</h4>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="padding: 25px 40px;">
                 <div class="row">
-                    <form class="form-horizontal col-xs-12">
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">Named Insured</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="resolveNamedInsured" placeholder="" readonly>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">Mailing Address
-                            %{--<span style="color:red;">*</span> --}%
-                            </label>
-                            <div class="col-sm-10">
-                                <input class="form-control col-xs-12" type="text" placeholder="Street address" name="" id="resolveStreet" onFocus="geolocate()"
-                                       style="margin-bottom: 6px;margin-top: 10px;" readonly/>
-                                <input class="form-control col-xs-12" type="text" placeholder = "City" name="" id="resolveCity" style="margin-bottom: 6px;" required="required" readonly/>
-                                <div class="col-xs-6" style="padding-left:0px;">
-                                    <input class="form-control" type="text" placeholder = "Zip Code" name="" id="resolveZip" style="margin-bottom: 6px;" required="required" readonly/>
+                    <div class="col-xs-12" style="text-align: center;margin-bottom: 10px;">
+                        <h4 class="control-label">Your submission seems to match another recently submitted.</h4>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div id="conflictExistsDiv">
+                            <div class="well">
+                                <div class="row">
+                                    <div class="col-xs-12" style="">
+                                        <label class="col-xs-7 control-label" style="margin-bottom: 0px;">Named Insured</label>
+                                        <label class="col-xs-5 control-label" style="margin-bottom: 0px;">Status</label>
+                                    </div><div class="col-xs-12" id="matchingSubmissionsContainer" style="margin-bottom:10px;">
+                                    <span class="col-xs-7" style="">Sample Named Insured LLC</span>
+                                    <span class="col-xs-5" style="">Broker of Record Needed</span>
                                 </div>
-                                <div class="col-xs-6" style="padding-left:0px; padding-right:0px;">
-                                    <select class="form-control" name=""   id="resolveState" style="margin-bottom: 6px;" required="required" readonly>
-                                        <option value="invalid" selected="selected">State</option>
-                                        <option value="AL">Alabama</option>
-                                        <option value="AK">Alaska</option>
-                                        <option value="AZ">Arizona</option>
-                                        <option value="AR">Arkansas</option>
-                                        <option value="CA">California</option>
-                                        <option value="CO">Colorado</option>
-                                        <option value="CT">Connecticut</option>
-                                        <option value="DE">Delaware</option>
-                                        <option value="DC">District Of Columbia</option>
-                                        <option value="FL">Florida</option>
-                                        <option value="GA">Georgia</option>
-                                        <option value="GU">Guam</option>
-                                        <option value="HI">Hawaii</option>
-                                        <option value="ID">Idaho</option>
-                                        <option value="IL">Illinois</option>
-                                        <option value="IN">Indiana</option>
-                                        <option value="IA">Iowa</option>
-                                        <option value="KS">Kansas</option>
-                                        <option value="KY">Kentucky</option>
-                                        <option value="LA">Louisiana</option>
-                                        <option value="ME">Maine</option>
-                                        <option value="MD">Maryland</option>
-                                        <option value="MA">Massachusetts</option>
-                                        <option value="MI">Michigan</option>
-                                        <option value="MN">Minnesota</option>
-                                        <option value="MS">Mississippi</option>
-                                        <option value="MO">Missouri</option>
-                                        <option value="MT">Montana</option>
-                                        <option value="NE">Nebraska</option>
-                                        <option value="NV">Nevada</option>
-                                        <option value="NH">New Hampshire</option>
-                                        <option value="NJ">New Jersey</option>
-                                        <option value="NM">New Mexico</option>
-                                        <option value="NY">New York</option>
-                                        <option value="NC">North Carolina</option>
-                                        <option value="ND">North Dakota</option>
-                                        <option value="OH">Ohio</option>
-                                        <option value="OK">Oklahoma</option>
-                                        <option value="OR">Oregon</option>
-                                        <option value="PA">Pennsylvania</option>
-                                        <option value="PR">Puerto Rico</option>
-                                        <option value="RI">Rhode Island</option>
-                                        <option value="SC">South Carolina</option>
-                                        <option value="SD">South Dakota</option>
-                                        <option value="TN">Tennessee</option>
-                                        <option value="TX">Texas</option>
-                                        <option value="UT">Utah</option>
-                                        <option value="VT">Vermont</option>
-                                        <option value="VI">Virgin Islands</option>
-                                        <option value="VA">Virginia</option>
-                                        <option value="WA">Washington</option>
-                                        <option value="WV">West Virginia</option>
-                                        <option value="WI">Wisconsin</option>
-                                        <option value="WY">Wyoming</option>
-                                    </select>
                                 </div>
                             </div>
-                        </div>
-                    </form>
-                    <div id="conflictExistsDiv" >
-                        <div class="col-xs-2">
-
-                        </div>
-                        <div class="col-xs-10">
-                            <mark class="control-label">Your submission seems to match another recently submitted.</mark>
-                        </div>
-                        <div class="col-xs-2">
-
-                        </div>
-                        <div class="col-xs-10" style=" margin-top: 16px;">
-                            <label class="col-xs-8 control-label" style="margin-bottom: 0px;">Named Insured</label>
-                            <label class="col-xs-4 control-label" style="margin-bottom: 0px;">Status</label>
-                        </div>
-                        <div class="col-xs-2">
-
-                        </div>
-                        <div class="col-xs-10" id="matchingSubmissionsContainer" style="margin-bottom:32px;">
-                            <span class="col-xs-8" style="color:red">Sample Named Insured LLC</span>
-                            <span class="col-xs-4" style="color:red">Broker of Record Needed</span>
-                        </div>
-                        <div class="col-xs-2">
-
-                        </div>
-                        <div class="col-xs-10">
-                            %{--<small class="control-label">This conflict will have to be investigated and cleared. If you select to continue, your submission will be created but placed on hold until the conflict is resolved.</small>--}%
-                            <small class="control-label">To continue please resolve conflict. If conflict cannot be resolved, you may choose to request a Broker of Record document confirming representation</small>
-
                         </div>
                     </div>
-
+                </div>
+                <div class="row" style="margin-top:12px;margin-bottom:12px;">
+                    <div class="col-xs-12" style="text-align: center;font-size: Larger;font-weight: 400;">
+                        <span class="control-label">By continuing this submission for Named Insured you will be required to complete a BOR</span>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-success pull-left" id="ignoreConflictBOR" type="button"  >UW Ignore BOR</button>
-                <button class="btn btn-info" id="resolveConflictBOR" type="button"  >Request BOR</button>
+                <button class="btn btn-success pull-left" id="ignoreConflictBOR" type="button">UW Ignore BOR</button>
+                <button class="btn btn-info" id="requestBORButton" type="button">Request BOR</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+</div>
 </body>
 </html>

@@ -6,12 +6,29 @@ function initializeListnerForNoBlankRequiredFields(){
     //CHANGE
     $(document).on('change', ':input[required]:visible', function() {
         // console.log("CHANGE VALIDATION");
-        if ($(this).val().length > 0) {
-            $(this).closest(".form-group").removeClass("has-error");
+        if( this.hasAttribute('data-lengthrequired')){
+            var lengthRequired = parseInt($(this).attr('data-lengthrequired'));
+
+            if ($(this).val().trim().length == lengthRequired) {
+
+                $(this).closest(".form-group").removeClass("has-error");
+            }
+            else {
+                // alert("length not correct")
+                // console.log(this)
+                $(this).closest(".form-group").addClass("has-error");
+            }
+
         }
-        else {
-            $(this).closest(".form-group").addClass("has-error");
+        else{
+            if ($(this).val().length > 0) {
+                $(this).closest(".form-group").removeClass("has-error");
+            }
+            else {
+                $(this).closest(".form-group").addClass("has-error");
+            }
         }
+
     });
 
     //FOCUS OUT
@@ -23,6 +40,9 @@ function initializeListnerForNoBlankRequiredFields(){
             }
             else if ($(this).attr("id") === "stateMailing" && ($(this).val() === "invalid")) {
                 $(this).closest(".form-group").addClass("has-error");
+            }
+            else if($(this).attr("id") === "zipCodeMailing"){
+
             }
             else {
                 //NO ERROR
@@ -45,17 +65,35 @@ function ValidateEmail(email) {
 function validateFields() {
     var valid = true;
     var message = "";
+    console.log("VALIDATING FIELDS")
 
     //VALIDATE REQUIRED FIELDS
     $(':input[required]:visible').each(function(index) {
-        if ($(this).val().length == 0) {
-            valid = false;
-            message = message + "Please complete all required fields\n"
-            $(this).closest(".form-group").addClass("has-error");
+        if( this.hasAttribute('data-lengthrequired')){
+            var lengthRequired = parseInt($(this).attr('data-lengthrequired'));
+
+            if ($(this).val().trim().length == lengthRequired) {
+                $(this).closest(".form-group").removeClass("has-error");
+            }
+            else {
+                $(this).closest(".form-group").addClass("has-error");
+            }
+
         }
-        else {
-            $(this).closest(".form-group").removeClass("has-error");
+        else{
+            if ($(this).val().length == 0) {
+                valid = false;
+                message = message + "Please complete all required fields\n"
+                $(this).closest(".form-group").addClass("has-error");
+            }
+            else {
+                $(this).closest(".form-group").removeClass("has-error");
+            }
         }
+
+
+
+
     });
 
     //VALIDATE DROPDOWNS
@@ -130,6 +168,19 @@ function validateFields() {
         else {
             $(this).closest(".form-group").removeClass("has-error");
         }
+    });
+
+    $('#zipCodeMailing:visible').each(function() {
+        var lengthOfZip = $(this).val().trim().length;
+        if(lengthOfZip != 5){
+            valid = false;
+            message = message + "Not a valid zipcode  \n"
+            $(this).closest(".form-group").addClass("has-error");
+        }
+        else {
+            $(this).closest(".form-group").removeClass("has-error");
+        }
+
     });
 
     if(message.length > 0){

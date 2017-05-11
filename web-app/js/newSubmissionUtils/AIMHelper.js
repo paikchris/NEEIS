@@ -872,7 +872,7 @@ function getSubmissionMapSP(){
 
     submissionMap.premSummary = "";
     submissionMap.premSummary = submissionMap.premSummary + "Premium Distribution" + "\t" + "" + "\n";
-    $('#coverageOptionsReview div#premDistributionInsert div.row').each(function() {
+    $('#coverageOptionsReview div.premDistributionInsert div.row').each(function() {
         if ($(this).hasClass("TotalPremiumRow")) {
             submissionMap.premSummary = submissionMap.premSummary + $(this).find('.lineOfBusinessSpan').html() + "\t" + $(this).find('.totalPremiumSpan').html() + "\n";
 

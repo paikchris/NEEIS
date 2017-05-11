@@ -74,7 +74,7 @@ function fillInAddress() {
 
             document.getElementById('zipCodeMailing').value = place.address_components[i]['long_name'];
             $("#zipCodeMailing").attr('placeholder', "");
-            $("#namedInsured").trigger('change');
+            $("#zipCodeMailing").trigger('change');
 
         }
         //if (componentForm[addressType]) {

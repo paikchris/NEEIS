@@ -143,18 +143,26 @@ $(document).ready(function() {
     $(document.body).on('change', '#tvSeriesCheckBox', function() {
         if ($("#tvSeriesCheckBox").is(':checked')) {
             $('#specFilmNumEpisodesText').css("display", "");
+            $(".numberEpisodesInput").addClass("showReview");
         }
         else {
             $('#specFilmNumEpisodesText').css("display", "none");
+            $(".numberEpisodesInput").removeClass("showReview");
         }
     });
 
     $(document.body).on('change', '#showFilmLocationsCheckbox', function() {
         if ($("#showFilmLocationsCheckbox").is(':checked')) {
             $('#filmingLocationInfo').css("display", "");
+            $(".filmLocationLocation").addClass("showReview");
+            $(".filmLocationStart").addClass("showReview");
+            $(".filmLocationEnd").addClass("showReview");
         }
         else {
             $('#filmingLocationInfo').css("display", "none");
+            $(".filmLocationLocation").removeClass("showReview");
+            $(".filmLocationStart").removeClass("showReview");
+            $(".filmLocationEnd").removeClass("showReview");
         }
     });
 
