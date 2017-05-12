@@ -1,4 +1,5 @@
 function getProductsForRisk() {
+    console.log("getting products")
     var riskChosen = getRiskTypeChosen();
     if (riskChosen.indexOf("Film Projects") > -1 && $("#proposedTermLength").val().length > 0) {
         $.ajax({
@@ -90,19 +91,27 @@ function getProductsForRisk() {
                             if (productsArray.indexOf("PIP 5") > -1) {
                                 //alert("PIP5 HERE")
                                 $('#PIP5Input').css("display", "");
-                                //$('.PIP5Options').css("display", "");
-                                if ($('#EPKGcoverage').is(':checked')) {
-                                    $('#PIP5InputRadio').prop("checked", true);
-                                    $('#PIP5InputRadio').trigger('change');
-                                    $(".PIP5Options").css('display', "");
-                                    $('.PIPCHOIOption').prop("checked", false);
-                                }
+
+
+                                //TEMPORARILY DISABLING AUTOMATICALLY PICKING PIP 5
+                                // if ($('#EPKGcoverage').is(':checked')) {
+                                //     $('#PIP5InputRadio').prop("checked", true);
+                                //     $('#PIP5InputRadio').trigger('change');
+                                //     $(".PIP5Options").css('display', "");
+                                //     $('.PIPCHOIOption').prop("checked", false);
+                                // }
                             }
                             else {
                                 $('#PIP5InputRadio').prop("checked", false);
                                 $('#EPKGCIVIL100AdditionalCoverage').prop("checked", false);
                                 $('#EPKGCIVIL500AdditionalCoverage').prop("checked", false);
                                 $('.additionalCoverageCheckboxPIP5').prop("checked", false);
+                            }
+
+                            //SELECT AUTO EPKG
+                            if ($('#EPKGcoverage').is(':checked')) {
+                                $('.coverageRadioButton.EPKG:visible').first().prop("checked", true);
+
                             }
 
                             if ($("input[name='EPKGRadio']:checked").length > 0) {
@@ -139,6 +148,11 @@ function getProductsForRisk() {
                                 }
                             }
                             //
+                        }
+                        else if (coverageID === "CPK" || coverageID === "CGL"){
+                            if ( riskChosen === "Film Projects Without Cast (No Work Comp)" ){
+                                $('#CPKCGLcoverage').trigger('change');
+                            }
                         }
                         else if (coverageID === "DICE" &&
                             (riskChosen === "Film Projects Without Cast (No Work Comp)" ||
@@ -499,6 +513,7 @@ function getSubmissionMap() {
         zipCodeMailing: $('#zipCodeMailing').val(),
         userCompany: $('#userDetails-company').html(),
         accountExec: "jason",
+        story: $('#story').val(),
         accountExecName: "Jason DeBolt",
         accountExecEmail: "jason@neeis.com",
         phoneNumber: $('#phoneNumber').val(),
@@ -523,13 +538,28 @@ function getSubmissionMap() {
         riskChosen: getRiskTypeChosen(),
         riskCategory: getRiskCategoryChosen(),
         premiumAllLOBTotal: $('#premiumAllLOBTotal').html(),
-        filmingLocation: $('#filmingLocation').html(),
+        filmingLocation: "Blank",
         productID: [],
         brokerCompany: $('#userDetails-company').html(),
         brokerEmail: $('#userDetails-email').html(),
         brokerPhone: $('#userDetails-phoneNumber').html(),
         insuredContactName: $('#nameOfPrincipal').val()
     };
+
+    //FILMING LOCATIONS
+    var htmlString = "";
+    var countFilmLocations = 0;
+
+    if($('#showFilmLocationsCheckbox').is(':checked')){
+        $('#filmingLocationInfo').find('.locationFilm').each(function() {
+            countFilmLocations++;
+            submissionMap[$(this).find('.filmLocationLocation').attr('id')] = $(this).find('.filmLocationLocation').val();
+            submissionMap[$(this).find('.filmLocationStart').attr('id')] = $(this).find('.filmLocationStart').val();
+            submissionMap[$(this).find('.filmLocationEnd').attr('id')] = $(this).find('.filmLocationEnd').val();
+        });
+        submissionMap["numberOfFilmLocations"] = countFilmLocations;
+    }
+
 
     if($('#sourceOfFinancing').is(":visible")){
         submissionMap.sourceOfFinancing = $('#sourceOfFinancing').val();

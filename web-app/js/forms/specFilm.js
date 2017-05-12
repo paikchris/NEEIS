@@ -478,6 +478,10 @@ $(document).ready(function() {
             htmlString = $(this).html();
             htmlString = htmlString.replace("Filming Location #1", " Filming Location # " + (count + 1));
             htmlString = htmlString.replace("Filming Location # " + count, "Filming Location # " + (count + 1));
+            htmlString = htmlString.replace(/(\(.)/g, "(" + (count + 1) );
+            htmlString = htmlString.replace("id=\"filmingLocation1", "id=\"filmingLocation" + (count + 1) );
+            htmlString = htmlString.replace("id=\"filmingStart1", "id=\"filmingStart" + (count + 1) );
+            htmlString = htmlString.replace("id=\"filmingEnd1", "id=\"filmingEnd" + (count + 1) );
         });
         $("#filmingLocationInfo").append("<div class='locationFilm'>" + htmlString + "</div>");
 
@@ -1851,7 +1855,8 @@ function ratePremiums(thisObj) {
 
                                 if (key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
                                     responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")) {
-                                    limitDeductibleString = limitDeductibleString + "<span>" + key + "</span>" + "<br><span>Non-Owned Auto Physical Damage</span>" +
+                                    limitDeductibleString = limitDeductibleString + "<span>" + key + "</span>" + "<br>" +
+                                        "<span style='margin-left: 20px; font-size: 12px;'>Non-Owned Auto Physical Damage</span>" +
                                         "</div>" +
                                         "<div class='col-xs-2 limitColumn'>";
                                 }
@@ -1888,7 +1893,12 @@ function ratePremiums(thisObj) {
                                 }
                                 else if (key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
                                     responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")) {
-                                    limitDeductibleString = limitDeductibleString + "<span class='limit'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span> <br><span></span>";
+
+                                    limitDeductibleString = limitDeductibleString + "<span class='limit'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span> " +
+                                        "<br>" +
+                                        "<span style='font-size: 12px;'>Included</span>";
+
+
                                 }
                                 else if (responseJSON.coverages[i].coverageCode === "NOAL" && CPKincluded) {
                                     limitDeductibleString = limitDeductibleString + "<span class='limit'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
@@ -1932,9 +1942,9 @@ function ratePremiums(thisObj) {
                                 if (key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
                                     responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")) {
                                     limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 deductibleColumn'>" +
-                                        "<span class='deductible " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "DeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles[key]) +
+                                        "<span class='deductible " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "DeductLine' style='font-size: 14px;padding-left:8px;'>" + formatMoney(responseJSON.coverages[i].deductibles[key]) +
                                         "</span><br>" +
-                                        "<span class='deductible NOHADeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles["Non-Owned Auto Physical Damage"]) +
+                                        "<span class='deductible NOHADeductLine' >" + formatMoney(responseJSON.coverages[i].deductibles["Non-Owned Auto Physical Damage"]) +
                                         "</span>";
                                 }
                                 else if (key === "Cast Essential") {

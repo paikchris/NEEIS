@@ -163,7 +163,7 @@
                                                 id="tvSeriesCheckBox" value="TV Series"/> TV Series</p>
 
                 <div class="form-group control-label">
-                    <input type="text" class="form-control numberEpisodesInput " name="numberOfEpisodes" id="specFilmNumEpisodesText"
+                    <input type="text" class="form-control numberEpisodesInput showReview" name="numberOfEpisodes" data-reviewName="Number of Episodes" id="specFilmNumEpisodesText"
                            placeholder="Number Of Episodes" style="display:none"/>
                 </div>
 
@@ -764,7 +764,7 @@
                     <div class="locationFilm">
                         <div class="form-group col-xs-6">
                             <h5 class="filmingLocationHeader" style="font-size: 16px;">Filming Location #1</h5>
-                            <input type="text" class="form-control filmLocationLocation" id="filmingLocation" data-reviewName="Filming Location Start Date End Date"
+                            <input type="text" class="form-control filmLocationLocation" id="filmingLocation1" data-reviewName="Filming Location (1)"
                                    name="filmLocation" placeholder="Location"/>
                         </div>
 
@@ -774,7 +774,7 @@
                             <input class="form-control " type="text"
                                    placeholder="Hidden Text Field To Adjust Focus off Date" name="hiddenField"
                                    style="display: none;"/>
-                            <input class="form-control datepicker filmLocationStart" name="date" placeholder="MM/DD/YYY" data-reviewName="Filming Location Start Date End Date"
+                            <input class="form-control datepicker filmLocationStart" name="date" id="filmingStart1" placeholder="MM/DD/YYY" data-reviewName="Start Date (1)"
                                    type="text" id="filmLocationStartDate"/>
                             %{--</div>--}%
                         </div>
@@ -782,7 +782,7 @@
                         <div class="col-xs-3">
                             %{--<div class="form-group"> <!-- Date input -->--}%
                             <h5 class="endDateHeader" style="font-size: 16px;">End Date</h5>
-                            <input class="form-control datepicker filmLocationEnd" name="date" placeholder="MM/DD/YYY" data-reviewName="Filming Location Start Date End Date"
+                            <input class="form-control datepicker filmLocationEnd" name="date" id="filmingEnd1" placeholder="MM/DD/YYY" data-reviewName="End Date (1)"
                                    type="text" id="filmLocationEndDate"/>
 
                             %{--</div>--}%

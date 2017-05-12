@@ -3146,7 +3146,7 @@ class AsyncController {
                         else{
                             if(termLength <= 60){
                                 tempLimitsMap["Blanket Additional Insured Endorsement"] = "";
-                                tempDeductsMap["Blanket Additional Insured Endorsement"] = "";
+                                tempDeductsMap["Blanket Additional Insured Endorsement"] = "";//$500
                             }
                             if (termLength <= 30) {
                                 rate = 0.319
@@ -3357,7 +3357,7 @@ class AsyncController {
                             }
                             if (params.additionalProducts.contains("MEDAdditionalCoverage")) {
                                 tempPremiumsMap["Medical Payments (Per Person)"] = ["flat", 25];
-                                tempDeductsMap["Medical Payments (Per Person)"] = "";
+                                tempDeductsMap["Medical Payments (Per Person)"] = "Nil";
                                 tempLimitsMap["Medical Payments (Per Person)"] = "\$5,000"
                                 productTotalPremium = productTotalPremium + 25
                                 rateInfo = rateInfo + "${coverageID}\tflat\t\$25\tMedical Payments (Per Person)\t\n";
@@ -3431,7 +3431,7 @@ class AsyncController {
 
                             //NOAL:Aggregate Limit
                             premiumsMap["Non-Owned & Hired Auto Liability"] = [6.0, Math.ceil(NOHApremium)];
-                            deductsMap["Non-Owned & Hired Auto Liability"] = "";
+                            deductsMap["Non-Owned & Hired Auto Liability"] = "Nil";
                             limitsMap["Non-Owned & Hired Auto Liability"] = "\$1,000,000"
                             productTotalPremium = productTotalPremium + NOHApremium
                             rateInfo = rateInfo + "${coverageID}\t${NOHArate}\t${moneyFormat.format(NOHApremium)}\tNon-Owned & Hired Auto Liability\t\n";
