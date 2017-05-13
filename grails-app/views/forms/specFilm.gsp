@@ -105,13 +105,13 @@
             </div>
         </div>
         %{--LIST OF PRIOR FILM PROJECTS--}%
-        <div class="form-group col-xs-12">
-            <label for="listOfPriorLosses">Title of Production</label>
-            <input type="text" class="form-control showReview" name="listOfPriorFilms"
-                   id="listOfPriorFilms questionListPriorFilmProjects"
-                   data-reviewName="Prior Films"
-                   placeholder="Prior Films"/>
-        </div>
+        %{--<div class="form-group col-xs-12">--}%
+            %{--<label for="listOfPriorLosses">List of Prior Film Projects</label>--}%
+            %{--<input type="text" class="form-control showReview" name="listOfPriorFilms"--}%
+                   %{--id="listOfPriorFilms questionListPriorFilmProjects"--}%
+                   %{--data-reviewName="Prior Films"--}%
+                   %{--placeholder="Prior Films"/>--}%
+        %{--</div>--}%
         %{--MAXIMUM COST OF ANY ONE PRODUCTION--}%
         <div class="form-group col-xs-12">
             <label>Maximum Cost of Any One Production</label>
@@ -503,12 +503,12 @@
                     <div class="form-group">
                         <input type="radio" name="equipmentOR"
                                class="showReview"
-                               value="Yes"
+                               value="Owned"
                                data-reviewName="Misc Equipment Owned or Rented?"
                                id="equipmentOwnRentYes_RadioButton"> Owned
                         <input type="radio" name="equipmentOR"
                                class=""
-                               value="No"
+                               value="Rented"
                                data-reviewName="Misc Equipment Owned or Rented?"
                                id="equipmentOwnRentNo_RadioButton"
                                checked="checked"> Rented
@@ -1540,7 +1540,7 @@
                     <div class="selectionContainer" style="display:none; margin-left:30px; padding-top:10px;">
                         <span class='' style="" >
                             <input type="checkbox" class="sgpSilver_CoverageCheckbox" value="" id="sgpSilver_NOHAPD">
-                                Non Owned & Hired Auto Physical Damage <br>
+                            Non Owned & Hired Auto Physical Damage <br>
                         </span>
                     </div>
                 </div>
@@ -1809,10 +1809,10 @@
         </div>
         <div class="selectionContainer" id="sgpPlatinumSelectionContainer">
             <span class='coverageInput' style="" id="sgpPlatinumRadioContainer"><input type="radio" name="productOptionRadio"
-                                                                                   class="productOptionRadio"
-                                                                                   value="Platinum"
-                                                                                   id="sgpPlatinumRadio"
-                                                                                   style="margin-bottom:10px;"> Platinum (Annual)<br>
+                                                                                       class="productOptionRadio"
+                                                                                       value="Platinum"
+                                                                                       id="sgpPlatinumRadio"
+                                                                                       style="margin-bottom:10px;"> Platinum (Annual)<br>
             </span>
             <div id="sgpPlatinumOptionsContainer" style="margin-left:30px; margin-bottom: 20px; display:none" >
                 <div class="selectionContainer" style="padding-bottom:10px;">

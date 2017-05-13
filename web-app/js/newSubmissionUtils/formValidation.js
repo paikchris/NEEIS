@@ -122,39 +122,47 @@ function validateFields() {
 
     //VALIDATE DATES
     $('.datepicker:visible').each(function() {
-        if ($(this).val().split('/').length != 3) {
-            valid = false;
-            message = message + "Please enter dates in MM/DD/YY format \n"
-            $(this).closest(".form-group").addClass("has-error");
+        if($(this).val().split('/').length == 3 ){
+            if ($(this).val().split('/').length != 3) {
+                valid = false;
+                message = message + "Please enter dates in MM/DD/YY format \n"
+                $(this).closest(".form-group").addClass("has-error");
+            }
+            else {
+                $(this).closest(".form-group").removeClass("has-error");
+            }
+            if ($(this).val().split('/')[0].length != 2) {
+                valid = false;
+                message = message + "Please enter dates in MM/DD/YY format (day)\n"
+                $(this).closest(".form-group").addClass("has-error");
+            }
+            else {
+                $(this).closest(".form-group").removeClass("has-error");
+            }
+            if ($(this).val().split('/')[1].length != 2) {
+                valid = false;
+                message = message + "Please enter dates in MM/DD/YY format (month)\n"
+                $(this).closest(".form-group").addClass("has-error");
+            }
+            else {
+                $(this).closest(".form-group").removeClass("has-error");
+            }
+            if ($(this).val().split('/')[2].length != 4) {
+                //alert($(this).val().split('/')[2].length)
+                valid = false;
+                message = message + "Please enter dates in MM/DD/YY format (year)\n"
+                $(this).closest(".form-group").addClass("has-error");
+            }
+            else {
+                $(this).closest(".form-group").removeClass("has-error");
+            }
         }
-        else {
-            $(this).closest(".form-group").removeClass("has-error");
-        }
-        if ($(this).val().split('/')[0].length != 2) {
-            valid = false;
-            message = message + "Please enter dates in MM/DD/YY format (day)\n"
-            $(this).closest(".form-group").addClass("has-error");
-        }
-        else {
-            $(this).closest(".form-group").removeClass("has-error");
-        }
-        if ($(this).val().split('/')[1].length != 2) {
-            valid = false;
-            message = message + "Please enter dates in MM/DD/YY format (month)\n"
-            $(this).closest(".form-group").addClass("has-error");
-        }
-        else {
-            $(this).closest(".form-group").removeClass("has-error");
-        }
-        if ($(this).val().split('/')[2].length != 4) {
-            //alert($(this).val().split('/')[2].length)
+        else{
             valid = false;
             message = message + "Please enter dates in MM/DD/YY format (year)\n"
             $(this).closest(".form-group").addClass("has-error");
         }
-        else {
-            $(this).closest(".form-group").removeClass("has-error");
-        }
+
     });
 
     //VALIDATE EMAIL

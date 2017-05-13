@@ -1196,12 +1196,12 @@
                 %{--COMMERCIAL GENERAL LIABILITY REQUESTED Y/N--}%
                 <div class="form-group col-xs-12">
                     <label>Commercial General Liability Limits Requested?</label><br>
-                    <input type="radio" name="commercialGeneralLiabilityRequested?"
+                    <input type="radio" name="commercialGeneralLiabilityRequested"
                            class="showReview"
                            value="Yes"
                            data-reviewName="Commercial General Liability Limits Requested?"
                            id="commercialGeneralLiabilityRequestedYes_RadioButton"> Yes
-                    <input type="radio" name="commercialGeneralLiabilityRequested?"
+                    <input type="radio" name="commercialGeneralLiabilityRequested"
                            class=""
                            value="No"
                            data-reviewName="Commercial General Liability Limits Requested?"
@@ -1580,7 +1580,7 @@
                             </div>
 
                             <div class="col-xs-2 premiumColumn">
-                                <span class="premium"></span>
+                                <span class="premium premiumThirdParty"></span>
                             </div>
 
                             <div class="col-xs-2 deductibleColumn">
@@ -1729,7 +1729,7 @@
                                     </div>
 
                                     <div class="col-xs-3">
-                                        <span class="premiumSpan commercialGeneralLiabilityPremiumCost effectsTotalPremiumPlaceholder"
+                                        <span class="premiumSpan commercialGeneralLiabilityPremiumCost effectsTotalPremium"
                                               id="commercialGeneralLiabilityPremiumCost"></span>
                                     </div>
                                 </div>
@@ -1737,7 +1737,7 @@
                         </div>
 
                         %{--ALCOHOL LIMITS--}%
-                        <div class="premDistributionInsert">
+                        <div class="premDistributionInsertIfUsed">
                             <div class="alcoholSaleContainer" style="display:none">
                                 <div class="row">
                                     <div class="col-xs-4">
@@ -1762,7 +1762,7 @@
                                     </div>
 
                                     <div class="col-xs-3">
-                                        <span class="premiumSpan effectsTotalPremiumPlaceholder"
+                                        <span class="premiumSpan effectsTotalPremium"
                                               id="policyFeePremiumCost"></span>
                                     </div>
                                 </div>
@@ -1775,12 +1775,12 @@
                                 <div class="row TotalPremiumRow">
                                     <div class="col-xs-4">
                                         <strong>
-                                            <span class="lineOfBusinessSpan" id="totalSalePremiumName">Total:</span>
+                                            <span class="" id="totalSalePremiumName">Total:</span>
                                         </strong>
                                     </div>
 
                                     <div class="col-xs-3">
-                                        <span class="premiumSpan productTotalPremium SPEVENTS totalPremiumSpan"
+                                        <span class=" productTotalPremium SPEVENTS totalPremiumSpan"
                                               id="totalSalePremiumCost"></span>
                                     </div>
                                 </div>
@@ -1788,7 +1788,7 @@
                         </div>
 
                         %{--BROKER FEE LIMITS--}%
-                        <div class="premDistributionInsert">
+                        <div class="premDistributionInsertBroker">
                             <div id="brokerFeePremiumContainer" style="display:none">
                                 <div class="row">
                                     <div class="col-xs-4">

@@ -473,16 +473,24 @@ $(document).ready(function() {
     $(document.body).on('click', '.addFilmLocation', function() {
         var htmlString = "";
         var count = 0;
-        $('#filmingLocationInfo').find('.locationFilm').each(function() {
-            count++
-            htmlString = $(this).html();
-            htmlString = htmlString.replace("Filming Location #1", " Filming Location # " + (count + 1));
-            htmlString = htmlString.replace("Filming Location # " + count, "Filming Location # " + (count + 1));
-            htmlString = htmlString.replace(/(\(.)/g, "(" + (count + 1) );
-            htmlString = htmlString.replace("id=\"filmingLocation1", "id=\"filmingLocation" + (count + 1) );
-            htmlString = htmlString.replace("id=\"filmingStart1", "id=\"filmingStart" + (count + 1) );
-            htmlString = htmlString.replace("id=\"filmingEnd1", "id=\"filmingEnd" + (count + 1) );
-        });
+        count = $('#filmingLocationInfo').find('.locationFilm').length + 1;
+        var htmlElem = $('#filmingLocationInfo').find('.locationFilm').first()
+        htmlString = $(htmlElem).html();
+        htmlString = htmlString.replace("Filming Location #1", " Filming Location # " + (count));
+        htmlString = htmlString.replace(/(\(.)/g, "(" + (count) );
+        htmlString = htmlString.replace("id=\"filmingLocation1", "id=\"filmingLocation" + (count) );
+        htmlString = htmlString.replace("id=\"filmingStart1", "id=\"filmingStart" + (count) );
+        htmlString = htmlString.replace("id=\"filmingEnd1", "id=\"filmingEnd" + (count) );
+
+        // $('#filmingLocationInfo').find('.locationFilm').each(function() {
+        //     htmlString = $(this).html();
+        //     htmlString = htmlString.replace("Filming Location #1", " Filming Location # " + (count + 1));
+        //     htmlString = htmlString.replace("Filming Location # " + count, "Filming Location # " + (count + 1));
+        //     htmlString = htmlString.replace(/(\(.)/g, "(" + (count + 1) );
+        //     htmlString = htmlString.replace("id=\"filmingLocation1", "id=\"filmingLocation" + (count + 1) );
+        //     htmlString = htmlString.replace("id=\"filmingStart1", "id=\"filmingStart" + (count + 1) );
+        //     htmlString = htmlString.replace("id=\"filmingEnd1", "id=\"filmingEnd" + (count + 1) );
+        // });
         $("#filmingLocationInfo").append("<div class='locationFilm'>" + htmlString + "</div>");
 
         var date_input = $('.datepicker');
@@ -496,10 +504,20 @@ $(document).ready(function() {
             $(this).closest('.locationFilm').remove();
             $('#filmingLocationInfo').find('.locationFilm').each(function() {
                 count++
-                var filmingLocationHeader = $(this).find('h5').html();
+                var filmingLocationHeader = $(this).find('h5.filmingLocationHeader').html();
                 if (filmingLocationHeader == "Filming Location #1") {}
                 else {
-                    $(this).find('h5').html("Filming Location # " + count);
+                    $(this).find('h5.filmingLocationHeader').html("Filming Location # " + count);
+
+                    $(this).find('input.filmLocationLocation').attr("id","filmingLocation" + count);
+                    $(this).find('input.filmLocationLocation').attr("data-reviewname","Filming Location (" + count + ")");
+
+                    $(this).find('input.filmLocationStart').attr("id","filmingStart" + count);
+                    $(this).find('input.filmLocationStart').attr("data-reviewname","Start Date (" + count + ")");
+
+                    $(this).find('input.filmLocationEnd').attr("id","filmingEnd" + count);
+                    $(this).find('input.filmLocationEnd').attr("data-reviewname","End Date (" + count + ")");
+
                 }
             });
         }

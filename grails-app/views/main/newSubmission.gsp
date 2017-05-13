@@ -14,12 +14,20 @@
     <script src="${resource(dir: 'js', file: "/utils/stringUtils.js?ts=" + new Date().getTime())}" async></script>
     <script src="${resource(dir: 'js', file: "/utils/fileHelper.js?ts=" + new Date().getTime())}" async></script>
     <script src="${resource(dir: 'js', file: "newSubmission.js?ts=" + new Date().getTime())}" async></script>
-
-
-
-
-
     <script src="${resource(dir: 'js', file: 'jquery.maskMoney.min.js')}" async></script>
+
+    <g:if test="${user.admin == "true"}">
+        <script src="${resource(dir: 'js/utils/', file: 'randomGenerator.js')}" ></script>
+        <script src="${resource(dir: 'js', file: 'jquery.autotype.js')}" ></script>
+        %{--<script src="${resource(dir: 'test/jasmine/', file: 'lib/jasmine-2.5.2/jasmine.js')}"></script>--}%
+        %{--<script src="${resource(dir: 'test/jasmine/', file: 'lib/jasmine-2.5.2/jasmine-html.js')}"></script>--}%
+        %{--<script src="${resource(dir: 'test/jasmine/', file: 'lib/jasmine-2.5.2/boot.js')}"></script>--}%
+        %{--<script src="${resource(dir: 'test/jasmine/', file: 'lib/jasmine-2.5.2/jasmine-jquery.js')}"></script>--}%
+        <script src="${resource(dir: 'test/jasmine/', file: 'utils/testHelper.js'+"?ts=" + new Date().getTime())}"></script>
+    </g:if>
+
+
+
 </head>
 <body>
 <div id="riskMap" style="display: none;">
@@ -41,8 +49,13 @@
 </form>
 <div class="container">
     <div class="row">
-        <div class="col-xs-1">
-
+        <div class="col-xs-1" style="margin-top:80px">
+            <button class="btn btn-xs btn-success" id="testHelper" type="button"
+                    style="background-color: rgb(105, 210, 255); border-color: rgb(105, 210, 255); margin: 2px;"
+                    onclick="autoFillAll()">
+                <i class="fa fa-cogs" aria-hidden="true"></i>
+                <span class="" style="font-size: 14px; font-weight: 500"> Test Helper</span>
+            </button>
         </div>
         <div class="col-xs-10">
             <h1>New Policy</h1>
@@ -970,12 +983,12 @@
                                     <div class="col-xs-3">
                                         <div class="form-group" id="totalBudgetConfirmGroup"> <!-- Date input -->
                                             <label class="control-label">Total Budget</label>
-                                            <input class="form-control" id="totalBudgetConfirm" name="totalBudgetConfirm" type="text"
+                                            <input class="form-control currencyInput" id="totalBudgetConfirm" name="totalBudgetConfirm" type="text"
                                                    data-object="submission" data-key="totalBudget" required="required">
                                         </div>
                                         <div class="form-group" id="premiumExpectedInputGroup" style="display:none">
                                             <label class="control-label">Target Premium</label>
-                                            <input class="form-control" id="premiumExpectedInput" name="premiumExpectedInput" type="text" required="" >
+                                            <input class="form-control currencyInput" id="premiumExpectedInput" name="premiumExpectedInput" type="text" required="" >
                                         </div>
                                     </div>
                                     <div class="col-xs-2">
@@ -1188,8 +1201,8 @@
                                 <br>
                                 <div class="row">
                                     <div class="form-group col-xs-2">
-                                        <label class="control-label">Broker Fee</label>
-                                        <input class="form-control" id="brokerFeeInput"type="text" placeholder = "$" name="brokerFee" />
+                                        <label class="control-label ">Broker Fee</label>
+                                        <input class="form-control currencyInput" id="brokerFeeInput"type="text" placeholder = "$" name="brokerFee" />
                                     </div>
                                 </div>
 
@@ -1489,7 +1502,7 @@
                             <div class="row">
                                 <div class="form-group col-xs-3">
                                     <label class="control-label">Business Structure</label>
-                                    <select class="form-control showReview" data-reviewName="Business Structure" name="businessStructure" id="businessStructureSelect">
+                                    <select class="form-control showReview" data-reviewName="Business Structure" name="businessStructure" id="businessStructureSelect" required="required">
                                         <option value="invalid" selected="selected">Please Select Business Structure</option>
                                         <option value="corporation" selected="selected">Corporation</option>
                                         <option value="individual" selected="selected">Individual</option>

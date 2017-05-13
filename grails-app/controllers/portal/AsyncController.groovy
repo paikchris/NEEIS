@@ -2149,7 +2149,7 @@ class AsyncController {
                     def twoSpaces = "  ";
 
                     //GET DEFAULT LIMITS, DEDUCTIBLES, AND TERMS FOR PRODUCT IN DMU AIM
-
+                    log.info("ORIGINAL PRODUCT ID: " + productID)
                     String renderString = ""
                     aimsql.eachRow("SELECT Limits, Deduct, Subject, Endorse, LobDistrib, ActiveFlag " +
                             "FROM Product with (NOLOCK)" +
@@ -2176,6 +2176,7 @@ class AsyncController {
 
                         lobString = it.LobDistrib;
                     }
+                    log.info("ORIGINAL LOB STRING: " + lobString)
                     try{
                         agentPct = lobString.split('\r')[0].split('\t')[3].trim();
                     }
@@ -3163,6 +3164,27 @@ class AsyncController {
                                 tempLimitsMap["Each Occurrence"] = "\$1000000"
                                 tempLimitsMap["Fire Damage (Any One Fire)"] = "\$100000"
 
+                                tempDeductsMap["General Aggregate Limit"] = "Nil"
+                                tempDeductsMap["Products & Completed Operations"] = "Nil"
+                                tempDeductsMap["Personal & Advertising Injury"] = "Nil"
+                                tempDeductsMap["Each Occurrence"] = "Nil"
+                                tempDeductsMap["Fire Damage (Any One Fire)"] = "Nil"
+
+                            }
+                            else if (termLength <= 60) {
+                                rate = 0.324
+                                minPremium = 500
+
+                                if (params.additionalProducts.contains("AGGAdditionalCoverage")) {
+                                    tempLimitsMap["General Aggregate Limit"] = "\$2000000"
+                                }
+                                else{
+                                    tempLimitsMap["General Aggregate Limit"] = "\$1000000"
+                                }
+                                tempLimitsMap["Products & Completed Operations"] = "\$1000000"
+                                tempLimitsMap["Personal & Advertising Injury"] = "\$1000000"
+                                tempLimitsMap["Each Occurrence"] = "\$1000000"
+                                tempLimitsMap["Fire Damage (Any One Fire)"] = "\$100000"
 
                                 tempDeductsMap["General Aggregate Limit"] = "Nil"
                                 tempDeductsMap["Products & Completed Operations"] = "Nil"
@@ -3170,7 +3192,8 @@ class AsyncController {
                                 tempDeductsMap["Each Occurrence"] = "Nil"
                                 tempDeductsMap["Fire Damage (Any One Fire)"] = "Nil"
 
-                            } else {
+                            }
+                            else {
                                 rate = 0.324
                                 minPremium = 1000
 
@@ -3434,11 +3457,12 @@ class AsyncController {
                             deductsMap["Non-Owned & Hired Auto Liability"] = "Nil";
                             limitsMap["Non-Owned & Hired Auto Liability"] = "\$1,000,000"
                             productTotalPremium = productTotalPremium + NOHApremium
-                            rateInfo = rateInfo + "${coverageID}\t${NOHArate}\t${moneyFormat.format(NOHApremium)}\tNon-Owned & Hired Auto Liability\t\n";
-                            indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Non-Owned & Hired Auto Liability\t\n";
+                            rateInfo = rateInfo + "${coverageID}\t${NOHArate}\t${moneyFormat.format(NOHApremium)}\tNon-Owned & Hired Auto Liability COH:${moneyFormat.format(costOfHire)}\t\n";
+                            indicationRateInfo = indicationRateInfo + "Non-Owned & Hired Auto Liability\t\n";
                             indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Rate\t${NOHArate}\n";
+                            indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Cost of Hire\t${moneyFormat.format(costOfHire)}\n";
                             indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Min Premium\t${moneyFormat.format(NOHAminPremium)}\n";
-                            indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Min Premium\t${moneyFormat.format(NOHApremium)}\n";
+                            indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Rated Premium\t${moneyFormat.format(NOHApremium)}\n";
 
 
 

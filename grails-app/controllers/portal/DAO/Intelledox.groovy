@@ -568,12 +568,23 @@ class Intelledox {
 
 \t<principalPhotographyTable>
 \t\t<principalPhotographyHeader>Principal Photography</principalPhotographyHeader>
-\t\t<principalPhotographyRow>
-\t\t\t<principalPhotographyName startPrincipalPhoto="${XmlUtil.escapeXml(jsonSerial.getAt("principalPhotographyDateStart"))} - ">
-\t\t\t\t<endPrincipalPhoto>${XmlUtil.escapeXml(jsonSerial.getAt("principalPhotographyDateStart"))}</endPrincipalPhoto>
-\t\t\t\t<locationPrincipalPhoto></locationPrincipalPhoto>
-\t\t\t</principalPhotographyName>
+\t\t<principalPhotographyRow>"""
+
+            if(jsonSerial.getAt("numberOfFilmLocations") != null){
+                def numLocations = jsonSerial.getAt("numberOfFilmLocations");
+                for(def i =1; i<numLocations +1; i++){
+                    soapXML = soapXML + """
+\t\t\t<principalPhotographyName startPrincipalPhoto="${XmlUtil.escapeXml(jsonSerial.getAt("filmingStart" + i))}">
+\t\t\t\t<endPrincipalPhoto>${XmlUtil.escapeXml(jsonSerial.getAt("filmingEnd" + i))}</endPrincipalPhoto>
+\t\t\t\t<locationPrincipalPhoto>${XmlUtil.escapeXml(jsonSerial.getAt("filmingLocation" + i))}</locationPrincipalPhoto>
+\t\t\t</principalPhotographyName>"""
+                }
+            }
+
+
+            soapXML = soapXML + """
 \t\t</principalPhotographyRow>
+
 \t</principalPhotographyTable>
 
 \t<keyPersonnelTable>
@@ -1101,7 +1112,7 @@ log.info(jsonSerial.getAt("endorseInsert"))
 \t\t<productionInformationHeader>Event Information</productionInformationHeader>
 \t\t<productionInformationRow>
 \t\t\t<productionInformationName productionInformationColOne="Types of Event:">
-\t\t\t\t<productionInformationColTwo> ${XmlUtil.escapeXml(jsonSerial.getAt("proposedTermLength"))} </productionInformationColTwo>
+\t\t\t\t<productionInformationColTwo> ${XmlUtil.escapeXml(jsonSerial.getAt("proposedTermLengthString"))} </productionInformationColTwo>
 \t\t\t</productionInformationName>
 \t\t\t<productionInformationName productionInformationColOne="Total Attendance:">
 \t\t\t\t<productionInformationColTwo> ${XmlUtil.escapeXml(jsonSerial.getAt("totalAttendance"))} </productionInformationColTwo>

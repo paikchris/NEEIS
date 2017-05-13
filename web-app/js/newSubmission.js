@@ -1431,7 +1431,7 @@ function buildReview() {
         var str = $("<div />").append($('#premDistributionInsert').clone()).html();
         str = str + $("<div />").append($('.TaxHeaderRow').clone()[0]).html();
         str = str + $("<div />").append($('#taxRows').clone()[0]).html();
-        str = str + $("<div />").append($('.TotalPremiumRow').clone()[0]).html();
+        // str = str + $("<div />").append($('.TotalPremiumRow').clone()[0]).html();
         str = str + premString;
         $("#reviewPremDistributionSP").html(str);
         $("#reviewTerms").html($("#termsInsert").html());

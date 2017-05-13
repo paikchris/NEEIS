@@ -665,7 +665,7 @@ function getSubmissionMap() {
             productArray.push("BARCPKGC");
         }
         submissionMap.CPKRateInfo = $('#CPK_RateInfo').html() + $('#NOAL_RateInfo').html();
-        submissionMap.CPKIndicationRateInfo = $('#CPK_IndicationRateInfo').html();
+        submissionMap.CPKIndicationRateInfo = $('#CPK_IndicationRateInfo').html() + $('#NOAL_IndicationRateInfo').html();
 
 
     }
@@ -877,7 +877,7 @@ function getSubmissionMapSP(){
         attention: $('#userDetails-firstName').html() + " " + $('#userDetails-lastName').html(), //DONT' CHANGE
         aimContactID: $('#userDetails-aimContactID').html(), //DON'T CHANGE
         website: $('#website').val(),
-        proposedTermLength: parseInt($("#proposedTermLength").val().split(" ")),
+        proposedTermLength: parseInt($("#proposedTermLength").val().split(" ")[0]),
         proposedEffectiveDate: $("#proposedEffectiveDate").val(),
         proposedExpirationDate: $("#proposedExpirationDate").val(),
         coverageCodes: "",
@@ -903,13 +903,13 @@ function getSubmissionMapSP(){
     submissionMap.premSummary = "";
     submissionMap.premSummary = submissionMap.premSummary + "Premium Distribution" + "\t" + "" + "\n";
     $('#coverageOptionsReview div.premDistributionInsert div.row').each(function() {
-        if ($(this).hasClass("TotalPremiumRow")) {
-            submissionMap.premSummary = submissionMap.premSummary + $(this).find('.lineOfBusinessSpan').html() + "\t" + $(this).find('.totalPremiumSpan').html() + "\n";
-
-        }
-        else {
+        // if ($(this).hasClass("TotalPremiumRow")) {
+        //     submissionMap.premSummary = submissionMap.premSummary + $(this).find('.lineOfBusinessSpan').html() + "\t" + $(this).find('.totalPremiumSpan').html() + "\n";
+        //
+        // }
+        // else {
             submissionMap.premSummary = submissionMap.premSummary + $(this).find('.lineOfBusinessSpan').html() + "\t" + $(this).find('.premiumSpan').html() + "\n";
-        }
+        // }
     });
 
     submissionMap.termsInsert = $('#termsInsert').html();
