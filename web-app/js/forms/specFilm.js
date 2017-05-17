@@ -835,54 +835,54 @@ $(document).ready(function() {
     };
     date_input.datepicker(options);
 
-
-    $(':file').change(function() {
-        var file = this.files[0];
-
-        var name = file.name;
-        var size = file.size;
-        var type = file.type;
-        var ext = $(this).val().split('.').pop().toLowerCase();
-        if ($.inArray(ext, ['zip', 'doc', 'docx', 'xlsx', 'xls', 'pdf', 'txt']) == -1) {
-            alert('Only .zip, .doc, .docx, .xlsx, .xls, .pdf, .txt are permitted');
-            $(this).val('');
-        }
-        else {
-            //alert(name);
-
-            //alert('Only .zip, .doc, .docx, .xlsx, .xls, .pdf are permitted');
-            var iconFilePath = "";
-            if (ext == "zip") {
-                iconFilePath = "zipIcon.png"
-            }
-            else if (ext == "doc") {
-                iconFilePath = "docIcon.png"
-            }
-            else if (ext == "docx") {
-                iconFilePath = "docxIcon.png"
-            }
-            else if (ext == "xls") {
-                iconFilePath = "xlsIcon.png"
-            }
-            else if (ext == "xlsx") {
-                iconFilePath = "xlsxIcon.png"
-            }
-            else if (ext == "pdf") {
-                iconFilePath = "pdfIcon.png"
-            }
-            else if (ext == "txt") {
-                iconFilePath = "txtIcon.png"
-            }
-            else {
-                iconFilePath = "fileIcon.png"
-            }
-
-            $("#" + $(this).attr('id') + 'Span').closest(".fileNameContainer").css("display", "");
-            $("#" + $(this).attr('id') + 'Span').html("<img src='/images/" + iconFilePath + "' height='16' width='16' style='margin-right:5px'/>" + name);
-        }
-        //console.log(this.files[0]);
-        //Your validation
-    });
+    //
+    // $(':file').change(function() {
+    //     var file = this.files[0];
+    //
+    //     var name = file.name;
+    //     var size = file.size;
+    //     var type = file.type;
+    //     var ext = $(this).val().split('.').pop().toLowerCase();
+    //     if ($.inArray(ext, ['zip', 'doc', 'docx', 'xlsx', 'xls', 'pdf', 'txt']) == -1) {
+    //         alert('Only .zip, .doc, .docx, .xlsx, .xls, .pdf, .txt are permitted');
+    //         $(this).val('');
+    //     }
+    //     else {
+    //         //alert(name);
+    //
+    //         //alert('Only .zip, .doc, .docx, .xlsx, .xls, .pdf are permitted');
+    //         var iconFilePath = "";
+    //         if (ext == "zip") {
+    //             iconFilePath = "zipIcon.png"
+    //         }
+    //         else if (ext == "doc") {
+    //             iconFilePath = "docIcon.png"
+    //         }
+    //         else if (ext == "docx") {
+    //             iconFilePath = "docxIcon.png"
+    //         }
+    //         else if (ext == "xls") {
+    //             iconFilePath = "xlsIcon.png"
+    //         }
+    //         else if (ext == "xlsx") {
+    //             iconFilePath = "xlsxIcon.png"
+    //         }
+    //         else if (ext == "pdf") {
+    //             iconFilePath = "pdfIcon.png"
+    //         }
+    //         else if (ext == "txt") {
+    //             iconFilePath = "txtIcon.png"
+    //         }
+    //         else {
+    //             iconFilePath = "fileIcon.png"
+    //         }
+    //
+    //         $("#" + $(this).attr('id') + 'Span').closest(".fileNameContainer").css("display", "");
+    //         $("#" + $(this).attr('id') + 'Span').html("<img src='/images/" + iconFilePath + "' height='16' width='16' style='margin-right:5px'/>" + name);
+    //     }
+    //     //console.log(this.files[0]);
+    //     //Your validation
+    // });
 
     $(document.body).on('click', '.attachClearButton', function() {
         $(this).closest('.fileNameContainer').find('.fileNameSpan').html("");
@@ -2005,7 +2005,7 @@ function ratePremiums(thisObj) {
                                     if (responseJSON.coverages[i].lobDist[key].split(";")[k].length > 0) {
                                         lobDistString = lobDistString + "<div class='row'";
                                         if (index % 2 == 0) {
-                                            lobDistString = lobDistString + " style= 'background-color: rgba(38, 80, 159, 0.13)'";
+                                            lobDistString = lobDistString + " style= 'background-color: rgba(38, 80, 159, 0.13); padding-left:10px;'";
                                         }
                                         lobDistString = lobDistString + ">" +
                                             "<div class='col-xs-4'>" +

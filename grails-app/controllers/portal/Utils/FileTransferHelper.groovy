@@ -26,6 +26,15 @@ class FileTransferHelper {
         file.transferTo(fileDest)
     }
 
+    def deleteLocalTempFile(localFolderPath, fileName){
+        String filename = "test.txt"
+        // this deletes the file test.txt
+        File file = new File(localFolderPath, fileName)
+        boolean fileSuccessfullyDeleted =  file.delete()
+
+        return fileSuccessfullyDeleted
+    }
+
     def saveBinaryFileToLocalPath(binaryFile, localPath, fileName){ 
 //        def quoteID = jsonSerial.getAt("allQuoteIDs").split(",")[0].split(";")[0]
 //        def a = new XmlSlurper().parseText(response.text)
@@ -56,15 +65,161 @@ class FileTransferHelper {
 
     }
 
-    def ftpFileToAIM(localFileName, localFolderPath, quoteID, dataSource_aim){
-        log.info("FTP FILE TO AIM")
-
+    def ftpFileToAIMBULK(attachedFileMap, localFolderPath, quoteIDs, dataSource_aim){
+        log.info("FTP FILEs TO AIM")
+        log.info(attachedFileMap)
+        log.info(quoteIDs)
         AIMSQL aimHelper = new AIMSQL();
 
+        def fileName;
+        def remoteFileName;
 
-//        def webrootDir = request.getSession().getServletContext().getRealPath("/")
-//        def webrootDir = getClass().getProtectionDomain().getCodeSource().getLocation().getFile().replace(getClass().getSimpleName() + ".class", "").substring(1);
-//        log.info "WEBROOT DIR = " + webrootDir
+        def responseString = "";
+        boolean done = false;
+
+        String server = "74.100.162.203";
+        int port = 21;
+        String user = "web_ftp";
+        String pass = "Get@4Files";
+
+        FTPClient ftpClient = new FTPClient();
+
+
+        try {
+
+            ftpClient.connect(server, port);
+            ftpClient.login(user, pass);
+            ftpClient.enterLocalPassiveMode();
+
+            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+
+            String remoteFolderPath
+            String remoteFileFullPath
+
+            //CREATE THE DIRECTORIES IN AIMSQL
+            quoteIDs.split(",").each{
+                def quoteID = it
+                log.info "looping: " + it
+                if (Environment.current == Environment.DEVELOPMENT) {
+                    remoteFolderPath = "/AIMAPP/ATTACHTEST/${quoteID}/";
+
+                }
+                else if (Environment.current == Environment.PRODUCTION) {
+                    remoteFolderPath = "/AIMAPP/ATTACH/${quoteID}/";
+                }
+
+                // Creates a directory
+                String dirToCreate = remoteFolderPath;
+                boolean success = ftpClient.makeDirectory(dirToCreate);
+                if (success) {
+                    log.info("Successfully created directory: " + dirToCreate);
+                } else {
+                    log.info("Did not create directory.");
+                }
+
+                attachedFileMap.each { key, value ->
+                    log.info "key = " + key
+                    log.info "value = " + value
+//                def fileRealName = value.fileName
+                    def tempFilename = value.uuid
+
+                    fileName = tempFilename
+                    remoteFileName = value.fileName
+                    String decodedFileName = URLDecoder.decode(remoteFileName, "UTF-8");
+                    remoteFileFullPath = remoteFolderPath + decodedFileName;
+
+
+//              CHECK IF FILE EXISTS
+                    boolean fileExists = true;
+                    def fileCounter = 0;
+                    def returnCode
+                    while(fileExists) {
+                        log.info("TRYING FILE PATH: " + remoteFileFullPath)
+                        String tempString = remoteFolderPath
+                        def filesInFolder = ftpClient.listNames(remoteFolderPath).toList();
+                        log.info remoteFileFullPath
+                        log.info filesInFolder
+                        log.info filesInFolder.contains(remoteFileFullPath)
+                        if(filesInFolder.contains(remoteFileFullPath)){
+                            fileExists = true;
+                            def baseName = FilenameUtils.getBaseName(decodedFileName)
+                            def extension = FilenameUtils.getExtension(decodedFileName)
+                            def fileNameSplit = baseName.split("-");
+                            log.info("SPLIT: " + fileNameSplit)
+                            def incrementString = fileNameSplit[fileNameSplit.length-1];
+                            log.info("Increment: " + incrementString)
+                            def incrementNumber
+                            if(incrementString.isInteger()){
+                                incrementNumber = (incrementString as int) + 1
+                                fileNameSplit[fileNameSplit.length-1] = incrementNumber
+                                decodedFileName = fileNameSplit.join("-") + "." + extension;
+                            }
+                            else{
+                                incrementNumber = 1
+                                decodedFileName = baseName + "-" + incrementNumber + "." + extension;
+                            }
+
+
+                            fileExists = true;
+                            remoteFileFullPath = remoteFolderPath + decodedFileName;
+                            log.info ("NEW FILE PATH: " + remoteFileFullPath)
+                        }
+                        else{
+                            fileExists = false;
+                        }
+
+                    }
+
+
+                    //NOW FILENAME SHOULD BE UNIQUE AND NOT EXIST IN AIMSQL
+                    File localFile = new File(localFolderPath, fileName)
+                    InputStream inputStream = new FileInputStream(localFile);
+
+                    log.info("Start uploading first file " + remoteFileFullPath);
+                    done = ftpClient.storeFile(remoteFileFullPath, inputStream);
+                    inputStream.close();
+
+
+                    if (done) {
+                        log.info("The file is uploaded successfully.");
+                        log.info "Upload Completed: " + decodedFileName
+
+                        aimHelper.logFileUpload(decodedFileName, localFolderPath, quoteID, dataSource_aim);
+                        log.info "Activity Logged: " + decodedFileName
+                    }
+                }
+
+                responseString = "Success"
+            }
+        } catch (Exception e) {
+            log.info "Connected to " + server + ".";
+            log.info ftpClient.getReplyString();
+            log.info ftpClient.getReplyCode();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+            responseString = "Error - " + exceptionAsString
+
+        } finally {
+            if (ftpClient.isConnected()) {
+                ftpClient.logout();
+                ftpClient.disconnect();
+            }
+
+
+
+
+        }
+
+
+        return responseString
+    }
+
+    def ftpFileToAIM(localFileName, localFolderPath, quoteID, dataSource_aim){
+        log.info("FTP FILE TO AIM")
+        AIMSQL aimHelper = new AIMSQL();
+
         def fileName;
         boolean done = false;
 //        Sql aimsql = new Sql(dataSource_aim)
@@ -151,25 +306,6 @@ class FileTransferHelper {
                     fileExists = false;
 
                 }
-
-
-
-//                InputStream inputStreamFileExists = ftpClient.retrieveFileStream(remoteFileFullPath);
-//                returnCode = ftpClient.getReplyCode();
-//                log.info ("RETURN CODE = " + returnCode)
-//                if (inputStreamFileExists == null || returnCode == 550) {
-//                    fileExists = false;
-//                    ftpClient.completePendingCommand();
-////                    if(returnCode == 550){
-////                        inputStreamFileExists.close();
-////                    }
-////
-//                }
-//                else{
-//                    fileCounter++;
-//
-//                    inputStreamFileExists.close();
-//                }
 
             }
 

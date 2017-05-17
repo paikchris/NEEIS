@@ -1084,6 +1084,177 @@ class AsyncController {
 
     }
 
+    def uploadAttachedFile(){
+        log.info("CHECKING AJAX ATTACH BUTTON")
+        log.info(params);
+        FileTransferHelper fileHelper = new FileTransferHelper();
+        Sql aimsql = new Sql(dataSource_aim)
+
+
+        def temporaryFilesFolderPath = servletContext.getRealPath("/attachments/temp/")
+        def attachedFile
+        def responseString = "";
+
+        if(params.file instanceof org.springframework.web.multipart.commons.CommonsMultipartFile){
+            try{
+                log.info("STORING ALL ATTACHMENTS IN " + temporaryFilesFolderPath)
+                def fileRealName
+                def tempFilename
+
+                fileRealName = params.file.getFileItem().name
+                tempFilename = params.fileUUID;
+                attachedFile = params.file;
+                fileHelper.saveAttachedFileToLocalPath(attachedFile, temporaryFilesFolderPath, tempFilename)
+                responseString = "Upload Completed"
+
+            } catch (IOException e) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                String exceptionAsString = sw.toString();
+                log.info("Error Details - " + exceptionAsString)
+                responseString = "Error Details - " + exceptionAsString
+            } finally {
+                try {
+
+                } catch (IOException ex) {
+                    log.info ex
+                    ex.printStackTrace();
+                }
+            }
+        }
+
+        render responseString
+    }
+
+    def removeTempFile(){
+        log.info("CHECKING AJAX ATTACH BUTTON")
+        log.info(params);
+        FileTransferHelper fileHelper = new FileTransferHelper();
+
+        def temporaryFilesFolderPath = servletContext.getRealPath("/attachments/temp/")
+        def attachedFile
+        def responseString = "";
+
+        try{
+            log.info("REMOVING TEMP FILE " + temporaryFilesFolderPath)
+
+            def status = fileHelper.deleteLocalTempFile(temporaryFilesFolderPath, params.fileUUID)
+            if(status == true){
+                responseString = "File Removed"
+            }
+            else{
+                responseString = "Error"
+            }
+
+        } catch (IOException e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+            responseString = "Error Details - " + exceptionAsString
+        } finally {
+            try {
+
+            } catch (IOException ex) {
+                log.info ex
+                ex.printStackTrace();
+            }
+        }
+
+        render responseString
+    }
+
+    def attachAndUploadFiles(){
+        log.info("UPLOADING FILES TO AIMSQL")
+        log.info(params);
+        FileTransferHelper fileHelper = new FileTransferHelper();
+        Sql aimsql = new Sql(dataSource_aim)
+
+        def attachedFileMap = new JsonSlurper().parseText(params.attachedFileMap)
+
+        def temporaryFilesFolderPath = servletContext.getRealPath("/attachments/temp/")
+        def attachedFile
+
+        def filesToCleanUp = [];
+        try {
+        attachedFileMap.each{ key, value ->
+            log.info "key = " + key
+            log.info "value = " + value
+
+                def fileRealName = value.fileName
+                def tempFilename = value.uuid
+
+                def srcStream
+                def cpStream
+                def dstStream
+                def keepFileHereStream
+
+                def fileName;
+                params.quoteIDs.split(",").each {
+                    def quoteID = it
+                    def localFolderPath = servletContext.getRealPath("/attachments/${it}/") //app directory
+                    boolean done = false;
+
+                    log.info("MOVING FILES FROM TEMP FOLDER TO QUOTE FOLDER= " + it)
+                    log.info(localFolderPath)
+                    File fileDest = new File(localFolderPath)
+                    fileDest.mkdirs();
+                    fileName = fileRealName
+                    log.info("COPYING: " + tempFilename + ", " + fileName)
+                    srcStream = new File(temporaryFilesFolderPath, tempFilename).newDataInputStream()
+                    dstStream = new File(localFolderPath, fileName).newDataOutputStream()
+                    dstStream << srcStream
+                    srcStream.close()
+                    dstStream.close()
+
+                    //add file to list of clean up files
+                    if (!filesToCleanUp.contains(tempFilename)) {
+                        filesToCleanUp.add(tempFilename);
+                    }
+
+//                    fileHelper.ftpFileToAIM(fileName, localFolderPath, quoteID, dataSource_aim)
+
+
+                    if (done) {
+                        log.info("The first file is uploaded successfully.");
+                    }
+                }
+            }
+
+                //FTP FILES TO AIM
+                def ftpResponse = fileHelper.ftpFileToAIMBULK(attachedFileMap, temporaryFilesFolderPath, params.quoteIDs, dataSource_aim)
+
+
+                //CLEAN UP TEMPORARY FILES
+                if(ftpResponse.contains("Success")){
+                    filesToCleanUp.each{
+                        log.info("REMOVING TEMP FILE " + it)
+                        def removeStatus = fileHelper.deleteLocalTempFile(temporaryFilesFolderPath, it)
+                        if(removeStatus == true){
+                            log.info "File Removed"
+                        }
+                        else{
+                            log.info "Error"
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                String exceptionAsString = sw.toString();
+                log.info("Error Details - " + exceptionAsString)
+            } finally {
+                try {
+                } catch (IOException ex) {
+                    log.info ex
+                    ex.printStackTrace();
+                }
+            }
+
+
+        render "Upload Completed"
+    }
+
     def ajaxAttachNew() {
         log.info("CHECKING AJAX ATTACH BUTTON")
         log.info(params);

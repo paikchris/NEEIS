@@ -131,13 +131,14 @@
         %{--ATTACHMENT CONTAINER FORMAL EVACUATION PLAN--}%
         <div class="row" id="evacuationAttachContainer" style="margin-bottom: 20px; display:none">
             <div class="col-xs-3" style="margin-left:20px">
-                <form enctype="multipart/form-data">
-                    <div class="fileUpload btn btn-primary">
-                        <span>Attach File</span>
-                        <input name="evacuationFile" type="file" class="file" id="evacuationFile"
-                               style="width:120px"/>
-                    </div>
-                </form>
+                %{--<form enctype="multipart/form-data">--}%
+                    %{--<div class="fileUpload btn btn-primary">--}%
+                        %{--<span>Attach File</span>--}%
+                        %{--<input name="evacuationFile" type="file" class="file" id="evacuationFile"--}%
+                               %{--style="width:120px"/>--}%
+                    %{--</div>--}%
+                %{--</form>--}%
+                <button class="btn btn-primary attachButton " id="" type="button" value="">Attach Files</button>
             </div>
 
             <div class="col-xs-8">
@@ -213,13 +214,14 @@
         %{--ATTACHMENT CONTAINER PRECAUTIONARY MEASURE IN THE EVENT OF STORM FLOOD HIGH WINDS--}%
         <div class="row" id="precautionaryMeasureAttachContainer" style="margin-bottom: 20px">
             <div class="col-xs-3" style="margin-left:20px">
-                <form enctype="multipart/form-data">
-                    <div class="fileUpload btn btn-primary">
-                        <span>Attach File</span>
-                        <input name="precautionaryMeasureFile" type="file" class="file" id="precautionaryMeasureFile"
-                               style="width:120px"/>
-                    </div>
-                </form>
+                %{--<form enctype="multipart/form-data">--}%
+                    %{--<div class="fileUpload btn btn-primary">--}%
+                        %{--<span>Attach File</span>--}%
+                        %{--<input name="precautionaryMeasureFile" type="file" class="file" id="precautionaryMeasureFile"--}%
+                               %{--style="width:120px"/>--}%
+                    %{--</div>--}%
+                %{--</form>--}%
+                <button class="btn btn-primary attachButton " id="" type="button" value="">Attach Files</button>
             </div>
 
             <div class="col-xs-8">
@@ -263,13 +265,14 @@
         %{--ATTACHMENT CONTAINER SEATING STAGE INDEPENDENT FIRM--}%
         <div class="row" id="stageSeatingAttachContainer" style="margin-bottom: 20px; display:none">
             <div class="col-xs-3" style="margin-left:20px">
-                <form enctype="multipart/form-data">
-                    <div class="fileUpload btn btn-primary">
-                        <span>Attach File</span>
-                        <input name="stageSeatingFile" type="file" class="file" id="stageSeatingFile"
-                               style="width:120px"/>
-                    </div>
-                </form>
+                %{--<form enctype="multipart/form-data">--}%
+                    %{--<div class="fileUpload btn btn-primary">--}%
+                        %{--<span>Attach File</span>--}%
+                        %{--<input name="stageSeatingFile" type="file" class="file" id="stageSeatingFile"--}%
+                               %{--style="width:120px"/>--}%
+                    %{--</div>--}%
+                %{--</form>--}%
+                <button class="btn btn-primary attachButton " id="" type="button" value="">Attach Files</button>
             </div>
 
             <div class="col-xs-8">
@@ -309,13 +312,14 @@
         %{--ATTACHMENT CONTAINER PARTICIPANT ACCIDENT MEDICAL COVERAGE--}%
         <div class="row" id="pamcAttachContainer" style="margin-bottom: 20px; display:none">
             <div class="col-xs-3" style="margin-left:20px">
-                <form enctype="multipart/form-data">
-                    <div class="fileUpload btn btn-primary">
-                        <span>Attach File</span>
-                        <input name="pamcFile" type="file" class="file" id="pamcFile"
-                               style="width:120px"/>
-                    </div>
-                </form>
+                %{--<form enctype="multipart/form-data">--}%
+                    %{--<div class="fileUpload btn btn-primary">--}%
+                        %{--<span>Attach File</span>--}%
+                        %{--<input name="pamcFile" type="file" class="file" id="pamcFile"--}%
+                               %{--style="width:120px"/>--}%
+                    %{--</div>--}%
+                %{--</form>--}%
+                <button class="btn btn-primary attachButton " id="" type="button" value="">Attach Files</button>
             </div>
 
             <div class="col-xs-8">
@@ -379,13 +383,14 @@
         %{--ATTACHMENT CONTAINER VOLUNTEERS WAIVER SIGNING SAMPLE--}%
         <div class="row" id="volunteerAttachContainer" style="margin-bottom: 20px; display:none">
             <div class="col-xs-3" style="margin-left:20px">
-                <form enctype="multipart/form-data">
-                    <div class="fileUpload btn btn-primary">
-                        <span>Attach File</span>
-                        <input name="volunteerFile" type="file" class="file" id="volunteerFile"
-                               style="width:120px"/>
-                    </div>
-                </form>
+                %{--<form enctype="multipart/form-data">--}%
+                    %{--<div class="fileUpload btn btn-primary">--}%
+                        %{--<span>Attach File</span>--}%
+                        %{--<input name="volunteerFile" type="file" class="file" id="volunteerFile"--}%
+                               %{--style="width:120px"/>--}%
+                    %{--</div>--}%
+                %{--</form>--}%
+                <button class="btn btn-primary attachButton " id="" type="button" value="">Attach Files</button>
             </div>
 
             <div class="col-xs-8">
@@ -537,12 +542,13 @@
                 %{--PYROTECHNICS CONTAINER--}%
                 <div class="row" id="pyrotechnicsAttachContainer" style="margin-bottom: 20px; display:none">
                     <div class="col-xs-3" style="margin-left:20px">
-                        <form enctype="multipart/form-data">
-                            <div class="fileUpload btn btn-primary">
-                                <span>Attach File</span>
-                                <input name="pyroFile" type="file" class="file" id="pyroFile" style="width:120px"/>
-                            </div>
-                        </form>
+                        %{--<form enctype="multipart/form-data">--}%
+                            %{--<div class="fileUpload btn btn-primary">--}%
+                                %{--<span>Attach File</span>--}%
+                                %{--<input name="pyroFile" type="file" class="file" id="pyroFile" style="width:120px"/>--}%
+                            %{--</div>--}%
+                        %{--</form>--}%
+                        <button class="btn btn-primary attachButton " id="" type="button" value="">Attach Files</button>
                     </div>
 
                     <div class="col-xs-8">
@@ -562,13 +568,14 @@
                 <div class="row" id="stuntsHazardousActivitiesAttachContainer"
                      style="margin-bottom: 20px; display:none">
                     <div class="col-xs-3" style="margin-left:20px">
-                        <form enctype="multipart/form-data">
-                            <div class="fileUpload btn btn-primary">
-                                <span>Attach File</span>
-                                <input name="stuntsFile" type="file" class="file" id="stuntsFile"
-                                       style="width:120px"/>
-                            </div>
-                        </form>
+                        %{--<form enctype="multipart/form-data">--}%
+                            %{--<div class="fileUpload btn btn-primary">--}%
+                                %{--<span>Attach File</span>--}%
+                                %{--<input name="stuntsFile" type="file" class="file" id="stuntsFile"--}%
+                                       %{--style="width:120px"/>--}%
+                            %{--</div>--}%
+                        %{--</form>--}%
+                        <button class="btn btn-primary attachButton " id="" type="button" value="">Attach Files</button>
                     </div>
 
                     <div class="col-xs-8">
@@ -697,13 +704,14 @@
                 %{--ATTACHMENT CONTAINER CONFIRM APPLICANT INDEMNIFIED AND HELD HARMLESS--}%
                 <div class="row" id="medicalAttachContainer" style="margin-bottom: 20px; display:none">
                     <div class="col-xs-3" style="margin-left:20px">
-                        <form enctype="multipart/form-data">
-                            <div class="fileUpload btn btn-primary">
-                                <span>Attach File</span>
-                                <input name="medicalFile" type="file" class="file" id="medicalFile"
-                                       style="width:120px"/>
-                            </div>
-                        </form>
+                        %{--<form enctype="multipart/form-data">--}%
+                            %{--<div class="fileUpload btn btn-primary">--}%
+                                %{--<span>Attach File</span>--}%
+                                %{--<input name="medicalFile" type="file" class="file" id="medicalFile"--}%
+                                       %{--style="width:120px"/>--}%
+                            %{--</div>--}%
+                        %{--</form>--}%
+                        <button class="btn btn-primary attachButton " id="" type="button" value="">Attach Files</button>
                     </div>
 
                     <div class="col-xs-8">
@@ -936,13 +944,14 @@
                 %{--ATTACHMENT CONTAINER PROVIDE CAMPING GROUND RULES--}%
                 <div class="row" id="campRulesAttachContainer" style="margin-bottom: 20px; display:none">
                     <div class="col-xs-3" style="margin-left:20px">
-                        <form enctype="multipart/form-data">
-                            <div class="fileUpload btn btn-primary">
-                                <span>Attach File</span>
-                                <input name="campRulesFile" type="file" class="file" id="campRulesFile"
-                                       style="width:120px"/>
-                            </div>
-                        </form>
+                        %{--<form enctype="multipart/form-data">--}%
+                            %{--<div class="fileUpload btn btn-primary">--}%
+                                %{--<span>Attach File</span>--}%
+                                %{--<input name="campRulesFile" type="file" class="file" id="campRulesFile"--}%
+                                       %{--style="width:120px"/>--}%
+                            %{--</div>--}%
+                        %{--</form>--}%
+                        <button class="btn btn-primary attachButton " id="" type="button" value="">Attach Files</button>
                     </div>
 
                     <div class="col-xs-8">
@@ -1030,13 +1039,14 @@
                     %{--ATTACHMENT CONTAINER PARKING--}%
                     <div class="row" id="parkingAttachContainer" style="margin-bottom: 20px; display:none">
                         <div class="col-xs-3" style="margin-left:20px">
-                            <form enctype="multipart/form-data">
-                                <div class="fileUpload btn btn-primary">
-                                    <span>Attach File</span>
-                                    <input name="parkingFile" type="file" class="file" id="parkingFile"
-                                           style="width:120px"/>
-                                </div>
-                            </form>
+                            %{--<form enctype="multipart/form-data">--}%
+                                %{--<div class="fileUpload btn btn-primary">--}%
+                                    %{--<span>Attach File</span>--}%
+                                    %{--<input name="parkingFile" type="file" class="file" id="parkingFile"--}%
+                                           %{--style="width:120px"/>--}%
+                                %{--</div>--}%
+                            %{--</form>--}%
+                            <button class="btn btn-primary attachButton " id="" type="button" value="">Attach Files</button>
                         </div>
 
                         <div class="col-xs-8">

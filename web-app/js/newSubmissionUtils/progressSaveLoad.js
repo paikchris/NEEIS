@@ -126,6 +126,12 @@ function loadSaveFunction(loadMap) {
         $("#totalBudgetConfirm").trigger("change");
 
     }
+
+    if(loadMap['attachedFiles']){
+        attachedFileMap = loadMap['attachedFiles']
+        loadSavedAttachedFiles(loadMap['attachedFiles']);
+    }
+
     setTimeout(function() {
         //console.log("wait")
         Object.keys(loadMap).forEach(function(key) {
@@ -312,6 +318,7 @@ function saveProgress() {
         //         });
         // }
 
+        autoSaveMap["attachedFiles"] = attachedFileMap;
 
 
 

@@ -48,6 +48,9 @@ public  java.lang.Object getAvailableCoveragesForRiskType() { return null;}
 public  java.lang.Object getAllRiskTypesForCategory() { return null;}
 public  java.lang.Object getAttachmentsList() { return null;}
 public  java.lang.Object addNewInsured() { return null;}
+public  java.lang.Object uploadAttachedFile() { return null;}
+public  java.lang.Object removeTempFile() { return null;}
+public  java.lang.Object attachAndUploadFiles() { return null;}
 public  java.lang.Object ajaxAttachNew() { return null;}
 public  java.lang.Object saveProgressStoreAttachedFiles() { return null;}
 public  java.lang.Object ajaxAttach() { return null;}

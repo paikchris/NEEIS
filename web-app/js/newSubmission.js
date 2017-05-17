@@ -33,6 +33,9 @@ function init(){
     //DATE FUNCTIONS SETUP (newSubmissionUtils/dateHelper.js)
     initializeDateInputAndFunctions();
     initializeBORFunctions();
+    intializeFileAttachButtons();
+
+
 }
 
 
@@ -205,10 +208,11 @@ $(document).ready(function() {
             $(this).find('select').css('display', "");
         }
         else {
-            setTimeout(
-                function() {
-                    $('#nextButtonStep1').trigger('click');
-                }, 200)
+            $('#nextButtonStep1').trigger('click');
+            // setTimeout(
+            //     function() {
+            //         $('#nextButtonStep1').trigger('click');
+            //     }, 200)
 
         }
         return false;
@@ -369,6 +373,14 @@ $(document).ready(function() {
                     }
                     else if (riskChosen.indexOf("Film Projects") > -1) {
                         $('#totalBudgetConfirmGroup').css('display', '');
+
+                        var head = document.getElementsByTagName('head')[0];
+                        var script = document.createElement('script');
+                        script.type = 'text/javascript';
+                        script.src = '/js/forms/specFilm.js' + "?ts=" + new Date().getTime();
+                        head.appendChild(script);
+
+
                         var finishedLoading1 = false;
                         var finishedLoading2 = false;
                         var finishedLoading3 = false;
@@ -385,18 +397,14 @@ $(document).ready(function() {
                             }
                         });
                         $("#riskSpecificInsert").load("./../forms/specFilm #riskSpecificInfo", function() {
-                            var head = document.getElementsByTagName('head')[0];
-                            var script = document.createElement('script');
-                            script.type = 'text/javascript';
-                            script.src = '/js/forms/specFilm.js' + "?ts=" + new Date().getTime();
-                            head.appendChild(script);
                             finishedLoading2 = true;
-
                             if (finishedLoading1 && finishedLoading2 && finishedLoading3) {
                                 $('#loadingModal').modal('hide');
                             }
 
                         });
+
+
                     }
                     else if (riskCategory === "Entertainer") {
                         $('#premiumExpectedInputGroup').css('display', '');
@@ -804,53 +812,76 @@ $(document).ready(function() {
                                     var quoteIDs = msg.split("&;&")[0];
 
                                     //NEW STUFF
-                                    var submissionHasFile = false;
-                                    $('input:file').each(function(){
-                                        var file = $(this).get(0).files[0];
-                                        if(file){
-                                            submissionHasFile = true;
-                                            formData.append($(this).attr('id'), file);
-                                        }
-                                    });
+                                    if(Object.keys(attachedFileMap).length != 0){
+                                        submissionHasFile = true;
+                                        formData.append("attachedFileMap", JSON.stringify(attachedFileMap))
+                                    }
 
                                     if (submissionHasFile) {
                                         $('.progress-bar').attr('aria-valuenow', "75").animate({
                                             width: "75%"
                                         }, 2000);
-                                        //formData.append('bioFile', bioFile);
-                                        //formData.append('lossesFile', lossesFile);
-                                        //formData.append('pyroFile', pyroFile);
-                                        //formData.append('stuntsFile', stuntsFile);
-                                        //formData.append('animalPDF', animalPDF);
-                                        //formData.append('dronePDF', dronePDF);
-                                        //formData.append('equipScheduleFile', equipScheduleFile);
-                                        //formData.append('doodFile', doodFile);
-                                        //formData.append('treatmentFile', treatmentFile);
-                                        //formData.append('budgetFile', budgetFile);
-                                        formData.append('quoteIDs', quoteIDs);
 
+                                        formData.append('quoteIDs', quoteIDs);
                                         $.ajax({
                                             method: "POST",
-                                            url: "/async/ajaxAttachNew",
+                                            url: "/async/attachAndUploadFiles",
                                             data: formData,
                                             cache: false,
                                             contentType: false,
                                             processData: false
-                                        })
-                                            .done(function(msg) {
-                                                //console.log("Finished Uploading");
-                                                $('.progress-bar').attr('aria-valuenow', "100").css("width", "100%");
-                                                $('#progressBarModal').modal('hide');
+                                        }).done(function(msg) {
+                                            //console.log("Finished Uploading");
+                                            $('.progress-bar').attr('aria-valuenow', "100").css("width", "100%");
+                                            $('#progressBarModal').modal('hide');
 
-                                                //CLEAR AUTOSAVE INFO
-                                                autoSaveMap = {};
-                                                Cookies.remove('autosaveData');
+                                            //CLEAR AUTOSAVE INFO
+                                            autoSaveMap = {};
+                                            Cookies.remove('autosaveData');
 
-                                                //REDIRECT TO SAVE SUCCESSFUL PAGE
-                                                window.location.href = "./../main/newSubmissionConfirm.gsp?submissionID=" + newSubmissionConfirmParam + "&pdfError=" + indicationPDFError;
+                                            //REDIRECT TO SAVE SUCCESSFUL PAGE
+                                            window.location.href = "./../main/newSubmissionConfirm.gsp?submissionID=" + newSubmissionConfirmParam + "&pdfError=" + indicationPDFError;
 
-                                            });
+                                        });
                                     }
+                                    // var submissionHasFile = false;
+                                    // $('input:file').each(function(){
+                                    //     var file = $(this).get(0).files[0];
+                                    //     if(file){
+                                    //         submissionHasFile = true;
+                                    //         formData.append($(this).attr('id'), file);
+                                    //     }
+                                    // });
+                                    //
+                                    // if (submissionHasFile) {
+                                    //     $('.progress-bar').attr('aria-valuenow', "75").animate({
+                                    //         width: "75%"
+                                    //     }, 2000);
+                                    //
+                                    //     formData.append('quoteIDs', quoteIDs);
+                                    //
+                                    //     $.ajax({
+                                    //         method: "POST",
+                                    //         url: "/async/ajaxAttachNew",
+                                    //         data: formData,
+                                    //         cache: false,
+                                    //         contentType: false,
+                                    //         processData: false
+                                    //     })
+                                    //         .done(function(msg) {
+                                    //             //console.log("Finished Uploading");
+                                    //             $('.progress-bar').attr('aria-valuenow', "100").css("width", "100%");
+                                    //             $('#progressBarModal').modal('hide');
+                                    //
+                                    //             //CLEAR AUTOSAVE INFO
+                                    //             autoSaveMap = {};
+                                    //             Cookies.remove('autosaveData');
+                                    //
+                                    //             //REDIRECT TO SAVE SUCCESSFUL PAGE
+                                    //             window.location.href = "./../main/newSubmissionConfirm.gsp?submissionID=" + newSubmissionConfirmParam + "&pdfError=" + indicationPDFError;
+                                    //
+                                    //         });
+                                    // }
                                     else {
                                         //console.log ("REDIRECTING");
                                         $('.progress-bar').attr('aria-valuenow', "100").animate({
@@ -917,42 +948,28 @@ $(document).ready(function() {
                                 var formDataNew = getFormDataWithAllAttachedFilesNew();
 
                                 var quoteIDs = msg.split("&;&")[0];
+                                var submissionHasFile = false;
 
                                 //NEW STUFF
-                                var submissionHasFile = false;
-                                $('input:file').each(function(){
-                                    var file = $(this).get(0).files[0];
-                                    if(file){
-                                        submissionHasFile = true;
-                                        formData.append($(this).attr('id'), file);
-                                    }
-                                });
+                                if(Object.keys(attachedFileMap).length != 0){
+                                    submissionHasFile = true;
+                                    formData.append("attachedFileMap", JSON.stringify(attachedFileMap))
+                                }
 
                                 if (submissionHasFile) {
                                     $('.progress-bar').attr('aria-valuenow', "75").animate({
                                         width: "75%"
                                     }, 2000);
-                                    //formData.append('bioFile', bioFile);
-                                    //formData.append('lossesFile', lossesFile);
-                                    //formData.append('pyroFile', pyroFile);
-                                    //formData.append('stuntsFile', stuntsFile);
-                                    //formData.append('animalPDF', animalPDF);
-                                    //formData.append('dronePDF', dronePDF);
-                                    //formData.append('equipScheduleFile', equipScheduleFile);
-                                    //formData.append('doodFile', doodFile);
-                                    //formData.append('treatmentFile', treatmentFile);
-                                    //formData.append('budgetFile', budgetFile);
-                                    formData.append('quoteIDs', quoteIDs);
 
+                                    formData.append('quoteIDs', quoteIDs);
                                     $.ajax({
                                         method: "POST",
-                                        url: "/async/ajaxAttachNew",
+                                        url: "/async/attachAndUploadFiles",
                                         data: formData,
                                         cache: false,
                                         contentType: false,
                                         processData: false
-                                    })
-                                        .done(function(msg) {
+                                    }).done(function(msg) {
                                             //console.log("Finished Uploading");
                                             $('.progress-bar').attr('aria-valuenow', "100").css("width", "100%");
                                             $('#progressBarModal').modal('hide');

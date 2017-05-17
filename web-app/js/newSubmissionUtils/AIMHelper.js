@@ -358,7 +358,7 @@ function calculateTaxesFromTaxString(msg){
     taxResponseArray.forEach(function(item, index) {
         if (item.split("&,&").length > 1) {
             // console.log(item)
-            htmlString = htmlString + "<div class='row " + item.split("&,&")[0] + "TaxRow' style= ''" + ">" +
+            htmlString = htmlString + "<div class='row " + item.split("&,&")[0] + "TaxRow' style= 'padding-left:10px;'" + ">" +
                 "<div class='col-xs-4'>" +
                 "<span class='taxDescriptionSpan'>" + item.split("&,&")[1] + "(" + item.split("&,&")[2] + ")</span>" +
                 "</div>" +
@@ -381,7 +381,7 @@ function calculateTaxesFromTaxString(msg){
         policyFeeTotal = policyFeeTotal + 15;
     }
 
-    htmlString = htmlString + "<div class='row " + "PolicyFee" + "TaxRow' style= ''" + ">" +
+    htmlString = htmlString + "<div class='row " + "PolicyFee" + "TaxRow' style= 'padding-left:10px;'" + ">" +
         "<div class='col-xs-4'>" +
         "<span class='taxDescriptionSpan'>Policy Fee</span>" +
         "</div>" +
