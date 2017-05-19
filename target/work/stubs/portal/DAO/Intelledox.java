@@ -23,4 +23,5 @@ public  java.lang.Object createIndicationPDF(java.lang.Object jsonSerial, java.l
 public  java.lang.Object createIndicationSpecialEventsPDF(java.lang.Object jsonSerial, java.lang.Object uwQuestionsMap, java.lang.Object uwQuestionsOrder, java.lang.Object dataSource_aim) { return null;}
 public  java.lang.Object createCertPDF(java.lang.Object params, java.lang.Object dataSource_aim) { return null;}
 public  java.lang.Object createBindingPDF(java.lang.Object jsonSerial, java.lang.Object uwQuestionsMap, java.lang.Object uwQuestionsOrder, java.lang.Object dataSource_aim) { return null;}
+public  java.lang.Object createEmergencyIndicationPDF(java.lang.Object dataSource_aim) { return null;}
 }

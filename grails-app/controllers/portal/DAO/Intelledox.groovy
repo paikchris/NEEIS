@@ -13,16 +13,15 @@ import portal.Utils.FileTransferHelper;
 
 class Intelledox {
 
-    def createIndicationPDF(jsonSerial, uwQuestionsMap, uwQuestionsOrder, dataSource_aim){
+
+    def createIndicationPDF(jsonSerial, uwQuestionsMap, uwQuestionsOrder, dataSource_aim) {
         log.info "INTELLEDOX"
         log.info "JSON ==== " + jsonSerial
-        try
-        {
+        try {
             def indicationDateFormat = 'MM/dd/yyyy'
             def now = new Date()
             def timeZone = TimeZone.getTimeZone('PST')
             def timestamp = now.format(indicationDateFormat, timeZone)
-
 
 //            jsonSerial.keySet().each{
 //                log.info it
@@ -42,16 +41,15 @@ class Intelledox {
 
             def totalPolicyFee = 0;
             def coverages = "";
-            if(jsonSerial.getAt("cglLOB").length() > 1){
+            if (jsonSerial.getAt("cglLOB").length() > 1) {
                 coverages = coverages + "CGL "
             }
-            if(jsonSerial.getAt("cpkLOB").length() > 1){
+            if (jsonSerial.getAt("cpkLOB").length() > 1) {
                 coverages = coverages + "CPK "
             }
-            if(jsonSerial.getAt("epkgLOB").length() > 1){
+            if (jsonSerial.getAt("epkgLOB").length() > 1) {
                 coverages = coverages + "EPKG "
             }
-
 
             //BROKER HEADER STUFF
             def brokerCompanyName = XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyName'));
@@ -76,38 +74,40 @@ class Intelledox {
                     <int:Data><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <application>
 \t<basicInfo>
-\t\t<logo>c:\\IntelledoxLogo\\${ XmlUtil.escapeXml(jsonSerial.getAt('userCompany'))}.png</logo>
+\t\t<logo>c:\\IntelledoxLogo\\${XmlUtil.escapeXml(jsonSerial.getAt('logoFile'))}</logo>
 \t\t<nameOfInsured>${XmlUtil.escapeXml(jsonSerial.getAt('namedInsured'))}</nameOfInsured>
 \t\t<brokerCompanyName>${brokerCompanyName}</brokerCompanyName>"""
 
-            if(brokerCompanyAddress != null){
+            if (brokerCompanyAddress != null) {
                 soapXML = soapXML + """
 \t\t<brokerCompanyAddress>${brokerCompanyAddress}</brokerCompanyAddress>"""
             }
-            if(brokerCompanyAddressCity != null){
+            if (brokerCompanyAddressCity != null) {
                 soapXML = soapXML + """
 \t\t<brokerCompanyAddressCity>${brokerCompanyAddressCity}</brokerCompanyAddressCity>"""
             }
-            if(brokerCompanyState != null){
+            if (brokerCompanyState != null) {
                 soapXML = soapXML + """
 \t\t<brokerCompanyAddressState>,${brokerCompanyState}</brokerCompanyAddressState>"""
             }
-            if(brokerCompanyZip != null){
+            if (brokerCompanyZip != null) {
                 soapXML = soapXML + """
 \t\t<brokerCompanyAddressZip>${brokerCompanyZip}</brokerCompanyAddressZip>"""
             }
-            if(brokerCompanyPhone != null){
+            if (brokerCompanyPhone != null) {
                 soapXML = soapXML + """
 \t\t<brokerCompanyPhone>${brokerCompanyPhone}</brokerCompanyPhone>"""
             }
-            if(brokerCompanyLicense != null){
+            if (brokerCompanyLicense != null) {
                 soapXML = soapXML + """
 \t\t<brokerCompanyLicenseNumber>CALicNo:${brokerCompanyLicense}</brokerCompanyLicenseNumber>"""
             }
 
             soapXML = soapXML + """
 \t\t<agentName>${XmlUtil.escapeXml(jsonSerial.getAt('attention'))}</agentName>
-\t\t<agentLicenseNumber>${ XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyLicense')) ? XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyLicense')) : ""}</agentLicenseNumber>
+\t\t<agentLicenseNumber>${
+                XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyLicense')) ? XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyLicense')) : ""
+            }</agentLicenseNumber>
 \t\t<agentEmail>${XmlUtil.escapeXml(jsonSerial.getAt('brokerEmail'))}</agentEmail>
 \t\t<agentPhone>${XmlUtil.escapeXml(jsonSerial.getAt('brokerPhone'))}</agentPhone>
 \t\t<date>${timestamp}</date>
@@ -122,7 +122,9 @@ class Intelledox {
 \t\t<addressOfInsured>${XmlUtil.escapeXml(jsonSerial.getAt('streetNameMailing'))}</addressOfInsured>
 \t\t<addressCityOfInsured>${XmlUtil.escapeXml(jsonSerial.getAt('cityMailing'))}</addressCityOfInsured>
 \t\t<addressZipOfInsured>${XmlUtil.escapeXml(jsonSerial.getAt('zipCodeMailing'))}</addressZipOfInsured>
-\t\t<riskDescription>${XmlUtil.escapeXml(jsonSerial.getAt("riskCategoryChosen"))}, ${XmlUtil.escapeXml(jsonSerial.getAt("riskTypeChosen"))}</riskDescription>
+\t\t<riskDescription>${XmlUtil.escapeXml(jsonSerial.getAt("riskCategoryChosen"))}, ${
+                XmlUtil.escapeXml(jsonSerial.getAt("riskTypeChosen"))
+            }</riskDescription>
 \t\t<locationOfRiskAddress>${XmlUtil.escapeXml(jsonSerial.getAt("filmingLocation"))}</locationOfRiskAddress>
 \t\t<insuranceCoverage>${coverages}</insuranceCoverage>
 \t\t<cbGDY>cb</cbGDY>
@@ -150,7 +152,9 @@ class Intelledox {
 \t\t\t<nameInsuredColTwo>Email: ${XmlUtil.escapeXml(jsonSerial.getAt("namedInsuredEmail"))}</nameInsuredColTwo>
 \t\t</namedInsuredRow>
 \t\t<namedInsuredRow>
-\t\t\t<nameInsured nameInsuredColOne="${XmlUtil.escapeXml(jsonSerial.getAt('cityMailing'))}, ${XmlUtil.escapeXml(jsonSerial.getAt('stateMailing'))} ${XmlUtil.escapeXml(jsonSerial.getAt('zipCodeMailing'))}"></nameInsured>
+\t\t\t<nameInsured nameInsuredColOne="${XmlUtil.escapeXml(jsonSerial.getAt('cityMailing'))}, ${
+                XmlUtil.escapeXml(jsonSerial.getAt('stateMailing'))
+            } ${XmlUtil.escapeXml(jsonSerial.getAt('zipCodeMailing'))}"></nameInsured>
 \t\t\t<nameInsuredColTwo>Phone: ${XmlUtil.escapeXml(jsonSerial.getAt("phoneNumber"))}</nameInsuredColTwo>
 \t\t</namedInsuredRow>
 \t</namedInsuredTable>
@@ -168,7 +172,9 @@ class Intelledox {
 \t\t\t<policyTerm policyTermColOne="Policy Term: ${XmlUtil.escapeXml(jsonSerial.getAt("proposedTermLengthString"))}"></policyTerm>
 \t\t</policyTermRow>
 \t\t<policyTermRow>
-\t\t\t<policyTerm policyTermColOne="Proposed Effective: ${XmlUtil.escapeXml(jsonSerial.getAt("proposedEffectiveDate"))} - ${XmlUtil.escapeXml(jsonSerial.getAt("proposedExpirationDate"))}"></policyTerm>
+\t\t\t<policyTerm policyTermColOne="Proposed Effective: ${
+                XmlUtil.escapeXml(jsonSerial.getAt("proposedEffectiveDate"))
+            } - ${XmlUtil.escapeXml(jsonSerial.getAt("proposedExpirationDate"))}"></policyTerm>
 \t\t</policyTermRow>
 \t</policyTermTable>
 \t""";
@@ -179,10 +185,9 @@ class Intelledox {
             if (jsonSerial.getAt("premSummary").split("\n").size() > 0) {
                 jsonSerial.getAt("premSummary").split("\n").each {
                     if (it.length() > 0) {
-                        if(it.split("\\t")[0] == "Premium Distribution"){
+                        if (it.split("\\t")[0] == "Premium Distribution") {
 
-                        }
-                        else if (it.split("\\t")[0] == "Taxes and Fees" ) {
+                        } else if (it.split("\\t")[0] == "Taxes and Fees") {
                             soapXML = soapXML + """
 \t\t<premiumSummary premiumSummaryPackage="${it.split("\\t")[0]}">
 \t\t\t<premiumSummaryCost>  </premiumSummaryCost>
@@ -197,7 +202,7 @@ class Intelledox {
 \t\t<premiumSummary premiumSummaryPackage="   ${it.split("\\t")[0]}">
 \t\t\t<premiumSummaryCost>${it.split("\t")[1]} </premiumSummaryCost>
 \t\t</premiumSummary>"""
-                        } 
+                        }
 
                     } else {
 
@@ -217,7 +222,6 @@ class Intelledox {
 
 
             ///////////////////Product descriptions and Limit/Deduct Breakdowns
-
             if(jsonSerial.getAt("cpkLOB").length() > 1){
                 soapXML = soapXML + """
 \t<coverageTable>
@@ -237,7 +241,7 @@ class Intelledox {
 \t\t</coverageRow>
 \t</coverageTable>"""
             }
-            else if(jsonSerial.getAt("cglLOB").length() > 1){
+            else if(jsonSerial.getAt("cglLOB").length() > 1) {
                 soapXML = soapXML + """
 \t<coverageTable>
 \t\t<coverageHeader>Commercial General Liability - Limits/Deductibles</coverageHeader>
@@ -247,7 +251,7 @@ class Intelledox {
                         soapXML = soapXML + """
 \t\t<coverage coveragePackage="${it.split("\t")[0]}">
 \t\t\t<coverageLimit> ${it.split("\t")[1]} </coverageLimit>
-\t\t\t<coverageDeductible> ${it.split("\t").size() >=3 ? it.split("\t")[2] : ""} </coverageDeductible>
+\t\t\t<coverageDeductible> ${it.split("\t").size() >= 3 ? it.split("\t")[2] : ""} </coverageDeductible>
 \t\t</coverage>
 \t"""
                     }
@@ -256,7 +260,7 @@ class Intelledox {
 \t\t</coverageRow>
 \t</coverageTable>"""
             }
-            if(jsonSerial.getAt("epkgLOB").length() > 1){
+            if (jsonSerial.getAt("epkgLOB").length() > 1) {
                 soapXML = soapXML + """
 \t<coverageTable>
 \t\t<coverageHeader>Entertainment Package - Limits/Deductibles</coverageHeader>
@@ -266,7 +270,7 @@ class Intelledox {
                         soapXML = soapXML + """
 \t\t<coverage coveragePackage="${it.split("\t")[0]}">
 \t\t\t<coverageLimit> ${it.split("\t")[1]} </coverageLimit>
-\t\t\t<coverageDeductible> ${it.split("\t").size() >=3 ? it.split("\t")[2] : ""} </coverageDeductible>
+\t\t\t<coverageDeductible> ${it.split("\t").size() >= 3 ? it.split("\t")[2] : ""} </coverageDeductible>
 \t\t</coverage>
 \t"""
                     }
@@ -291,27 +295,25 @@ class Intelledox {
 \t</policyFormEndorsementTable>
 """
 
-            if(jsonSerial.getAt("epkgLOB").length() > 1){
+            if (jsonSerial.getAt("epkgLOB").length() > 1) {
                 jsonSerial.getAt("endorseInsertEPKG").split("\n").eachWithIndex { row, index ->
 
 
                     if (row.length() > 0) {
-                        if(index ==0){
+                        if (index == 0) {
                             soapXML = soapXML + """
 \t<policyFormEndorsementHeaders>
 \t\t<policyFormEndorsementHeader>${XmlUtil.escapeXml(row)}</policyFormEndorsementHeader>
 \t\t\t<policyFormEndorsementRow>
 """
-                        }
-                        else{
-                            if(row.split(" - ").size() > 1){
+                        } else {
+                            if (row.split(" - ").size() > 1) {
                                 soapXML = soapXML + """
 \t\t\t\t<policyFormEndorsement policyFormEndorsementCode="${XmlUtil.escapeXml(row.split(" - ")[0])}">
 \t\t\t\t\t\t<policyFormEndorsementName>${XmlUtil.escapeXml(row.split(" - ")[1].replaceAll(".*:", ""))}</policyFormEndorsementName>
 \t\t\t\t</policyFormEndorsement>
 """
-                            }
-                            else{
+                            } else {
                                 soapXML = soapXML + """
 \t\t\t\t<policyFormEndorsement policyFormEndorsementCode="${XmlUtil.escapeXml(row)}">
 \t\t\t\t\t\t<policyFormEndorsementName></policyFormEndorsementName>
@@ -328,25 +330,23 @@ class Intelledox {
 """
 
             }
-            if(jsonSerial.getAt("cpkLOB").length() > 1){
+            if (jsonSerial.getAt("cpkLOB").length() > 1) {
                 jsonSerial.getAt("endorseInsertCPK").split("\n").eachWithIndex { row, index ->
                     if (row.length() > 0) {
-                        if(index ==0){
+                        if (index == 0) {
                             soapXML = soapXML + """
 \t<policyFormEndorsementHeaders>
 \t\t<policyFormEndorsementHeader>${XmlUtil.escapeXml(row)}</policyFormEndorsementHeader>
 \t\t\t<policyFormEndorsementRow>
 """
-                        }
-                        else{
-                            if(row.split(" - ").size() > 1){
+                        } else {
+                            if (row.split(" - ").size() > 1) {
                                 soapXML = soapXML + """
 \t\t\t\t<policyFormEndorsement policyFormEndorsementCode="${XmlUtil.escapeXml(row.split(" - ")[0])}">
 \t\t\t\t\t\t<policyFormEndorsementName>${XmlUtil.escapeXml(row.split(" - ")[1].replaceAll(".*:", ""))}</policyFormEndorsementName>
 \t\t\t\t</policyFormEndorsement>
 """
-                            }
-                            else{
+                            } else {
                                 soapXML = soapXML + """
 \t\t\t\t<policyFormEndorsement policyFormEndorsementCode="${XmlUtil.escapeXml(row)}">
 \t\t\t\t\t\t<policyFormEndorsementName></policyFormEndorsementName>
@@ -361,26 +361,23 @@ class Intelledox {
 \t\t\t</policyFormEndorsementRow>
 \t</policyFormEndorsementHeaders>
 """
-            }
-            else if(jsonSerial.getAt("cglLOB").length() > 1){
+            } else if (jsonSerial.getAt("cglLOB").length() > 1) {
                 jsonSerial.getAt("endorseInsertCGL").split("\n").eachWithIndex { row, index ->
                     if (row.length() > 0) {
-                        if(index ==0){
+                        if (index == 0) {
                             soapXML = soapXML + """
 \t<policyFormEndorsementHeaders>
 \t\t<policyFormEndorsementHeader>${XmlUtil.escapeXml(row)}</policyFormEndorsementHeader>
 \t\t\t<policyFormEndorsementRow>
 """
-                        }
-                        else{
-                            if(row.split(" - ").size() > 1){
+                        } else {
+                            if (row.split(" - ").size() > 1) {
                                 soapXML = soapXML + """
 \t\t\t\t<policyFormEndorsement policyFormEndorsementCode="${XmlUtil.escapeXml(row.split(" - ")[0])}">
 \t\t\t\t\t\t<policyFormEndorsementName>${XmlUtil.escapeXml(row.split(" - ")[1].replaceAll(".*:", ""))}</policyFormEndorsementName>
 \t\t\t\t</policyFormEndorsement>
 """
-                            }
-                            else{
+                            } else {
                                 soapXML = soapXML + """
 \t\t\t\t<policyFormEndorsement policyFormEndorsementCode="${XmlUtil.escapeXml(row)}">
 \t\t\t\t\t\t<policyFormEndorsementName></policyFormEndorsementName>
@@ -402,7 +399,7 @@ class Intelledox {
 \t<notesTable>
 \t\t<notesHeader>Underwriting Questions</notesHeader>
 \t\t<notesRow>"""
-            uwQuestionsOrder.each{
+            uwQuestionsOrder.each {
 
                 soapXML = soapXML + """
 
@@ -420,22 +417,21 @@ class Intelledox {
 \t\t<ratingHeader>Rating</ratingHeader>
 \t"""
 
-            if(jsonSerial.getAt("EPKGIndicationRateInfo") != null){
+            if (jsonSerial.getAt("EPKGIndicationRateInfo") != null) {
                 soapXML = soapXML + """
 \t\t<ratingRow>
 \t\t\t<rating ratingName="Entertainment Package">
 \t\t\t\t<ratingPrice>  </ratingPrice>
 \t\t\t</rating>"""
 
-                jsonSerial.getAt("EPKGIndicationRateInfo").split("\n").eachWithIndex{ row, index ->
+                jsonSerial.getAt("EPKGIndicationRateInfo").split("\n").eachWithIndex { row, index ->
                     log.info("ROW: " + row)
-                    if(row.split("\t").size()>1){
+                    if (row.split("\t").size() > 1) {
                         soapXML = soapXML + """
 \t\t\t<rating ratingName="${row.split("\t")[0]}">
 \t\t\t\t<ratingPrice> ${XmlUtil.escapeXml(row.split("\t")[1])}</ratingPrice>
 \t\t\t</rating>"""
-                    }
-                    else{
+                    } else {
                         soapXML = soapXML + """
 \t\t\t<rating ratingName="${row.split("\t")[0]}">
 \t\t\t\t<ratingPrice></ratingPrice>
@@ -445,22 +441,21 @@ class Intelledox {
                 soapXML = soapXML + """
 \t\t</ratingRow>"""
             }
-            if(jsonSerial.getAt("CPKIndicationRateInfo") != null){
+            if (jsonSerial.getAt("CPKIndicationRateInfo") != null) {
                 soapXML = soapXML + """
 \t\t<ratingRow>
 \t\t\t<rating ratingName="Commercial Package">
 \t\t\t\t<ratingPrice>  </ratingPrice>
 \t\t\t</rating>"""
 
-                jsonSerial.getAt("CPKIndicationRateInfo").split("\n").eachWithIndex{ row, index ->
+                jsonSerial.getAt("CPKIndicationRateInfo").split("\n").eachWithIndex { row, index ->
                     log.info("ROW: " + row)
-                    if(row.split("\t").size()>1){
+                    if (row.split("\t").size() > 1) {
                         soapXML = soapXML + """
 \t\t\t<rating ratingName="${row.split("\t")[0]}">
 \t\t\t\t<ratingPrice> ${XmlUtil.escapeXml(row.split("\t")[1])}</ratingPrice>
 \t\t\t</rating>"""
-                    }
-                    else{
+                    } else {
                         soapXML = soapXML + """
 \t\t\t<rating ratingName="${row.split("\t")[0]}">
 \t\t\t\t<ratingPrice></ratingPrice>
@@ -469,23 +464,21 @@ class Intelledox {
                 }
                 soapXML = soapXML + """
 \t\t</ratingRow>"""
-            }
-            else if(jsonSerial.getAt("CGLIndicationRateInfo") != null){
+            } else if (jsonSerial.getAt("CGLIndicationRateInfo") != null) {
                 soapXML = soapXML + """
 \t\t<ratingRow>
 \t\t\t<rating ratingName="Commercial General Liability">
 \t\t\t\t<ratingPrice>  </ratingPrice>
 \t\t\t</rating>"""
 
-                jsonSerial.getAt("CGLIndicationRateInfo").split("\n").eachWithIndex{ row, index ->
+                jsonSerial.getAt("CGLIndicationRateInfo").split("\n").eachWithIndex { row, index ->
                     log.info("ROW: " + row)
-                    if(row.split("\t").size()>1){
+                    if (row.split("\t").size() > 1) {
                         soapXML = soapXML + """
 \t\t\t<rating ratingName="${row.split("\t")[0]}">
 \t\t\t\t<ratingPrice> ${XmlUtil.escapeXml(row.split("\t")[1])}</ratingPrice>
 \t\t\t</rating>"""
-                    }
-                    else{
+                    } else {
                         soapXML = soapXML + """
 \t\t\t<rating ratingName="${row.split("\t")[0]}">
 \t\t\t\t<ratingPrice></ratingPrice>
@@ -516,7 +509,11 @@ class Intelledox {
 \t\t\t\t<applicantInformationColTwo>${XmlUtil.escapeXml(jsonSerial.getAt("website"))}</applicantInformationColTwo>
 \t\t\t</applicantInformation>
 \t\t\t<applicantInformation applicantInformationColOne="Mailing Address">
-\t\t\t\t<applicantInformationColTwo>${XmlUtil.escapeXml(jsonSerial.getAt("streetNameMailing"))} ${XmlUtil.escapeXml(jsonSerial.getAt("cityMailing"))}, ${XmlUtil.escapeXml(jsonSerial.getAt("stateMailing"))} ${XmlUtil.escapeXml(jsonSerial.getAt("zipCodeMailing"))} </applicantInformationColTwo>
+\t\t\t\t<applicantInformationColTwo>${XmlUtil.escapeXml(jsonSerial.getAt("streetNameMailing"))} ${
+                XmlUtil.escapeXml(jsonSerial.getAt("cityMailing"))
+            }, ${XmlUtil.escapeXml(jsonSerial.getAt("stateMailing"))} ${
+                XmlUtil.escapeXml(jsonSerial.getAt("zipCodeMailing"))
+            } </applicantInformationColTwo>
 \t\t\t</applicantInformation>
 \t\t\t<applicantInformation applicantInformationColOne="Primary Contact Name">
 \t\t\t\t<applicantInformationColTwo>${XmlUtil.escapeXml(jsonSerial.getAt("insuredContactName"))} </applicantInformationColTwo>
@@ -542,7 +539,7 @@ class Intelledox {
 \t\t\t</budgetInformation>
 """
 
-            if(jsonSerial.getAt("sourceOfFinancing") != null){
+            if (jsonSerial.getAt("sourceOfFinancing") != null) {
                 soapXML = soapXML + """      
 \t\t\t<budgetInformation budgetInformationColOne="Source of Financing">
 \t\t\t\t<budgetInformationColTwo> ${XmlUtil.escapeXml(jsonSerial.getAt("sourceOfFinancing"))} </budgetInformationColTwo>
@@ -570,9 +567,9 @@ class Intelledox {
 \t\t<principalPhotographyHeader>Principal Photography</principalPhotographyHeader>
 \t\t<principalPhotographyRow>"""
 
-            if(jsonSerial.getAt("numberOfFilmLocations") != null){
+            if (jsonSerial.getAt("numberOfFilmLocations") != null) {
                 def numLocations = jsonSerial.getAt("numberOfFilmLocations");
-                for(def i =1; i<numLocations +1; i++){
+                for (def i = 1; i < numLocations + 1; i++) {
                     soapXML = soapXML + """
 \t\t\t<principalPhotographyName startPrincipalPhoto="${XmlUtil.escapeXml(jsonSerial.getAt("filmingStart" + i))}">
 \t\t\t\t<endPrincipalPhoto>${XmlUtil.escapeXml(jsonSerial.getAt("filmingEnd" + i))}</endPrincipalPhoto>
@@ -622,19 +619,18 @@ class Intelledox {
 
             def client = new SOAPClient('http://138.91.159.55/Produce/Service/GenerateDoc.asmx?WSDL')
             client.authorization = new HTTPBasicAuthorization("admin", "admin")
-            def response = client.send(SOAPAction:'http://services.dpm.com.au/intelledox/GenerateWithData', soapXML)
+            def response = client.send(SOAPAction: 'http://services.dpm.com.au/intelledox/GenerateWithData', soapXML)
 
-            if(response.text.length() > 1500){
-                log.info response.text.substring(0,1500);
-            }
-            else{
+            if (response.text.length() > 1500) {
+                log.info response.text.substring(0, 1500);
+            } else {
                 log.info response.text
             }
 
             def fileName = "Indication A.pdf"
 
             def a = new XmlSlurper().parseText(response.text)
-            def nodeToSerialize = a."**".find {it.name() == 'BinaryFile'}
+            def nodeToSerialize = a."**".find { it.name() == 'BinaryFile' }
             def pdfBinaryFile = nodeToSerialize.text();
 
 //            throw new IOException()
@@ -653,10 +649,10 @@ class Intelledox {
 
             return "good"
         }
-        catch(Exception e){
+        catch (Exception e) {
             StringWriter writer = new StringWriter();
-            PrintWriter printWriter = new PrintWriter( writer );
-            e.printStackTrace( printWriter );
+            PrintWriter printWriter = new PrintWriter(writer);
+            e.printStackTrace(printWriter);
             printWriter.flush();
             String stackTrace = writer.toString();
             log.info("Error Details - " + stackTrace)
@@ -665,20 +661,16 @@ class Intelledox {
         }
 
 
-
-
     }
 
-    def createIndicationSpecialEventsPDF(jsonSerial, uwQuestionsMap, uwQuestionsOrder, dataSource_aim){
+    def createIndicationSpecialEventsPDF(jsonSerial, uwQuestionsMap, uwQuestionsOrder, dataSource_aim) {
         log.info "INTELLEDOX"
         log.info "JSON ==== " + jsonSerial
-        try
-        {
+        try {
             def indicationDateFormat = 'MM/dd/yyyy'
             def now = new Date()
             def timeZone = TimeZone.getTimeZone('PST')
             def timestamp = now.format(indicationDateFormat, timeZone)
-
 
 //            jsonSerial.keySet().each{
 //                log.info it
@@ -698,19 +690,19 @@ class Intelledox {
 
             def totalPolicyFee = 0;
             def coverages = "";
-            if(jsonSerial.getAt("cglLOB").length() > 1){
+            if (jsonSerial.getAt("cglLOB").length() > 1) {
                 coverages = coverages + "CGL "
             }
-            if(jsonSerial.getAt("cumbLOB").length() > 1){
+            if (jsonSerial.getAt("cumbLOB").length() > 1) {
                 coverages = coverages + "CUMB "
             }
-            if(jsonSerial.getAt("alcoholLOB").length() > 1){
+            if (jsonSerial.getAt("alcoholLOB").length() > 1) {
                 coverages = coverages + "ALCOHOL "
             }
-            if(jsonSerial.getAt("wcLOB").length() > 1){
+            if (jsonSerial.getAt("wcLOB").length() > 1) {
                 coverages = coverages + "WC "
             }
-            if(jsonSerial.getAt("noalLOB").length() > 1){
+            if (jsonSerial.getAt("noalLOB").length() > 1) {
                 coverages = coverages + "NOAL "
             }
 
@@ -758,7 +750,7 @@ class Intelledox {
                 soapXML = soapXML + """
 \\t\\t<brokerCompanyAddressZip>${brokerCompanyZip}</brokerCompanyAddressZip>"""
             }
-            if(brokerCompanyPhone != null){
+            if (brokerCompanyPhone != null) {
                 soapXML = soapXML + """
 \t\t<brokerCompanyPhone>${brokerCompanyPhone}</brokerCompanyPhone>"""
             }
@@ -769,7 +761,9 @@ class Intelledox {
 
             soapXML = soapXML + """
 \t\t<agentName>${XmlUtil.escapeXml(jsonSerial.getAt('attention'))}</agentName>
-\t\t<agentLicenseNumber>${ XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyLicense')) ? XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyLicense')) : ""}</agentLicenseNumber>
+\t\t<agentLicenseNumber>${
+                XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyLicense')) ? XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyLicense')) : ""
+            }</agentLicenseNumber>
 \t\t<agentEmail>${XmlUtil.escapeXml(jsonSerial.getAt('brokerEmail'))}</agentEmail>
 \t\t<agentPhone>${XmlUtil.escapeXml(jsonSerial.getAt('brokerPhone'))}</agentPhone>
 \t\t<date>${timestamp}</date>
@@ -784,7 +778,9 @@ class Intelledox {
 \t\t<addressOfInsured>${XmlUtil.escapeXml(jsonSerial.getAt('streetNameMailing'))}</addressOfInsured>
 \t\t<addressCityOfInsured>${XmlUtil.escapeXml(jsonSerial.getAt('cityMailing'))}</addressCityOfInsured>
 \t\t<addressZipOfInsured>${XmlUtil.escapeXml(jsonSerial.getAt('zipCodeMailing'))}</addressZipOfInsured>
-\t\t<riskDescription>${XmlUtil.escapeXml(jsonSerial.getAt("riskCategoryChosen"))}, ${XmlUtil.escapeXml(jsonSerial.getAt("riskTypeChosen"))}</riskDescription>
+\t\t<riskDescription>${XmlUtil.escapeXml(jsonSerial.getAt("riskCategoryChosen"))}, ${
+                XmlUtil.escapeXml(jsonSerial.getAt("riskTypeChosen"))
+            }</riskDescription>
 \t\t<locationOfRiskAddress>${XmlUtil.escapeXml(jsonSerial.getAt("filmingLocation"))}</locationOfRiskAddress>
 \t\t<insuranceCoverage>${coverages}</insuranceCoverage>
 \t\t<cbGDY>cb</cbGDY>
@@ -812,7 +808,9 @@ class Intelledox {
 \t\t\t<nameInsuredColTwo></nameInsuredColTwo>
 \t\t</namedInsuredRow>
 \t\t<namedInsuredRow>
-\t\t\t<nameInsured nameInsuredColOne="${XmlUtil.escapeXml(jsonSerial.getAt('cityMailing'))}, ${XmlUtil.escapeXml(jsonSerial.getAt('stateMailing'))} ${XmlUtil.escapeXml(jsonSerial.getAt('zipCodeMailing'))}"></nameInsured>
+\t\t\t<nameInsured nameInsuredColOne="${XmlUtil.escapeXml(jsonSerial.getAt('cityMailing'))}, ${
+                XmlUtil.escapeXml(jsonSerial.getAt('stateMailing'))
+            } ${XmlUtil.escapeXml(jsonSerial.getAt('zipCodeMailing'))}"></nameInsured>
 \t\t\t<nameInsuredColTwo></nameInsuredColTwo>
 \t\t</namedInsuredRow>
 \t</namedInsuredTable>
@@ -830,7 +828,9 @@ class Intelledox {
 \t\t\t<policyTerm policyTermColOne="Policy Term: ${XmlUtil.escapeXml(jsonSerial.getAt("proposedEffectiveDate"))}"></policyTerm>
 \t\t</policyTermRow>
 \t\t<policyTermRow>
-\t\t\t<policyTerm policyTermColOne="Proposed Effective: ${XmlUtil.escapeXml(jsonSerial.getAt("proposedEffectiveDate"))} - ${XmlUtil.escapeXml(jsonSerial.getAt("proposedExpirationDate"))}"></policyTerm>
+\t\t\t<policyTerm policyTermColOne="Proposed Effective: ${
+                XmlUtil.escapeXml(jsonSerial.getAt("proposedEffectiveDate"))
+            } - ${XmlUtil.escapeXml(jsonSerial.getAt("proposedExpirationDate"))}"></policyTerm>
 \t\t</policyTermRow>
 \t</policyTermTable>
 \t""";
@@ -841,10 +841,9 @@ class Intelledox {
             if (jsonSerial.getAt("premSummary").split("\n").size() > 0) {
                 jsonSerial.getAt("premSummary").split("\n").each {
                     if (it.length() > 0) {
-                        if(it.split("\\t")[0] == "Premium Distribution"){
+                        if (it.split("\\t")[0] == "Premium Distribution") {
 
-                        }
-                        else if (it.split("\\t")[0] == "Taxes and Fees" ) {
+                        } else if (it.split("\\t")[0] == "Taxes and Fees") {
                             soapXML = soapXML + """
 \t\t<premiumSummary premiumSummaryPackage="${it.split("\\t")[0]}">
 \t\t\t<premiumSummaryCost>  </premiumSummaryCost>
@@ -865,8 +864,7 @@ class Intelledox {
 
                     }
                 }
-            }
-            else {
+            } else {
                 log.info jsonSerial.getAt("premiumAllLOBTotal")
                 soapXML = soapXML + """
 \\t\\t<premiumSummary package="Total">
@@ -877,21 +875,20 @@ class Intelledox {
 \t\t</premiumSummaryRow>
 \t</premiumSummaryTable>""";
 
-
             ///////////////////Product descriptions and Limit/Deduct Breakdowns
 
-            if(jsonSerial.getAt("cglLOB").length() > 1){
+            if (jsonSerial.getAt("cglLOB").length() > 1) {
                 soapXML = soapXML + """
 \t<coverageTable>
 \t\t<coverageHeader>Commercial Package Policy - Limits/Deductibles</coverageHeader>
 \t\t<coverageRow>""";
                 jsonSerial.getAt("cglLOB").split("\n").each {
                     if (it.length() > 0) {
-                        log.info ("CGLLOB TESTING ===== " + it)
+                        log.info("CGLLOB TESTING ===== " + it)
                         soapXML = soapXML + """
 \t\t<coverage coveragePackage="${it.split("\t")[0]}">
 \t\t\t<coverageLimit> ${it.split("\t")[1]} </coverageLimit>
-\t\t\t<coverageDeductible> ${it.split("\t").size() >=3 ? it.split("\t")[2] : ""} </coverageDeductible>
+\t\t\t<coverageDeductible> ${it.split("\t").size() >= 3 ? it.split("\t")[2] : ""} </coverageDeductible>
 \t\t</coverage>
 \t"""
                     }
@@ -899,8 +896,7 @@ class Intelledox {
                 soapXML = soapXML + """
 \t\t</coverageRow>
 \t</coverageTable>"""
-            }
-            else if(jsonSerial.getAt("cumbLOB").length() > 1){
+            } else if (jsonSerial.getAt("cumbLOB").length() > 1) {
                 soapXML = soapXML + """
 \t<coverageTable>
 \t\t<coverageHeader>Host Liquor - Limits/Deductibles</coverageHeader>
@@ -910,7 +906,7 @@ class Intelledox {
                         soapXML = soapXML + """
 \t\t<coverage coveragePackage="${it.split("\t")[0]}">
 \t\t\t<coverageLimit> ${it.split("\t")[1]} </coverageLimit>
-\t\t\t<coverageDeductible> ${it.split("\t").size() >=3 ? it.split("\t")[2] : ""} </coverageDeductible>
+\t\t\t<coverageDeductible> ${it.split("\t").size() >= 3 ? it.split("\t")[2] : ""} </coverageDeductible>
 \t\t</coverage>
 \t"""
                     }
@@ -919,7 +915,7 @@ class Intelledox {
 \t\t</coverageRow>
 \t</coverageTable>"""
             }
-            if(jsonSerial.getAt("alcoholLOB").length() > 1){
+            if (jsonSerial.getAt("alcoholLOB").length() > 1) {
                 soapXML = soapXML + """
 \t<coverageTable>
 \t\t<coverageHeader>Non-Owned and Hired Automobile- Limits/Deductibles</coverageHeader>
@@ -929,7 +925,7 @@ class Intelledox {
                         soapXML = soapXML + """
 \t\t<coverage coveragePackage="${it.split("\t")[0]}">
 \t\t\t<coverageLimit> ${it.split("\t")[1]} </coverageLimit>
-\t\t\t<coverageDeductible> ${it.split("\t").size() >=3 ? it.split("\t")[2] : ""} </coverageDeductible>
+\t\t\t<coverageDeductible> ${it.split("\t").size() >= 3 ? it.split("\t")[2] : ""} </coverageDeductible>
 \t\t</coverage>
 \t"""
                     }
@@ -938,7 +934,7 @@ class Intelledox {
 \t\t</coverageRow>
 \t</coverageTable>"""
             }
-            if(jsonSerial.getAt("wcLOB").length() > 1){
+            if (jsonSerial.getAt("wcLOB").length() > 1) {
                 soapXML = soapXML + """
 \t<coverageTable>
 \t\t<coverageHeader>Umbrella- Limits/Deductibles</coverageHeader>
@@ -948,7 +944,7 @@ class Intelledox {
                         soapXML = soapXML + """
 \t\t<coverage coveragePackage="${it.split("\t")[0]}">
 \t\t\t<coverageLimit> ${it.split("\t")[1]} </coverageLimit>
-\t\t\t<coverageDeductible> ${it.split("\t").size() >=3 ? it.split("\t")[2] : ""} </coverageDeductible>
+\t\t\t<coverageDeductible> ${it.split("\t").size() >= 3 ? it.split("\t")[2] : ""} </coverageDeductible>
 \t\t</coverage>
 \t"""
                     }
@@ -957,7 +953,7 @@ class Intelledox {
 \t\t</coverageRow>
 \t</coverageTable>"""
             }
-            if(jsonSerial.getAt("noalLOB").length() > 1){
+            if (jsonSerial.getAt("noalLOB").length() > 1) {
                 soapXML = soapXML + """
 \t<coverageTable>
 \t\t<coverageHeader>Workers Compensation- Limits/Deductibles</coverageHeader>
@@ -967,7 +963,7 @@ class Intelledox {
                         soapXML = soapXML + """
 \t\t<coverage coveragePackage="${it.split("\t")[0]}">
 \t\t\t<coverageLimit> ${it.split("\t")[1]} </coverageLimit>
-\t\t\t<coverageDeductible> ${it.split("\t").size() >=3 ? it.split("\t")[2] : ""} </coverageDeductible>
+\t\t\t<coverageDeductible> ${it.split("\t").size() >= 3 ? it.split("\t")[2] : ""} </coverageDeductible>
 \t\t</coverage>
 \t"""
                     }
@@ -992,18 +988,17 @@ class Intelledox {
 \t\t<policyFormEndorsementTitle>Policy Form / Endorsement</policyFormEndorsementTitle>
 \t</policyFormEndorsementTable>
 """
-log.info(jsonSerial.getAt("endorseInsert"))
-            if(jsonSerial.getAt("cglLOB").length() > 1){
+            log.info(jsonSerial.getAt("endorseInsert"))
+            if (jsonSerial.getAt("cglLOB").length() > 1) {
                 jsonSerial.getAt("endorseInsert").split("\n").eachWithIndex { row, index ->
                     if (row.length() > 0) {
-                        if(index ==0){
+                        if (index == 0) {
                             soapXML = soapXML + """
 \t<policyFormEndorsementHeaders>
 \t\t<policyFormEndorsementHeader>${XmlUtil.escapeXml(row)}</policyFormEndorsementHeader>
 \t\t\t<policyFormEndorsementRow>
 """
-                        }
-                        else{
+                        } else {
                             log.info row
                             log.info row.split(" - ")[0]
                             log.info row.split(" - ")[1]
@@ -1026,7 +1021,7 @@ log.info(jsonSerial.getAt("endorseInsert"))
 \t<notesTable>
 \t\t<notesHeader>Underwriting Questions</notesHeader>
 \t\t<notesRow>"""
-            uwQuestionsOrder.each{
+            uwQuestionsOrder.each {
 
                 soapXML = soapXML + """
 
@@ -1037,7 +1032,6 @@ log.info(jsonSerial.getAt("endorseInsert"))
             soapXML = soapXML + """
 \t\t</notesRow>
 \t</notesTable>"""
-
 
 //            soapXML = soapXML + """
 //\t<ratingTable>
@@ -1092,7 +1086,11 @@ log.info(jsonSerial.getAt("endorseInsert"))
 \t\t\t\t<applicantInformationColTwo>${XmlUtil.escapeXml(jsonSerial.getAt("website"))}</applicantInformationColTwo>
 \t\t\t</applicantInformation>
 \t\t\t<applicantInformation applicantInformationColOne="Mailing Address">
-\t\t\t\t<applicantInformationColTwo>${XmlUtil.escapeXml(jsonSerial.getAt("streetNameMailing"))} ${XmlUtil.escapeXml(jsonSerial.getAt("cityMailing"))}, ${XmlUtil.escapeXml(jsonSerial.getAt("stateMailing"))} ${XmlUtil.escapeXml(jsonSerial.getAt("zipCodeMailing"))} </applicantInformationColTwo>
+\t\t\t\t<applicantInformationColTwo>${XmlUtil.escapeXml(jsonSerial.getAt("streetNameMailing"))} ${
+                XmlUtil.escapeXml(jsonSerial.getAt("cityMailing"))
+            }, ${XmlUtil.escapeXml(jsonSerial.getAt("stateMailing"))} ${
+                XmlUtil.escapeXml(jsonSerial.getAt("zipCodeMailing"))
+            } </applicantInformationColTwo>
 \t\t\t</applicantInformation>
 \t\t\t<applicantInformation applicantInformationColOne="Primary Contact Name">
 \t\t\t\t<applicantInformationColTwo>${XmlUtil.escapeXml(jsonSerial.getAt("namedInsured"))} </applicantInformationColTwo>
@@ -1151,19 +1149,18 @@ log.info(jsonSerial.getAt("endorseInsert"))
 
             def client = new SOAPClient('http://138.91.159.55/Produce/Service/GenerateDoc.asmx?WSDL')
             client.authorization = new HTTPBasicAuthorization("admin", "admin")
-            def response = client.send(SOAPAction:'http://services.dpm.com.au/intelledox/GenerateWithData', soapXML)
+            def response = client.send(SOAPAction: 'http://services.dpm.com.au/intelledox/GenerateWithData', soapXML)
 
-            if(response.text.length() > 1500){
-                log.info response.text.substring(0,1500);
-            }
-            else{
+            if (response.text.length() > 1500) {
+                log.info response.text.substring(0, 1500);
+            } else {
                 log.info response.text
             }
-            
+
             def fileName = "Indication A.pdf"
 
             def a = new XmlSlurper().parseText(response.text)
-            def nodeToSerialize = a."**".find {it.name() == 'BinaryFile'}
+            def nodeToSerialize = a."**".find { it.name() == 'BinaryFile' }
             def pdfBinaryFile = nodeToSerialize.text();
 
 //            throw new IOException()
@@ -1182,10 +1179,10 @@ log.info(jsonSerial.getAt("endorseInsert"))
 
             return "good"
         }
-        catch(Exception e){
+        catch (Exception e) {
             StringWriter writer = new StringWriter();
-            PrintWriter printWriter = new PrintWriter( writer );
-            e.printStackTrace( printWriter );
+            PrintWriter printWriter = new PrintWriter(writer);
+            e.printStackTrace(printWriter);
             printWriter.flush();
             String stackTrace = writer.toString();
             log.info("Error Details - " + stackTrace)
@@ -1194,20 +1191,17 @@ log.info(jsonSerial.getAt("endorseInsert"))
         }
 
 
-
-
     }
 
-    def createCertPDF(params, dataSource_aim){
+    def createCertPDF(params, dataSource_aim) {
         log.info "INTELLEDOX CERT BYTES"
         log.info params
         FileTransferHelper fileHelper = new FileTransferHelper();
-        def projectGUID="";
-        if(params.ai == "true"){
+        def projectGUID = "";
+        if (params.ai == "true") {
             //WITH AI FORM
-            projectGUID="8285f070-4e75-4ab2-a265-e81d7e4b2517"
-        }
-        else{
+            projectGUID = "8285f070-4e75-4ab2-a265-e81d7e4b2517"
+        } else {
             //WITHOUT AI FORM
             projectGUID = "d83d80e6-3683-4589-a747-24e98b14765c"
         }
@@ -1323,11 +1317,8 @@ log.info(jsonSerial.getAt("endorseInsert"))
 \t\t<nameOfOrganizationInformation>${params.additionalRemarks}</nameOfOrganizationInformation>
 \t</certificate>"""
 
-
-
-
         ////CPK GENERAL LIABILITY TABLE
-        if(params.getAt("cpkLOB").length() > 1) {
+        if (params.getAt("cpkLOB").length() > 1) {
             soapXML = soapXML + """
 \t<GeneralTable>
 \t\t<GeneralROW>""";
@@ -1336,7 +1327,7 @@ log.info(jsonSerial.getAt("endorseInsert"))
                     soapXML = soapXML + """
 \t\t\t<General packageGeneral="${it.split(";&;")[0]}">
 \t\t\t\t<limitGeneral> ${it.split(";&;")[1]} </limitGeneral>
-\t\t\t\t<deductibleGeneral> ${it.split(";&;").size() >=3 ? it.split(";&;")[2] : ""} </deductibleGeneral>
+\t\t\t\t<deductibleGeneral> ${it.split(";&;").size() >= 3 ? it.split(";&;")[2] : ""} </deductibleGeneral>
 \t\t\t</General>"""
                 }
             }
@@ -1346,7 +1337,7 @@ log.info(jsonSerial.getAt("endorseInsert"))
         }
 
         ////CGL GENERAL LIABILITY TABLE
-        if(params.getAt("cglLOB").length() > 1) {
+        if (params.getAt("cglLOB").length() > 1) {
             soapXML = soapXML + """
 \t<GeneralTable>
 \t\t<GeneralROW>""";
@@ -1355,7 +1346,7 @@ log.info(jsonSerial.getAt("endorseInsert"))
                     soapXML = soapXML + """
 \t\t\t<General packageGeneral="${it.split(";&;")[0]}">
 \t\t\t\t<limitGeneral> ${it.split(";&;")[1]} </limitGeneral>
-\t\t\t\t<deductibleGeneral> ${it.split(";&;").size() >=3 ? it.split(";&;")[2] : ""} </deductibleGeneral>
+\t\t\t\t<deductibleGeneral> ${it.split(";&;").size() >= 3 ? it.split(";&;")[2] : ""} </deductibleGeneral>
 \t\t\t</General>"""
                 }
             }
@@ -1364,9 +1355,8 @@ log.info(jsonSerial.getAt("endorseInsert"))
 \t</GeneralTable>"""
         }
 
-
         ////EPKG TABLE
-        if(params.getAt("epkgLOB").length() > 1) {
+        if (params.getAt("epkgLOB").length() > 1) {
             soapXML = soapXML + """
 \t<EPKTable>
 \t\t<EPKROW>""";
@@ -1375,7 +1365,7 @@ log.info(jsonSerial.getAt("endorseInsert"))
                     soapXML = soapXML + """
 \t\t\t<EPK packageEPK="${it.split(";&;")[0]}">
 \t\t\t\t<limitEPK> ${it.split(";&;")[1]} </limitEPK>
-\t\t\t\t<deductibleEPK> ${it.split(";&;").size() >=3 ? it.split(";&;")[2] : ""} </deductibleEPK>
+\t\t\t\t<deductibleEPK> ${it.split(";&;").size() >= 3 ? it.split(";&;")[2] : ""} </deductibleEPK>
 \t\t\t</EPK>"""
                 }
             }
@@ -1383,7 +1373,6 @@ log.info(jsonSerial.getAt("endorseInsert"))
 \t\t</EPKROW>
 \t</EPKTable>"""
         }
-
 
 //\t<AutoTable>
 //\t\t<AutoROW>
@@ -1414,15 +1403,15 @@ log.info(jsonSerial.getAt("endorseInsert"))
 
         def client = new SOAPClient('http://138.91.159.55/Produce/Service/GenerateDoc.asmx?WSDL')
         client.authorization = new HTTPBasicAuthorization("admin", "admin")
-        def response = client.send(SOAPAction:'http://services.dpm.com.au/intelledox/GenerateWithData', soapXML)
+        def response = client.send(SOAPAction: 'http://services.dpm.com.au/intelledox/GenerateWithData', soapXML)
 
 //        log.info response.text
 
-        log.info response.text.substring(0,1000)
+        log.info response.text.substring(0, 1000)
         def fileName = "Certificate-" + params.insured + ".pdf"
 
         def a = new XmlSlurper().parseText(response.text)
-        def nodeToSerialize = a."**".find {it.name() == 'BinaryFile'}
+        def nodeToSerialize = a."**".find { it.name() == 'BinaryFile' }
         def pdfBinaryFile = nodeToSerialize.text();
 
 //        def quoteID = it.split(";")[0]
@@ -1440,15 +1429,15 @@ log.info(jsonSerial.getAt("endorseInsert"))
     }
 
 
-def createBindingPDF(jsonSerial, uwQuestionsMap, uwQuestionsOrder, dataSource_aim){
-    log.info "INTELLEDOX"
-    log.info "JSON ==== " + jsonSerial
+    def createBindingPDF(jsonSerial, uwQuestionsMap, uwQuestionsOrder, dataSource_aim) {
+        log.info "INTELLEDOX"
+        log.info "JSON ==== " + jsonSerial
 
-    FileTransferHelper fileHelper = new FileTransferHelper();
+        FileTransferHelper fileHelper = new FileTransferHelper();
 
 
 
-    def soapXML = """<x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:int="http://services.dpm.com.au/intelledox/">
+        def soapXML = """<x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:int="http://services.dpm.com.au/intelledox/">
     <x:Header/>
     <x:Body>
         <int:GenerateWithData>
@@ -1528,6 +1517,1061 @@ def createBindingPDF(jsonSerial, uwQuestionsMap, uwQuestionsOrder, dataSource_ai
 //    }
 
 
-    return "good"
+        return "good"
+    }
+
+
+    def createEmergencyIndicationPDF(dataSource_aim) {
+        log.info "INTELLEDOX Emergency Indication"
+        def allQuoteIDs = "0000000"
+        try {
+            def indicationDateFormat = 'MM/dd/yyyy'
+            def now = new Date()
+            def timeZone = TimeZone.getTimeZone('PST')
+
+
+            FileTransferHelper fileHelper = new FileTransferHelper();
+
+
+
+            def soapXML = """
+<x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:int="http://services.dpm.com.au/intelledox/">
+    <x:Header/>
+    <x:Body>
+        <int:GenerateWithData>
+            <int:userName>admin</int:userName>
+            <int:password>admin</int:password>
+            <int:projectGroupGuid>a2962264-75d3-42a6-9a48-389a7cb59520</int:projectGroupGuid>
+            <int:providedData>
+                <int:ProvidedData>
+                    <int:DataServiceGuid>ab704e33-cf56-4406-9fc3-2b10f1de1a04</int:DataServiceGuid>
+                    <int:Data><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<application>
+\t<basicInfo>
+\t\t<logo>c:\\IntelledoxLogo\\Barbican.png</logo>
+\t\t<nameOfInsured>FEUD &amp; Twentieth Century Fox Film Entertainment &amp; 21st Century Fox Subsidiaries &amp; Divisions</nameOfInsured>
+\t\t<brokerCompanyName>Highly Protected Risk (HPR) Insurance Services</brokerCompanyName>
+\t\t<brokerCompanyAddress>1000 Potomac Street NW  Suite 5000</brokerCompanyAddress>
+\t\t<brokerCompanyAddressCity>Washington</brokerCompanyAddressCity>
+\t\t<brokerCompanyAddressState>,DC</brokerCompanyAddressState>
+\t\t<brokerCompanyAddressZip>20007</brokerCompanyAddressZip>
+\t\t<brokerCompanyPhone>(202) 567-7636</brokerCompanyPhone>
+\t\t<agentName>David Combes</agentName>
+\t\t<agentLicenseNumber></agentLicenseNumber>
+\t\t<agentEmail>david@davidkcombes.com</agentEmail>
+\t\t<agentPhone>2025677636</agentPhone>
+\t\t<date>05/17/2017</date>
+\t\t<dateStart>null</dateStart>
+\t\t<submission>0624886</submission>
+\t\t<underwriter>Jason DeBolt</underwriter>
+\t\t<underwriterPhone>(310) 265-3804</underwriterPhone>
+\t\t<underwriterFax>(310) 265-3805</underwriterFax>
+\t\t<underwriterEmail>jason@neeis.com</underwriterEmail>
+\t\t<total>Total:</total>
+\t\t<totalCost>\$319,201.80</totalCost>
+\t\t<addressOfInsured>10201 West Pico Blvd</addressOfInsured>
+\t\t<addressCityOfInsured>Los Angeles</addressCityOfInsured>
+\t\t<addressZipOfInsured>90036</addressZipOfInsured>
+\t\t<riskDescription>null, null</riskDescription>
+\t\t<locationOfRiskAddress>Blank</locationOfRiskAddress>
+\t\t<insuranceCoverage>CPK EPKG </insuranceCoverage>
+\t\t<cbGDY>cb</cbGDY>
+\t\t<cbGDN>cb</cbGDN>
+\t\t<cbCAARPY>cb</cbCAARPY>
+\t\t<cbCAARPN>cb</cbCAARPN>
+\t\t<cbCAARPIneligibleY>cb</cbCAARPIneligibleY>
+\t\t<cbCAARPIneligibleN>cb</cbCAARPIneligibleN>
+\t\t<cbHealthY>cb</cbHealthY>
+\t\t<cbHealthN>cb</cbHealthN>
+\t\t<RiskPurchasingGroupName></RiskPurchasingGroupName>
+\t\t<RiskPurchasingGroupAddress></RiskPurchasingGroupAddress>
+\t\t<nameOtherAgent></nameOtherAgent>
+\t\t<insuranceCompany>Lloyd&apos;s of London / Barbican Syndicate 1955</insuranceCompany>
+\t</basicInfo>
+
+\t<namedInsuredTable>
+\t\t<namedInsuredHeader>Named Insured</namedInsuredHeader>
+\t\t<namedInsuredRow>
+\t\t\t<nameInsured nameInsuredColOne="FEUD &amp; Twentieth Century Fox Film Entertainment &amp; 21st Century Fox Subsidiaries &amp; Divisions"></nameInsured>
+\t\t\t<nameInsuredColTwo>Contact: Twentieth Century Fox</nameInsuredColTwo>
+\t\t</namedInsuredRow>
+\t\t<namedInsuredRow>
+\t\t\t<nameInsured nameInsuredColOne="10201 West Pico Blvd"></nameInsured>
+\t\t\t<nameInsuredColTwo>Email: david@davidkcombes.com</nameInsuredColTwo>
+\t\t</namedInsuredRow>
+\t\t<namedInsuredRow>
+\t\t\t<nameInsured nameInsuredColOne="Los Angeles, CA 90036"></nameInsured>
+\t\t\t<nameInsuredColTwo>Phone: (202) 567-7636</nameInsuredColTwo>
+\t\t</namedInsuredRow>
+\t</namedInsuredTable>
+
+\t<insuranceCompanyTable>
+\t\t<insuranceCompanyHeader>Insurance Company</insuranceCompanyHeader>
+\t\t<insuranceCompanyRow>
+\t\t\t<insuranceCompany insuranceCompanyColOne="Lloyd&apos;s of London / Barbican Syndicate 1955"></insuranceCompany>
+\t\t</insuranceCompanyRow>
+\t</insuranceCompanyTable>
+
+\t<policyTermTable>
+\t\t<policyTermHeader>Policy Term</policyTermHeader>
+\t\t<policyTermRow>
+\t\t\t<policyTerm policyTermColOne="Policy Term: 365 Days"></policyTerm>
+\t\t</policyTermRow>
+\t\t<policyTermRow>
+\t\t\t<policyTerm policyTermColOne="Proposed Effective: 06/30/2017 - 06/30/2018"></policyTerm>
+\t\t</policyTermRow>
+\t</policyTermTable>
+
+\t<premiumSummaryTable>
+\t\t<premiumSummaryHeader>Premium Summary</premiumSummaryHeader>
+\t\t<premiumSummaryRow>
+\t\t<premiumSummary premiumSummaryPackage="   Entertainment Package">
+\t\t\t<premiumSummaryCost>\$297,250 </premiumSummaryCost>
+\t\t</premiumSummary>
+\t\t<premiumSummary premiumSummaryPackage="   Commercial Package">
+\t\t\t<premiumSummaryCost>\$12,025 </premiumSummaryCost>
+\t\t</premiumSummary>
+\t\t<premiumSummary premiumSummaryPackage="Taxes and Fees">
+\t\t\t<premiumSummaryCost>  </premiumSummaryCost>
+\t\t</premiumSummary>
+\t\t<premiumSummary premiumSummaryPackage="   Surplus Lines Tax(0.03)">
+\t\t\t<premiumSummaryCost>\$9,278.25 </premiumSummaryCost>
+\t\t</premiumSummary>
+\t\t<premiumSummary premiumSummaryPackage="   Stamping Office Fee(0.002)">
+\t\t\t<premiumSummaryCost>\$618.55 </premiumSummaryCost>
+\t\t</premiumSummary>
+\t\t<premiumSummary premiumSummaryPackage="   Policy Fee">
+\t\t\t<premiumSummaryCost>\$30.00 </premiumSummaryCost>
+\t\t</premiumSummary>
+\t\t</premiumSummaryRow>
+\t</premiumSummaryTable>
+\t<coverageTable>
+\t\t<coverageHeader>Commercial Package - Limits/Deductibles</coverageHeader>
+\t\t<coverageRow>
+\t\t<coverage coveragePackage="Each Occurrence ">
+\t\t\t<coverageLimit> \$1,000,000  </coverageLimit>
+\t\t\t<coverageDeductible> Nil </coverageDeductible>
+\t\t</coverage>
+
+\t\t<coverage coveragePackage="General Aggregate Limit ">
+\t\t\t<coverageLimit> \$2,000,000  </coverageLimit>
+\t\t\t<coverageDeductible> Nil </coverageDeductible>
+\t\t</coverage>
+
+\t\t<coverage coveragePackage="Products &amp; Completed Operations ">
+\t\t\t<coverageLimit> \$1,000,000  </coverageLimit>
+\t\t\t<coverageDeductible> Nil </coverageDeductible>
+\t\t</coverage>
+
+\t\t<coverage coveragePackage="Personal &amp; Advertising Injury ">
+\t\t\t<coverageLimit> \$1,000,000  </coverageLimit>
+\t\t\t<coverageDeductible> Nil </coverageDeductible>
+\t\t</coverage>
+
+\t\t<coverage coveragePackage="Fire Damage (Any One Fire) ">
+\t\t\t<coverageLimit> \$100,000  </coverageLimit>
+\t\t\t<coverageDeductible> Nil </coverageDeductible>
+\t\t</coverage>
+
+\t\t<coverage coveragePackage="Medical Payments (Per Person) ">
+\t\t\t<coverageLimit> \$5,000  </coverageLimit>
+\t\t\t<coverageDeductible> Nil </coverageDeductible>
+\t\t</coverage>
+
+\t\t<coverage coveragePackage="Increased Agg Limit ">
+\t\t\t<coverageLimit> Included  </coverageLimit>
+\t\t\t<coverageDeductible>  </coverageDeductible>
+\t\t</coverage>
+
+\t\t<coverage coveragePackage="Blanket Additional Insured Endorsement ">
+\t\t\t<coverageLimit> Included  </coverageLimit>
+\t\t\t<coverageDeductible>  </coverageDeductible>
+\t\t</coverage>
+
+\t\t<coverage coveragePackage="Non-Owned &amp; Hired Auto Liability ">
+\t\t\t<coverageLimit> \$1,000,000  </coverageLimit>
+\t\t\t<coverageDeductible> Nil </coverageDeductible>
+\t\t</coverage>
+
+\t\t</coverageRow>
+\t</coverageTable>
+\t<coverageTable>
+\t\t<coverageHeader>Entertainment Package - Limits/Deductibles</coverageHeader>
+\t\t<coverageRow>
+\t\t<coverage coveragePackage="Cast Insurance (Up to 10) ">
+\t\t\t<coverageLimit> \$29,700,000  </coverageLimit>
+\t\t\t<coverageDeductible> \$25,000 </coverageDeductible>
+\t\t</coverage>
+
+\t\t<coverage coveragePackage="Negative Film &amp; Videotape ">
+\t\t\t<coverageLimit> \$29,700,000  </coverageLimit>
+\t\t\t<coverageDeductible> \$5,000 </coverageDeductible>
+\t\t</coverage>
+
+\t\t<coverage coveragePackage="Faulty Stock &amp; Camera Processing ">
+\t\t\t<coverageLimit> \$29,700,000  </coverageLimit>
+\t\t\t<coverageDeductible> \$5,000 </coverageDeductible>
+\t\t</coverage>
+
+\t\t<coverage coveragePackage="Miscellaneous Rented Equipment ">
+\t\t\t<coverageLimit> \$1,000,000  </coverageLimit>
+\t\t\t<coverageDeductible> \$3,500 </coverageDeductible>
+\t\t</coverage>
+
+\t\t<coverage coveragePackage="Non-Owned Auto Physical Damage ">
+\t\t\t<coverageLimit> Included Under Misc. Rented Equip.  </coverageLimit>
+\t\t\t<coverageDeductible> 10% of Loss (\$1,500 Min / \$10,000) </coverageDeductible>
+\t\t</coverage>
+
+\t\t<coverage coveragePackage="Extra Expense ">
+\t\t\t<coverageLimit> \$1,000,000  </coverageLimit>
+\t\t\t<coverageDeductible> \$3,500 </coverageDeductible>
+\t\t</coverage>
+
+\t\t<coverage coveragePackage="Props, Sets &amp; Wardrobe ">
+\t\t\t<coverageLimit> \$1,000,000  </coverageLimit>
+\t\t\t<coverageDeductible> \$2,500 </coverageDeductible>
+\t\t</coverage>
+
+\t\t<coverage coveragePackage="Third Party Prop Damage Liab ">
+\t\t\t<coverageLimit> \$1,000,000  </coverageLimit>
+\t\t\t<coverageDeductible> \$2,500 </coverageDeductible>
+\t\t</coverage>
+
+\t\t<coverage coveragePackage="Office Contents ">
+\t\t\t<coverageLimit> \$50,000  </coverageLimit>
+\t\t\t<coverageDeductible> \$1,000 </coverageDeductible>
+\t\t</coverage>
+
+\t\t<coverage coveragePackage="Money &amp; Securities ">
+\t\t\t<coverageLimit> \$50,000  </coverageLimit>
+\t\t\t<coverageDeductible> \$1,000 </coverageDeductible>
+\t\t</coverage>
+
+\t\t<coverage coveragePackage="Civil Authority (US Only) ">
+\t\t\t<coverageLimit> \$100,000  </coverageLimit>
+\t\t\t<coverageDeductible> \$7,000 </coverageDeductible>
+\t\t</coverage>
+
+\t\t</coverageRow>
+\t</coverageTable>
+\t<termsTable>
+\t\t<termHeader>Terms</termHeader>
+\t\t<term>
+\t\t\t<terms>THIS INSURANCE IS UNDERWRITTEN BY UNDERWRITERS AT LLOYD&apos;S OF LONDON, REF. No. B1333ECB150004, 100% BARBICAN SYNDICATE 1955.
+
+SUBJECTIVITY TO BIND:
+\t- Signed Surplus Lines Forms as per State Requirements
+\t- Signed TRIA Rejection Form.
+
+NOTE: Proposal descriptions are for summary purposes only. For a detailed description of the terms of the policy, please refer to the policy forms. Specimens of all of the below policy forms and endorsements are attached. Please note that this Quote contains only a general description of coverage provided.
+
+Proposed Insured must be domiciled in the United States of America
+
+ </terms>
+\t\t</term>
+\t</termsTable>
+\t<policyFormEndorsementTable>
+\t\t<policyFormEndorsementTitle>Policy Form / Endorsement</policyFormEndorsementTitle>
+\t</policyFormEndorsementTable>
+
+\t<policyFormEndorsementHeaders>
+\t\t<policyFormEndorsementHeader>EPKG - EPKG37</policyFormEndorsementHeader>
+\t\t\t<policyFormEndorsementRow>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="SLC3 USA NMA2868">
+\t\t\t\t\t\t<policyFormEndorsementName>Form Approved by Lloyds Market Association</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="NE 04 14">
+\t\t\t\t\t\t<policyFormEndorsementName>Film Package Policy</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="LMA 5020">
+\t\t\t\t\t\t<policyFormEndorsementName>Service of Suit Clause (U.S.A.)</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="LMA 5021">
+\t\t\t\t\t\t<policyFormEndorsementName>Applicable Law (U.S.A.)</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="NMA 2918">
+\t\t\t\t\t\t<policyFormEndorsementName>War and Terrorism Exclusion Endorsement</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="NMA 2340">
+\t\t\t\t\t\t<policyFormEndorsementName>Seepage and/or Pollutants and/or Contamination Exclusion Clause</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="LMA 5091">
+\t\t\t\t\t\t<policyFormEndorsementName>U.S. Terrorism Risk Insurance Act of 2002 New and Renewal</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="LMA 5092">
+\t\t\t\t\t\t<policyFormEndorsementName>U.S. Terrorism Risk Insurance Act of 2002 Not Purchased Clause, but only where the Insured elects not to purchase terrorism coverage in accordance with TRIA.</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="LMA 5209">
+\t\t\t\t\t\t<policyFormEndorsementName>Direct Binding Authority Endorsement </policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="LSW 1001">
+\t\t\t\t\t\t<policyFormEndorsementName>Several Liability Notice</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="LSW 1135B">
+\t\t\t\t\t\t<policyFormEndorsementName>Lloyd&apos;s Privacy Policy Statement</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="LSW1146D">
+\t\t\t\t\t\t<policyFormEndorsementName>California Mandatory Disclosure Statement</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="Applicable State Specific Surplus Lines Notices and Disclosures - ">
+\t\t\t\t\t\t<policyFormEndorsementName></policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t</policyFormEndorsementRow>
+\t</policyFormEndorsementHeaders>
+
+\t<policyFormEndorsementHeaders>
+\t\t<policyFormEndorsementHeader>CPK - BARCPKGC</policyFormEndorsementHeader>
+\t\t\t<policyFormEndorsementRow>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="NE CM 0000 11 14">
+\t\t\t\t\t\t<policyFormEndorsementName>Commercial General Liability Declarations</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="SLC-3(USA) NMA2868 (24/08/00)">
+\t\t\t\t\t\t<policyFormEndorsementName>Lloyds Certificate</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="CG DS 01 10 01">
+\t\t\t\t\t\t<policyFormEndorsementName>Commercial General Liability Declarations</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="CG 00 01 04 13">
+\t\t\t\t\t\t<policyFormEndorsementName>Commercial General Liability Coverage Form</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="CG 21 44 07 98">
+\t\t\t\t\t\t<policyFormEndorsementName>Limitation of Coverage to Designated Premises or Project</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="CG E02 AS 08 04">
+\t\t\t\t\t\t<policyFormEndorsementName>Exclusions and Limitations Personal Injury and Advertising Injury</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="CG E01 AS 08 04">
+\t\t\t\t\t\t<policyFormEndorsementName>Additional Exclusions, Limitations &amp;amp; Amendments</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="GL 0030 0610">
+\t\t\t\t\t\t<policyFormEndorsementName>Exclusion-Fireworks with Exception for Concussion Effects, Flashpots and Smokepots</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="GL 0035 0610">
+\t\t\t\t\t\t<policyFormEndorsementName>Exclusion-Personal and Advertising Injury Liability-Entertainment Industry</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="GL 0038 0610">
+\t\t\t\t\t\t<policyFormEndorsementName>Exclusion-Sport, Athletic, Event, Exhibition or Performance Participants</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="CG 21 47 12 07">
+\t\t\t\t\t\t<policyFormEndorsementName>Employment-Related Practices Exclusion</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="CG 00 68 05 09)">
+\t\t\t\t\t\t<policyFormEndorsementName>Recording and Distribution of Material or Information in Violation of Law Exclusion</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="CG E42 AS 08 04">
+\t\t\t\t\t\t<policyFormEndorsementName>Exclusion-Feature Films for Theatrical Release</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="CG 21 46 07 98">
+\t\t\t\t\t\t<policyFormEndorsementName>Abuse or Molestation Exclusion</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="CG E26 AS 08 04">
+\t\t\t\t\t\t<policyFormEndorsementName>Knowledge-Notice of Occurrence</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="CG E31 AS 08 03">
+\t\t\t\t\t\t<policyFormEndorsementName>Unintentional Errors &amp;amp; Omissions</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="CG E24 AS 08 04">
+\t\t\t\t\t\t<policyFormEndorsementName>Liberalization Clause</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="GL 0041 0610">
+\t\t\t\t\t\t<policyFormEndorsementName>Knowledge of Occurrence</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="GL 0019 0610">
+\t\t\t\t\t\t<policyFormEndorsementName>Cross Liability Exclusion</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="GL 0008 0610">
+\t\t\t\t\t\t<policyFormEndorsementName>Amendment of Employee Definition (Temporary Employee)</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="GL 0042 0610">
+\t\t\t\t\t\t<policyFormEndorsementName>Limitation-No Stacking of Occurrence Limits of Insurance</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="GL 0001 0610">
+\t\t\t\t\t\t<policyFormEndorsementName>Absolute Asbestos Exclusion</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="GL 0002 0610">
+\t\t\t\t\t\t<policyFormEndorsementName>Absolute Lead Exclusion</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="CG 21 67 12 04">
+\t\t\t\t\t\t<policyFormEndorsementName>Fungi or Bacteria Exclusion</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="CG 21 76 01 08">
+\t\t\t\t\t\t<policyFormEndorsementName>Exclusion of Punitive Damages Related to a Certified Act of Terrorism</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="CG 21 96 03 05">
+\t\t\t\t\t\t<policyFormEndorsementName>Silica or Silica-Related Dust Exclusion</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="CG 21 49 09 99">
+\t\t\t\t\t\t<policyFormEndorsementName>Total Pollution Exclusion Endorsement</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="CG 21 75 06 08">
+\t\t\t\t\t\t<policyFormEndorsementName>Exclusion of Certified Acts of Terrorism</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="CG 32 34 01 05">
+\t\t\t\t\t\t<policyFormEndorsementName>California Changes</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="AI CD 71 OB 04">
+\t\t\t\t\t\t<policyFormEndorsementName>Business Auto Coverage Form Declarations</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="CA E02 AS 01 07">
+\t\t\t\t\t\t<policyFormEndorsementName>Business Auto Coverage Form</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="CA 00 01 03 10">
+\t\t\t\t\t\t<policyFormEndorsementName>Business Auto Coverage Form</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="CA 20 54 10 01">
+\t\t\t\t\t\t<policyFormEndorsementName>Employee Hired Autos</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="AU 0011 0910">
+\t\t\t\t\t\t<policyFormEndorsementName>Explanation of Premium Basis</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="AU 0013 0910">
+\t\t\t\t\t\t<policyFormEndorsementName>Mexico Endorsement</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="AU 0017 0910">
+\t\t\t\t\t\t<policyFormEndorsementName>Who is an Insured Amended</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="CA 23 84 01 06">
+\t\t\t\t\t\t<policyFormEndorsementName>Exclusion of Terrorism</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="CA 01 43 05 07">
+\t\t\t\t\t\t<policyFormEndorsementName>California Changes</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="IL 02 70 08 11">
+\t\t\t\t\t\t<policyFormEndorsementName>California Changes-Cancellation and NonRenewal</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="CL 0100 03 99">
+\t\t\t\t\t\t<policyFormEndorsementName>Common Policy Conditions</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="CL 0700 10 06">
+\t\t\t\t\t\t<policyFormEndorsementName>Virus or Bacteria Exclusion</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="IL 00 17 11 98">
+\t\t\t\t\t\t<policyFormEndorsementName>Common Policy Conditions</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="IL 00 21 09 08">
+\t\t\t\t\t\t<policyFormEndorsementName>Nuclear Energy Liability Exclusion Endorsement</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="LMA5091 12 07">
+\t\t\t\t\t\t<policyFormEndorsementName>US Terrorism Risk Insurance Act of 2002 Amended</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t\t<policyFormEndorsement policyFormEndorsementCode="D-1(Eff July 21, 2011)">
+\t\t\t\t\t\t<policyFormEndorsementName>Notice Disclosure to Insured</policyFormEndorsementName>
+\t\t\t\t</policyFormEndorsement>
+
+\t\t\t</policyFormEndorsementRow>
+\t</policyFormEndorsementHeaders>
+
+\t<notesTable>
+\t\t<notesHeader>Underwriting Questions</notesHeader>
+\t\t<notesRow>
+
+\t\t\t<notes notesQuestion="Name Of Production Company">
+\t\t\t\t<notesAnswer>FEUD &amp; Twentieth Century Fox Film Entertainment &amp; 21st Century Fox Subsidiaries &amp; Divisions</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Title of Production">
+\t\t\t\t<notesAnswer>FEUD - Season 2</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Name of Principals">
+\t\t\t\t<notesAnswer>Twentieth Century Fox</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Years Experience">
+\t\t\t\t<notesAnswer>30</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Prior Losses">
+\t\t\t\t<notesAnswer>None</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Maximum Cost of Any One Production">
+\t\t\t\t<notesAnswer>\$2,970,000</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Type of Production">
+\t\t\t\t<notesAnswer>TV Series</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Number of Episodes">
+\t\t\t\t<notesAnswer>10</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Special Hazards Declared">
+\t\t\t\t<notesAnswer>None</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Do you do post production or special effects for others?">
+\t\t\t\t<notesAnswer>No</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Are you involved in film distribution?">
+\t\t\t\t<notesAnswer>No</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Has your insurance have ever been cancelled or declined?">
+\t\t\t\t<notesAnswer>No</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Misc Equipment Coverage Requested?">
+\t\t\t\t<notesAnswer>Yes</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Misc Equipment Owned or Rented?">
+\t\t\t\t<notesAnswer>Rented</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="What Equipment Limit is Requested?">
+\t\t\t\t<notesAnswer>\$1,000,000</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Provide Equipment Schedule if any one item exceeds \$10,000 in value">
+\t\t\t\t<notesAnswer>To Follow</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Where is equipment kept when not in use?">
+\t\t\t\t<notesAnswer>20th Century Fox Studios</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Security Measures against theft, loss, and damage">
+\t\t\t\t<notesAnswer>20th Century Fox Security</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Method of Inventory">
+\t\t\t\t<notesAnswer>Standard Company Procedures</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Is Foreign GL, Hired Auto and Workers Comp Required?">
+\t\t\t\t<notesAnswer>No</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Do you require Film Producer Error and Omissions Liability? If yes, what limits? Please complete online application and submit for quoting">
+\t\t\t\t<notesAnswer>No</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Producer">
+\t\t\t\t<notesAnswer>Jon Robin Baitz</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Director">
+\t\t\t\t<notesAnswer>DeDe Gardner</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Source of Financing">
+\t\t\t\t<notesAnswer>Twentieth Century Fox</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Completion Bond Required?">
+\t\t\t\t<notesAnswer>No</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Filming Location (1)">
+\t\t\t\t<notesAnswer>Los Angeles</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Start Date (1)">
+\t\t\t\t<notesAnswer>06/30/2017</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="End Date (1)">
+\t\t\t\t<notesAnswer>08/30/2017</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Story / Synopsis">
+\t\t\t\t<notesAnswer>Rivalry between Bette Davis &amp; Joan Crawford, exploring how these 2 women endured sexism, ageism, misogyny while struggling to hang on to fame in their twilight years.</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Number of Cast Members">
+\t\t\t\t<notesAnswer>Matthew Broderick,,
+Sarah Paulson,,
+Jessica Lange,,
+Jackie Hoffman,,
+Kate Bates,,
+Dominic Burges,,
+Joel Kelley Dauten,,
+Alfred Molina,,
+Catherine Zeta-Jones,,
+Joel Kelly-Dauten,,
+</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Total Above-The-Line">
+\t\t\t\t<notesAnswer>To Follow</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Total Below-The-Line">
+\t\t\t\t<notesAnswer>To Follow</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Total Post Production Cost">
+\t\t\t\t<notesAnswer>To Follow</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Will Payroll Service Co provide primary Work Comp Coverage?">
+\t\t\t\t<notesAnswer>Yes</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Physical Street Address">
+\t\t\t\t<notesAnswer>10201 West Pico Blvd</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Physical City">
+\t\t\t\t<notesAnswer>Los Angeles</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Physical Zipcode">
+\t\t\t\t<notesAnswer>90036</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Business Structure">
+\t\t\t\t<notesAnswer>Corporation</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="FEIN/SSN">
+\t\t\t\t<notesAnswer>26-0075658</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="SIC">
+\t\t\t\t<notesAnswer>7812</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="NAIC">
+\t\t\t\t<notesAnswer>512110</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Name Of Production Company">
+\t\t\t\t<notesAnswer>FEUD &amp; Twentieth Century Fox Film Entertainment &amp; 21st Century Fox Subsidiaries &amp; Divisions</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Title of Production">
+\t\t\t\t<notesAnswer>FEUD - Season 2</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Name of Principals">
+\t\t\t\t<notesAnswer>Twentieth Century Fox</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Years Experience">
+\t\t\t\t<notesAnswer>30</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Prior Losses">
+\t\t\t\t<notesAnswer>None</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Maximum Cost of Any One Production">
+\t\t\t\t<notesAnswer>\$2,970,000</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Type of Production">
+\t\t\t\t<notesAnswer>TV Series</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Number of Episodes">
+\t\t\t\t<notesAnswer>10</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Special Hazards Declared">
+\t\t\t\t<notesAnswer>None</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Do you do post production or special effects for others?">
+\t\t\t\t<notesAnswer>No</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Are you involved in film distribution?">
+\t\t\t\t<notesAnswer>No</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Has your insurance have ever been cancelled or declined?">
+\t\t\t\t<notesAnswer>No</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Misc Equipment Coverage Requested?">
+\t\t\t\t<notesAnswer>Yes</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Misc Equipment Owned or Rented?">
+\t\t\t\t<notesAnswer>Rented</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="What Equipment Limit is Requested?">
+\t\t\t\t<notesAnswer>\$1,000,000</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Provide Equipment Schedule if any one item exceeds \$10,000 in value">
+\t\t\t\t<notesAnswer>To Follow</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Where is equipment kept when not in use?">
+\t\t\t\t<notesAnswer>20th Century Fox Studios</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Security Measures against theft, loss, and damage">
+\t\t\t\t<notesAnswer>20th Century Fox Security</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Method of Inventory">
+\t\t\t\t<notesAnswer>Standard Company Procedures</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Is Foreign GL, Hired Auto and Workers Comp Required?">
+\t\t\t\t<notesAnswer>No</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Do you require Film Producer Error and Omissions Liability? If yes, what limits? Please complete online application and submit for quoting">
+\t\t\t\t<notesAnswer>No</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Producer">
+\t\t\t\t<notesAnswer>Jon Robin Baitz</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Director">
+\t\t\t\t<notesAnswer>DeDe Gardner</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Source of Financing">
+\t\t\t\t<notesAnswer>Twentieth Century Fox</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Completion Bond Required?">
+\t\t\t\t<notesAnswer>No</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Filming Location (1)">
+\t\t\t\t<notesAnswer>Los Angeles</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Start Date (1)">
+\t\t\t\t<notesAnswer>06/30/2017</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="End Date (1)">
+\t\t\t\t<notesAnswer>08/30/2017</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Story / Synopsis">
+\t\t\t\t<notesAnswer>Rivalry between Bette Davis &amp; Joan Crawford, exploring how these 2 women endured sexism, ageism, misogyny while struggling to hang on to fame in their twilight years.</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Number of Cast Members">
+\t\t\t\t<notesAnswer>Matthew Broderick,,
+Sarah Paulson,,
+Jessica Lange,,
+Jackie Hoffman,,
+Kate Bates,,
+Dominic Burges,,
+Joel Kelley Dauten,,
+Alfred Molina,,
+Catherine Zeta-Jones,,
+Joel Kelly-Dauten,,
+</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Total Above-The-Line">
+\t\t\t\t<notesAnswer>To Follow</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Total Below-The-Line">
+\t\t\t\t<notesAnswer>To Follow</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Total Post Production Cost">
+\t\t\t\t<notesAnswer>To Follow</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Will Payroll Service Co provide primary Work Comp Coverage?">
+\t\t\t\t<notesAnswer>Yes</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Physical Street Address">
+\t\t\t\t<notesAnswer>10201 West Pico Blvd</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Physical City">
+\t\t\t\t<notesAnswer>Los Angeles</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Physical Zipcode">
+\t\t\t\t<notesAnswer>90036</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="Business Structure">
+\t\t\t\t<notesAnswer>Corporation</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="FEIN/SSN">
+\t\t\t\t<notesAnswer>26-0075658</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="SIC">
+\t\t\t\t<notesAnswer>7812</notesAnswer>
+\t\t\t</notes>
+
+\t\t\t<notes notesQuestion="NAIC">
+\t\t\t\t<notesAnswer>512110</notesAnswer>
+\t\t\t</notes>
+\t\t</notesRow>
+\t</notesTable>
+\t<ratingTable>
+\t\t<ratingHeader>Rating</ratingHeader>
+
+\t\t<ratingRow>
+\t\t\t<rating ratingName="Entertainment Package">
+\t\t\t\t<ratingPrice>  </ratingPrice>
+\t\t\t</rating>
+\t\t\t<rating ratingName="    Rate">
+\t\t\t\t<ratingPrice> 1</ratingPrice>
+\t\t\t</rating>
+\t\t\t<rating ratingName="    Min Premium">
+\t\t\t\t<ratingPrice> \$5,750.00</ratingPrice>
+\t\t\t</rating>
+\t\t\t<rating ratingName="    Rated Premium">
+\t\t\t\t<ratingPrice> \$297,250.00</ratingPrice>
+\t\t\t</rating>
+\t\t</ratingRow>
+\t\t<ratingRow>
+\t\t\t<rating ratingName="Commercial Package">
+\t\t\t\t<ratingPrice>  </ratingPrice>
+\t\t\t</rating>
+\t\t\t<rating ratingName="    Rate">
+\t\t\t\t<ratingPrice> 0.324</ratingPrice>
+\t\t\t</rating>
+\t\t\t<rating ratingName="    Min Premium">
+\t\t\t\t<ratingPrice> \$1,750.00</ratingPrice>
+\t\t\t</rating>
+\t\t\t<rating ratingName="    Blanket Additional Insured Endorsement">
+\t\t\t\t<ratingPrice> \$500</ratingPrice>
+\t\t\t</rating>
+\t\t\t<rating ratingName="    Medical Payments (Per Person)">
+\t\t\t\t<ratingPrice> \$25</ratingPrice>
+\t\t\t</rating>
+\t\t\t<rating ratingName="    Increased Agg Limit">
+\t\t\t\t<ratingPrice> \$250</ratingPrice>
+\t\t\t</rating>
+\t\t\t<rating ratingName="    Rated Premium">
+\t\t\t\t<ratingPrice> \$11,525.00</ratingPrice>
+\t\t\t</rating>
+\t\t\t<rating ratingName="Non-Owned &amp; Hired Auto Liability">
+\t\t\t\t<ratingPrice></ratingPrice>
+\t\t\t</rating>
+\t\t\t<rating ratingName="    Rate">
+\t\t\t\t<ratingPrice> 6.0</ratingPrice>
+\t\t\t</rating>
+\t\t\t<rating ratingName="    Cost of Hire">
+\t\t\t\t<ratingPrice> \$5,500.00</ratingPrice>
+\t\t\t</rating>
+\t\t\t<rating ratingName="    Min Premium">
+\t\t\t\t<ratingPrice> \$500.00</ratingPrice>
+\t\t\t</rating>
+\t\t\t<rating ratingName="    Rated Premium">
+\t\t\t\t<ratingPrice> \$500.00</ratingPrice>
+\t\t\t</rating>
+\t\t</ratingRow>
+\t</ratingTable>
+
+
+\t<applicantInformationTable>
+\t\t<applicantInformationHeader>Application Information</applicantInformationHeader>
+\t\t<applicantInformationRow>
+\t\t\t<applicantInformation applicantInformationColOne="Name of Production Company">
+\t\t\t\t<applicantInformationColTwo>FEUD &amp; Twentieth Century Fox Film Entertainment &amp; 21st Century Fox Subsidiaries &amp; Divisions</applicantInformationColTwo>
+\t\t\t</applicantInformation>
+\t\t\t<applicantInformation applicantInformationColOne="Title of Production">
+\t\t\t\t<applicantInformationColTwo>FEUD - Season 2</applicantInformationColTwo>
+\t\t\t</applicantInformation>
+\t\t\t<applicantInformation applicantInformationColOne="Website">
+\t\t\t\t<applicantInformationColTwo>www.feud.com</applicantInformationColTwo>
+\t\t\t</applicantInformation>
+\t\t\t<applicantInformation applicantInformationColOne="Mailing Address">
+\t\t\t\t<applicantInformationColTwo>10201 West Pico Blvd Los Angeles, CA 90036 </applicantInformationColTwo>
+\t\t\t</applicantInformation>
+\t\t\t<applicantInformation applicantInformationColOne="Primary Contact Name">
+\t\t\t\t<applicantInformationColTwo>Twentieth Century Fox </applicantInformationColTwo>
+\t\t\t</applicantInformation>
+\t\t\t<applicantInformation applicantInformationColOne="Tel No">
+\t\t\t\t<applicantInformationColTwo>(202) 567-7636 </applicantInformationColTwo>
+\t\t\t</applicantInformation>
+\t\t\t<applicantInformation applicantInformationColOne="Email">
+\t\t\t\t<applicantInformationColTwo>david@davidkcombes.com </applicantInformationColTwo>
+\t\t\t</applicantInformation>
+\t\t</applicantInformationRow>
+\t</applicantInformationTable>
+
+
+\t<budgetInformationTable>
+\t\t<budgetInformationHeader>Budget Information</budgetInformationHeader>
+\t\t<budgetInformationRow>
+\t\t\t<budgetInformation budgetInformationColOne="Gross Production Cost">
+\t\t\t\t<budgetInformationColTwo> \$29,700,000 </budgetInformationColTwo>
+\t\t\t</budgetInformation>
+\t\t\t<budgetInformation budgetInformationColOne="Budget Attached">
+\t\t\t\t<budgetInformationColTwo> Top Sheet of Budget is required </budgetInformationColTwo>
+\t\t\t</budgetInformation>
+
+\t\t</budgetInformationRow>
+\t</budgetInformationTable>
+
+
+\t<productionInformationTable>
+\t\t<productionInformationHeader>Production Information</productionInformationHeader>
+\t\t<productionInformationRow>
+\t\t\t<productionInformationName productionInformationColOne="Types of Production:">
+\t\t\t\t<productionInformationColTwo> TV Series </productionInformationColTwo>
+\t\t\t</productionInformationName>
+\t\t\t<productionInformationName productionInformationColOne="Script / Story:">
+\t\t\t\t<productionInformationColTwo> Rivalry between Bette Davis &amp; Joan Crawford, exploring how these 2 women endured sexism, ageism, misogyny while struggling to hang on to fame in their twilight years. </productionInformationColTwo>
+\t\t</productionInformationName>
+\t\t</productionInformationRow>
+\t</productionInformationTable>
+
+\t<principalPhotographyTable>
+\t\t<principalPhotographyHeader>Principal Photography</principalPhotographyHeader>
+\t\t<principalPhotographyRow>
+\t\t\t<principalPhotographyName startPrincipalPhoto="06/30/2017">
+\t\t\t\t<endPrincipalPhoto>08/30/2017</endPrincipalPhoto>
+\t\t\t\t<locationPrincipalPhoto>Los Angeles</locationPrincipalPhoto>
+\t\t\t</principalPhotographyName>
+\t\t</principalPhotographyRow>
+
+\t</principalPhotographyTable>
+
+\t<keyPersonnelTable>
+\t\t<keyPersonnelHeader>Key Personnel</keyPersonnelHeader>
+\t\t<keyPersonnelRow>
+\t\t\t<keyPerson keyPersonnel="Director">
+\t\t\t\t<keyPersonnelName>DeDe Gardner</keyPersonnelName>
+\t\t\t\t<keyPersonnelYOE></keyPersonnelYOE>
+\t\t\t\t<keyPersonnelPrior></keyPersonnelPrior>
+\t\t\t</keyPerson>
+\t\t\t<keyPerson keyPersonnel="Producer">
+\t\t\t\t<keyPersonnelName>Jon Robin Baitz</keyPersonnelName>
+\t\t\t\t<keyPersonnelYOE></keyPersonnelYOE>
+\t\t\t\t<keyPersonnelPrior></keyPersonnelPrior>
+\t\t\t</keyPerson>
+\t\t</keyPersonnelRow>
+\t</keyPersonnelTable>
+
+\t<extraForms> </extraForms>
+
+
+</application>]]></int:Data>
+                </int:ProvidedData>
+            </int:providedData>
+            <int:options>
+                <int:ReturnDocuments>true</int:ReturnDocuments>
+                <int:RunProviders>1</int:RunProviders>
+                <int:LogGeneration>true</int:LogGeneration>
+            </int:options>
+        </int:GenerateWithData>
+    </x:Body>
+</x:Envelope>
+"""
+
+            log.info soapXML
+
+            def client = new SOAPClient('http://138.91.159.55/Produce/Service/GenerateDoc.asmx?WSDL')
+            client.authorization = new HTTPBasicAuthorization("admin", "admin")
+            def response = client.send(SOAPAction: 'http://services.dpm.com.au/intelledox/GenerateWithData', soapXML)
+
+            if (response.text.length() > 1500) {
+                log.info response.text.substring(0, 1500);
+            } else {
+                log.info response.text
+            }
+
+            def fileName = "Indication A.pdf"
+
+            def a = new XmlSlurper().parseText(response.text)
+            def nodeToSerialize = a."**".find { it.name() == 'BinaryFile' }
+            def pdfBinaryFile = nodeToSerialize.text();
+
+
+            allQuoteIDs.split(",").each {
+                def quoteID = it.split(";")[0]
+                def folderPath = org.codehaus.groovy.grails.web.context.ServletContextHolder.getServletContext().getRealPath("/attachments/${quoteID}/")
+                log.info folderPath
+
+                fileHelper.saveBinaryFileToLocalPath(pdfBinaryFile, folderPath, fileName);
+
+                fileHelper.ftpFileToAIM(fileName, folderPath, quoteID, dataSource_aim);
+            }
+
+            return "good"
+        }
+        catch (Exception e) {
+            StringWriter writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(writer);
+            e.printStackTrace(printWriter);
+            printWriter.flush();
+            String stackTrace = writer.toString();
+            log.info("Error Details - " + stackTrace)
+
+            return "Indication Error"
+        }
+
+
+    }
 }
-}
+

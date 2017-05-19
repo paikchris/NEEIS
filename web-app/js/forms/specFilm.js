@@ -19,125 +19,13 @@ var specFilmJSScriptIsLoaded = true;
 
 var riskChosen;
 $(document).ready(function() {
-
-    if ($("li.active").length > 0) {
-        riskChosen = getRiskTypeChosen();
-    }
-    else {
-        riskChosen = reviewRiskChosen; //FROM REVIEW SUBMISSION MODAL
-    }
-
-    if (riskChosen === "Film Projects Without Cast (No Work Comp)") {
-        riskHasCast = false;
-        riskHasWC = false;
-    }
-    else if (riskChosen === "Film Projects Without Cast (With Work Comp)") {
-        riskHasCast = false;
-        riskHasWC = true;
-    }
-    else if (riskChosen === "Film Projects With Cast (No Work Comp)") {
-        riskHasCast = true;
-        riskHasWC = false;
-        $('#EPKGCASTOption').css("display", "");
-        //$('#EPKGCASTEssentialOption').css("display", "");
-        $(document.body).on('change', '#EPKGCASTEssentialAdditionalCoverage', function() {
-            if ($("#EPKGCASTEssentialAdditionalCoverage").is(':checked')) {
-                $('#castEssentialDiv').css("display", "");
-            }
-            else {
-                $('#castEssentialDiv').css("display", "none");
-                $("#castEssentialInput").prop("checked", false);
-            }
-        });
-
-        //REMOVE PHYSICAL LOCATION INFO PARTS
-        $('.physicalAddressNumBuildings').parent().remove();
-        $('.physicalAddressHabUnits').parent().remove();
-        $('.physicalAddressCommSqFt').parent().remove();
-        $('.interestSelect').parent().remove();
-    }
-    else if (riskChosen === "Film Projects With Cast (With Work Comp)") {
-        riskHasCast = true;
-        riskHasWC = true;
-    }
-
     // MONEY FORMAT
     inputMoneyFormat();
 
     // PERCENTAGE FORMAT
     $(document.body).on('focus', '.percent' ,function(){
-        // $("#projectsOutsideUS").mask("9?99%" , {reverse: true});
         percentage();
     });
-
-    if (riskHasCast) {
-        $('#questionListPriorFilmProjects').css('display', '');
-        $('#listOfPriorFilms').css('display', '');
-        $('#questionTotalAbove').css('display', '');
-        $('#totalAboveLine').css('display', '');
-
-        $('#questionTotalBelow').css('display', '');
-        $('#totalBelowLine').css('display', '');
-
-        $('#questionTotalPost').css('display', '');
-        $('#totalPostProductionCost').css('display', '');
-
-        $('#questionFilmingLocations').css('display', '');
-        $('#questionSourceFinancing').css('display', '');
-        $('#sourceOfFinancing').css('display', '');
-
-        $('#questionCompletionBondRequired').css('display', '');
-        $('#questionsCast').css('display', '');
-        $('#numberOfCastMembers').css('display', '');
-        $('.castMemberName').css('display', '');
-        $('.castMemberAge').css('display', '');
-        $('.castMemberRole').css('display', '');
-    }
-    else {
-        $('#questionListPriorFilmProjects').css('display', 'none');
-        $('#listOfPriorFilms').css('display', 'none');
-
-        $('#questionTotalAbove').css('display', 'none');
-        $('#totalAboveLine').css('display', 'none');
-
-        $('#questionTotalBelow').css('display', 'none');
-        $('#totalBelowLine').css('display', 'none');
-
-        $('#questionTotalPost').css('display', 'none');
-        $('#totalPostProductionCost').css('display', 'none');
-
-        $('#questionFilmingLocations').css('display', 'none');
-        $('#questionSourceFinancing').css('display', 'none');
-        $('#sourceOfFinancing').css('display', 'none');
-
-        $('#questionCompletionBondRequired').css('display', 'none');
-        $('#questionsCast').css('display', 'none');
-        $('#numberOfCastMembers').css('display', 'none');
-        $('.castMemberName').css('display', 'none');
-        $('.castMemberAge').css('display', 'none');
-        $('.castMemberRole').css('display', 'none');
-    }
-
-
-    if (riskHasWC) {
-        $('#questionListPriorFilmProjects').css('display', '');
-        $('#listOfPriorFilms').css('display', '');
-        $('#statesOfHire').css('display', '');
-        $('#statesOfHireAndPayroll').css('display', '');
-        $('#questionFilmingLocations').css('display', '');
-        $('#questionSourceFinancing').css('display', '');
-        $('#sourceOfFinancing').css('display', '');
-        $('#questionCompletionBondRequired').css('display', '');
-    }
-    else {
-        $('#workCompCoverageRequested').css('display', 'none');
-        $('#statesOfHire').css('display', 'none');
-        $('#statesOfHireAndPayroll').css('display', 'none');
-        $('#namesOfOfficers').css('display', 'none');
-        $('#namesOfficerTitleOwnership').css('display', 'none');
-        $('#namesOfOfficersExcluded').css('display', 'none');
-        $('#officersExcludedUnderWC').css('display', 'none');
-    }
 
     //CHECKBOXES THAT HIDE AND SHOW FIELDS
     $(document.body).on('change', '#tvSeriesCheckBox', function() {
@@ -178,6 +66,7 @@ $(document).ready(function() {
 
 
     //NUMBER OF CAST MEMBERS
+    /*
     $(document.body).on('change', '#numberOfCastMembers', function() {
         if ($.isNumeric($(this).val())) {
             var htmlString = "";
@@ -245,6 +134,49 @@ $(document).ready(function() {
 
 
 
+
+    });
+    */
+
+    $(document.body).on('click', '.castRowDeleteIcon', function(){
+        $(this).closest('.row').remove();
+        var numCast = $('#castMemberDetailContainer .row').length
+        $('#numberOfCastMembers').attr('placeholder', '');
+        $('#numberOfCastMembers').val(numCast)
+    });
+
+    $(document.body).on('click', '#addCastMemberButton', function(){
+        var htmlString = "<div class='row'>" +
+            "<div class='col-xs-6'>" +
+            "<div class='form-group'>" +
+            "<input type='text' class='form-control  castMemberName'  data-reviewname='Cast Member Name, Age, Role' " +
+            "name='castMemberName' placeholder='Name'>" +
+            "</div>" +
+            "</div>" +
+
+            "<div class='col-xs-2'>" +
+            "<div class='form-group'>" +
+            "<input type='text' class='form-control  castMemberAge'  data-reviewname='Cast Member Name, Age, Role'" +
+            "name='castMemberAge' placeholder='Age'>" +
+            "</div>" +
+            "</div>" +
+
+            "<div class='col-xs-4' style=''>" +
+            "<div class='col-xs-10' style='padding:0px;'>" +
+            "<input type='text' class='form-control  castMemberRole' id='castMember0RoleInput' data-reviewname='Cast Member Name, Age, Role'" +
+            "name='castMemberRole' placeholder='Role' style=''>" +
+            "</div>" +
+            "<div class='col-xs-2' style='padding:0px;'>" +
+            "<i class='fa fa-times-circle castRowDeleteIcon' aria-hidden='true' style=''></i>" +
+            "</div>" +
+            "</div>"
+
+        $('#castMemberDetailContainer').append(htmlString);
+
+        var numCast = $('#castMemberDetailContainer .row').length
+        $('#numberOfCastMembers').attr('placeholder', '');
+
+        $('#numberOfCastMembers').val(numCast)
 
     });
 
@@ -1232,6 +1164,117 @@ $(document).ready(function() {
 
 
 });
+
+function checkWCandCastInputs(){
+    if ($("li.active").length > 0) {
+        riskChosen = getRiskTypeChosen();
+    }
+    else {
+        riskChosen = reviewRiskChosen; //FROM REVIEW SUBMISSION MODAL
+    }
+
+    if (riskChosen === "Film Projects Without Cast (No Work Comp)") {
+        riskHasCast = false;
+        riskHasWC = false;
+    }
+    else if (riskChosen === "Film Projects Without Cast (With Work Comp)") {
+        riskHasCast = false;
+        riskHasWC = true;
+    }
+    else if (riskChosen === "Film Projects With Cast (No Work Comp)") {
+        riskHasCast = true;
+        riskHasWC = false;
+        $('#EPKGCASTOption').css("display", "");
+        //$('#EPKGCASTEssentialOption').css("display", "");
+        $(document.body).on('change', '#EPKGCASTEssentialAdditionalCoverage', function() {
+            if ($("#EPKGCASTEssentialAdditionalCoverage").is(':checked')) {
+                $('#castEssentialDiv').css("display", "");
+            }
+            else {
+                $('#castEssentialDiv').css("display", "none");
+                $("#castEssentialInput").prop("checked", false);
+            }
+        });
+
+        //REMOVE PHYSICAL LOCATION INFO PARTS
+        $('.physicalAddressNumBuildings').parent().remove();
+        $('.physicalAddressHabUnits').parent().remove();
+        $('.physicalAddressCommSqFt').parent().remove();
+        $('.interestSelect').parent().remove();
+    }
+    else if (riskChosen === "Film Projects With Cast (With Work Comp)") {
+        riskHasCast = true;
+        riskHasWC = true;
+    }
+
+    if (riskHasCast) {
+        $('#questionListPriorFilmProjects').css('display', '');
+        $('#listOfPriorFilms').css('display', '');
+        $('#questionTotalAbove').css('display', '');
+        $('#totalAboveLine').css('display', '');
+
+        $('#questionTotalBelow').css('display', '');
+        $('#totalBelowLine').css('display', '');
+
+        $('#questionTotalPost').css('display', '');
+        $('#totalPostProductionCost').css('display', '');
+
+        $('#questionFilmingLocations').css('display', '');
+        $('#questionSourceFinancing').css('display', '');
+        $('#sourceOfFinancing').css('display', '');
+
+        $('#questionCompletionBondRequired').css('display', '');
+        $('#questionsCast').css('display', '');
+        $('#numberOfCastMembers').css('display', '');
+        $('.castMemberName').css('display', '');
+        $('.castMemberAge').css('display', '');
+        $('.castMemberRole').css('display', '');
+    }
+    else {
+        $('#questionListPriorFilmProjects').css('display', 'none');
+        $('#listOfPriorFilms').css('display', 'none');
+
+        $('#questionTotalAbove').css('display', 'none');
+        $('#totalAboveLine').css('display', 'none');
+
+        $('#questionTotalBelow').css('display', 'none');
+        $('#totalBelowLine').css('display', 'none');
+
+        $('#questionTotalPost').css('display', 'none');
+        $('#totalPostProductionCost').css('display', 'none');
+
+        $('#questionFilmingLocations').css('display', 'none');
+        $('#questionSourceFinancing').css('display', 'none');
+        $('#sourceOfFinancing').css('display', 'none');
+
+        $('#questionCompletionBondRequired').css('display', 'none');
+        $('#questionsCast').css('display', 'none');
+        $('#numberOfCastMembers').css('display', 'none');
+        $('.castMemberName').css('display', 'none');
+        $('.castMemberAge').css('display', 'none');
+        $('.castMemberRole').css('display', 'none');
+    }
+
+    if (riskHasWC) {
+        $('#questionListPriorFilmProjects').css('display', '');
+        $('#listOfPriorFilms').css('display', '');
+        $('#statesOfHire').css('display', '');
+        $('#statesOfHireAndPayroll').css('display', '');
+        $('#questionFilmingLocations').css('display', '');
+        $('#questionSourceFinancing').css('display', '');
+        $('#sourceOfFinancing').css('display', '');
+        $('#questionCompletionBondRequired').css('display', '');
+    }
+    else {
+        $('#workCompCoverageRequested').css('display', 'none');
+        $('#statesOfHire').css('display', 'none');
+        $('#statesOfHireAndPayroll').css('display', 'none');
+        $('#namesOfOfficers').css('display', 'none');
+        $('#namesOfficerTitleOwnership').css('display', 'none');
+        $('#namesOfOfficersExcluded').css('display', 'none');
+        $('#officersExcludedUnderWC').css('display', 'none');
+    }
+}
 
 function checkPhotographyDates() {
 

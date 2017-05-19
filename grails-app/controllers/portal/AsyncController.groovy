@@ -3214,61 +3214,47 @@ class AsyncController {
                                     productTotalPremium = productTotalPremium + 0;
                                 }
 
-                                if (params.additionalProducts.contains("moneyCurrencyCheckbox")) {
-                                    premiumsMap["Money and Currency"] = ["flat", "incl"];
-                                    deductsMap["Money and Currency"] = "\$2,500";
-                                    limitsMap["Money and Currency"] = "\$25,000";
+                                    tempPremiumsMap["Money and Currency"] = ["flat", "incl"];
+                                    tempDeductsMap["Money and Currency"] = "\$2,500";
+                                    tempLimitsMap["Money and Currency"] = "\$25,000";
                                     productTotalPremium = productTotalPremium + 0;
                                     rateInfo = rateInfo + "EPKG\tflat\tincl\tMoney and Currency\t\n";
-                                }
 
-                                if (params.additionalProducts.contains("fursJewelryCheckbox")) {
-                                    premiumsMap["Furs, Jewelry, Art & Antiques"] = ["flat", "incl"];
-                                    deductsMap["Furs, Jewelry, Art & Antiques"] = "\$2,500";
-                                    limitsMap["Furs, Jewelry, Art & Antiques"] = "\$25,000";
+                                    tempPremiumsMap["Furs, Jewelry, Art & Antiques"] = ["flat", "incl"];
+                                    tempDeductsMap["Furs, Jewelry, Art & Antiques"] = "\$2,500";
+                                    tempLimitsMap["Furs, Jewelry, Art & Antiques"] = "\$25,000";
                                     productTotalPremium = productTotalPremium + 0;
                                     rateInfo = rateInfo + "EPKG\tflat\tincl\tFurs, Jewelry, Art & Antiques\t\n";
-                                }
 
-                                if (params.additionalProducts.contains("talentNonBudgetCheckbox")) {
-                                    premiumsMap["Talent and Non Budgeted Costs"] = ["flat", "incl"];
-                                    deductsMap["Talent and Non Budgeted Costs"] = "\$2,500";
-                                    limitsMap["Talent and Non Budgeted Costs"] = "\$25,000";
+                                    tempPremiumsMap["Talent and Non Budgeted Costs"] = ["flat", "incl"];
+                                    tempDeductsMap["Talent and Non Budgeted Costs"] = "\$2,500";
+                                    tempLimitsMap["Talent and Non Budgeted Costs"] = "\$25,000";
                                     productTotalPremium = productTotalPremium + 0;
                                     rateInfo = rateInfo + "EPKG\tflat\tincl\tTalent and Non Budgeted Costs\t\n";
-                                }
 
-                                if (params.additionalProducts.contains("adminCostCheckbox")) {
-                                    premiumsMap["Administrative Costs"] = ["flat", "incl"];
-                                    deductsMap["Administrative Costs"] = "\$2,500";
-                                    limitsMap["Administrative Costs"] = "\$25,000";
+                                    tempPremiumsMap["Administrative Costs"] = ["flat", "incl"];
+                                    tempDeductsMap["Administrative Costs"] = "\$2,500";
+                                    tempLimitsMap["Administrative Costs"] = "\$25,000";
                                     productTotalPremium = productTotalPremium + 0;
                                     rateInfo = rateInfo + "EPKG\tflat\tincl\tAdministrative Costs\t\n";
-                                }
 
-                                if (params.additionalProducts.contains("hardwareElectronicDataCheckbox")) {
-                                    premiumsMap["Hardware"] = ["flat", "incl"];
-                                    deductsMap["Hardware"] = "\$2,500";
-                                    limitsMap["Hardware"] = "\$25,000";
+                                    tempPremiumsMap["Hardware"] = ["flat", "incl"];
+                                    tempDeductsMap["Hardware"] = "\$2,500";
+                                    tempLimitsMap["Hardware"] = "\$25,000";
                                     productTotalPremium = productTotalPremium + 0;
                                     rateInfo = rateInfo + "EPKG\tflat\tincl\tHardware\t\n";
-                                }
 
-                                if (params.additionalProducts.contains("dataMediaElectronicDataCheckbox")) {
-                                    premiumsMap["Data and Media"] = ["flat", "incl"];
-                                    deductsMap["Data and Media"] = "\$2,500";
-                                    limitsMap["Data and Media"] = "\$25,000";
+                                    tempPremiumsMap["Data and Media"] = ["flat", "incl"];
+                                    tempDeductsMap["Data and Media"] = "\$2,500";
+                                    tempLimitsMap["Data and Media"] = "\$25,000";
                                     productTotalPremium = productTotalPremium + 0;
                                     rateInfo = rateInfo + "EPKG\tflat\tincl\tData and Media\t\n";
-                                }
 
-                                if (params.additionalProducts.contains("extraExpenseElectronicDataCheckbox")) {
-                                    premiumsMap["Electronic Data Extra Expense"] = ["flat", "incl"];
-                                    deductsMap["Electronic Data Extra Expense"] = "\$2,500";
-                                    limitsMap["Electronic Data Extra Expense"] = "\$25,000";
+                                    tempPremiumsMap["Electronic Data Extra Expense"] = ["flat", "incl"];
+                                    tempDeductsMap["Electronic Data Extra Expense"] = "\$2,500";
+                                    tempLimitsMap["Electronic Data Extra Expense"] = "\$25,000";
                                     productTotalPremium = productTotalPremium + 0;
                                     rateInfo = rateInfo + "EPKG\tflat\tincl\tExtra Expense\t\n";
-                                }
 
                                 lobString = "Entertainment Package" + "\t" + Math.ceil(productTotalPremium) + "\t" + grossPct + "\t" + agentPct+"\r"
                                 limitsMap = tempLimitsMap
@@ -3849,6 +3835,20 @@ class AsyncController {
 
                 dataMap.underwriterPhone = it.Wk_Phone
                 dataMap.underwriterFax = it.Wk_Fax
+            }
+
+            //SET LOGO
+            def agencyRecord = Agency.findAllWhere(agencyID: session.user.company)
+            if(agencyRecord.logoFileName != null){
+                if(agencyRecord.logoFileName == "default"){
+                    dataMap.logoFile = "Barbican.png"
+                }
+                else{
+                    dataMap.logoFile = agencyRecord[0].logoFileName
+                }
+            }
+            else{
+                dataMap.logoFile = "Barbican.png"
             }
 
 

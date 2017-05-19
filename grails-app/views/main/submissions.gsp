@@ -322,9 +322,9 @@
                             </ul>
                         </div>
 
-                        <button class="btn btn-primary" id="bindOptionsButton" type="button" style="margin-left:20px;">
+                        <button class="btn btn-primary bindOptionsButton" id="" type="button" style="margin-left:20px;">
                             <i class="fa fa-handshake-o" aria-hidden="true"></i>
-                            <span class="" id="bindOptionsButtonSpan" style="font-size: 14px; font-weight: 500" > Bind</span>
+                            <span class="" id="bindOptionsButtonSpan" style="font-size: 14px; font-weight: 500" > Assign Policy Number</span>
                         </button>
                     </g:if>
 
@@ -350,7 +350,7 @@
                         <g:if test="${user.userRole == "Broker"}">
                         </g:if>
                         <g:elseif test="${user.userRole == "Underwriter"}">
-                            <li role="presentation"><a class="reviewTab " href="#rating" aria-controls="rating" role="tab" data-toggle="tab">Rating</a></li>
+                            %{--<li role="presentation"><a class="reviewTab " href="#rating" aria-controls="rating" role="tab" data-toggle="tab">Rating</a></li>--}%
                             <li role="presentation"><a class="reviewTab " href="#bind" aria-controls="bind" role="tab" data-toggle="tab" id="bindReviewTabButton">Bind</a></li>
                         </g:elseif>
                         </ul>
@@ -457,6 +457,7 @@
                                 </div>
                             </div>
                         <g:if test="${user.userRole == "Underwriter"}">
+                            %{--
                             <div role="tabpanel" class="tab-pane fade" id="rating">
                                 <div class="row">
                                     <div class="col-md-12">
@@ -879,6 +880,7 @@
                                     </div>
                                 </div>
                             </div>
+                            --}%
                             <div role="tabpanel" class="tab-pane fade" id="bind">
                                 <style>
                                     .policyNumberOptionButtonRow{

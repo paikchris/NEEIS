@@ -69,7 +69,6 @@
                 <div class="col-xs-3">
                     <button type="button" class="btn btn-default btn-xs attachClearButton">Clear</button>
                 </div>
-
             </div>
         </div>
         %{--LIST AND DESCRIBE ALL PRIOR LOSSES--}%
@@ -869,7 +868,7 @@
                     <div class="form-group">
                         <input type="text" class="form-control showReview" data-reviewName="Number of Cast Members"
                                id="numberOfCastMembers"
-                               name="numberOfCastMembers" placeholder="#" style="display:none"/>
+                               name="numberOfCastMembers" placeholder="1" style="display:none" disabled/>
                     </div>
                 </div>
 
@@ -896,29 +895,33 @@
                     <div class="row">
                         <div class="col-xs-6">
                             <div class="form-group">
-                                <input type="text" class="form-control showReview castMemberName"
-                                       data-reviewName="Cast Member Name, Age, Role"
-                                       name="castMemberName" placeholder="" style="display:none"/>
+                                <input type="text" class="form-control  castMemberName" id="castMember0NameInput"
+                                       data-reviewname="Cast Member Name, Age, Role" name="castMemberName" placeholder="Name">
                             </div>
                         </div>
 
                         <div class="col-xs-2">
                             <div class="form-group">
-                                <input type="text" class="form-control showReview castMemberAge"
-                                       data-reviewName="Cast Member Name, Age, Role"
-                                       name="castMemberAge" placeholder="" style="display:none"/>
+                                <input type="text" class="form-control  castMemberAge" id="castMember0AgeInput" data-reviewname="Cast Member Name, Age, Role"
+                                       name="castMemberAge" placeholder="Age">
                             </div>
                         </div>
 
-                        <div class="col-xs-4">
-                            <div class="form-group">
-                                <input type="text" class="form-control showReview castMemberRole"
-                                       data-reviewName="Cast Member Name, Age, Role"
-                                       name="castMemberRole" placeholder="" style="display:none"/>
+                        <div class="col-xs-4" style="">
+                            <div class="col-xs-10" style="padding:0px;">
+                                <input type="text" class="form-control  castMemberRole" id="castMember0RoleInput" data-reviewname="Cast Member Name, Age, Role"
+                                       name="castMemberRole" placeholder="Role" style="">
+                            </div>
+                            <div class="col-xs-2" style="padding:0px;">
+                                <i class="fa fa-times-circle castRowDeleteIcon" aria-hidden="true" style=""></i>
                             </div>
                         </div>
                     </div>
-
+                </div>
+                <div class="row col-xs-12">
+                    <div class="col-xs-12" style="padding: 8px;">
+                        <button class="btn btn-sm btn-success  pull-right" id="addCastMemberButton" type="button" value="">Add Cast Member</button>
+                    </div>
                 </div>
 
 
@@ -1036,8 +1039,8 @@
                        id="umbrellaLimitRequested"/>
             </div>
             %{--WORK COMP COVERAGE REQUESTED?--}%
-            <div id="">
-                <div class="col-xs-12" id="workCompCoverageRequested">
+            <div id="workCompCoverageRequested">
+                <div class="col-xs-12" id="">
                     <p class="control-label"><input type="checkbox"
                                                     class=""
                                                     data-reviewName="" name=""

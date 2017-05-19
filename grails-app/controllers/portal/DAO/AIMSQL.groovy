@@ -160,10 +160,6 @@ class AIMSQL {
 
 
 
-    def test(){
-        log.info "testDAO"
-
-    }
     def saveNewSpecialEventSubmission(dataMap, dataSource_aim, user, uwQuestionsMap, uwQuestionsOrder) {
         log.info "AIMDAO SPECIAL EVENT SAVE"
         Sql aimsql = new Sql(dataSource_aim)
@@ -575,7 +571,7 @@ class AIMSQL {
                        UserID:"'web'",
                        DateTime: "'${timestamp}'",
                        Subject: "'Underwriter Questions'",
-                       Note: "'${notesFormatted}'",
+                       Note: "'${notesFormatted.replaceAll("'","''")}'",
                        PurgeDate: 'NULL',
                        StatusID: 'NULL',
                        AlternateRefID: 'NULL',
@@ -1265,7 +1261,7 @@ class AIMSQL {
                            UserID:"'web'",
                            DateTime: "'${timestamp}'",
                            Subject: "'Underwriter Questions'",
-                           Note: "'${notesFormatted}'",
+                           Note: "'${notesFormatted.replaceAll("'","''")}'",
                            PurgeDate: 'NULL',
                            StatusID: 'NULL',
                            AlternateRefID: 'NULL',
@@ -1876,9 +1872,16 @@ class AIMSQL {
         log.info "productID: " + productID
         log.info "proposedEffective: " + proposedEffective
         log.info "teamID: " + teamID
-        def rows = aimsql.callWithRows("{call dbo.spGetPolicyRegister('$p1', '$p2', '$p3', '$p4', '$p5', $p6, '$p7', ${Sql.ALL_RESULT_SETS})}") { num ->
-            log.info "ReferenceID $num"
+        log.info "SQL: " + "{call dbo.spGetPolicyRegister('$p1', '$p2', '$p3', '$p4', '$p5', $p6, '$p7', ${Sql.ALL_RESULT_SETS})}"
+//        def rows = aimsql.callWithAllRows("{call dbo.spGetPolicyRegister('$p1', '$p2', '$p3', '$p4', '$p5', $p6, '$p7', ${Sql.ALL_RESULT_SETS})}") { num ->
+//            log.info "ReferenceID $num"
+//        }
+        def rows = aimsql.callWithAllRows("{call dbo.spGetPolicyRegister('$p1', '$p2', '$p3', '$p4', '$p5', $p6, '$p7')}"){ dwells ->
+                log.info "dwells: " + dwells
+
         }
+
+//        List rows = aimsql.rows("{call dbo.spGetPolicyRegister('$p1', '$p2', '$p3', '$p4', '$p5', $p6, '$p7', ${Sql.ALL_RESULT_SETS})}")
         log.info rows
         //****************************************************************************************************************
 

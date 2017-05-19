@@ -97,6 +97,9 @@
         </div>
 
         <div class="col-xs-4 ">
+            <button class="btn btn-xs btn-success" id="emergencyIndicationButton" type="button" style="" onclick="emergencyIndication();">
+                <span class="" style="" > Indication Generate</span>
+            </button>
         </div>
 
         <div class="col-xs-4">

@@ -74,6 +74,15 @@ i.fa.fa-times-circle.fileDeleteFAIcon:hover {
 }
 
 
+i.fa.fa-times-circle.castRowDeleteIcon{
+    width: 25%;
+    color: rgba(128, 128, 128, 0.38);
+    padding-top: 8px;
+    padding-left: 10px;
+}
+i.fa.fa-times-circle.castRowDeleteIcon:hover {
+    color: #646669;
+}
 
 
 

@@ -298,9 +298,14 @@ $(document).ready(function () {
                         "</button>";
                 }
                 else if(statusCode === "BND"){
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton'  disabled> " +
-                        "<i class='fa fa-flag' aria-hidden='true'></i>" +
-                        "<span>Bound</span>" +
+                    // htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton'  disabled> " +
+                    //     "<i class='fa fa-flag' aria-hidden='true'></i>" +
+                    //     "<span>Bound</span>" +
+                    //     "</button>";
+
+                    htmlString = htmlString + "<button class='btn btn-sm btn-primary bindOptionsButton' id='' type='button' style=''>" +
+                        "<i class='fa fa-handshake-o' aria-hidden='true'></i>" +
+                        "<span class='' id='bindOptionsButtonSpan' style='' > Assign Policy Number</span>" +
                         "</button>";
 
                 }
@@ -464,8 +469,18 @@ $(document).ready(function () {
 
 
     ////////////////////////////////BIND FUNCTION STUFF///////////////////////////////
-    $(document).on('click', '#bindOptionsButton', function () {
-        $('#bindReviewTabButton').click();
+    $(document).on('click', '.bindOptionsButton', function () {
+        if($('#reviewModal').is(':visible')) {
+            $('#bindReviewTabButton').click();
+        }
+        else{
+            $('.reviewButton').trigger('click');
+            setTimeout(function(){
+                $('#bindReviewTabButton').click();
+
+            },1500);
+        }
+
     });
     $(document).on('click', '#bindReviewTabButton', function () {
         var thisQuoteID = $('#reviewQuoteID').html().trim();

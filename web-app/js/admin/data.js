@@ -364,6 +364,18 @@ function clearModalProductFields(){
     $('#productModalProductSelect option:eq(0)').prop('selected', true)
 }
 
+function emergencyIndication(){
+    $.ajax({
+        method: "POST",
+        url: "/Admin/emergencyIndication",
+        data: {
+        }
+    })
+        .done(function(msg) {
+            alert(msg);
+        });
+}
+
 
 
 

@@ -50,12 +50,14 @@
 <div class="container">
     <div class="row">
         <div class="col-xs-1" style="margin-top:80px">
-            <button class="btn btn-xs btn-success" id="testHelper" type="button"
-                    style="background-color: rgb(105, 210, 255); border-color: rgb(105, 210, 255); margin: 2px;"
-                    onclick="autoFillAll()">
-                <i class="fa fa-cogs" aria-hidden="true"></i>
-                <span class="" style="font-size: 14px; font-weight: 500"> Test Helper</span>
-            </button>
+            <g:if test="${user.admin == "true"}">
+                <button class="btn btn-xs btn-success" id="testHelper" type="button"
+                        style="background-color: rgb(105, 210, 255); border-color: rgb(105, 210, 255); margin: 2px;"
+                        onclick="autoFillAll()">
+                    <i class="fa fa-cogs" aria-hidden="true"></i>
+                    <span class="" style="font-size: 14px; font-weight: 500"> Test Helper</span>
+                </button>
+            </g:if>
         </div>
         <div class="col-xs-10">
             <h1>New Policy</h1>
@@ -1253,7 +1255,7 @@
                                     </div>
                                     <div class="form-group col-xs-12">
                                         <label for="phoneNumber">Phone Number <span style="color:red;">*</span></label>
-                                        <g:textField type="text" class="form-control phoneNumberMask" name="phoneNumber" placeholder="(123) 456-7890" required="required" />
+                                        <g:textField type="text" class="form-control phoneNumberMask" name="phoneNumber" placeholder="(123) 456-7890" required="required" maxlength="20"/>
                                     </div>
                                     <div class="form-group col-xs-12">
                                         <label for="email">Email address <span style="color:red;">*</span></label>
@@ -1277,7 +1279,7 @@
                                         <input class="form-control" type="text" placeholder = "City" name="cityMailing" id="cityMailing" required="required" />
                                     </div>
                                     <div class="form-group col-xs-6">
-                                        <input class="form-control" type="text" placeholder = "Zip Code" name="zipCodeMailing" id="zipCodeMailing" required="required" data-lengthrequired="5"/>
+                                        <input class="form-control" type="text" placeholder = "Zip Code" name="zipCodeMailing" id="zipCodeMailing" required="required" data-lengthrequired="5" maxlength="6"/>
                                     </div>
                                     <div class="form-group col-xs-6">
                                         %{--<input class="form-control" type="text" placeholder = "State" name="stateMailing" id="stateMailing"/>--}%
@@ -1457,7 +1459,7 @@
                                     </div>
                                     <div class="form-group col-xs-2">
                                         <label class="control-label">Zipcode</label>
-                                        <input class="form-control showReview" type="text" data-reviewName="Physical Zipcode" placeholder = "Zip Code" name="zipCode" />
+                                        <input class="form-control showReview" type="text" data-reviewName="Physical Zipcode" placeholder = "Zip Code" name="zipCode" maxlength="12"/>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -1514,15 +1516,15 @@
                                 </div>
                                 <div class="form-group col-xs-3">
                                     <label class="control-label">FEIN/SSN</label>
-                                    <input class="form-control showReview" type="text" data-reviewName="FEIN/SSN" placeholder = "FEIN/SSN" name="FEINSSN" id="FEINSSN"/>
+                                    <input class="form-control showReview" type="text" data-reviewName="FEIN/SSN" placeholder = "FEIN/SSN" name="FEINSSN" id="FEINSSN" maxlength="12"/>
                                 </div>
                                 <div class="form-group col-xs-3">
                                     <label class="control-label">SIC</label>
-                                    <input class="form-control showReview" type="text" data-reviewName="SIC" placeholder = "SIC" name="SIC" id="SIC" value="7812"/>
+                                    <input class="form-control showReview" type="text" data-reviewName="SIC" placeholder = "SIC" name="SIC" id="SIC" value="7812" maxlength="6"/>
                                 </div>
                                 <div class="form-group col-xs-3">
                                     <label class="control-label">NAIC</label>
-                                    <input class="form-control showReview" type="text" data-reviewName="NAIC" placeholder = "NAIC" name="NCCI" id="NCCI" value="512110"/>
+                                    <input class="form-control showReview" type="text" data-reviewName="NAIC" placeholder = "NAIC" name="NCCI" id="NCCI" value="512110" maxlength="15"/>
                                 </div>
                             </div>
                         </div>

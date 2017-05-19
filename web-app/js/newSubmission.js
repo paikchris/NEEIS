@@ -738,6 +738,8 @@ $(document).ready(function() {
                     $('#principalPhotographyDateEnd').val($('#proposedExpirationDate').val());
                     $('#totalBudgetInput').val($('#totalBudgetConfirm').val());
                     $('#loadingModal').modal('hide');
+
+                    checkWCandCastInputs();
                 }
                 else {
                     $('#loadingModal').modal('hide');
@@ -812,6 +814,7 @@ $(document).ready(function() {
                                     var quoteIDs = msg.split("&;&")[0];
 
                                     //NEW STUFF
+                                    var submissionHasFile = false;
                                     if(Object.keys(attachedFileMap).length != 0){
                                         submissionHasFile = true;
                                         formData.append("attachedFileMap", JSON.stringify(attachedFileMap))
@@ -1497,6 +1500,11 @@ function buildReview() {
     var reviewString = "";
     var checkboxesReviewed = "";
     var blankAnswer = "To Follow"
+
+    //RESET UWQUESTIONS
+    uwQuestionsMap = {};
+    uwQuestionsOrder = [];
+
     $(".showReview").each(function() {
         if ($(this).is(':visible')) {
             //if ($(this).css("display") != "none") {
@@ -1601,7 +1609,7 @@ function buildReview() {
                 $("#castMemberDetailContainer").find('.row').each(function() {
                     if ($(this).css("display") != "none") {
                         if ($(this).find(".castMemberName").val().trim().length > 0) {
-                            answer = answer + $(this).find(".castMemberName").val() + "," + $(this).find(".castMemberAge").val() + "," + $(this).find(".castMemberRole").val() + "\n"
+                            answer = answer + $(this).find(".castMemberName").val() + ",\t" + $(this).find(".castMemberAge").val() + ",\t" + $(this).find(".castMemberRole").val() + "\n"
 
                         }
                     }
@@ -1611,13 +1619,21 @@ function buildReview() {
                 if (answer === "") {
                     answer = "To Follow";
                 }
-
                 reviewString = reviewString + "<div class='row'>" +
                     "<div class='col-xs-3 text-left'>" +
                     "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
                     "</div>" +
                     "<div class='col-xs-9'>" +
-                    "<div class='reviewSpan' >" + answer + "</div>" +
+                    "<div class='reviewSpan' style='white-space: pre-line'>" + $(this).val() + "</div>" +
+                    "</div>" +
+                    "</div>";
+
+                reviewString = reviewString + "<div class='row'>" +
+                    "<div class='col-xs-3 text-left'>" +
+                    "<label class='reviewLabel '>" + "Cast Members" + "</label><br>" +
+                    "</div>" +
+                    "<div class='col-xs-9'>" +
+                    "<div class='reviewSpan' style='white-space: pre-line'>" + answer + "</div>" +
                     "</div>" +
                     "</div>";
                 reviewString = reviewString + "<br>";

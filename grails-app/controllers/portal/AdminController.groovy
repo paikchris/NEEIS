@@ -1,6 +1,8 @@
 package portal
 
 import groovy.sql.Sql
+import portal.DAO.AIMSQL
+import portal.DAO.Intelledox
 
 //TESTING SSHFS
 
@@ -9,6 +11,8 @@ class AdminController {
     def beforeInterceptor = [action: this.&checkUser]
     def timeZone = TimeZone.getTimeZone('PST')
     def dateFormat = 'yyyy-MM-dd HH:mm:ss.SSS'
+    AIMSQL aimDAO = new AIMSQL();
+    Intelledox intelledoxDAO = new Intelledox();
 
     def checkUser() {
         log.info "CHECK USER"
@@ -25,6 +29,11 @@ class AdminController {
         else if(test == true){
             redirect(controller:'main', action:'index')
         }
+
+    }
+
+    def emergencyIndication(){
+        intelledoxDAO.createEmergencyIndicationPDF(dataSource_aim)
 
     }
 
@@ -52,6 +61,53 @@ class AdminController {
 
     def saveRiskTypeChanges(){
 
+    }
+
+    def fixCompanyLogos(){
+        log.info "FIXING AIM CONTACT IDS"
+        log.info params
+        Sql aimsql = new Sql(dataSource_aim)
+
+        //ADD MISSING COMPANIES TO AGENCY TABLE
+        def userList = User.list();
+        def agencyList = Agency.list();
+        log.info "AGENCY LIST: " + agencyList.agencyID
+
+        userList.each{
+            def userRecord = it;
+
+            //CHECK IF COMPANY ID IS IN AGENCY TABLE
+            if(userRecord.company != null){
+                if(agencyList.agencyID.contains(userRecord.company)){
+                    log.info(it.company + " COMPANY EXISTS, CHECKING IF LOGO PATH IS NOT EMPTY")
+
+                    def agencyRecordToCheck = Agency.findAllWhere(agencyID: userRecord.company)
+                    if(agencyRecordToCheck.logoFileName !=null && agencyRecordToCheck.logoFileName.size() > 0){
+                        log.info(it.company + " LOGO EXISTS")
+                        log.info(it.company + " OK")
+                    }
+                    else{
+                        log.info(it.company + " LOGO DOES NOT EXIST, ADDING DEFAULT")
+                        agencyRecordToCheck.logoFileName = "default"
+                        agencyRecordToCheck.save(flush: true, failOnError: true);
+                    }
+                }
+                else{
+                    log.info "COMPANY DOES NOT EXIST, ADDING AND SETTING TO DEFAULT"
+                    def a = new portal.Agency(agencyID:userRecord.company, agencyPin:"", logoFileName:"default")
+                    a.save(flush: true, failOnError: true)
+
+                }
+            }
+
+        }
+
+
+        agencyList.each{
+            def agencyRecord = it;
+
+
+        }
     }
 
     def fixUserAimContactIDs(){
