@@ -25,6 +25,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 
 class AsyncController {
+    def beforeInterceptor = [action: this.&checkUser]
+    def grailsLinkGenerator
+
     def dataSource_aim
     AIMSQL aimDAO = new AIMSQL();
     Intelledox intelledoxHelper = new Intelledox();
@@ -34,6 +37,23 @@ class AsyncController {
     def timeZone = TimeZone.getTimeZone('PST')
     def dateFormat = 'yyyy-MM-dd HH:mm:ss.SSS'
     def dateSimple = 'MM/dd/yyyy'
+
+    def checkUser() {
+        println "CHECK USER"
+        println params
+        AuthController ac = new AuthController()
+        def isLoggedIn = ac.checkAJAXRequest()
+
+        if(isLoggedIn){
+        }
+        else{
+            render "Session Expired," + grailsLinkGenerator.serverBaseURL + "/auth/login"
+
+
+
+            return false
+        }
+    }
 
     def getProductsForCoverageV2(){
         log.info("GETTING PRODUCTS FOR COVERAGE V2")
@@ -3808,10 +3828,9 @@ class AsyncController {
 
         //SAVE INSURED
         try {
-            def dataMap = new JsonSlurper().parseText(params.dataMap)
-
             //GATHERING TEST DATA
             // def testDataRecord = testDataHelper.saveParams("savingSubmissionToAIM", JsonOutput.prettyPrint(JsonOutput.toJson(dataMap)))
+            def dataMap = new JsonSlurper().parseText(params.dataMap)
             def uwQuestionsOrder = params.uwQuestionsOrder.split("&;&");
             def uwQuestionsMap = new JsonSlurper().parseText(params.uwQuestionsMap)
 
@@ -3839,7 +3858,7 @@ class AsyncController {
 
             //SET LOGO
             def agencyRecord = Agency.findAllWhere(agencyID: session.user.company)
-            if(agencyRecord.logoFileName != null){
+            if(agencyRecord != null && agencyRecord.logoFileName != null){
                 if(agencyRecord.logoFileName == "default"){
                     dataMap.logoFile = "Barbican.png"
                 }
@@ -3916,17 +3935,6 @@ class AsyncController {
             def uwQuestionsOrder = params.uwQuestionsOrder.split("&;&");
             def uwQuestionsMap = new JsonSlurper().parseText(params.uwQuestionsMap)
 
-            def quoteIDCoverages = aimDAO.saveNewSpecialEventSubmission(dataMap, dataSource_aim, session.user, uwQuestionsMap, uwQuestionsOrder)
-            log.info "QuoteID: " + quoteIDCoverages
-            //0620584;EPKG,0620585;CPK
-            def submitGroupID = ""
-            quoteIDCoverages.split(",").each{
-                submitGroupID = submitGroupID + it.split(";")[0] + ","
-            }
-            if (submitGroupID.endsWith(",")) {
-                submitGroupID = submitGroupID.substring(0, submitGroupID.length() - 1);
-            }
-            
             //ADDITIONAL INFORMATION NECESSARY FOR INDICATION PDF
             Sql aimsql = new Sql(dataSource_aim)
             aimsql.eachRow("SELECT     *\n" +
@@ -3947,6 +3955,45 @@ class AsyncController {
 
                 dataMap.underwriterPhone = it.Wk_Phone
                 dataMap.underwriterFax = it.Wk_Fax
+            }
+            //SET LOGO
+            def agencyRecord = Agency.findAllWhere(agencyID: session.user.company)
+            if(agencyRecord != null && agencyRecord.logoFileName != null){
+                if(agencyRecord.logoFileName == "default"){
+                    dataMap.logoFile = "Prosight.png"
+                }
+                else{
+                    dataMap.logoFile = agencyRecord[0].logoFileName
+                }
+            }
+            else{
+                dataMap.logoFile = "Prosight.png"
+            }
+
+
+//            def quoteAndIndicationStatus = aimDAO.saveNewSpecialEventSubmission(dataMap, dataSource_aim, session.user, uwQuestionsMap, uwQuestionsOrder)
+//            def quoteIDCoverages = quoteAndIndicationStatus.split("&;&")[0]
+//            indicationStatus = quoteAndIndicationStatus.split("&;&")[1]
+//            log.info "QuoteID: " + quoteIDCoverages
+//            //0620584;EPKG,0620585;CPK
+//            def submitGroupID = ""
+//            quoteIDCoverages.split(",").each{
+//                submitGroupID = submitGroupID + it.split(";")[0] + ","
+//            }
+//            if (submitGroupID.endsWith(",")) {
+//                submitGroupID = submitGroupID.substring(0, submitGroupID.length() - 1);
+//            }
+
+
+            def quoteIDCoverages = aimDAO.saveNewSpecialEventSubmission(dataMap, dataSource_aim, session.user, uwQuestionsMap, uwQuestionsOrder)
+            log.info "QuoteID: " + quoteIDCoverages
+            //0620584;EPKG,0620585;CPK
+            def submitGroupID = ""
+            quoteIDCoverages.split(",").each{
+                submitGroupID = submitGroupID + it.split(";")[0] + ","
+            }
+            if (submitGroupID.endsWith(",")) {
+                submitGroupID = submitGroupID.substring(0, submitGroupID.length() - 1);
             }
 
             def now = new Date()
@@ -4604,6 +4651,8 @@ class AsyncController {
         log.info "BIND SUBMISSION"
         log.info params
 
-        render  JsonOutput.toJson(aimDAO.bind(params, dataSource_aim));
+        def dataMap = new JsonSlurper().parseText(params.dataMap)
+
+        render  JsonOutput.toJson(aimDAO.bind(params, dataMap, dataSource_aim));
     }
 }

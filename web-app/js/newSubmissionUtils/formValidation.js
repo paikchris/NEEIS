@@ -121,7 +121,7 @@ function validateFields() {
     });
 
     //VALIDATE DATES
-    $('.datepicker:visible').each(function() {
+    $('.datepicker[required]:visible').each(function() {
         if($(this).val().split('/').length == 3 ){
             if ($(this).val().split('/').length != 3) {
                 valid = false;

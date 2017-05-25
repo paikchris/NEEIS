@@ -1363,6 +1363,7 @@ function buildReview() {
     //alert($("#namedInsured").html());
     $("#reviewNamedInsured").html($("#namedInsured").val());
     $("#reviewMailingAddress").html($("#googleAutoAddress").val());
+    // console.log($("#cityMailing").val())
     $("#reviewMailingCity").html($("#cityMailing").val());
     $("#reviewMailingZipcode").html($("#zipCodeMailing").val());
     $("#reviewMailingState").html($("#stateMailing").val());

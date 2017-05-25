@@ -20,6 +20,10 @@ public  void setMetaClass(groovy.lang.MetaClass mc) { }
 public  java.lang.Object invokeMethod(java.lang.String method, java.lang.Object arguments) { return null;}
 public  java.lang.Object getProperty(java.lang.String property) { return null;}
 public  void setProperty(java.lang.String property, java.lang.Object value) { }
+public  java.lang.Object getBeforeInterceptor() { return null;}
+public  void setBeforeInterceptor(java.lang.Object value) { }
+public  java.lang.Object getGrailsLinkGenerator() { return null;}
+public  void setGrailsLinkGenerator(java.lang.Object value) { }
 public  java.lang.Object getDataSource_aim() { return null;}
 public  void setDataSource_aim(java.lang.Object value) { }
 public  portal.DAO.AIMSQL getAimDAO() { return (portal.DAO.AIMSQL)null;}
@@ -40,6 +44,7 @@ public  java.lang.Object getAjaxDownloadAttachment() { return null;}
 public  void setAjaxDownloadAttachment(java.lang.Object value) { }
 public  java.lang.Object getDownloadCert() { return null;}
 public  void setDownloadCert(java.lang.Object value) { }
+public  java.lang.Object checkUser() { return null;}
 public  java.lang.Object getProductsForCoverageV2() { return null;}
 public  java.lang.Object getProductsForCoverage() { return null;}
 public  java.lang.Object getProductsForCoverageV3() { return null;}

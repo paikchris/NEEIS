@@ -413,88 +413,7 @@ class Intelledox {
 
 
             soapXML = soapXML + """
-\t<ratingTable>
-\t\t<ratingHeader>Rating</ratingHeader>
-\t"""
 
-            if (jsonSerial.getAt("EPKGIndicationRateInfo") != null) {
-                soapXML = soapXML + """
-\t\t<ratingRow>
-\t\t\t<rating ratingName="Entertainment Package">
-\t\t\t\t<ratingPrice>  </ratingPrice>
-\t\t\t</rating>"""
-
-                jsonSerial.getAt("EPKGIndicationRateInfo").split("\n").eachWithIndex { row, index ->
-                    log.info("ROW: " + row)
-                    if (row.split("\t").size() > 1) {
-                        soapXML = soapXML + """
-\t\t\t<rating ratingName="${row.split("\t")[0]}">
-\t\t\t\t<ratingPrice> ${XmlUtil.escapeXml(row.split("\t")[1])}</ratingPrice>
-\t\t\t</rating>"""
-                    } else {
-                        soapXML = soapXML + """
-\t\t\t<rating ratingName="${row.split("\t")[0]}">
-\t\t\t\t<ratingPrice></ratingPrice>
-\t\t\t</rating>"""
-                    }
-                }
-                soapXML = soapXML + """
-\t\t</ratingRow>"""
-            }
-            if (jsonSerial.getAt("CPKIndicationRateInfo") != null) {
-                soapXML = soapXML + """
-\t\t<ratingRow>
-\t\t\t<rating ratingName="Commercial Package">
-\t\t\t\t<ratingPrice>  </ratingPrice>
-\t\t\t</rating>"""
-
-                jsonSerial.getAt("CPKIndicationRateInfo").split("\n").eachWithIndex { row, index ->
-                    log.info("ROW: " + row)
-                    if (row.split("\t").size() > 1) {
-                        soapXML = soapXML + """
-\t\t\t<rating ratingName="${row.split("\t")[0]}">
-\t\t\t\t<ratingPrice> ${XmlUtil.escapeXml(row.split("\t")[1])}</ratingPrice>
-\t\t\t</rating>"""
-                    } else {
-                        soapXML = soapXML + """
-\t\t\t<rating ratingName="${row.split("\t")[0]}">
-\t\t\t\t<ratingPrice></ratingPrice>
-\t\t\t</rating>"""
-                    }
-                }
-                soapXML = soapXML + """
-\t\t</ratingRow>"""
-            } else if (jsonSerial.getAt("CGLIndicationRateInfo") != null) {
-                soapXML = soapXML + """
-\t\t<ratingRow>
-\t\t\t<rating ratingName="Commercial General Liability">
-\t\t\t\t<ratingPrice>  </ratingPrice>
-\t\t\t</rating>"""
-
-                jsonSerial.getAt("CGLIndicationRateInfo").split("\n").eachWithIndex { row, index ->
-                    log.info("ROW: " + row)
-                    if (row.split("\t").size() > 1) {
-                        soapXML = soapXML + """
-\t\t\t<rating ratingName="${row.split("\t")[0]}">
-\t\t\t\t<ratingPrice> ${XmlUtil.escapeXml(row.split("\t")[1])}</ratingPrice>
-\t\t\t</rating>"""
-                    } else {
-                        soapXML = soapXML + """
-\t\t\t<rating ratingName="${row.split("\t")[0]}">
-\t\t\t\t<ratingPrice></ratingPrice>
-\t\t\t</rating>"""
-                    }
-                }
-                soapXML = soapXML + """
-\t\t</ratingRow>"""
-            }
-
-            soapXML = soapXML + """
-\t</ratingTable>
-\t"""
-
-
-            soapXML = soapXML + """
 \t
 \t<applicantInformationTable>
 \t\t<applicantInformationHeader>Application Information</applicantInformationHeader>
@@ -550,55 +469,88 @@ class Intelledox {
 \t\t</budgetInformationRow>
 \t</budgetInformationTable>
 
-\t
-\t<productionInformationTable>
-\t\t<productionInformationHeader>Production Information</productionInformationHeader>
-\t\t<productionInformationRow>
-\t\t\t<productionInformationName productionInformationColOne="Types of Production:">
-\t\t\t\t<productionInformationColTwo> ${XmlUtil.escapeXml(jsonSerial.getAt("productionType"))} </productionInformationColTwo>
-\t\t\t</productionInformationName>
-\t\t\t<productionInformationName productionInformationColOne="Script / Story:">
-\t\t\t\t<productionInformationColTwo> ${XmlUtil.escapeXml(jsonSerial.getAt("story"))} </productionInformationColTwo>
-\t\t</productionInformationName>
-\t\t</productionInformationRow>
-\t</productionInformationTable>
+\t<ratingTable>
+\t\t<ratingHeader>Rating</ratingHeader>
+\t"""
 
-\t<principalPhotographyTable>
-\t\t<principalPhotographyHeader>Principal Photography</principalPhotographyHeader>
-\t\t<principalPhotographyRow>"""
+            if (jsonSerial.getAt("EPKGIndicationRateInfo") != null) {
+                soapXML = soapXML + """
+\\t\\t<ratingRow>
+\\t\\t\\t<rating ratingName="Entertainment Package">
+\\t\\t\\t\\t<ratingPrice>  </ratingPrice>
+\\t\\t\\t</rating>"""
 
-            if (jsonSerial.getAt("numberOfFilmLocations") != null) {
-                def numLocations = jsonSerial.getAt("numberOfFilmLocations");
-                for (def i = 1; i < numLocations + 1; i++) {
-                    soapXML = soapXML + """
-\t\t\t<principalPhotographyName startPrincipalPhoto="${XmlUtil.escapeXml(jsonSerial.getAt("filmingStart" + i))}">
-\t\t\t\t<endPrincipalPhoto>${XmlUtil.escapeXml(jsonSerial.getAt("filmingEnd" + i))}</endPrincipalPhoto>
-\t\t\t\t<locationPrincipalPhoto>${XmlUtil.escapeXml(jsonSerial.getAt("filmingLocation" + i))}</locationPrincipalPhoto>
-\t\t\t</principalPhotographyName>"""
+                jsonSerial.getAt("EPKGIndicationRateInfo").split("\\n").eachWithIndex { row, index ->
+                    log.info("ROW: " + row)
+                    if (row.split("\\t").size() > 1) {
+                        soapXML = soapXML + """
+\\t\\t\\t<rating ratingName="${row.split("\\t")[0]}">
+\\t\\t\\t\\t<ratingPrice> ${XmlUtil.escapeXml(row.split("\\t")[1])}</ratingPrice>
+\\t\\t\\t</rating>"""
+                    } else {
+                        soapXML = soapXML + """
+\\t\\t\\t<rating ratingName="${row.split("\\t")[0]}">
+\\t\\t\\t\\t<ratingPrice></ratingPrice>
+\\t\\t\\t</rating>"""
+                    }
                 }
+                soapXML = soapXML + """
+\\t\\t</ratingRow>"""
             }
+            if (jsonSerial.getAt("CPKIndicationRateInfo") != null) {
+                soapXML = soapXML + """
+\\t\\t<ratingRow>
+\\t\\t\\t<rating ratingName="Commercial Package">
+\\t\\t\\t\\t<ratingPrice>  </ratingPrice>
+\\t\\t\\t</rating>"""
+
+                jsonSerial.getAt("CPKIndicationRateInfo").split("\\n").eachWithIndex { row, index ->
+                    log.info("ROW: " + row)
+                    if (row.split("\\t").size() > 1) {
+                        soapXML = soapXML + """
+\\t\\t\\t<rating ratingName="${row.split("\\t")[0]}">
+\\t\\t\\t\\t<ratingPrice> ${XmlUtil.escapeXml(row.split("\\t")[1])}</ratingPrice>
+\\t\\t\\t</rating>"""
+                    } else {
+                        soapXML = soapXML + """
+\\t\\t\\t<rating ratingName="${row.split("\\t")[0]}">
+\\t\\t\\t\\t<ratingPrice></ratingPrice>
+\\t\\t\\t</rating>"""
+                    }
+                }
+                soapXML = soapXML + """
+\\t\\t</ratingRow>"""
+            } else if (jsonSerial.getAt("CGLIndicationRateInfo") != null) {
+                soapXML = soapXML + """
+\\t\\t<ratingRow>
+\\t\\t\\t<rating ratingName="Commercial General Liability">
+\\t\\t\\t\\t<ratingPrice>  </ratingPrice>
+\\t\\t\\t</rating>"""
+
+                jsonSerial.getAt("CGLIndicationRateInfo").split("\\n").eachWithIndex { row, index ->
+                    log.info("ROW: " + row)
+                    if (row.split("\\t").size() > 1) {
+                        soapXML = soapXML + """
+\\t\\t\\t<rating ratingName="${row.split("\\t")[0]}">
+\\t\\t\\t\\t<ratingPrice> ${XmlUtil.escapeXml(row.split("\\t")[1])}</ratingPrice>
+\\t\\t\\t</rating>"""
+                    } else {
+                        soapXML = soapXML + """
+\\t\\t\\t<rating ratingName="${row.split("\\t")[0]}">
+\\t\\t\\t\\t<ratingPrice></ratingPrice>
+\\t\\t\\t</rating>"""
+                    }
+                }
+                soapXML = soapXML + """
+\\t\\t</ratingRow>"""
+            }
+
+            soapXML = soapXML + """
+\\t</ratingTable>
+\\t"""
 
 
             soapXML = soapXML + """
-\t\t</principalPhotographyRow>
-
-\t</principalPhotographyTable>
-
-\t<keyPersonnelTable>
-\t\t<keyPersonnelHeader>Key Personnel</keyPersonnelHeader>
-\t\t<keyPersonnelRow>
-\t\t\t<keyPerson keyPersonnel="Director">
-\t\t\t\t<keyPersonnelName>${XmlUtil.escapeXml(jsonSerial.getAt("director"))}</keyPersonnelName>
-\t\t\t\t<keyPersonnelYOE></keyPersonnelYOE>
-\t\t\t\t<keyPersonnelPrior></keyPersonnelPrior>
-\t\t\t</keyPerson>
-\t\t\t<keyPerson keyPersonnel="Producer">
-\t\t\t\t<keyPersonnelName>${XmlUtil.escapeXml(jsonSerial.getAt("producer"))}</keyPersonnelName>
-\t\t\t\t<keyPersonnelYOE></keyPersonnelYOE>
-\t\t\t\t<keyPersonnelPrior></keyPersonnelPrior>
-\t\t\t</keyPerson>
-\t\t</keyPersonnelRow>
-\t</keyPersonnelTable>
 
 \t<extraForms> </extraForms>
 
@@ -730,7 +682,7 @@ class Intelledox {
                     <int:Data><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <application>
 \t<basicInfo>
-\t\t<logo>c:\\IntelledoxLogo\\proSight.png</logo>
+\t\t<logo>c:\\IntelledoxLogo\\${XmlUtil.escapeXml(jsonSerial.getAt('logoFile'))}</logo>
 \t\t<nameOfInsured>${XmlUtil.escapeXml(jsonSerial.getAt('namedInsured'))}</nameOfInsured>
 \t\t<brokerCompanyName>${XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyName'))}</brokerCompanyName>"""
 
@@ -1103,34 +1055,6 @@ class Intelledox {
 \t\t\t</applicantInformation>
 \t\t</applicantInformationRow>
 \t</applicantInformationTable>
-
-
-\t
-\t<productionInformationTable>
-\t\t<productionInformationHeader>Event Information</productionInformationHeader>
-\t\t<productionInformationRow>
-\t\t\t<productionInformationName productionInformationColOne="Types of Event:">
-\t\t\t\t<productionInformationColTwo> ${XmlUtil.escapeXml(jsonSerial.getAt("proposedTermLengthString"))} </productionInformationColTwo>
-\t\t\t</productionInformationName>
-\t\t\t<productionInformationName productionInformationColOne="Total Attendance:">
-\t\t\t\t<productionInformationColTwo> ${XmlUtil.escapeXml(jsonSerial.getAt("totalAttendance"))} </productionInformationColTwo>
-\t\t</productionInformationName>
-\t\t\t<productionInformationName productionInformationColOne="Largest Number of Attendees Per Day:">
-\t\t\t\t<productionInformationColTwo> ${XmlUtil.escapeXml(jsonSerial.getAt("attendeePerDay"))} </productionInformationColTwo>
-\t\t</productionInformationName>
-\t\t\t<productionInformationName productionInformationColOne="Event Location:">
-\t\t\t\t<productionInformationColTwo> ${XmlUtil.escapeXml(jsonSerial.getAt("eventState"))} </productionInformationColTwo>
-\t\t</productionInformationName>
-\t\t</productionInformationRow>
-\t</productionInformationTable>
-
-\t<principalPhotographyTable>
-\t\t<principalPhotographyHeader></principalPhotographyHeader>
-\t</principalPhotographyTable>
-
-\t<keyPersonnelTable>
-\t\t<keyPersonnelHeader></keyPersonnelHeader>
-\t</keyPersonnelTable>
 
 
 </application>]]></int:Data>

@@ -303,7 +303,7 @@ $(document).ready(function () {
                     //     "<span>Bound</span>" +
                     //     "</button>";
 
-                    htmlString = htmlString + "<button class='btn btn-sm btn-primary bindOptionsButton' id='' type='button' style=''>" +
+                    htmlString = htmlString + "<button class='btn btn-sm btn-primary bibindOptionsndOptionsButton' id='' type='button' style=''>" +
                         "<i class='fa fa-handshake-o' aria-hidden='true'></i>" +
                         "<span class='' id='bindOptionsButtonSpan' style='' > Assign Policy Number</span>" +
                         "</button>";
@@ -480,12 +480,15 @@ $(document).ready(function () {
 
             },1500);
         }
+        // $('.sw-toolbar-bottom').css('display', 'none')
 
     });
     $(document).on('click', '#bindReviewTabButton', function () {
         var thisQuoteID = $('#reviewQuoteID').html().trim();
         $('#smartwizard').smartWizard("reset");
         $('.sw-btn-next').attr("disabled", "disabled");
+
+        $('.sw-toolbar-bottom').css('display', 'none')
         $.ajax({
             method: "POST",
             url: "/Async/bindPrepare",
@@ -513,6 +516,9 @@ $(document).ready(function () {
     });
     $(document).on('click', '#getPolicyFromRegisterButton', function () {
         var thisQuoteID = $('#reviewQuoteID').html().trim();
+        $('.sw-btn-next').click();
+        $('#policyNumbersLoadingDiv').css('display', '');
+        $('.policyNumbersContainer').css('display', 'none');
 
         $.ajax({
             method: "POST",
@@ -523,7 +529,9 @@ $(document).ready(function () {
             }
         })
             .done(function (msg) {
-                //alert(msg)
+                // alert(msg)
+                $('#policyNumbersLoadingDiv').css('display', 'none');
+                $('.policyNumbersContainer').css('display', '');
                 var response = msg.trim();
                 if(msg.indexOf("isInvoiced") > -1){
                     alert("This submission is already invoiced");
@@ -531,46 +539,72 @@ $(document).ready(function () {
                 }
                 else{
                     var policyNumbersJSON = JSON.parse(msg);
+                    console.log(policyNumbersJSON)
                     var htmlString = "";
 
                     var limitNumPolicy = 10;
                     var count =0;
-                    for(var i=1; i <10 && i<policyNumbersJSON.length; i++){
-                        var policyRow = policyNumbersJSON[i];
-                        console.log(policyRow);
-                        htmlString = htmlString + "<div class='row card policyRow'>" +
-                            "<div class='col-xs-2 '>" +
-                            "<span class='policyNumber'>" + policyRow.PolicyID + "</span>" +
-                            "</div>" +
-                            "<div class='col-xs-2 '>" +
-                            "<span>" + policyRow.Describe + "</span>" +
-                            "</div>" +
-                            "<div class='col-xs-2 '>" +
-                            "<span>" + policyRow.CompanyID + "</span>" +
-                            "</div>" +
-                            "<div class='col-xs-2 '>" +
-                            "<span>" + policyRow.CompanyName + "</span>" +
-                            "</div>" +
-                            "<div class='col-xs-2 '>" +
-                            "<span>" + policyRow.ProductID + "</span>" +
-                            "</div>" +
-                            "<div class='col-xs-2 '>" +
-                            "<span>" + policyRow.PolicyRegisterKey_SK + "</span>" +
+                    if(policyNumbersJSON[0].length==0){
+                        htmlString = htmlString + "<div class='row'>" +
+                            "<div class='col-xs-12 '>" +
+                                "<h4 class='' style='color: rgb(185, 0, 0); text-align: center;'>No Policy Numbers Available</h4>" +
                             "</div>" +
                             "</div>";
-                    };
+                    }
+                    else{
+                        for(var i=0; i <10 && i<policyNumbersJSON[0].length; i++){
+                            var policyRow = (policyNumbersJSON[0])[i];
+                            console.log(policyRow);
+                            htmlString = htmlString + "<div class='row card policyRow'>" +
+                                "<div class='col-xs-2 '>" +
+                                "<span class='policyNumber'>" + policyRow.PolicyID + "</span>" +
+                                "</div>" +
+                                "<div class='col-xs-2 '>" +
+                                "<span>" + policyRow.Describe + "</span>" +
+                                "</div>" +
+                                "<div class='col-xs-2 '>" +
+                                "<span>" + policyRow.CompanyID + "</span>" +
+                                "</div>" +
+                                "<div class='col-xs-2 '>" +
+                                "<span>" + policyRow.CompanyName + "</span>" +
+                                "</div>" +
+                                "<div class='col-xs-2 '>" +
+                                "<span>" + policyRow.ProductID + "</span>" +
+                                "</div>" +
+                                "<div class='col-xs-2 '>" +
+                                "<span>" + policyRow.PolicyRegisterKey_SK + "</span>" +
+                                "</div>" +
+                                "</div>";
+                        };
+                    }
+
                     $('#policyNumberTable').html(htmlString);
 
-                    $('.sw-btn-next').click();
+
                 }
 
 
             });
     });
 
+    // $(document).on('click', '.policyRow', function () {
+    //     var policyNumber = $(this).find('.policyNumber').html();
+    //     $('.sw-btn-next').removeAttr("disabled");
+    //     $('.sw-btn-next').click();
+    //     $("#confirmPolicyNumber").html(policyNumber)
+    //     $('.sw-btn-next').attr("disabled", true);
+    // });
+
     $(document).on('click', '.policyRow', function () {
         var thisQuoteID = $('#reviewQuoteID').html().trim();
         var policyNumber = $(this).find('.policyNumber').html();
+        $('.sw-btn-next').removeAttr("disabled");
+        $('.sw-btn-next').click();
+        $('.sw-btn-next').attr("disabled", true);
+
+        $('#policyNumberReviewLoadingDiv').css('display', '');
+        $('#policyNumberReviewDiv').css('display', 'none');
+
         $.ajax({
             method: "POST",
             url: "/Async/bindReviewSubmissionDetails",
@@ -581,18 +615,61 @@ $(document).ready(function () {
             }
         })
             .done(function (msg) {
+                $('#policyNumberReviewLoadingDiv').css('display', 'none');
+                $('#policyNumberReviewDiv').css('display', '');
+
                 $('#policyNumberHeader').html(policyNumber);
                 $('#proposedDatesForBind').html($('#reviewProposedDates').html())
                 $('#premiumBreakdownOverviewForBind').html($('#premiumBreakdownOverview').html())
                 $('#limitsDeductOverviewForBind').html($('#limitsDeductOverview').html())
-                $('.sw-btn-next').removeAttr("disabled");
-                $('.sw-btn-next').click();
+
             });
 
     });
 
+
+    $(document).on('click', '#reviewPolicyDetailsNextButton', function () {
+        $('.sw-btn-next').removeAttr("disabled");
+        $('.sw-btn-next').click();
+        $('.sw-btn-next').attr("disabled", true);
+    });
+
     $(document).on('click', '#bindFinalButton', function () {
         var thisQuoteID = $('#reviewQuoteID').html().trim();
+
+        /*
+        var dataMap = [];
+        $('#premiumBreakdownOverview .premiumDistRow').each(function(){
+
+            var premiumDistObject = {
+                Description : $(this).find('.coverageNameSpan'),
+                Amount : $(this).find('.premiumAmountSpan'),
+                LineTypeID : "P",
+                TransCd : "NBS"
+            }
+            dataMap.push(premiumDistObject)
+        });
+
+        $('#premiumBreakdownOverview .feeDistRow').each(function(){
+
+            var premiumDistObject = {
+                Description : $(this).find('.feeNameSpan'),
+                Amount : $(this).find('.feeAmountSpan'),
+                LineTypeID : "F",
+                TransCd : "FEE"
+            }
+            feeDistString = feeDistString + feeName + "&,&" + feeAmount + "&;&"
+        });
+
+        var taxDistString = "";
+        $('#premiumBreakdownOverview .feeDistRow').each(function(){
+            var taxName = $(this).find('.feeNameSpan');
+            var taxAmount = $(this).find('.feeAmountSpan');
+
+            taxDistString = taxDistString + taxName + "&,&" + taxAmount + "&;&"
+        });
+        */
+
         $.ajax({
             method: "POST",
             url: "/Async/bindSubmission",
@@ -961,6 +1038,8 @@ $(document).ready(function () {
                     ////FORMAT PREMIUM BREAKDOWN
                     var coverageRowsArray = questionJSON['Version-LobDistribSched'].split(/\r\n|\n|\r/);
                     var feesRowsArray = questionJSON['Version-FeeSchedule'].split(/\r\n|\n|\r/);
+                    var grossComm = questionJSON['Version-GrossComm']
+                    var agentComm = questionJSON['Version-AgentComm']
                     var nameColWidth = 5;
                     var premColWidth = 7;
                     premiumBreakdownString = "";
@@ -969,12 +1048,15 @@ $(document).ready(function () {
                         var premiumAmount = coverageRowsArray[i].split("\t")[1];
                         var coverageName = coverageRowsArray[i].split("\t")[0];
                         premiumBreakdownString = premiumBreakdownString +
-                                //"<div class='row'>" +
+                            "<div class='coverageDistRow'>" +
                             "<div class='col-xs-" + nameColWidth +"'>" +
-                            "<span>" + coverageName + "</span>" +
+                            "<span class='coverageNameSpan'>" + coverageName + "</span>" +
                             "</div>" +
                             "<div class='col-xs-" + premColWidth +"'>" +
-                            "<span>" + premiumAmount + "</span>" +
+                            "<span class='premiumAmountSpan'> " + premiumAmount + "</span>" +
+                            "</div>" +
+                            "<span class='grossComm' style='display:none'> " + grossComm + "</span>" +
+                            "<span class='agentComm' style='display:none'> " + agentComm + "</span>" +
                             "</div>";
                     }
                     //FEES SECOND
@@ -982,14 +1064,33 @@ $(document).ready(function () {
                         var feeAmount = feesRowsArray[i].split("\t")[1];
                         var feeName = feesRowsArray[i].split("\t")[0];
                         if(typeof feeName !== 'undefined' && typeof feeAmount !== 'undefined'){
-                            premiumBreakdownString = premiumBreakdownString +
-                                    //"<div class='row'>" +
-                                "<div class='col-xs-" + nameColWidth +"'>" +
-                                "<span>" + feeName + "</span>" +
-                                "</div>" +
-                                "<div class='col-xs-" + premColWidth +"'>" +
-                                "<span>" + feeAmount + "</span>" +
-                                "</div>";
+                            if(feeName === "Broker Fee"){
+                                premiumBreakdownString = premiumBreakdownString +
+                                    "<div class=''>" +
+                                    "<div class='col-xs-" + nameColWidth +"'>" +
+                                    "<span class='feeNameSpan'>" + feeName + "</span>" +
+                                    "</div>" +
+                                    "<div class='col-xs-" + premColWidth +"'>" +
+                                    "<span class='feeAmountSpan'>" + feeAmount + "</span>" +
+                                    "<span class='grossComm' style='display:none'> " + "100.0" + "</span>" +
+                                    "<span class='agentComm' style='display:none'> " + "" + "</span>" +
+                                    "</div>" +
+                                    "</div>";
+                            }
+                            else{
+                                premiumBreakdownString = premiumBreakdownString +
+                                    "<div class='feeDistRow'>" +
+                                    "<div class='col-xs-" + nameColWidth +"'>" +
+                                    "<span class='feeNameSpan'>" + feeName + "</span>" +
+                                    "</div>" +
+                                    "<div class='col-xs-" + premColWidth +"'>" +
+                                    "<span class='feeAmountSpan'>" + feeAmount + "</span>" +
+                                    "<span class='grossComm' style='display:none'> " + "100.0" + "</span>" +
+                                    "<span class='agentComm' style='display:none'> " + "" + "</span>" +
+                                    "</div>" +
+                                    "</div>";
+                            }
+
                         }
 
                     }
@@ -1000,12 +1101,15 @@ $(document).ready(function () {
                         console.log((questionJSON[taxString]))
                         if(parseFloat(questionJSON[taxString]) > 0){
                             premiumBreakdownString = premiumBreakdownString +
-                                    //"<div class='row'>" +
+                                "<div class='taxDistRow'>" +
                                 "<div class='col-xs-" + nameColWidth +"'>" +
-                                "<span>" + questionJSON[taxString+'Name'] + "</span>" +
+                                "<span class='taxNameSpan'>" + questionJSON[taxString+'Name'] + "</span>" +
                                 "</div>" +
                                 "<div class='col-xs-" + premColWidth +"'>" +
-                                "<span>" + questionJSON[taxString] + "</span>" +
+                                "<span class='taxAmountSpan'>" + questionJSON[taxString] + "</span>" +
+                                "<span class='grossComm' style='display:none'> " + "100.0" + "</span>" +
+                                "<span class='agentComm' style='display:none'> " + "" + "</span>" +
+                                "</div>" +
                                 "</div>";
                         }
                     }

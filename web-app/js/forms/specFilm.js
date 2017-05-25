@@ -1474,7 +1474,7 @@ function ratePremiums(thisObj) {
                     }
                 })
                     .done(function(msg) {
-                        //alert(msg);
+                        // alert(msg);
                         //alert( "Data Saved: " + msg );
                         responseJSON = JSON.parse(msg);
                         //alert(responseJSON.coverages.length);

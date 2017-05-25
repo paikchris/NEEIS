@@ -12,6 +12,37 @@ class AuthController {
     def timeZone = TimeZone.getTimeZone('PST')
     def dateFormat = 'yyyy-MM-dd HH:mm:ss.SSS'
 
+    def check(){
+        log.info params
+        log.info "Checking Session"
+        log.info "Session = " + session.user
+
+        if(!session.user){
+            //i.e. user not logged in
+            log.info("Not logged in")
+            redirect(controller:'auth', action:'login')
+            return false
+        }
+        else{
+            return true;
+        }
+    }
+
+    def checkAJAXRequest(){
+        log.info params
+        log.info "Checking Session"
+        log.info "Session = " + session.user
+
+        if(!session.user){
+            //i.e. user not logged in
+            log.info("Not logged in")
+            return false
+        }
+        else{
+            return true;
+        }
+    }
+
     def index() {
     }
     def iesupport(){
@@ -144,23 +175,7 @@ class AuthController {
 
     }
 
-    def check(){
-        log.info params
-        log.info "Checking Session"
-        log.info "Session = " + session.user
 
-        if(!session.user){
-            //i.e. user not logged in
-                log.info("Not logged in")
-                redirect(controller:'auth', action:'login')
-                return false
-
-
-        }
-        else{
-            return true;
-        }
-    }
 
     def resetPassword(){
         log.info("PASSWORD RESET ACTION1")

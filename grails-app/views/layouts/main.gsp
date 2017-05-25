@@ -43,6 +43,18 @@
 	<!--[if IE]>
 	<![endif]-->
 
+
+
+	%{--REQUIRE JS--}%
+	%{--<script data-main="scripts/main" src="scripts/require.js"></script>--}%
+	%{--<script src="js/vendor/require.js"></script>--}%
+	%{--<script src="${resource(dir: 'js/vendor', file: 'require.js')}" ></script>--}%
+
+
+
+
+
+
 	<!-- Google Analytics Script -->
 	<script>
 		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -130,6 +142,8 @@
 	<!-- Neeis Global JS file-->
 	<script src="${resource(dir: 'js', file: 'global.js')}" ></script>
 
+	<script src="${resource(dir: 'js/utils', file: 'ajaxHandlers.js')}" ></script>
+
 	<!-- Jquery Bootstrap Wizard Plugin-->
 	<link rel="stylesheet" href="${resource(dir: 'plugins/UI/bootstrap-wizard/css', file: 'smart_wizard.css')}" type="text/css">
 	<link rel="stylesheet" href="${resource(dir: 'plugins/UI/bootstrap-wizard/css', file: 'smart_wizard_theme_arrows.css')}" type="text/css">
@@ -166,6 +180,11 @@
 
 	</script>
 
+	%{--STORE.JS PLUGIN--}%
+	<script src="${resource(dir: 'js/utils', file: 'store.everything.min.js')}" ></script>
+	<script>
+
+	</script>
 
 
 

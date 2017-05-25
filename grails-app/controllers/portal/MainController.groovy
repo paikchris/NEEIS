@@ -17,9 +17,6 @@ class MainController {
         println params
         AuthController ac = new AuthController()
         def test = ac.check()
-
-        //println "TEST WASSSSS " + session.user;
-
     }
 
     def SpecRunner(){

@@ -868,6 +868,7 @@ function getSubmissionMapSP(){
         userCompany: $('#userDetails-company').html(), //DONT' CHANGE
         accountExec: "jason", //DON'T CHANGE
         accountExecName: "Jason DeBolt", //DON'T CHANGE
+        accountExecEmail: "jason@neeis.com",
         phoneNumber: $('#phoneNumber').val(),
         namedInsuredEmail: $('#namedInsuredEmail').val(),
         FEINSSN: $('#FEINSSN').val(),
@@ -917,30 +918,10 @@ function getSubmissionMapSP(){
     submissionMap.lobString = ""
     submissionMap.limitsString = ""
     submissionMap.deductsString = ""
-    submissionMap.wcLOB = "";
-    submissionMap.noalLOB = "";
     submissionMap.cglLOB = "";
-    submissionMap.cumbLOB = "";
     submissionMap.alcoholLOB = "";
 
-// TABLE WORKCOMP
-    $('div#reviewLimitsDeductsSP div.tableWC div.lobRow').each(function() {
-        submissionMap.lobString = submissionMap.lobString + $(this).find('.coverageColumn').children().first().html() + " \t" + $(this).find('.limitColumn').children().first().html() + " \t" +
-            "" + "\n";
-        submissionMap.wcLOB = submissionMap.wcLOB + $(this).find('.coverageColumn').children().first().html() + " \t" + $(this).find('.limitColumn').children().first().html() + " \t" +
-            "" + "\n";
-        submissionMap.limitsString = submissionMap.limitsString + $(this).find('.limitColumn').children().first().html() + "\tWC:" + $(this).find('.coverageColumn').children().first().html() + "\n";
-        submissionMap.deductsString = submissionMap.deductsString + "" + "\tWC:" + $(this).find('.coverageColumn').children().first().html() + "\n";
-    });
-// TABLE HIRED AND NON OWNED AUTO LIABILITY
-    $('div#reviewLimitsDeductsSP div.tableNOAL div.lobRow').each(function() {
-        submissionMap.lobString = submissionMap.lobString + $(this).find('.coverageColumn').children().first().html() + " \t" + $(this).find('.limitColumn').children().first().html() + " \t" +
-            "" + "\n";
-        submissionMap.noalLOB = submissionMap.noalLOB + $(this).find('.coverageColumn').children().first().html() + " \t" + $(this).find('.limitColumn').children().first().html() + " \t" +
-            "" + "\n";
-        submissionMap.limitsString = submissionMap.limitsString + $(this).find('.limitColumn').children().first().html() + "\tNOAL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
-        submissionMap.deductsString = submissionMap.deductsString + "" + "\tNOAL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
-    });
+
 // TABLE COMMERCIAL GENERAL LIABILITY (CGL)
     $('div#reviewLimitsDeductsSP div.tableCGL div.lobRow').each(function() {
         submissionMap.lobString = submissionMap.lobString + $(this).find('.coverageColumn').children().first().html() + " \t" + $(this).find('.limitColumn').children().first().html() + " \t" +
@@ -948,17 +929,9 @@ function getSubmissionMapSP(){
         submissionMap.cglLOB = submissionMap.cglLOB + $(this).find('.coverageColumn').children().first().html() + " \t" + $(this).find('.limitColumn').children().first().html() + " \t" +
             "" + "\n";
         submissionMap.limitsString = submissionMap.limitsString + $(this).find('.limitColumn').children().first().html() + "\tCGL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
-        submissionMap.deductsString = submissionMap.deductsString + "" + "\tCGL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+        submissionMap.deductsString = submissionMap.deductsString + $(this).find('.deductibleColumn').children().first().html() + "\tCGL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
     });
-// TABLE UMBRELLA LIABILITY
-    $('div#reviewLimitsDeductsSP div.tableCUMB div.lobRow').each(function() {
-        submissionMap.lobString = submissionMap.lobString + $(this).find('.coverageColumn').children().first().html() + " \t" + $(this).find('.limitColumn').children().first().html() + " \t" +
-            "" + "\n";
-        submissionMap.cumbLOB = submissionMap.cumbLOB + $(this).find('.coverageColumn').children().first().html() + " \t" + $(this).find('.limitColumn').children().first().html() + " \t" +
-            "" + "\n";
-        submissionMap.limitsString = submissionMap.limitsString + $(this).find('.limitColumn').children().first().html() + "\tCUMB:" + $(this).find('.coverageColumn').children().first().html() + "\n";
-        submissionMap.deductsString = submissionMap.deductsString + "" + "\tCUMB:" + $(this).find('.coverageColumn').children().first().html() + "\n";
-    });
+
 // TABLE ALCOHOL LIABILITY
     $('div#reviewLimitsDeductsSP div.tableALCOHOL div.lobRow').each(function() {
         submissionMap.lobString = submissionMap.lobString + $(this).find('.coverageColumn').children().first().html() + " \t" + $(this).find('.limitColumn').children().first().html() + " \t" +
@@ -966,7 +939,7 @@ function getSubmissionMapSP(){
         submissionMap.alcoholLOB = submissionMap.alcoholLOB + $(this).find('.coverageColumn').children().first().html() + " \t" + $(this).find('.limitColumn').children().first().html() + " \t" +
             "" + "\n";
         submissionMap.limitsString = submissionMap.limitsString + $(this).find('.limitColumn').children().first().html() + "\tALCOHOL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
-        submissionMap.deductsString = submissionMap.deductsString + "" + "\tALCOHOL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
+        submissionMap.deductsString = submissionMap.deductsString + $(this).find('.deductibleColumn').children().first().html() + "\tALCOHOL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
     });
 
     //BUILD LOB, LIMITS, DEDUCTS STRING

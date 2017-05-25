@@ -26,11 +26,12 @@ public  java.lang.Object getTimeZone() { return null;}
 public  void setTimeZone(java.lang.Object value) { }
 public  java.lang.Object getDateFormat() { return null;}
 public  void setDateFormat(java.lang.Object value) { }
+public  java.lang.Object check() { return null;}
+public  java.lang.Object checkAJAXRequest() { return null;}
 public  java.lang.Object index() { return null;}
 public  java.lang.Object iesupport() { return null;}
 public  java.lang.Object register() { return null;}
 public  java.lang.Object registerUser() { return null;}
-public  java.lang.Object check() { return null;}
 public  java.lang.Object resetPassword() { return null;}
 public  java.lang.Object login() { return null;}
 public  java.lang.Object logout() { return null;}

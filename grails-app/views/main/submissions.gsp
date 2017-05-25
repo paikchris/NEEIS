@@ -894,12 +894,15 @@
                                         color: darkgray;
                                     }
                                     .policyRow{
-                                        background-color: rgba(17, 80, 53, 1);
+                                        background-color: rgb(95, 154, 189);
                                         color: white;
                                         border-radius: 4px;
                                         padding:4px;
                                         margin-bottom: 14px;
                                         cursor:pointer;
+                                    }
+                                    .policyRow:hover{
+                                        background-color: rgb(66, 106, 131);
                                     }
                                     .card {
                                     }
@@ -958,7 +961,7 @@
                                                 </div>
                                                 <div id="step-2" class="" style="display:none">
                                                     <h5>Select a Policy Number</h5>
-                                                    <div class="policyNumbersContainer" style="padding: 10px 20px">
+                                                    <div class="policyNumbersContainer" style="padding: 10px 20px; display:none">
                                                         <div id="policyKeyID" style="display:none"></div>
                                                         <div class="row">
                                                             <div class="col-xs-2">
@@ -984,45 +987,69 @@
 
                                                         </div>
                                                     </div>
+                                                    <div id="policyNumbersLoadingDiv"style="display:none; text-align: center; margin-top: 50px; margin-bottom: 80px; color: rgb(95, 154, 189);">
+                                                        <i class="fa fa-spinner fa-spin fa-5x fa-fw"></i>
+                                                    </div>
                                                 </div>
                                                 <div id="step-3" class="" style="display:none">
-                                                    <h4 id="policyNumberHeader"> </h4>
-                                                    <br>
-                                                    <div class="col-xs-6">
+                                                    <div class="row col-xs-12" style="margin-top: 5px; margin-bottom:10px;">
                                                         <div class="col-xs-12">
                                                             <div class="col-xs-12">
-                                                                <span style="font-weight:500">Premium Breakdown</span>
+                                                                <h4 id="policyNumberHeader"> </h4>
                                                             </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row" style="margin-bottom:30px;">
+                                                        <div class="col-xs-12" id="policyNumberReviewDiv" style="display:none">
+                                                            <div class="col-xs-6">
+                                                                <div class="col-xs-12">
+                                                                    <div class="col-xs-12">
+                                                                        <span style="font-weight:500">Premium Breakdown</span>
+                                                                    </div>
 
-                                                        </div>
-                                                        <div class="col-xs-12">
-                                                            <div id="premiumBreakdownOverviewForBind">
-                                                            </div>
-                                                        </div>
-                                                        <br>
-                                                        <br>
-                                                        <br>
-                                                        <div class="col-xs-12">
-                                                            <div class="col-xs-3">
-                                                                <span style="font-weight:500">Limit</span>
+                                                                </div>
+                                                                <div class="col-xs-12">
+                                                                    <div id="premiumBreakdownOverviewForBind">
+                                                                    </div>
+                                                                </div>
+                                                                <br>
+                                                                <br>
+                                                                <br>
+                                                                <div class="col-xs-12">
+                                                                    <div class="col-xs-3">
+                                                                        <span style="font-weight:500">Limit</span>
+                                                                    </div>
+                                                                    <div class="col-xs-6">
+                                                                        <span style="font-weight:500">Coverage</span>
+                                                                    </div>
+                                                                    <div class="col-xs-3">
+                                                                        <span style="font-weight:500">Deductible</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-xs-12">
+                                                                    <div id="limitsDeductOverviewForBind" style="font-size:12px; text-overflow: ellipsis ;">
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                             <div class="col-xs-6">
-                                                                <span style="font-weight:500">Coverage</span>
-                                                            </div>
-                                                            <div class="col-xs-3">
-                                                                <span style="font-weight:500">Deductible</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-xs-12">
-                                                            <div id="limitsDeductOverviewForBind" style="font-size:12px; text-overflow: ellipsis ;">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xs-6">
-                                                        <div class="col-xs-12" id="proposedDatesForBind">
+                                                                <div class="col-xs-12" id="proposedDatesForBind">
 
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div id="policyNumberReviewLoadingDiv"style="display:none; text-align: center; margin-top: 50px; margin-bottom: 80px; color: rgb(95, 154, 189);">
+                                                            <i class="fa fa-spinner fa-spin fa-5x fa-fw"></i>
                                                         </div>
                                                     </div>
+                                                    <div class="row col-xs-12" style="margin: 10px;">
+                                                        <div class="col-xs-12">
+                                                            <button class="btn btn-primary pull-right" id="reviewPolicyDetailsNextButton" type="button"
+                                                                    style="margin: 10px; width:100px;">
+                                                                <span class="" id="" style="">Next</span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
 
 
 

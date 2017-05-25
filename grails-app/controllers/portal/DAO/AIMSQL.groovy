@@ -1,6 +1,7 @@
 package portal.DAO
 
 import grails.util.Environment
+import grails.util.Holders
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.sql.Sql
@@ -15,7 +16,6 @@ import sun.swing.StringUIClientPropertyKey;
 
 class AIMSQL {
     Intelledox intelledoxController = new Intelledox();
-
     def timeZone = TimeZone.getTimeZone('PST')
     def dateFormat = 'yyyy-MM-dd HH:mm:ss.SSS'
 
@@ -351,7 +351,7 @@ class AIMSQL {
         def taxCount = 0;
 
 
-        def webQuoteFee = 0 
+        def webQuoteFee = 0
         def webQuoteFeeNoTax = 0
         def feeSchedule
         def versionPremDist
@@ -390,7 +390,7 @@ class AIMSQL {
                           Deductible:"'${deductsString}'",
                           CoInsure:"''",
                           StatusID:"'${dataMap.getAt("statusID")}'",
-                          MarketID:"'SAFELL'",
+                          MarketID:"'RM0039'",
                           Tax1:"'${tax1Amount}'",
                           Tax2:"'${tax2Amount}'",
                           Tax3:"'${tax3Amount}'",
@@ -630,7 +630,8 @@ class AIMSQL {
         allQuoteIDs = allQuoteIDs + quoteID + ";" + coverageID + ",";
 
         log.info(allQuoteIDs)
-        if(allQuoteIDs.charAt(allQuoteIDs.length() - 1) == ','){
+
+        if(allQuoteIDs.endsWith(",")){
             allQuoteIDs = allQuoteIDs.substring(0, allQuoteIDs.length()-1);
         }
         def totalPolicyFee = 15 * (allQuoteIDs.split(",").size());
@@ -656,22 +657,21 @@ class AIMSQL {
         def quoteID =0;
         def allQuoteIDs = "";
 
-        def insuredID = 0; 
+        def insuredID = 0;
         def brokerName = user.firstName + " " + user.lastName;
 
 
-
-        aimsql.call("{call dbo.GetKeyField(${Sql.INTEGER}, 'ReferenceID')}") { num ->
-            log.info "InsuredID $num"
-            insuredID = num
-        }
+        insuredID = getKeyField("ReferenceID", aimsql)
+//        aimsql.call("{call dbo.GetKeyField(${Sql.INTEGER}, 'ReferenceID')}") { num ->
+//            insuredID = num
+//        }
 
 
         def now = new Date()
         def timestamp = now.format(dateFormat, timeZone)
 
         ///////SAVE INSURED
-        def map = [InsuredID:"'${insuredID}'",
+        def tempMap = [InsuredID:"'${insuredID}'",
                    NamedInsured: "'${testjson.getAt("namedInsured").replaceAll("'","''")}'",
                    NameType: "'B'",
                    DBAName: "'${testjson.getAt("namedInsured").replaceAll("'","''")}'",
@@ -747,6 +747,9 @@ class AIMSQL {
                    CountryID: 'NULL',
                    ParentInsuredName : 'NULL'
         ]
+
+        def map = cleanSQLMap(tempMap, "Insured", dataSource_aim)
+
 
 
         aimsql.execute "insert into Insured (InsuredID, NamedInsured, NameType, DBAName, Prefix, First_Name, Last_Name,\n" +
@@ -1046,7 +1049,7 @@ class AIMSQL {
                 webQuoteFeeNoTax = webQuoteFeeNoTax + Double.parseDouble(brokerFee)
             }
 
-            def versionmap = [QuoteID: "'${quoteID}'",
+            tempMap = [QuoteID: "'${quoteID}'",
                               VerOriginal: "'A'",
                               Version: "'A'",
                               Financed: "'Y'",
@@ -1159,6 +1162,9 @@ class AIMSQL {
                               InsuredDepositwoTRIA:"'0.00'",
                               ReferenceKey_FK:"'${referenceID}'"
             ]
+
+            def versionMap = cleanSQLMap(tempMap, "Version", dataSource_aim)
+            
             aimsql.execute "INSERT INTO dbo.Version (QuoteID, VerOriginal, Version, Financed, Taxed, Brokerage, Indicator, DirectBillFlag, ProposedTerm, UnderLyingCoverage, " +
                     "PolicyTerm, VersionID, CompanyID, ProductID, Premium, Quoted, Limits, Subject, Endorsement, MEP, Rate, GrossComm, AgentComm, Deductible, " +
                     "CoInsure, StatusID, MarketID, Tax1, Tax2, Tax3, Tax4, FormID, RateInfo, CommPaid, ProposedEffective, ProposedExpiration, TaxDistrib, " +
@@ -1170,23 +1176,23 @@ class AIMSQL {
                     "TaxwoTRIA6, Tax6Name, TaxwoTRIA7, Tax7Name, TaxwoTRIA8, Tax8Name, Tax6, Tax7, Tax8, InsuredDeposit, AgentDepositwoTRIA, InsuredDepositwoTRIA," +
                     "Non_Premium, NonTax_Premium, FlagFeeCalc, TaxesPaidBy, TaxesPaidByID, FeeSchedule, PremDistrib, LobDistribSched, LobDistrib, ReferenceKey_FK) " +
                     "values " +
-                    "($versionmap.QuoteID, $versionmap.VerOriginal, $versionmap.Version, $versionmap.Financed, $versionmap.Taxed, $versionmap.Brokerage, $versionmap.Indicator, $versionmap.DirectBillFlag, $versionmap.ProposedTerm, $versionmap.UnderLyingCoverage, " +
-                    "$versionmap.PolicyTerm, $versionmap.VersionID, $versionmap.CompanyID, $versionmap.ProductID, $versionmap.Premium, $versionmap.Quoted, $versionmap.Limits, $versionmap.Subject, $versionmap.Endorsement, $versionmap.MEP, $versionmap.Rate, $versionmap.GrossComm, $versionmap.AgentComm, $versionmap.Deductible, " +
-                    "$versionmap.CoInsure, $versionmap.StatusID, $versionmap.MarketID, $versionmap.Tax1, $versionmap.Tax2, $versionmap.Tax3, $versionmap.Tax4, $versionmap.FormID, $versionmap.RateInfo, $versionmap.CommPaid, $versionmap.ProposedEffective, $versionmap.ProposedExpiration, $versionmap.TaxDistrib, " +
-                    "$versionmap.DeductType, $versionmap.LOB_Limit1, $versionmap.LOB_Limit2, $versionmap.LOB_Limit3, $versionmap.LOB_Limit4, $versionmap.LOB_Limit5, $versionmap.LOB_Limit6, $versionmap.LOB_Deduct1, $versionmap.LOB_Deduct2, $versionmap.LOB_Limit1Value, $versionmap.LOB_Limit2Value, " +
-                    "$versionmap.LOB_Limit3Value, $versionmap.LOB_Limit4Value, $versionmap.LOB_Limit5Value, $versionmap.LOB_Limit6Value, $versionmap.LOB_Deduct1Value, $versionmap.LOB_Deduct2Value, $versionmap.TerrorActStatus, $versionmap.FlagOverrideCalc, " +
-                    "$versionmap.TerrorTaxes, $versionmap.FlagMultiOption, $versionmap.LOB_Coverage1, $versionmap.LOB_Coverage2, $versionmap.LOB_Coverage3, $versionmap.LOB_Coverage4, $versionmap.LOB_Coverage5, $versionmap.LOB_Coverage6, $versionmap.LOB_DeductType1, $versionmap.LOB_DeductType2, " +
-                    "$versionmap.TaxwoTRIA1, $versionmap.TaxwoTRIA2, $versionmap.TaxwoTRIA3, $versionmap.TaxwoTRIA4, $versionmap.LOB_Coverage7, $versionmap.LOB_Coverage8, $versionmap.LOB_Limit7, $versionmap.LOB_Limit8, $versionmap.LOB_Limit7Value, $versionmap.LOB_Limit8Value, $versionmap.PremiumProperty, " +
-                    "$versionmap.PremiumLiability, $versionmap.PremiumOther, $versionmap.Tax1Name, $versionmap.Tax2Name, $versionmap.Tax3Name, $versionmap.Tax4Name, $versionmap.AgentDeposit, $versionmap.TaxwoTRIA5, $versionmap.Tax5, $versionmap.Tax5Name, $versionmap.LOB_Coverage9, $versionmap.LOB_Limit9, $versionmap.LOB_Limit9Value, " +
-                    "$versionmap.TaxwoTRIA6, $versionmap.Tax6Name, $versionmap.TaxwoTRIA7, $versionmap.Tax7Name, $versionmap.TaxwoTRIA8, $versionmap.Tax8Name, $versionmap.Tax6, $versionmap.Tax7, $versionmap.Tax8, $versionmap.InsuredDeposit, $versionmap.AgentDepositwoTRIA, $versionmap.InsuredDepositwoTRIA," +
-                    "$versionmap.Non_Premium, $versionmap.NonTax_Premium, $versionmap.FlagFeeCalc, $versionmap.TaxesPaidBy, $versionmap.TaxesPaidByID, $versionmap.FeeSchedule, $versionmap.PremDistrib, $versionmap.LobDistribSched, $versionmap.LobDistrib, $versionmap.ReferenceKey_FK)"
+                    "($versionMap.QuoteID, $versionMap.VerOriginal, $versionMap.Version, $versionMap.Financed, $versionMap.Taxed, $versionMap.Brokerage, $versionMap.Indicator, $versionMap.DirectBillFlag, $versionMap.ProposedTerm, $versionMap.UnderLyingCoverage, " +
+                    "$versionMap.PolicyTerm, $versionMap.VersionID, $versionMap.CompanyID, $versionMap.ProductID, $versionMap.Premium, $versionMap.Quoted, $versionMap.Limits, $versionMap.Subject, $versionMap.Endorsement, $versionMap.MEP, $versionMap.Rate, $versionMap.GrossComm, $versionMap.AgentComm, $versionMap.Deductible, " +
+                    "$versionMap.CoInsure, $versionMap.StatusID, $versionMap.MarketID, $versionMap.Tax1, $versionMap.Tax2, $versionMap.Tax3, $versionMap.Tax4, $versionMap.FormID, $versionMap.RateInfo, $versionMap.CommPaid, $versionMap.ProposedEffective, $versionMap.ProposedExpiration, $versionMap.TaxDistrib, " +
+                    "$versionMap.DeductType, $versionMap.LOB_Limit1, $versionMap.LOB_Limit2, $versionMap.LOB_Limit3, $versionMap.LOB_Limit4, $versionMap.LOB_Limit5, $versionMap.LOB_Limit6, $versionMap.LOB_Deduct1, $versionMap.LOB_Deduct2, $versionMap.LOB_Limit1Value, $versionMap.LOB_Limit2Value, " +
+                    "$versionMap.LOB_Limit3Value, $versionMap.LOB_Limit4Value, $versionMap.LOB_Limit5Value, $versionMap.LOB_Limit6Value, $versionMap.LOB_Deduct1Value, $versionMap.LOB_Deduct2Value, $versionMap.TerrorActStatus, $versionMap.FlagOverrideCalc, " +
+                    "$versionMap.TerrorTaxes, $versionMap.FlagMultiOption, $versionMap.LOB_Coverage1, $versionMap.LOB_Coverage2, $versionMap.LOB_Coverage3, $versionMap.LOB_Coverage4, $versionMap.LOB_Coverage5, $versionMap.LOB_Coverage6, $versionMap.LOB_DeductType1, $versionMap.LOB_DeductType2, " +
+                    "$versionMap.TaxwoTRIA1, $versionMap.TaxwoTRIA2, $versionMap.TaxwoTRIA3, $versionMap.TaxwoTRIA4, $versionMap.LOB_Coverage7, $versionMap.LOB_Coverage8, $versionMap.LOB_Limit7, $versionMap.LOB_Limit8, $versionMap.LOB_Limit7Value, $versionMap.LOB_Limit8Value, $versionMap.PremiumProperty, " +
+                    "$versionMap.PremiumLiability, $versionMap.PremiumOther, $versionMap.Tax1Name, $versionMap.Tax2Name, $versionMap.Tax3Name, $versionMap.Tax4Name, $versionMap.AgentDeposit, $versionMap.TaxwoTRIA5, $versionMap.Tax5, $versionMap.Tax5Name, $versionMap.LOB_Coverage9, $versionMap.LOB_Limit9, $versionMap.LOB_Limit9Value, " +
+                    "$versionMap.TaxwoTRIA6, $versionMap.Tax6Name, $versionMap.TaxwoTRIA7, $versionMap.Tax7Name, $versionMap.TaxwoTRIA8, $versionMap.Tax8Name, $versionMap.Tax6, $versionMap.Tax7, $versionMap.Tax8, $versionMap.InsuredDeposit, $versionMap.AgentDepositwoTRIA, $versionMap.InsuredDepositwoTRIA," +
+                    "$versionMap.Non_Premium, $versionMap.NonTax_Premium, $versionMap.FlagFeeCalc, $versionMap.TaxesPaidBy, $versionMap.TaxesPaidByID, $versionMap.FeeSchedule, $versionMap.PremDistrib, $versionMap.LobDistribSched, $versionMap.LobDistrib, $versionMap.ReferenceKey_FK)"
 
             log.info("Testing Step = " + testjson.getAt("totalBudgetConfirm"))
 
             def totalBudget = Double.parseDouble(testjson.getAt("totalBudgetConfirm").replaceAll('[$,]', ''));
             log.info("Testing Step1")
 
-            def quotemap = [QuoteID: "'${quoteID}'",
+            tempMap = [QuoteID: "'${quoteID}'",
                             ProducerID:"'${user.company}'",
                             ProductID:"'${productID}'" ,
                             NamedInsured:"'${testjson.getAt("namedInsured").replaceAll("'","''")}'",
@@ -1241,6 +1247,9 @@ class AIMSQL {
                             ContactID:"'${user.aimContactID}'",
                             UserDefinedStr1:"'${user.id}'", //keep track of which agent created quotes
             ]
+
+            def quotemap = cleanSQLMap(tempMap, "Quote", dataSource_aim)
+
             aimsql.execute "INSERT INTO dbo.Quote (QuoteID ,ProducerID , ProductID, NamedInsured ,UserID ,Received , Acknowledged, Quoted, TeamID ,DivisionID ,StatusID ,CreatedID ,\n" +
                     "                Renewal ,OpenItem ,VersionCounter ,InsuredID ,Description ,Address1 ,Address2 ,City ,State ,Zip ,AcctExec ,\n" +
                     "                CsrID ,ReferenceID ,SubmitGrpID ,TaxState ,CoverageID ,SuspenseFlag ,ClaimsFlag ,ActivePolicyFlag ,LossHistory ,\n" +
@@ -1257,7 +1266,7 @@ class AIMSQL {
             uwQuestionsOrder.each{
                 notesFormatted = notesFormatted + "${it}: " + uwQuestionsMap.getAt(it) + "\n";
             }
-            def noteMap = [ReferenceID: "'${quoteID}'",
+            tempMap = [ReferenceID: "'${quoteID}'",
                            UserID:"'web'",
                            DateTime: "'${timestamp}'",
                            Subject: "'Underwriter Questions'",
@@ -1268,6 +1277,7 @@ class AIMSQL {
                            DateAddedTo: 'NULL',
                            AddedByUserID: 'NULL']
 
+            def noteMap = cleanSQLMap(tempMap, "Notes", dataSource_aim)
 
 
             aimsql.execute "INSERT INTO dbo.Notes (ReferenceID, UserID, DateTime, Subject, Note, PurgeDate, StatusID, AlternateRefID, DateAddedTo, \n" +
@@ -1275,11 +1285,13 @@ class AIMSQL {
                     "($noteMap.ReferenceID ,$noteMap.UserID , $noteMap.DateTime, $noteMap.Subject ,$noteMap.Note ,$noteMap.PurgeDate ,$noteMap.StatusID ,$noteMap.AlternateRefID," +
                     "$noteMap.DateAddedTo ,$noteMap.AddedByUserID)"
 
-            def taaQuoteMap = [QuoteID: "'${quoteID}'"]
+            tempMap = [QuoteID: "'${quoteID}'"]
 
-            aimsql.execute "INSERT INTO taaQuoteActivity (QuoteID) VALUES ('${quoteID}')"
+            def taaQuoteMap = cleanSQLMap(tempMap, "taaQuoteActivity", dataSource_aim)
 
-            aimsql.execute "INSERT INTO taaQuoteExtendedDetail (QuoteID) VALUES('${quoteID}')"
+            aimsql.execute "INSERT INTO dbo.taaQuoteActivity (QuoteID) VALUES (${quoteID})"
+
+            aimsql.execute "INSERT INTO dbo.taaQuoteExtendedDetail (QuoteID) VALUES(${quoteID})"
 
             //exec dbo.AddTransaction  @ReferenceID='0620017',@UserID='web',@Description='New business submission recvd',
             //@Date='2016-10-08 11:40:26:747',@StatusID='NBS',@ImageID=NULL,@TypeID=NULL,@QuoteVersion='A',@ToNameKey=0,
@@ -1327,7 +1339,6 @@ class AIMSQL {
         testjson['totalPolicyFee'] = totalPolicyFee;
         testjson['allQuoteIDs'] = allQuoteIDs;
         log.info("BEFORE SENDING TO INTELLEDOX = "+  testjson['allQuoteIDs'])
-
         def indicationStatus = intelledoxController.createIndicationPDF(testjson, uwQuestionsMap, uwQuestionsOrder, dataSource_aim)
 
         return allQuoteIDs + "&;&" + indicationStatus
@@ -1849,7 +1860,6 @@ class AIMSQL {
             }
         }
 
-
         /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////USER HAS CLICKED GET POLICY NUMBER FROM REGISTER/////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
@@ -1877,12 +1887,13 @@ class AIMSQL {
 //            log.info "ReferenceID $num"
 //        }
         def rows = aimsql.callWithAllRows("{call dbo.spGetPolicyRegister('$p1', '$p2', '$p3', '$p4', '$p5', $p6, '$p7')}"){ dwells ->
-                log.info "dwells: " + dwells
-
+            log.info "dwells: " + dwells
         }
 
-//        List rows = aimsql.rows("{call dbo.spGetPolicyRegister('$p1', '$p2', '$p3', '$p4', '$p5', $p6, '$p7', ${Sql.ALL_RESULT_SETS})}")
+//      List rows = aimsql.rows("{call dbo.spGetPolicyRegister('$p1', '$p2', '$p3', '$p4', '$p5', $p6, '$p7', ${Sql.ALL_RESULT_SETS})}")
+
         log.info rows
+        log.info rows.size()
         //****************************************************************************************************************
 
         ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
@@ -2114,7 +2125,7 @@ class AIMSQL {
         //****************************************************************************************************************
     }
 
-    def bind(params, dataSource_aim) {
+    def bind(params, dataMap, dataSource_aim) {
         log.info "AIMDAO BIND"
         log.info params
 
@@ -2148,6 +2159,7 @@ class AIMSQL {
         def quoteRecordMap = [:];
 
         def where = "(QuoteID='$params.aimQuoteID')";
+
         quoteRecordMap = selectAllFromTableWhereWithFormatting("Quote", where, dataSource_aim)[0]
 
         versionRecordMap = selectAllFromTableWhereWithFormatting("Version", where, dataSource_aim)[0]
@@ -2258,15 +2270,16 @@ class AIMSQL {
                       DCAttachCategory, LnStagingDir, LNAutoCaptureDir, LibertyNetDir, FlagEndFormV2, RSUITargetDir, attArchiveDir, FlagUseFormsV2, attArchivePeriod, FlagLotusEMail,
                       CRPartTeams, FlagMultiPremInstall, DCCabinetQuery, DCFilter, FlagInstallV2, FlagCombineIRUserIndex, FlagEndRoundToCents, FlagEnableWC
             FROM         Control WITH (NOLOCK)
-         */
+
         aimsql.eachRow("SELECT     * \n" +
                 "FROM         Control WITH (NOLOCK)") {
             log.info "Control: " + it
-        }
+        }*/
         //****************************************************************************************************************
 
         ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
         //EXEC spGetBinderNumber '0623193', 'CA', 'Y', '00', 'NESF16-005', '3/2/2017'
+        /*
         def p1 = params.aimQuoteID
         def p2 = taxState
         def p3 = taxed
@@ -2278,6 +2291,7 @@ class AIMSQL {
             log.info "GetBinderNumber $num"
         }
         log.info "GetBinderNumber Rows: " + spGetBinderNumberRows
+        */
         //****************************************************************************************************************
 
         aimsql.withTransaction {
@@ -2293,22 +2307,28 @@ class AIMSQL {
             //****************************************************************************************************************
 
             ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
+            /*
             aimsql.eachRow("SELECT     TransDecript\n" +
                     "FROM         Status WITH (NOLOCK)\n" +
                     "WHERE     (StatusID = 'BND')") {
                 log.info "Status: " + it
             }
+            */
             //****************************************************************************************************************
 
+
             ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
+            /*
             aimsql.eachRow("SELECT     COUNT(DocumentID) AS Expr1\n" +
                     "FROM         [Document] WITH (NOLOCK)\n" +
                     "WHERE     (DocumentID = 'BINDERF')") {
                 log.info "Document: " + it
             }
+            */
             //****************************************************************************************************************
 
             ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
+            /*
             aimsql.eachRow("SELECT     DocumentID, TypeID, Description, Comments, DataSet, FlagCrystalReport, StatusID, RTF, DefaultDays, SuspenseTypeID, DefaultReasonID, DefaultActionID, \n" +
                     "                      DateBasisID, FlagAllowActivityEntryEdit, DefaultSuspToID, AttachName, TeamID, DivisionID, ActiveFlag, SecurityLvl, DocumentKey_PK, AddressFromID, AddressToID, \n" +
                     "                      FlagOfficeSpecific\n" +
@@ -2316,20 +2336,23 @@ class AIMSQL {
                     "WHERE     (DocumentID = 'BINDER')") {
                 log.info "dvDocumentTemplate (Binder): " + it
             }
+            */
             //****************************************************************************************************************
 
             ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
+            /*
             aimsql.eachRow("SELECT     DocumentID, TypeID, Description, Comments, DataSet, FlagCrystalReport, StatusID, RTF, DefaultDays, SuspenseTypeID, DefaultReasonID, DefaultActionID, \n" +
                     "                      DateBasisID, FlagAllowActivityEntryEdit, DefaultSuspToID, AttachName, TeamID, DivisionID, ActiveFlag, SecurityLvl, DocumentKey_PK, AddressFromID, AddressToID, \n" +
                     "                      FlagOfficeSpecific\n" +
                     "FROM         dvDocumentTemplate\n" +
                     "WHERE     (DocumentID = '00_BINDER')") {
                 log.info "dvDocumentTemplate (00_Binder): " + it
-
             }
+            */
             //****************************************************************************************************************
 
             ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
+            /*
             aimsql.eachRow("SELECT     DocumentID, TypeID, Description, Comments, DataSet, FlagCrystalReport, StatusID, RTF, DefaultDays, SuspenseTypeID, DefaultReasonID, DefaultActionID, \n" +
                     "                      DateBasisID, FlagAllowActivityEntryEdit, DefaultSuspToID, AttachName, TeamID, DivisionID, ActiveFlag, SecurityLvl, DocumentKey_PK, AddressFromID, AddressToID, \n" +
                     "                      FlagOfficeSpecific\n" +
@@ -2338,9 +2361,11 @@ class AIMSQL {
                 log.info "dvDocumentTemplate (Binder): " + it
 
             }
+            */
             //****************************************************************************************************************
 
             ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
+            /*
             aimsql.eachRow("SELECT     DocumentID, Description, StatusID, TypeID, RTF, WPForm, TeamID, SecurityLvl, Comments, DataSet, LogoName_NULL, Attachments, Memo, CreatedBy, SystemReq, \n" +
                     "                      LogoName, AttachmentFlag, EndorsementFlag, SuspenseTypeID, DefaultDays, DefaultReasonID, DefaultActionID, AddressToID, AddressFromID, EmailFormat, \n" +
                     "                      CreateDate, ModifiedDate, LvlRemoveProtection, DocumentKey_PK, FlagGeneralDocument, DateBasisID, DefaultSuspToID, DefaultHeaderStyle, \n" +
@@ -2350,20 +2375,22 @@ class AIMSQL {
                     "FROM         [Document] WITH (NOLOCK)\n" +
                     "WHERE     (DocumentID = 'BINDER')") {
                 log.info "Document (Binder): " + it
-
             }
+            */
             //****************************************************************************************************************
 
             ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
+            /*
             aimsql.eachRow("SELECT     FlagAttachTaxAffidavit\n" +
                     "FROM         Control WITH (NOLOCK)") {
                 log.info "Control: " + it
-
             }
+            */
             //****************************************************************************************************************
 
 
             ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
+            /*
             p1 = quoteContactID
             p2 = "AGT" //CAN'T TELL IF THIS IS CONSTANT OR BEING PULLED
             p3 = producerID
@@ -2373,22 +2400,25 @@ class AIMSQL {
                 log.info "RecipientData: $num"
             }
             log.info "getRecipientDataRows: " + getRecipientDataRows
-
+            */
             //****************************************************************************************************************
 
             ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
+            /*
             p1 = acctExec
             p2 = "EXC" //CAN'T TELL IF THIS IS CONSTANT OR BEING PULLED
             def getSenderDataRows = aimsql.callWithRows("{call dbo.spGetSenderData( '$p1', '$p2')}") { num ->
                 log.info "SenderData: $num"
             }
             log.info getSenderDataRows
+            */
             //****************************************************************************************************************
 
 
             ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-//      exec dbo.lkpCommonData_v1  @CompanyID='RM0057',@MarketID='SAFELL',@QuoteID='0623191',@productID='EPKG37',@producerID='TVD',
-//      @UserID='web',@Premium=$5750.0000,@Fees=$15.0000,@Taxes=$184.0000,@GrossComm=28,@AgentComm=15,@CedingCompanyID=NULL
+//          exec dbo.lkpCommonData_v1  @CompanyID='RM0057',@MarketID='SAFELL',@QuoteID='0623191',@productID='EPKG37',@producerID='TVD',
+//          @UserID='web',@Premium=$5750.0000,@Fees=$15.0000,@Taxes=$184.0000,@GrossComm=28,@AgentComm=15,@CedingCompanyID=NULL
+            /*
             p1 = companyID
             p2 = marketID
             p3 = params.aimQuoteID
@@ -2407,33 +2437,34 @@ class AIMSQL {
                 log.info "lkpCommonData: $num"
             }
             log.info "lkpCommonDataRows: " + lkpCommonDataRows
+            */
             //****************************************************************************************************************
 
 
             ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-//        set @p4=29828
-//        exec dbo.ImagePost1  @origID=NULL,@img=0x7B5C727466315C616E73695C64656,@att=NULL,@newID=@p4 output,@Update=NULL,@ReferenceID=91265,@Type='B',@Version=NULL,@DocumentID='BINDER'
-//        p1 = null //@origID
-//        p2 = 23333443 //Binary data for Image file
-//        p3 = null //@att
-//        p4 = null //@imageID
-//        p5 = null //@Update
-//        p6 = 91265 //@ReferenceID
-//        p7 = 'B' //@Type
-//        p8 = null //@Version
-//        p9 = "Binder" //@DocumentID
-//
-//        def imagePost1 = aimsql.callWithRows("{call dbo.imagePost1('$p1', '$p2', '$p3', ${Sql.ALL_RESULT_SETS}, '$p5', '$p6', " +
-//                "'$p7', '$p8', '$p9')}") { num ->
-//            log.info "New ImageID $num"
-//        }
-//        log.info "imagePost1: " + imagePost1
+//          set @p4=29828
+//          exec dbo.ImagePost1  @origID=NULL,@img=0x7B5C727466315C616E73695C64656,@att=NULL,@newID=@p4 output,@Update=NULL,@ReferenceID=91265,@Type='B',@Version=NULL,@DocumentID='BINDER'
+            p1 = null //@origID
+            p2 = 23333443 //Binary data for Image file
+            p3 = null //@att
+            p4 = null //@imageID
+            p5 = null //@Update
+            p6 = 91265 //@ReferenceID
+            p7 = 'B' //@Type
+            p8 = null //@Version
+            p9 = "Binder" //@DocumentID
+
+            def imagePost1 = aimsql.callWithRows("{call dbo.imagePost1('$p1', '$p2', '$p3', ${Sql.ALL_RESULT_SETS}, '$p5', '$p6', " +
+                    "'$p7', '$p8', '$p9')}") { num ->
+                log.info "New ImageID $num"
+            }
+            log.info "imagePost1: " + imagePost1
             //****************************************************************************************************************
 
 
             ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-//        exec dbo.AddTransaction  @ReferenceID='0623191',@UserID='web',@Description='Coverage bound on version A',@Date='2017-03-02 05:31:44:157',
-//        @StatusID='BND',@ImageID=NULL,@TypeID=NULL,@QuoteVersion='A',@ToNameKey=0,@DocTemplateID=NULL,@AttachmentIcon=0,@SourceDateTime='1899-12-30 00:00:00:000'
+//          exec dbo.AddTransaction  @ReferenceID='0623191',@UserID='web',@Description='Coverage bound on version A',@Date='2017-03-02 05:31:44:157',
+//          @StatusID='BND',@ImageID=NULL,@TypeID=NULL,@QuoteVersion='A',@ToNameKey=0,@DocTemplateID=NULL,@AttachmentIcon=0,@SourceDateTime='1899-12-30 00:00:00:000'
             def now = new Date()
             def timestamp = now.format(dateFormat, timeZone)
             p1 = params.aimQuoteID
@@ -2452,35 +2483,30 @@ class AIMSQL {
                     "$p7, '$p8', $p9, $p10, $p11, '$p12')}") { num ->
                 log.info "addTransaction: $num"
             }
-            log.info "addTransactionRows: " + lkpCommonDataRows
+            log.info "addTransactionRows: " + addTransactionRows
             //****************************************************************************************************************
 
 
             ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
+            /*
             aimsql.eachRow("SELECT     TransDecript\n" +
                     "FROM         Status WITH (NOLOCK)\n" +
                     "WHERE     (StatusID = 'BPF')") {
                 log.info "Status: " + it
             }
+            */
             //****************************************************************************************************************
 
 
-
             ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-//        INSERT INTO dbo.Policy (QuoteID ,PolicyID ,PolicyKey_PK ,Version ,Effective ,Expiration ,Inception ,
-//        Term ,Bound ,StatusID ,Endorsement ,PolicySource ,CompanyID ,ProductID ,EffectiveTime ,ActivePolicyFlag ,AIM_TransDate ,
-//        PolicyGroupKey_FK ,AccountKey_FK ,PremiumWritten ,PremiumTerm ,FlagInspectionRequired ,FlagOverrideServiceUW ,DefaultBillingType )
-//        VALUES ('0623191', 'NESF16-006', 91403, '0', '20170302 00:00:00.000', '20180302 00:00:00.000', '20170302 00:00:00.000', 365,
-//        '20170302 00:00:00.000', 'PIF', '1', 'R', 'RM0057', 'EPKG37', '12:01 AM', 'Y', '20170302 05:31:44.160', 91403, 91264,
-//        convert(money,'5750.00'), convert(money,'5750.00'), 'N', 'N', 'AB')
-            //AccountKey_FK = Version.ReferenceKey_FK
             now = new Date();
             def  policy_timestamp = now.format(dateFormat, timeZone);
-            log.info policy_timestamp.split(" ")[0].replace("-", "") + " " + "00:00:00.000"
             policy_timestamp = policy_timestamp.split(" ")[0].replace("-", "") + " " + "00:00:00.000"
+            log.info policy_timestamp
+
             now = new Date();
             def aimTrans_timestamp = now.format(dateFormat, timeZone);
-            log.info timestamp
+
             aimsql.execute("INSERT INTO dbo.Policy (QuoteID ,PolicyID ,PolicyKey_PK ,Version ,Effective ,Expiration ,Inception ," +
                     "Term ,Bound ,StatusID ,Endorsement ,PolicySource ,CompanyID ,ProductID ,EffectiveTime ,ActivePolicyFlag ,AIM_TransDate ," +
                     "PolicyGroupKey_FK ,AccountKey_FK ,PremiumWritten ,PremiumTerm ,FlagInspectionRequired ,FlagOverrideServiceUW ,DefaultBillingType )  " +
@@ -2490,156 +2516,6 @@ class AIMSQL {
             log.info "Rows Updated (Insert into Policy): " + aimsql.getUpdateCount()
             //****************************************************************************************************************
 
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-//        SELECT *
-//        FROM dbo.Policy WHERE QuoteID='0623191' AND PolicyID='NESF16-006'
-            aimsql.eachRow("SELECT     QuoteID, PolicyID, PolicyKey_PK, Version, PolicyGrpID, Effective, Expiration, Inception, Term, BillingType, NewAccountIndicator, RateDate, MailToCode, \n" +
-                    "PolicyStatusDate, BillingAccountNumber, Bound, BoundTime, SetupDate, MailoutDate, FinanceCompanyID, Cancellation, CancelEffective, CancellationReason, \n" +
-                    "NonRenewalCode, NonRenewBy, Reinstated, Invoiced, Units, UnitType, LocationZip, ClaimsPending, ClaimsMade, LossesPaid, BillToCode, StatusID, Endorsement, \n" +
-                    "AdditionalInsureds, InspectionOrdered, EC, Operations, SICID, Location, CancelTime_Old, CancelRequestedBy, ReturnPrem, ReturnRate, PolicySource, CompanyID, \n" +
-                    "ProductID, ContractID, WrittenPremium, Control_State, Financed, BinderType, RewriteCompanyID, RewritePolicyID, RewriteDate, TypeID, BillTo, RenewalQuoteID, \n" +
-                    "AuditID, AuditInception, AuditType, AuditPremium, AuditOutstanding, DeductType, PolicyForm, InstallID, SuspID, InvoiceDate, FormMakerName, TermPremiumAdj, \n" +
-                    "PolicyPrintDate, EffectiveTime, ActivePolicyFlag, Limit1, Coverage1, Limit2, Coverage2, Limit3, Coverage3, Limit4, Coverage4, AIM_TransDate, PolicyGroupKey_FK, \n" +
-                    "AccountKey_FK, CancelTime, PolicyTerm, InspectionCo_FK, LoanNumber, ReinsuranceCategory, PendingNOCKey_FK, ContractName, ContractKey_FK, \n" +
-                    "DateInspectionOrdered, DateNOC, DateRenewalNotice, AmountFinanced, CountCancelled, CountEndorsed, CountRenewed, CountClaims, PremiumWritten, \n" +
-                    "PremiumBilled, PremiumAdjustments, PremiumTerm, PremiumReturn, DateRenewalLetter, FlagFinancingFunded, FlagSubjectToAudit, FlagConfirmation, \n" +
-                    "DateAuditReviewed, AuditReceivedBy, DateAuditReceived, AuditReviewedBy, InspectionOrderedBy, DateInspectionReceived, InspectionReceivedBy, \n" +
-                    "DateInspectionReviewed, InspectionReviewedBy, FlagInspectionRequired, InspectionFile, DatePolicyReceived, DateReceived, FlagOverrideServiceUW, \n" +
-                    "TRIAReceivedDate, ERPEffective, ERPExpiration, DefaultBillingType, ProductionSplitKey_FK, InvoiceKey_FK, BasisPremiumTerm, FlagLapseInCoverage, \n" +
-                    "DateInspectionBilled, InspectionInvoiceNumber, InspectionCost, InspectionPhotosRecvd, InspectionComments, InspectionInvoiceDate, FlagPremFinAgentFunded, \n" +
-                    "PremiumConvertedTerm, DateInspectionReordered, InspectionReorderedBy, MasterInstallKey_FK, LastInstallExported, EscrowInvoiceKey_FK, EscrowPremium, \n" +
-                    "EscrowInvoiceDate, EscrowInvoiced\n" +
-                    "FROM         Policy\n" +
-                    "WHERE     (QuoteID = '$params.aimQuoteID') AND (PolicyID = '$params.policyNumber')") {
-                log.info "Policy: " + it
-            }
-            //****************************************************************************************************************
-
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-//        SELECT *
-//        FROM dbo.Policy WHERE QuoteID='0623191' '
-            aimsql.eachRow("SELECT     QuoteID, PolicyID, PolicyKey_PK, Version, PolicyGrpID, Effective, Expiration, Inception, Term, BillingType, NewAccountIndicator, RateDate, MailToCode, \n" +
-                    "PolicyStatusDate, BillingAccountNumber, Bound, BoundTime, SetupDate, MailoutDate, FinanceCompanyID, Cancellation, CancelEffective, CancellationReason, \n" +
-                    "NonRenewalCode, NonRenewBy, Reinstated, Invoiced, Units, UnitType, LocationZip, ClaimsPending, ClaimsMade, LossesPaid, BillToCode, StatusID, Endorsement, \n" +
-                    "AdditionalInsureds, InspectionOrdered, EC, Operations, SICID, Location, CancelTime_Old, CancelRequestedBy, ReturnPrem, ReturnRate, PolicySource, CompanyID, \n" +
-                    "ProductID, ContractID, WrittenPremium, Control_State, Financed, BinderType, RewriteCompanyID, RewritePolicyID, RewriteDate, TypeID, BillTo, RenewalQuoteID, \n" +
-                    "AuditID, AuditInception, AuditType, AuditPremium, AuditOutstanding, DeductType, PolicyForm, InstallID, SuspID, InvoiceDate, FormMakerName, TermPremiumAdj, \n" +
-                    "PolicyPrintDate, EffectiveTime, ActivePolicyFlag, Limit1, Coverage1, Limit2, Coverage2, Limit3, Coverage3, Limit4, Coverage4, AIM_TransDate, PolicyGroupKey_FK, \n" +
-                    "AccountKey_FK, CancelTime, PolicyTerm, InspectionCo_FK, LoanNumber, ReinsuranceCategory, PendingNOCKey_FK, ContractName, ContractKey_FK, \n" +
-                    "DateInspectionOrdered, DateNOC, DateRenewalNotice, AmountFinanced, CountCancelled, CountEndorsed, CountRenewed, CountClaims, PremiumWritten, \n" +
-                    "PremiumBilled, PremiumAdjustments, PremiumTerm, PremiumReturn, DateRenewalLetter, FlagFinancingFunded, FlagSubjectToAudit, FlagConfirmation, \n" +
-                    "DateAuditReviewed, AuditReceivedBy, DateAuditReceived, AuditReviewedBy, InspectionOrderedBy, DateInspectionReceived, InspectionReceivedBy, \n" +
-                    "DateInspectionReviewed, InspectionReviewedBy, FlagInspectionRequired, InspectionFile, DatePolicyReceived, DateReceived, FlagOverrideServiceUW, \n" +
-                    "TRIAReceivedDate, ERPEffective, ERPExpiration, DefaultBillingType, ProductionSplitKey_FK, InvoiceKey_FK, BasisPremiumTerm, FlagLapseInCoverage, \n" +
-                    "DateInspectionBilled, InspectionInvoiceNumber, InspectionCost, InspectionPhotosRecvd, InspectionComments, InspectionInvoiceDate, FlagPremFinAgentFunded, \n" +
-                    "PremiumConvertedTerm, DateInspectionReordered, InspectionReorderedBy, MasterInstallKey_FK, LastInstallExported, EscrowInvoiceKey_FK, EscrowPremium, \n" +
-                    "EscrowInvoiceDate, EscrowInvoiced\n" +
-                    "FROM         Policy\n" +
-                    "WHERE     (QuoteID = '$params.aimQuoteID')") {
-                log.info "Policy: " + it
-            }
-            //****************************************************************************************************************
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-//        SELECT *
-//        FROM         InvoiceHeader WITH (NOLOCK)
-//        WHERE     (PolicyKey_FK = 91403)
-//        ORDER BY InvoiceKey_PK
-            aimsql.eachRow("SELECT     InvoiceID, InvoiceKey_PK, QuoteID, PolicyKey_FK, Effective, ProducerID, BillingType, BillToCode, Premium, Non_Premium, Misc_Premium, NonTax_Premium, Tax1, \n" +
-                    "Tax2, Tax3, Tax4, InvoiceTypeID, PolicyID, Description, TaxState, InvoiceTotal, BillToAddressID, PaymentToAddressID, MemoInvoiceFlag, OutStandingAmt, \n" +
-                    "DirectBillFlag, InstallmentPlanID, DueDate, NumberOfPayments, TotalGrossComm, TotalAgentComm, TotalDue, TotalPayable, Note, GrossComm, AgentComm, \n" +
-                    "CompanyCollectedFees, AgencyCollectedFees, TotalPremium, InstallmentID, PayableID, InstallmentFlag, Message, TaxPaidBy, Taxed, TaxesPaidByID, UserHoldFlag, \n" +
-                    "CourtesyFilingID, DefaultPayableID, Ledger, ReversedFlag, PostDate, FrequencyID, IncludeAgentComm, IncludeCompanyFee, IncludeAgencyComm, \n" +
-                    "IncludeAgencyFee, DownPercent, StatusID, InstallmentItem, Initial_InvoiceFlag, PayToCode, AcuityTargetCompanyID, InsuredID, TeamID, InvoicedByID, \n" +
-                    "AcuityStatusID, InvoiceDate, OwnerKey_FK, InstallmentTotal, Address1, Address2, City, State, Zip, RemitAddress1, RemitAddress2, RemitCity, RemitState, RemitZip, \n" +
-                    "InvTypeID, EndorsementKey_FK, ExportDate, HeldSuspenseKey, InvoiceTerms, InstallPayOOBFlag, AgencyCollectedTaxes, TotalFeeRevenue, TotalNetDueCompany, \n" +
-                    "AccountingEffectiveDate, ReversedInvoiceKey, ExportStatusID, AcuityBatchKey, ProgramID, TotalInstallmentsDue, RiskLimits, RiskZip, RiskCounty, PaidByStatement, \n" +
-                    "DownPaymentAmt, PayToDueDate, DateCreated, FinanceID, FlagFinanced, Endorsement, CompanyCollectedTaxes, TotalTaxes, FlagSplit, MarketID, ContractID, \n" +
-                    "OtherTaxes, OtherExpense, AcctExec, CurrencyType, CurrencyAmount, ProductID, CoverageID, OwnerKey_SK, ZipPlus, TotalFeeExpense, TotalRevenue, \n" +
-                    "TotalFeeCommission, DatePrinted, GLPeriod, FlagRebill, TotalPayments, TermPremium, MinimumPremium, ProcessBatchKey_FK, EffectiveDate, DivisionID, \n" +
-                    "DateTaxesFiled, FlagMultiPremium, DatePremiumReported, AdmittedPremium, FlagOverrideComm, CommissionSplitKey_FK, Entity, CstCtr, ProductionSplitKey_FK, \n" +
-                    "TotalAgentCommOnly, TotalAgentFeeTaxes, TotalAPCompany, TotalAPTax, TotalNetFeeRevenue, TotalNetComm, Expiration, TotalNetRevenue, TotalFees, \n" +
-                    "FlagCourtesyFiler, FlagProductionSplit, SourcePremium, RebillInvoiceKey_FK, DownPaymentMemo, TotalBasisAmount, CompanyID, InvoicePostedByID, \n" +
-                    "TerrorismPremium_GL, TerrorismPremium, FlagSuppress, FlaggedAR, FlaggedAP, MapToID, Tax5, Tax6, Tax7, Tax8, AddToExisting, AR_AccountID, BatchID, \n" +
-                    "StatusID_Old, StatusID_Old2, OLD_AcuityTargetCompanyID, DateBackOutFiled, PerArchFiled, ArchBatchKey, FlagCancelFiledToArch, TaxKeyPK, OrigPolNum, \n" +
-                    "DateTaxesAccepted, FlagFileSLSO, SLSOErrorType, SLSOBatchKey_FK, MasterInstallKey_FK, FlagMasterInstall, DepositPremium, InstallmentNo, AggregateLimits, \n" +
-                    "FlagMailedOut, FlagEscrow\n" +
-                    "FROM         InvoiceHeader WITH (NOLOCK)\n" +
-                    "WHERE     (PolicyKey_FK = $params.policyKeyID)\n" +
-                    "ORDER BY InvoiceKey_PK") {
-                log.info "Invoice Header: " + it
-            }
-            //****************************************************************************************************************
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            UPDATE dbo.Version
-            SET Version=NULL,
-            Limits='$24,000	EPKG:Cast Insurance (Up to 10)',
-            Deductible='$25,000	EPKG:Cast Insurance (Up to 10)',
-            StatusID='BND',RateInfo='EPKG	Rate	Premium	Coverage	Min Prem', AggregateLimits=convert(money,'24000.00'),
-            DeductibleVal=convert(money,'25000.00'),BoundFlag='Y',UnderLyingCoverage='', TaxDistrib='SLT	172.5	A',
-            PremiumFinanceFee=convert(money,'0.00'),LOB_Limit1='$24,000',LOB_Limit2='$24,000',LOB_Limit3='$24,000',LOB_Limit4='$1,000,000',
-            LOB_Limit5='Included Under Misc. Rented Equip.',LOB_Limit6='$1,000,000',LOB_Deduct1='$25,000',LOB_Deduct2='$5,000',
-            LOB_Limit1Value=convert(money,'24000.00'),LOB_Limit2Value=convert(money,'24000.00'),LOB_Limit3Value=convert(money,'24000.00'),
-            LOB_Limit4Value=convert(money,'1000000.00'),LOB_Limit6Value=convert(money,'1000000.00'),LOB_Deduct1Value=convert(money,'25000.00'),
-            LOB_Deduct2Value=convert(money,'5000.00'),APR=0.07,AmountFinanced=convert(money,'5738.50'),DownPayment=convert(money,'210.50'),
-            Payments=convert(money,'637.79'),FinCharge=convert(money,'1.61'),TotalPayment=convert(money,'5740.11'),NumPayments=9,DownFactor=0.002,
-            LOB_Coverage1='EPKG:Cast Insurance (Up to 10)',LOB_Coverage2='EPKG:Negative Film &amp; Videota',LOB_Coverage3='EPKG:Faulty Stock &amp; Camera P',
-            LOB_Coverage4='EPKG:Miscellaneous Rented Equipm',LOB_Coverage5='EPKG:Non-Owned Auto Physical Dam',LOB_Coverage6='EPKG:Extra Expense',
-            LOB_DeductType1='EPKG:Cast Insurance (Up to 10)',LOB_DeductType2='EPKG:Negative Film &amp; Videota',LOB_Coverage7='EPKG:Props, Sets &amp; Wardrobe',
-            LOB_Coverage8='EPKG:Third Party Prop Damage Lia',LOB_Limit7='$1,000,000',LOB_Limit8='$1,000,000',LOB_Limit7Value=convert(money,'1000000.00'),
-            LOB_Limit8Value=convert(money,'1000000.00'),LOB_Coverage9='EPKG:Office Contents',LOB_Limit9='$50,000',LOB_Limit9Value=convert(money,'50000.00')
-            WHERE QuoteID='0623191' AND VerOriginal='A' AND Version='A' AND LobID IS NULL  AND LobSubID IS NULL  AND CompanyID='RM0057' AND ProductID='EPKG37'
-            AND Premium=convert(money,'5750.00') AND Non_Premium=convert(money,'0.00') AND Misc_Premium IS NULL  AND NonTax_Premium=convert(money,'15.00')
-            AND Quoted='20170227 23:21:35.516' AND Expires IS NULL  AND Financed='Y' AND Taxed='Y' AND MEP='' AND Rate='' AND GrossComm=28.0 AND AgentComm=15.0
-            AND Brokerage='N' AND CoInsure='' AND StatusID='WB3' AND SubmitDate IS NULL  AND SubmitPOC IS NULL  AND MarketID='SAFELL' AND Apportionment IS NULL
-            AND Tax1=convert(money,'172.50') AND Tax2=convert(money,'11.50') AND Tax3=convert(money,'0.00') AND Tax4=convert(money,'0.00') AND FormID='OCR'
-            AND Indicator='N' AND PendingSuspenseID IS NULL  AND CommPaid=convert(money,'862.50') AND AggregateLimits IS NULL  AND DeductibleVal IS NULL
-            AND BoundFlag IS NULL  AND DirectBillFlag='N' AND ProposedEffective='20170302 00:00:00.000' AND ProposedExpiration='20180302 00:00:00.000'
-            AND ProposedTerm=365 AND Retroactive IS NULL  AND RetroPeriod IS NULL  AND MiscPrem1 IS NULL  AND MiscPrem2 IS NULL  AND MiscPrem3 IS NULL
-            AND NonTax1 IS NULL  AND NonTax2 IS NULL  AND NonPrem1 IS NULL  AND NonPrem2 IS NULL  AND PaymentRecv IS NULL  AND PremDownPayment IS NULL
-            AND Valuation IS NULL  AND Retention IS NULL  AND AIM_TransDate IS NULL  AND InvoiceCodes IS NULL  AND TaxDistrib='SLT	172.5	A	CADOI	0	0.03
-            SOF	11.5	A	CA_SLA	0	0.002' AND PremDistrib='FEE	15	A	00	Y	N' AND CAP_Limit IS NULL  AND EPL_Limit IS NULL  AND TakenOut_RatedTerm IS NULL
-            AND PolicyTerm='365 Days' AND PolicyForm IS NULL  AND BillToCompanyID IS NULL  AND StatementKey_FK IS NULL  AND PaymentKey_FK IS NULL
-            AND CommRecvd IS NULL  AND VersionID='0623191A' AND MarketContactKey_FK IS NULL  AND TIV IS NULL  AND CompanyFees IS NULL
-            AND UnderLyingLimitsSum IS NULL  AND PunitiveDamage IS NULL  AND ThirdPartyLimits IS NULL  AND AnnualPremium IS NULL  AND AnnualFees IS NULL
-             AND FlagCollectMuniTax IS NULL  AND TrueExpire IS NULL  AND WrittenLimits IS NULL  AND AttachPoint IS NULL  AND LineSlip IS NULL  AND CoverageFormID IS NULL
-             AND PositionID IS NULL  AND LobDistrib='EPKG	5750	28.0	15.0' AND TotalTax IS NULL  AND Total IS NULL  AND TotalAmount IS NULL  AND TaxesPaidBy='A'
-             AND ResubmitDate IS NULL  AND FeeSchedule='Policy Fee	$15.00' AND LobDistribSched='Entertainment Package	$5,750	15.0' AND DeductType=''
-             AND PremiumFinanceFee IS NULL  AND LOB_Field1 IS NULL  AND LOB_Field2 IS NULL  AND LOB_Field3 IS NULL  AND LOB_Flag1 IS NULL  AND LOB_Prem1 IS NULL
-             AND LOB_Prem2 IS NULL  AND LOB_Prem3 IS NULL  AND LOB_Limit1='' AND LOB_Limit2='' AND LOB_Limit3='' AND LOB_Limit4='' AND LOB_Limit5='' AND LOB_Limit6=''
-             AND LOB_Deduct1='' AND LOB_Deduct2='' AND LOB_Limit1Value=convert(money,'0.00') AND LOB_Limit2Value=convert(money,'0.00') AND LOB_Limit3Value=convert(money,'0.00')
-             AND LOB_Limit4Value=convert(money,'0.00') AND LOB_Limit5Value=convert(money,'0.00') AND LOB_Limit6Value=convert(money,'0.00')
-             AND LOB_Deduct1Value=convert(money,'0.00') AND LOB_Deduct2Value=convert(money,'0.00') AND TaxesPaidByID='CADOI' AND FlagMultiStateTax IS NULL  AND MultiStateDistrib IS NULL
-             AND AdmittedPremium IS NULL  AND RatedPremium IS NULL  AND APR IS NULL  AND AmountFinanced IS NULL  AND DownPayment IS NULL  AND Payments IS NULL  AND FinCharge IS NULL
-             AND TotalPayment IS NULL  AND NumPayments IS NULL  AND FinanceDueDate IS NULL  AND ReferenceKey_FK=91265 AND RemitAmount IS NULL  AND CollectAmount IS NULL
-             AND DownFactor IS NULL  AND TerrorActPremium IS NULL  AND TerrorActGrossComm IS NULL  AND TerrorActAgentComm IS NULL  AND TerrorActMEP IS NULL
-             AND TerrorActStatus='WAIVED' AND FlagOverrideCalc='N' AND TerrorTaxes=convert(money,'0.00') AND FlagFinanceWithTRIA IS NULL  AND FlagMultiOption=''
-             AND FlagFeeCalc='N' AND ParticipantCo1ID IS NULL  AND ParticipantCo2ID IS NULL  AND ParticipantCo3ID IS NULL  AND UserDefinedStr1 IS NULL
-             AND UserDefinedStr2 IS NULL  AND UserDefinedStr3 IS NULL  AND UserDefinedStr4 IS NULL  AND UserDefinedDate1 IS NULL  AND UserDefinedValue1 IS NULL
-             AND LOB_Coverage1='' AND LOB_Coverage2='' AND LOB_Coverage3='' AND LOB_Coverage4='' AND LOB_Coverage5='' AND LOB_Coverage6='' AND LOB_DeductType1=''
-             AND LOB_DeductType2='' AND DeclinationReasonID IS NULL  AND ERPOption IS NULL  AND ERPDays IS NULL  AND ERPPercent IS NULL  AND ERPPremium IS NULL
-             AND TaxwoTRIA1=convert(money,'172.50') AND TaxwoTRIA2=convert(money,'11.50') AND TaxwoTRIA3=convert(money,'0.00') AND TaxwoTRIA4=convert(money,'0.00')
-             AND LOB_Prem4 IS NULL  AND LOB_Coverage7='' AND LOB_Coverage8='' AND LOB_Limit7='' AND LOB_Limit8='' AND LOB_Limit7Value=convert(money,'0.00')
-             AND LOB_Limit8Value=convert(money,'0.00') AND LOB_Prem5 IS NULL  AND LOB_Prem6 IS NULL  AND LOB_Prem7 IS NULL  AND LOB_Prem8 IS NULL  AND CoverageList IS NULL
-             AND DocucorpFormList IS NULL  AND TerrorActPremium_GL IS NULL  AND FlagRecalcTaxes IS NULL  AND DateMktResponseRecvd IS NULL  AND CancelClause IS NULL
-             AND PremiumProperty=convert(money,'0.00') AND PremiumLiability=convert(money,'0.00') AND PremiumOther=convert(money,'0.00') AND EndorsementKey_FK IS NULL
-             AND DefaultRiskCompanyID IS NULL  AND MarketPOCKey_FK IS NULL  AND ExcludedFinPrem IS NULL  AND AggregateLimitsTemp IS NULL  AND RetentionTemp IS NULL
-             AND RetentionTemp2 IS NULL  AND RetentionValue IS NULL  AND Tax1Name='Surplus Lines Tax' AND Tax2Name='Stamping Office Fee' AND Tax3Name='' AND Tax4Name=''
-             AND AgentDeposit=convert(money,'-862.50') AND TaxwoTRIA5=convert(money,'0.00') AND Tax5=convert(money,'0.00') AND Tax5Name='' AND LOB_Coverage9='' AND LOB_Limit9=''
-             AND LOB_Limit9Value=convert(money,'0.00') AND LOB_Prem9 IS NULL  AND FeeSchedule2 IS NULL  AND TaxwoTRIA6=convert(money,'0.00') AND Tax6Name=''
-             AND TaxwoTRIA7=convert(money,'0.00') AND Tax7Name='' AND TaxwoTRIA8=convert(money,'0.00') AND Tax8Name='' AND Tax6=convert(money,'0.00')
-             AND Tax7=convert(money,'0.00') AND Tax8=convert(money,'0.00') AND InsuredDeposit=convert(money,'0.00') AND CopiedFrom IS NULL  AND InstallmentPlanID IS NULL
-             AND DownPaymentAmt IS NULL  AND Installments IS NULL  AND FrequencyID IS NULL  AND InstallmentFee IS NULL  AND InstallmentFeeID IS NULL
-             AND AgentDepositwoTRIA=convert(money,'-862.50') AND InsuredDepositwoTRIA=convert(money,'0.00') AND InstallFeeInfo IS NULL  AND InstallFeeInvKey IS NULL
-             AND InstallmentFeeFirst IS NULL
-             */
             log.info "UPDATE dbo.Version\n " +
                     "SET Version=NULL, Limits=${versionRecordMap['Limits']}, Deductible=${versionRecordMap['Deductible']}, " +
                     "StatusID='BND', RateInfo=${versionRecordMap['RateInfo']}, AggregateLimits='',\n" +
@@ -2684,109 +2560,10 @@ class AIMSQL {
             //****************************************************************************************************************
 
 
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-//        SELECT *  FROM dbo.Version WHERE QuoteID='0623191' AND VerOriginal='A'
-            aimsql.eachRow("SELECT QuoteID ,VerOriginal ,Version ,LobID ,LobSubID ,CompanyID ,ProductID ,Premium ,Non_Premium ,Misc_Premium ,NonTax_Premium ," +
-                    "Quoted ,Expires ,Limits ,Subject ,Endorsement ,Financed ,Taxed ,MEP ,Rate ,GrossComm, AgentComm ,Brokerage ,Deductible ,CoInsure ,StatusID ,ReasonID ," +
-                    "SubmitDate ,SubmitPOC ,MarketID ,Apportionment ,Tax1 ,Tax2 ,Tax3 ,Tax4 ,FormID ,RateInfo ,Indicator ,PendingSuspenseID ,CommPaid ,AggregateLimits \n" +
-                    ",DeductibleVal ,BoundFlag ,DirectBillFlag ,ProposedEffective ,ProposedExpiration ,ProposedTerm ,Retroactive ,RetroPeriod ,UnderLyingCoverage ,MultiOption ," +
-                    "MiscPrem1 ,MiscPrem2 ,MiscPrem3 ,NonTax1 ,NonTax2 ,NonPrem1,NonPrem2 ,PaymentRecv ,PremDownPayment ,Valuation ,Retention ,AIM_TransDate ,InvoiceCodes ," +
-                    "TaxDistrib ,PremDistrib ,CAP_Limit ,EPL_Limit ,TakenOut_RatedTerm, PolicyTerm ,PolicyForm ,BillToCompanyID ,StatementKey_FK, PaymentKey_FK ,CommRecvd ," +
-                    "VersionID ,MarketContactKey_FK ,TIV ,CompanyFees ,UnderLyingLimitsSum ,PunitiveDamage ,ThirdPartyLimits ,AnnualPremium ,AnnualFees ,FlagCollectMuniTax ," +
-                    "TrueExpire ,WrittenLimits ,AttachPoint, LineSlip ,CoverageFormID ,PositionID ,LobDistrib ,TotalTax ,Total ,TotalAmount ,TaxesPaidBy ,ResubmitDate ," +
-                    "FeeSchedule ,LobDistribSched ,DeductType ,PremiumFinanceFee ,LOB_Field1 ,LOB_Field2 ,LOB_Field3 ,LOB_Flag1, LOB_Prem1 ,LOB_Prem2 ,LOB_Prem3 ,LOB_Limit1 ," +
-                    "LOB_Limit2 ,LOB_Limit3 ,LOB_Limit4 ,LOB_Limit5 ,LOB_Limit6 ,LOB_Deduct1 ,LOB_Deduct2 ,LOB_Limit1Value ,LOB_Limit2Value ,LOB_Limit3Value ,LOB_Limit4Value ," +
-                    "LOB_Limit5Value,LOB_Limit6Value ,LOB_Deduct1Value ,LOB_Deduct2Value ,TaxesPaidByID ,FlagMultiStateTax ,MultiStateDistrib ,AdmittedPremium ,RatedPremium ," +
-                    "APR ,AmountFinanced ,DownPayment ,Payments ,FinCharge ,TotalPayment ,NumPayments ,FinanceDueDate ,ReferenceKey_FK ,RemitAmount ,CollectAmount ,DownFactor ," +
-                    "TerrorActPremium ,TerrorActGrossComm ,TerrorActAgentComm ,TerrorActMEP ,TerrorActStatus ,FlagOverrideCalc ,TerrorTaxes ,FlagFinanceWithTRIA ," +
-                    "FlagMultiOption ,FlagFeeCalc ,ParticipantCo1ID ,ParticipantCo2ID ,ParticipantCo3ID ,UserDefinedStr1 ,UserDefinedStr2 ,UserDefinedStr3 ,UserDefinedStr4 ," +
-                    "UserDefinedDate1 ,UserDefinedValue1 ,LOB_Coverage1 ,LOB_Coverage2 ,LOB_Coverage3 ,LOB_Coverage4 ,LOB_Coverage5 ,LOB_Coverage6 ,LOB_DeductType1 ," +
-                    "LOB_DeductType2 ,DeclinationReasonID ,ERPOption ,ERPDays ,ERPPercent ,ERPPremium ,TaxwoTRIA1 ,TaxwoTRIA2 ,TaxwoTRIA3 ,TaxwoTRIA4 ,LOB_Prem4 ,LOB_Coverage7 ," +
-                    "LOB_Coverage8 ,LOB_Limit7 ,LOB_Limit8 ,LOB_Limit7Value ,LOB_Limit8Value ,LOB_Prem5 ,LOB_Prem6 ,LOB_Prem7 ,LOB_Prem8 ,CoverageList ,DocucorpFormList ," +
-                    "TerrorActPremium_GL ,FlagRecalcTaxes ,DateMktResponseRecvd ,CancelClause ,PremiumProperty ,PremiumLiability ,PremiumOther ,EndorsementKey_FK ," +
-                    "DefaultRiskCompanyID ,MarketPOCKey_FK ,ExcludedFinPrem ,AggregateLimitsTemp ,RetentionTemp ,RetentionTemp2 ,RetentionValue ,Tax1Name ,Tax2Name ,Tax3Name ," +
-                    "Tax4Name ,AgentDeposit ,EndorseForms ,TaxwoTRIA5 ,Tax5 ,Tax5Name ,LOB_Coverage9 ,LOB_Limit9 ,LOB_Limit9Value ,LOB_Prem9 ,FeeSchedule2 ,TaxwoTRIA6 ,Tax6Name ," +
-                    "TaxwoTRIA7 ,Tax7Name ,TaxwoTRIA8 ,Tax8Name ,Tax6 ,Tax7 ,Tax8 ,InsuredDeposit ,CopiedFrom ,InstallmentPlanID ,DownPaymentAmt ,Installments ,FrequencyID ," +
-                    "InstallmentFee ,InstallmentFeeID ,AgentDepositwoTRIA ,InsuredDepositwoTRIA ,InstallFeeInfo ,InstallFeeInvKey ,InstallmentFeeFirst  " +
-                    "FROM dbo.Version " +
-                    "WHERE QuoteID='" + params.aimQuoteID + "' AND VerOriginal='A'") {
-                log.info "Select Version: " + it
-            }
-            //****************************************************************************************************************
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-//        SELECT *  FROM dbo.Version WHERE QuoteID='0623191' AND VerOriginal='A'
-            aimsql.eachRow("SELECT     OwnerID, State, SLALicense, Taxed, Comments\n" +
-                    "FROM         CompAdmt WITH (NOLOCK)\n" +
-                    "WHERE     (OwnerID = 'RM0057') AND (State = 'CA')") {
-                log.info "CompAdmt: " + it
-            }
-            //****************************************************************************************************************
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            UPDATE dbo.Quote
-            SET VersionBound='A',StatusID='BIF',PolicyID='NESF16-006',Bound='20170302 00:00:00.000',BndPremium=convert(money,'5750.00'),BndFee=convert(money,'15.00'),
-            ProductID='EPKG37',Effective='20170302 00:00:00.000',Expiration='20180302 00:00:00.000',PolicyVer='0',ActivePolicyFlag='Y',AIM_TransDate='20170302 00:00:00.000',
-            BndMarketID='SAFELL',PolicyInception='20170302 00:00:00.000',CoverageExpired='20180302 00:00:00.000'
-
-            WHERE QuoteID='0623191' AND VersionBound IS NULL  AND ProducerID='TVD' AND NamedInsured='Sdkfjlsklll' AND TypeID IS NULL  AND UserID='web' AND Attention='Andee Abad'
-            AND Received='20170227 23:21:35.516' AND Acknowledged='20170227 23:21:35.516' AND Quoted='20170227 23:21:35.516' AND TeamID='01' AND DivisionID='00' AND StatusID='WB3'
-            AND CreatedID='web' AND Renewal='N' AND OldPolicyID IS NULL  AND OldVersion IS NULL  AND OldExpiration IS NULL  AND OpenItem='N' AND PolicyID IS NULL
-            AND VersionCounter='A' AND InsuredID='91264' AND Description='Feature Film' AND FileLocation IS NULL  AND Address1='3444' AND Address2='' AND City='sldkfj'
-            AND State='CA' AND Zip='23099' AND Bound IS NULL  AND Submitted IS NULL  AND SubmitType IS NULL  AND NoteAttached IS NULL  AND AcctExec='jason'
-            AND InsuredInterest IS NULL  AND EC IS NULL  AND BndPremium IS NULL  AND BndFee IS NULL  AND CompanyID='RM0057' AND ProductID IS NULL  AND Effective IS NULL
-            AND Expiration IS NULL  AND Setup IS NULL  AND PolicyMailOut IS NULL  AND BinderRev IS NULL  AND PriorCarrier IS NULL  AND TargetPremium IS NULL
-            AND CsrID='web' AND PolicyVer IS NULL  AND OldQuoteID IS NULL  AND PolicyGrpID IS NULL  AND PendingSuspenseID IS NULL  AND ReferenceID=91265 AND MapToID IS NULL
-            AND SubmitGrpID='0623191' AND AcctAsst IS NULL  AND TaxState='CA' AND SicID IS NULL  AND CoverageID='EPKG' AND OldPremium IS NULL  AND AddressID IS NULL
-            AND OldEffective IS NULL  AND TaxBasis IS NULL AND QuoteRequiredBy IS NULL  AND RequiredLimits IS NULL  AND RequiredDeduct IS NULL  AND Retroactive IS NULL
-            AND PrevCancelFlag IS NULL  AND PrevNonRenew IS NULL  AND PriorPremium IS NULL  AND PriorLimits IS NULL  AND UWCheckList IS NULL  AND FileSetup IS NULL
-            AND ContactID=24936 AND SuspenseFlag='N' AND PriorDeductible IS NULL  AND CategoryID IS NULL  AND StructureID IS NULL  AND RenewalStatusID IS NULL
-            AND ClaimsFlag='N' AND ActivePolicyFlag='N' AND Assets IS NULL  AND PublicEntity IS NULL  AND VentureID IS NULL  AND IncorporatedState IS NULL
-            AND ReInsuranceFlag IS NULL  AND TaxedPaidBy IS NULL  AND Employees IS NULL  AND Stock_52wk IS NULL  AND NetIncome IS NULL  AND PriorLimitsNew IS NULL
-            AND LargeLossHistory='' AND DateOfApp IS NULL  AND Stock_High IS NULL  AND Stock_Low IS NULL  AND Stock_Current IS NULL  AND MarketCap IS NULL
-            AND AIM_TransDate='20170227 23:21:35.516' AND LostBusinessFlag IS NULL  AND YearEst IS NULL  AND LostBusiness_Carrier IS NULL  AND LostBusiness_Premium IS NULL
-            AND AccountKey_FK=91264 AND FlagRewrite IS NULL  AND flagWIP IS NULL  AND RenewalQuoteID IS NULL  AND QuoteDueDate IS NULL  AND QuoteStatus IS
-            NULL  AND BinderExpires IS NULL  AND TIV IS NULL  AND InvoicedPremium IS NULL  AND InvoicedFee IS NULL  AND InvoicedCommRev IS NULL  AND SplitAccount IS NULL
-            AND FileCloseReason IS NULL  AND FileCloseReasonID IS NULL  AND SourceOfLeadID IS NULL  AND ServiceUWID IS NULL  AND SubmitTypeID='NEW' AND SubProducerID IS NULL
-            AND AgtAccountNumber IS NULL  AND BndMarketID IS NULL  AND RefQuoteID IS NULL  AND FlagHeldFile IS NULL  AND HeldFileMessage IS NULL  AND TermPremium IS NULL
-            AND ProcessBatchKey_FK IS NULL  AND PolicyInception IS NULL  AND ClassID IS NULL  AND ScheduleIRM IS NULL  AND ClaimExpRM IS NULL  AND DateAppRecvd IS NULL
-            AND DateLossRunRecvd IS NULL  AND CoverageEffective IS NULL  AND CoverageExpired IS NULL  AND SLA IS NULL  AND Class IS NULL  AND IRFileNum IS NULL
-            AND IRDrawer IS NULL  AND FlagOverRideBy IS NULL  AND RackleyQuoteID IS NULL  AND FlagCourtesyFiling IS NULL  AND FlagRPG='N' AND CurrencyType IS NULL
-            AND CurrencySymbol IS NULL  AND FileNo IS NULL  AND UserDefinedStr1='8' AND UserDefinedStr2 IS NULL  AND UserDefinedStr3 IS NULL  AND UserDefinedStr4 IS NULL
-            AND UserDefinedDate1 IS NULL  AND UserDefinedValue1 IS NULL  AND ReservedContractID IS NULL  AND CountryID='' AND RatingKey_FK IS NULL  AND eAttached IS NULL
-            AND NewField IS NULL  AND TotalCoinsuranceLimit IS NULL  AND TotalCoinsurancePremium IS NULL  AND CurrencyExchRate IS NULL  AND Invoiced IS NULL  AND OtherLead IS NULL
-            AND LeadCarrierID IS NULL  AND RenewTypeID IS NULL  AND IsoCode IS NULL  AND CedingPolicyID IS NULL  AND CedingPolicyDate IS NULL  AND ConversionStatusID IS NULL
-            AND FlagTaxExempt='' AND Units IS NULL  AND SubUnits IS NULL  AND LicenseAgtKey_FK IS NULL  AND ContractPlanKey_FK IS NULL  AND AltStatusID IS NULL
-            AND FlagNonResidentAgt='N' AND CedingPolicyEndDate IS NULL  AND TargetPremPercent IS NULL  AND AgentContactKey_FK IS NULL  AND LAGACoverage IS NULL
-            AND LAGALimoRateKey_FK IS NULL  AND FirewallTeamID IS NULL  AND CurrencyExchRate_Old IS NULL  AND MarketCapValue IS NULL  AND ExternalNoteFile IS NULL
-            AND PriorRate IS NULL  AND DBAName='' AND MailAddress1='' AND MailAddress2='' AND MailCity='' AND MailState='' AND MailZip='' AND RatingID_FK IS NULL  AND HereOn IS NULL
-            AND TaxMunicipality IS NULL
-             */
             def quotenow = new Date();
             log.info quotenow
             def quotetimestamp = quotenow.format(dateFormat, timeZone);
-            log.info quotetimestamp
-            log.info quotetimestamp.split(" ")[0].replace("-", "") + " " + "00:00:00.000"
             quotetimestamp = quotetimestamp.split(" ")[0].replace("-", "") + " " + "00:00:00.000"
-            log.info "UPDATE    Quote \n" +
-                    "SET VersionBound = 'A', " +
-                    "StatusID = 'BIF', " +
-                    "PolicyID = '${params.policyNumber}', " +
-                    "Bound = '$quotetimestamp', " +
-                    "BndPremium = CONVERT(money, ${quoteRecordMap['BndPremium']}), \n" +
-                    "BndFee = CONVERT(money, ${quoteRecordMap['BndFee']}), " +
-                    "ProductID = '$productID', " +
-                    "Effective = ${quoteRecordMap['Effective']}, " +  //WILL NEED TO CHANGE
-                    "Expiration = ${quoteRecordMap['Expiration']}, " + //WILL NEED TO CHANGE
-                    "PolicyVer = '0', " +
-                    "ActivePolicyFlag = 'Y', " +
-                    "AIM_TransDate = '$quotetimestamp', " +
-                    "BndMarketID = '$marketID', " +
-                    "PolicyInception = '$quotetimestamp', " +
-                    "CoverageExpired = ${quoteRecordMap['Expiration']} \n" + //WILL NEED TO CHANGE
-                    "WHERE     (QuoteID = ${quoteRecordMap['QuoteID']}) AND (ProducerID = ${quoteRecordMap['ProducerID']}) "
             aimsql.execute("UPDATE    Quote \n" +
                     "SET VersionBound = 'A', " +
                     "StatusID = 'BIF', " +
@@ -2809,87 +2586,6 @@ class AIMSQL {
             //****************************************************************************************************************
 
 
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     QuoteID, VersionBound, ProducerID, NamedInsured, TypeID, UserID, Attention, Received, Acknowledged, Quoted, TeamID, DivisionID, StatusID, CreatedID, Renewal,
-                          OldPolicyID, OldVersion, OldExpiration, OpenItem, Notes, PolicyID, VersionCounter, InsuredID, Description, FileLocation, Address1, Address2, City, State, Zip, Bound,
-                          Submitted, SubmitType, NoteAttached, AcctExec, InsuredInterest, RiskInformation, EC, BndPremium, BndFee, CompanyID, ProductID, Effective, Expiration, Setup,
-                          PolicyMailOut, BinderRev, PriorCarrier, TargetPremium, CsrID, PolicyVer, OldQuoteID, PolicyGrpID, PendingSuspenseID, ReferenceID, MapToID, SubmitGrpID,
-                          AcctAsst, TaxState, SicID, CoverageID, OldPremium, AddressID, OldEffective, TaxBasis, QuoteRequiredBy, RequiredLimits, RequiredDeduct, Retroactive,
-                          PrevCancelFlag, PrevNonRenew, PriorPremium, PriorLimits, UWCheckList, FileSetup, ContactID, SuspenseFlag, PriorDeductible, CategoryID, StructureID,
-                          RenewalStatusID, ClaimsFlag, ActivePolicyFlag, Assets, PublicEntity, VentureID, IncorporatedState, ReInsuranceFlag, TaxedPaidBy, LayeredCoverage, Employees,
-                          Stock_52wk, NetIncome, LossHistory, PriorLimitsNew, LargeLossHistory, DateOfApp, Stock_High, Stock_Low, Stock_Current, MarketCap, Exposures, AIM_TransDate,
-                          LostBusinessFlag, YearEst, LostBusiness_Carrier, LostBusiness_Premium, AccountKey_FK, FlagRewrite, flagWIP, RenewalQuoteID, QuoteDueDate, QuoteStatus,
-                          BinderExpires, TIV, InvoicedPremium, InvoicedFee, InvoicedCommRev, SplitAccount, FileCloseReason, FileCloseReasonID, SourceOfLeadID, ServiceUWID,
-                          SubmitTypeID, SubProducerID, AgtAccountNumber, BndMarketID, RefQuoteID, FlagHeldFile, HeldFileMessage, TermPremium, ProcessBatchKey_FK, PolicyInception,
-                          ClassID, ScheduleIRM, ClaimExpRM, DateAppRecvd, DateLossRunRecvd, CoverageEffective, CoverageExpired, SLA, Class, IRFileNum, IRDrawer, FlagOverRideBy,
-                          RackleyQuoteID, FlagCourtesyFiling, FlagRPG, CurrencyType, CurrencySymbol, FileNo, UserDefinedStr1, UserDefinedStr2, UserDefinedStr3, UserDefinedStr4,
-                          UserDefinedDate1, UserDefinedValue1, ReservedContractID, CountryID, RatingKey_FK, eAttached, NewField, TotalCoinsuranceLimit, TotalCoinsurancePremium,
-                          CurrencyExchRate, Invoiced, OtherLead, LeadCarrierID, RenewTypeID, IsoCode, CedingPolicyID, CedingPolicyDate, ConversionStatusID, FlagTaxExempt, Units,
-                          SubUnits, LicenseAgtKey_FK, ContractPlanKey_FK, AltStatusID, FlagNonResidentAgt, CedingPolicyEndDate, TargetPremPercent, AgentContactKey_FK, LAGACoverage,
-                          LAGALimoRateKey_FK, FirewallTeamID, CurrencyExchRate_Old, MarketCapValue, ExternalNoteFile, PriorRate, DBAName, MailAddress1, MailAddress2, MailCity,
-                          MailState, MailZip, RatingID_FK, HereOn, TaxMunicipality
-            FROM         Quote
-            WHERE     (QuoteID = '0623191')
-             */
-            aimsql.eachRow("SELECT     * \n" +
-                    "FROM         Quote\n" +
-                    "WHERE     (QuoteID = '" + params.aimQuoteID + "')") {
-                log.info "Quote: " + it
-            }
-            //****************************************************************************************************************
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     SUM(Premium) AS Premium, SUM(TotalFees) AS Fees, SUM(TotalTaxes) AS Taxes, SUM(TermPremium) AS PremiumTerm, - SUM(TotalAgentComm) AS Commission,
-                          SUM(TotalDue) AS AmountDue, SUM(OutStandingAmt) AS PolicyBal, SUM(TotalPayments) AS Payments
-            FROM         InvoiceHeader WITH (NOLOCK)
-            WHERE     (QuoteID = '0623191') AND (StatusID IN ('P', 'E')) AND (MemoInvoiceFlag IS NULL)
-             */
-            aimsql.eachRow("SELECT     SUM(Premium) AS Premium, SUM(TotalFees) AS Fees, SUM(TotalTaxes) AS Taxes, SUM(TermPremium) AS PremiumTerm, - SUM(TotalAgentComm) AS Commission, \n" +
-                    "                      SUM(TotalDue) AS AmountDue, SUM(OutStandingAmt) AS PolicyBal, SUM(TotalPayments) AS Payments\n" +
-                    "FROM         InvoiceHeader WITH (NOLOCK)\n" +
-                    "WHERE     (QuoteID = '" + params.aimQuoteID + "') AND (StatusID IN ('P', 'E')) AND (MemoInvoiceFlag IS NULL)") {
-                log.info "InvoiceHeader: " + it
-            }
-            //****************************************************************************************************************
-
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     SUM(Premium) AS Premium, SUM(TotalFees) AS Fees, SUM(TotalTaxes) AS Taxes, SUM(TermPremium) AS PremiumTerm, - SUM(TotalAgentComm) AS Commission,
-                          SUM(TotalDue) AS AmountDue, SUM(OutStandingAmt) AS PolicyBal, SUM(TotalPayments) AS Payments
-            FROM         InvoiceHeader WITH (NOLOCK)
-            WHERE     (QuoteID = '0623191') AND (StatusID IN ('P', 'E')) AND (MemoInvoiceFlag IS NULL)
-             */
-            aimsql.eachRow("SELECT     LEN(LTRIM(CONVERT(varchar(255), ISNULL(Comment, '')))) AS Expr1\n" +
-                    "FROM         Producer WITH (NOLOCK)\n" +
-                    "WHERE     (ProducerID = 'TVD')") {
-                log.info "Producer: " + it
-            }
-            //****************************************************************************************************************
-
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     ReferenceKey_FK, EndorsementKey_PK, Description, FormID, DateAdded, Premium, FTPremium, RiskDetailKey_FK, CreatedByID, CoverageID, EndorseFormKey_FK,
-                          Effective, DateDropped, DocumentTemplateID, EndorseDate, OrderNumber, FlagRequired, FlagEdited
-            FROM         taaPolicyEndorsement WITH (NOLOCK)
-            WHERE     (ReferenceKey_FK = 91265)
-            ORDER BY OrderNumber
-             */
-            aimsql.eachRow("SELECT     ReferenceKey_FK, EndorsementKey_PK, Description, FormID, DateAdded, Premium, FTPremium, RiskDetailKey_FK, CreatedByID, CoverageID, EndorseFormKey_FK, \n" +
-                    "                      Effective, DateDropped, DocumentTemplateID, EndorseDate, OrderNumber, FlagRequired, FlagEdited\n" +
-                    "FROM         taaPolicyEndorsement WITH (NOLOCK)\n" +
-                    "WHERE     (ReferenceKey_FK = 91265)\n" +
-                    "ORDER BY OrderNumber") {
-                log.info "taaPolicyEndorsement: " + it
-            }
-            //****************************************************************************************************************
 
 
             ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
@@ -2919,43 +2615,12 @@ class AIMSQL {
 
             ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
             /*
-            SELECT     ReferenceID, TransID, UserID, Description, Date, TypeID, StatusID, ImageID, PremiumAmt, PolicyTrans, MktingTrans, ClaimsTrans, FinanceTrans, AccountingDocID,
-                          ImageIconID, QuoteVersion, ToNameKey, SystemDate, NoteIconID, FlagCurrentProcess, DocumentSequence, BatchProcessKey_FK, DocTemplateID, FlagDistibution,
-                          FlagDistribution, AttachmentIcon, SourceDateTime, FolderName, Temp, SessionID, FolderName AS Folder, ISNULL(SourceDateTime, Date) AS SortDate
-            FROM         Activity WITH (NOLOCK)
-            WHERE     (ReferenceID = '0623191')
-            ORDER BY Date DESC
-             */
-            aimsql.eachRow("SELECT     ReferenceID, TransID, UserID, Description, Date, TypeID, StatusID, ImageID, PremiumAmt, PolicyTrans, MktingTrans, ClaimsTrans, FinanceTrans, AccountingDocID, \n" +
-                    "ImageIconID, QuoteVersion, ToNameKey, SystemDate, NoteIconID, FlagCurrentProcess, DocumentSequence, BatchProcessKey_FK, DocTemplateID, FlagDistibution, \n" +
-                    "FlagDistribution, AttachmentIcon, SourceDateTime, FolderName, Temp, SessionID, FolderName AS Folder, ISNULL(SourceDateTime, Date) AS SortDate\n" +
-                    "FROM         Activity WITH (NOLOCK)\n" +
-                    "WHERE     (ReferenceID = '0623191')\n" +
-                    "ORDER BY Date DESC") {
-                log.info "Actvitiy: " + it
-            }
-            //****************************************************************************************************************
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     TeamID
-            FROM         UserID WITH (NOLOCK)
-            WHERE     (UserID = 'jason')
-             */
-            aimsql.eachRow("SELECT     TeamID\n" +
-                    "FROM         UserID WITH (NOLOCK)\n" +
-                    "WHERE     (UserID = 'jason')") {
-                log.info "UserID: " + it
-            }
-            //****************************************************************************************************************
-
-///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-//        declare @p1 int
-//        set @p1=510642
-//        exec dbo.spAddSuspense  @SuspenseID=@p1 output,@ReferenceID='0623191',@AlternateID='NESF16-006',@ReasonID='ISS',@UserID='jason',@SuspendedByID='web',
-//        @TypeID='F',@TeamID='01',@DateEntered='2017-03-02 00:00:00:000',@SuspenseDate='2017-03-02 00:00:00:000',@Comments=NULL
-//        select @p1
+            declare @p1 int
+            set @p1=510642
+            exec dbo.spAddSuspense  @SuspenseID=@p1 output,@ReferenceID='0623191',@AlternateID='NESF16-006',@ReasonID='ISS',@UserID='jason',@SuspendedByID='web',
+            @TypeID='F',@TeamID='01',@DateEntered='2017-03-02 00:00:00:000',@SuspenseDate='2017-03-02 00:00:00:000',@Comments=NULL
+            select @p1
+            */
             now = new Date();
             timestamp = now.format(dateFormat, timeZone);
             p1 = params.aimQuoteID
@@ -2975,285 +2640,8 @@ class AIMSQL {
             log.info "spAddSuspenseRows: " + spAddSuspenseRows
             //****************************************************************************************************************
 
-
             ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     FlagInvoiceRequired
-            FROM         Control WITH (NOLOCK)
-             */
-            aimsql.eachRow("SELECT     FlagInvoiceRequired\n" +
-                    "FROM         Control WITH (NOLOCK)") {
-                log.info "Control: " + it
-            }
-            //****************************************************************************************************************
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     BinderBillOption
-            FROM         Company WITH (NOLOCK)
-            WHERE     (CompanyID = 'SAFELL')
-             */
-            aimsql.eachRow("SELECT     BinderBillOption\n" +
-                    "FROM         Company WITH (NOLOCK)\n" +
-                    "WHERE     (CompanyID = 'SAFELL')") {
-                log.info "Company: " + it
-            }
-            //****************************************************************************************************************
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            EXEC	@return_value = [dbo].[spInvCheckInvoiceStatus]
-            @QuoteID = N'0623191',
-            @EndorseKey = 0,
-            @Count = @Count OUTPUT
-
-            SELECT	@Count as N'@Count'
-            SELECT	'Return Value' = @return_value
-            */
-            p1 = params.aimQuoteID
-            p2 = "" //Endorse Key
-            p3 = "" // Count
-            def spInvCheckInvoiceStatusRows = aimsql.callWithAllRows("{call dbo.spInvCheckInvoiceStatus(${Sql.ALL_RESULT_SETS}, '$p1', '$p2', '$p3')}") { num ->
-                log.info "spInvCheckInvoiceStatus $num"
-            }
-            log.info "spInvCheckInvoiceStatusRows: " + spInvCheckInvoiceStatusRows
-            //****************************************************************************************************************
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     InvoiceID, InvoiceKey_PK, QuoteID, PolicyKey_FK, Effective, ProducerID, BillingType, BillToCode, Premium, Non_Premium, Misc_Premium, NonTax_Premium, Tax1,
-                          Tax2, Tax3, Tax4, InvoiceTypeID, PolicyID, Description, TaxState, InvoiceTotal, BillToAddressID, PaymentToAddressID, MemoInvoiceFlag, OutStandingAmt,
-                          DirectBillFlag, InstallmentPlanID, DueDate, NumberOfPayments, TotalGrossComm, TotalAgentComm, TotalDue, TotalPayable, Note, GrossComm, AgentComm,
-                          CompanyCollectedFees, AgencyCollectedFees, TotalPremium, InstallmentID, PayableID, InstallmentFlag, Message, TaxPaidBy, Taxed, TaxesPaidByID, UserHoldFlag,
-                          CourtesyFilingID, DefaultPayableID, Ledger, ReversedFlag, PostDate, FrequencyID, IncludeAgentComm, IncludeCompanyFee, IncludeAgencyComm,
-                          IncludeAgencyFee, DownPercent, StatusID, InstallmentItem, Initial_InvoiceFlag, PayToCode, AcuityTargetCompanyID, InsuredID, TeamID, InvoicedByID,
-                          AcuityStatusID, InvoiceDate, OwnerKey_FK, InstallmentTotal, Address1, Address2, City, State, Zip, RemitAddress1, RemitAddress2, RemitCity, RemitState, RemitZip,
-                          InvTypeID, EndorsementKey_FK, ExportDate, HeldSuspenseKey, InvoiceTerms, InstallPayOOBFlag, AgencyCollectedTaxes, TotalFeeRevenue, TotalNetDueCompany,
-                          AccountingEffectiveDate, ReversedInvoiceKey, ExportStatusID, AcuityBatchKey, ProgramID, TotalInstallmentsDue, RiskLimits, RiskZip, RiskCounty, PaidByStatement,
-                          DownPaymentAmt, PayToDueDate, DateCreated, FinanceID, FlagFinanced, Endorsement, CompanyCollectedTaxes, TotalTaxes, FlagSplit, MarketID, ContractID,
-                          OtherTaxes, OtherExpense, AcctExec, CurrencyType, CurrencyAmount, ProductID, CoverageID, OwnerKey_SK, ZipPlus, TotalFeeExpense, TotalRevenue,
-                          TotalFeeCommission, DatePrinted, GLPeriod, FlagRebill, TotalPayments, TermPremium, MinimumPremium, ProcessBatchKey_FK, EffectiveDate, DivisionID,
-                          DateTaxesFiled, FlagMultiPremium, DatePremiumReported, AdmittedPremium, FlagOverrideComm, CommissionSplitKey_FK, Entity, CstCtr, ProductionSplitKey_FK,
-                          TotalAgentCommOnly, TotalAgentFeeTaxes, TotalAPCompany, TotalAPTax, TotalNetFeeRevenue, TotalNetComm, Expiration, TotalNetRevenue, TotalFees,
-                          FlagCourtesyFiler, FlagProductionSplit, SourcePremium, RebillInvoiceKey_FK, DownPaymentMemo, TotalBasisAmount, CompanyID, InvoicePostedByID,
-                          TerrorismPremium_GL, TerrorismPremium, FlagSuppress, FlaggedAR, FlaggedAP, MapToID, Tax5, Tax6, Tax7, Tax8, AddToExisting, AR_AccountID, BatchID,
-                          StatusID_Old, StatusID_Old2, OLD_AcuityTargetCompanyID, DateBackOutFiled, PerArchFiled, ArchBatchKey, FlagCancelFiledToArch, TaxKeyPK, OrigPolNum,
-                          DateTaxesAccepted, FlagFileSLSO, SLSOErrorType, SLSOBatchKey_FK, MasterInstallKey_FK, FlagMasterInstall, DepositPremium, InstallmentNo, AggregateLimits,
-                          FlagMailedOut, FlagEscrow
-            FROM         InvoiceHeader WITH (NOLOCK)
-            WHERE     (InvoiceKey_PK = 0)
-             */
-            aimsql.eachRow("SELECT    * \n" +
-                    "FROM         InvoiceHeader WITH (NOLOCK)\n" +
-                    "WHERE     (InvoiceKey_PK = 0)") {
-                log.info "InvoiceHeader: " + it
-            }
-            //****************************************************************************************************************
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     InvoiceKey_FK, InvoiceDetailKey_PK, TransCd, Description, Amount, GrossComm, AgentComm, Revenue_Amt, Expense_Amt, AP_Amt, AR_Amt, Tax1_Amt, Tax2_Amt,
-                          Tax3_Amt, Tax4_Amt, LineTypeID, CollectedBy, PayableID, GLAcctID, PaidAmount, PaymentKey_FK, PaidInFullFlag, PayToCode, ChargingParty, RevenueFee_Amt,
-                          InvoiceID, CoverageID, SplitLineKey_FK, ComputeAgtComm, ComputeAgyComm, FlagSplitPayable, ContractID, MarketID, DBCommExp_Amt, FlagManualEdit,
-                          FlagFullyEarned, ReturnFactor, ReturnPremium, ReturnMethodID, TermPremium, FlagAdjustment, MinimumPremium, MEP, OwedByCode, RiskCompanyID,
-                          BasisAmount, LimitsValue, Limits, Deductible, DeductibleValue, ItemDueDate, DateReported, LineKey_FK, FlagSuppressReport, QuoteID, LineSlip, Tax5_Amt,
-                          Tax6_Amt, Tax7_Amt, Tax8_Amt, TaxRate, ContactID, OrigInvoiceKey_FK, OrigInvoiceDetailKey_FK, FleetUnitKey_FK, InstallmentID
-            FROM         InvoiceDetail WITH (NOLOCK)
-            WHERE     (InvoiceKey_FK = NULL)
-            ORDER BY InvoiceDetailKey_PK, PayableID
-             */
-            aimsql.eachRow("SELECT     InvoiceKey_FK, InvoiceDetailKey_PK, TransCd, Description, Amount, GrossComm, AgentComm, Revenue_Amt, Expense_Amt, AP_Amt, AR_Amt, Tax1_Amt, Tax2_Amt, \n" +
-                    "                      Tax3_Amt, Tax4_Amt, LineTypeID, CollectedBy, PayableID, GLAcctID, PaidAmount, PaymentKey_FK, PaidInFullFlag, PayToCode, ChargingParty, RevenueFee_Amt, \n" +
-                    "                      InvoiceID, CoverageID, SplitLineKey_FK, ComputeAgtComm, ComputeAgyComm, FlagSplitPayable, ContractID, MarketID, DBCommExp_Amt, FlagManualEdit, \n" +
-                    "                      FlagFullyEarned, ReturnFactor, ReturnPremium, ReturnMethodID, TermPremium, FlagAdjustment, MinimumPremium, MEP, OwedByCode, RiskCompanyID, \n" +
-                    "                      BasisAmount, LimitsValue, Limits, Deductible, DeductibleValue, ItemDueDate, DateReported, LineKey_FK, FlagSuppressReport, QuoteID, LineSlip, Tax5_Amt, \n" +
-                    "                      Tax6_Amt, Tax7_Amt, Tax8_Amt, TaxRate, ContactID, OrigInvoiceKey_FK, OrigInvoiceDetailKey_FK, FleetUnitKey_FK, InstallmentID\n" +
-                    "FROM         InvoiceDetail WITH (NOLOCK)\n" +
-                    "WHERE     (InvoiceKey_FK = NULL)\n" +
-                    "ORDER BY InvoiceDetailKey_PK, PayableID") {
-                log.info "InvoiceDetail: " + it
-            }
-            //****************************************************************************************************************
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     TransCode, TransTypeID, Description, Rate, VersionTbl_Field, GrossComm, AgentComm, AP_AccountID, CollectedBy, AR_Acct, AP_Acct, Revenue_Acct, Expense_Acct,
-                          Clearing_Acct, AcuityTranGroup, FlatAmount_Flag, Revenue_Acct_DB, AllowOverRide, CompanyID, CoverageID, ActiveFlag, TranCodeKey_SK, NonTaxableFee,
-                          Comment, DateAdded, DateModified, CreatedByID, ModifiedByID, SystemRequired, FlagInvoiceReason, InvoiceReason, RecordKey_PK, MapToID,
-                          FlagCreditTransaction, MinAmount, MaxAmount, FlagRPGRevenue, RoundingRule, FlagIncludeTRIAPremium, FlagMemoTransCode, AllowOverRideChargingParty
-            FROM         InvoiceTranCode WITH (NOLOCK)
-            ORDER BY Description
-             */
-            aimsql.eachRow("SELECT     TransCode, TransTypeID, Description, Rate, VersionTbl_Field, GrossComm, AgentComm, AP_AccountID, CollectedBy, AR_Acct, AP_Acct, Revenue_Acct, Expense_Acct, \n" +
-                    "                      Clearing_Acct, AcuityTranGroup, FlatAmount_Flag, Revenue_Acct_DB, AllowOverRide, CompanyID, CoverageID, ActiveFlag, TranCodeKey_SK, NonTaxableFee, \n" +
-                    "                      Comment, DateAdded, DateModified, CreatedByID, ModifiedByID, SystemRequired, FlagInvoiceReason, InvoiceReason, RecordKey_PK, MapToID, \n" +
-                    "                      FlagCreditTransaction, MinAmount, MaxAmount, FlagRPGRevenue, RoundingRule, FlagIncludeTRIAPremium, FlagMemoTransCode, AllowOverRideChargingParty\n" +
-                    "FROM         InvoiceTranCode WITH (NOLOCK)\n" +
-                    "ORDER BY Description") {
-                log.info "InvoiceTranCode: " + it
-            }
-            //****************************************************************************************************************
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     QuoteID, PolicyID, Effective, Expiration, ProducerID, InsuredID, NamedInsured, ReferenceID, Renewal, TaxState, CSRid, TeamID, Attention, StatusID, AcctExec,
-                          CoverageID, OldPolicyID, ActivePolicyFlag, Bound, RiskCompanyID, RiskCompany, Premium, Non_Premium, Misc_Premium, NonTax_Premium, TotalFees, Tax1,
-                          Tax2, Tax3, Tax4, Tax5, Tax6, Tax7, Tax8, Taxes, Taxed, AgentComm, GrossComm, ProductID, TaxDistrib, PremDistrib, LobDistrib, DirectBillFlag, Brokerage,
-                          CommPaid, PayToCompanyID, VerOriginal, TotalAmount, MEP, VersionID, Description, MarketName, DueInDays, DivisionID, ProducerName, ProducerAddress,
-                          ProducerAddress2, ProducerCity, ProducerState, ProducerZip, Financed, LoanNumber, FinanceCompanyID, InvoiceDate, FlagCourtesyFiling, TerrorActMEP,
-                          TemplateInvoice, ContactID, MarketContactKey_FK, FlagBillOffBasis, RatedPremium, LastInstallExported
-            FROM         dvPolicyInvoiceDetail
-            WHERE     (QuoteID = '0623191')
-             */
-            aimsql.eachRow("SELECT     QuoteID, PolicyID, Effective, Expiration, ProducerID, InsuredID, NamedInsured, ReferenceID, Renewal, TaxState, CSRid, TeamID, Attention, StatusID, AcctExec, \n" +
-                    "                      CoverageID, OldPolicyID, ActivePolicyFlag, Bound, RiskCompanyID, RiskCompany, Premium, Non_Premium, Misc_Premium, NonTax_Premium, TotalFees, Tax1, \n" +
-                    "                      Tax2, Tax3, Tax4, Tax5, Tax6, Tax7, Tax8, Taxes, Taxed, AgentComm, GrossComm, ProductID, TaxDistrib, PremDistrib, LobDistrib, DirectBillFlag, Brokerage, \n" +
-                    "                      CommPaid, PayToCompanyID, VerOriginal, TotalAmount, MEP, VersionID, Description, MarketName, DueInDays, DivisionID, ProducerName, ProducerAddress, \n" +
-                    "                      ProducerAddress2, ProducerCity, ProducerState, ProducerZip, Financed, LoanNumber, FinanceCompanyID, InvoiceDate, FlagCourtesyFiling, TerrorActMEP, \n" +
-                    "                      TemplateInvoice, ContactID, MarketContactKey_FK, FlagBillOffBasis, RatedPremium, LastInstallExported\n" +
-                    "FROM         dvPolicyInvoiceDetail\n" +
-                    "WHERE     (QuoteID = '0623191')") {
-                log.info "dvPolicyInoiceDetail: " + it
-            }
-            //****************************************************************************************************************
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     TeamID
-            FROM         Team WITH (NOLOCK)
-            WHERE     (TeamID = '01') AND (ISNULL(ActiveFlag, 'Y') = 'Y')
-             */
-            aimsql.eachRow("SELECT     TeamID\n" +
-                    "FROM         Team WITH (NOLOCK)\n" +
-                    "WHERE     (TeamID = '01') AND (ISNULL(ActiveFlag, 'Y') = 'Y')") {
-                log.info "Team: " + it
-            }
-            //****************************************************************************************************************
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     CompanyID, BillCompanyID
-            FROM         Company WITH (NOLOCK)
-            WHERE     (CompanyID = 'SAFELL')
-             */
-            aimsql.eachRow("SELECT     CompanyID, BillCompanyID\n" +
-                    "FROM         Company WITH (NOLOCK)\n" +
-                    "WHERE     (CompanyID = 'SAFELL')") {
-                log.info "Company: " + it
-            }
-            //****************************************************************************************************************
-
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            declare @p1 int
-            set @p1=91404
-            exec dbo.GetKeyField  @KeyValue=@p1 output,@FieldName='ReferenceID'
-            select @p1
-             */
-            def referenceID =0;
-            aimsql.call("{call dbo.GetKeyField(${Sql.INTEGER}, 'ReferenceID')}") { num ->
-                log.info "ReferenceID $num"
-                referenceID = num
-            }
-
-            //****************************************************************************************************************
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     FlagPaidByStatement
-            FROM         Producer WITH (NOLOCK)
-            WHERE     (ProducerID = 'TVD') AND (ProducerID IS NOT NULL)
-             */
-            aimsql.eachRow("SELECT     FlagPaidByStatement\n" +
-                    "FROM         Producer WITH (NOLOCK)\n" +
-                    "WHERE     (ProducerID = 'TVD') AND (ProducerID IS NOT NULL)") {
-                log.info "Producer: " + it
-            }
-            //****************************************************************************************************************
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     COUNT(*) AS Expr1
-            FROM         InvoiceHeader WITH (NOLOCK)
-            WHERE     (QuoteID = '0623191') AND (QuoteID IS NOT NULL)
-             */
-            aimsql.eachRow("SELECT     COUNT(*) AS Expr1\n" +
-                    "FROM         InvoiceHeader WITH (NOLOCK)\n" +
-                    "WHERE     (QuoteID = '0623191') AND (QuoteID IS NOT NULL)") {
-                log.info "InvoiceHeader: " + it
-            }
-            //****************************************************************************************************************
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     DefaultInvoiceMessage
-            FROM         Control WITH (NOLOCK)
-             */
-            aimsql.eachRow("SELECT     DefaultInvoiceMessage\n" +
-                    "FROM         Control WITH (NOLOCK)") {
-                log.info "Control: " + it
-            }
-            //****************************************************************************************************************
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     InvoiceKey_FK, InvoiceDetailKey_PK, TransCd, Description, Amount, GrossComm, AgentComm, Revenue_Amt, Expense_Amt, AP_Amt, AR_Amt, Tax1_Amt, Tax2_Amt,
-                          Tax3_Amt, Tax4_Amt, LineTypeID, CollectedBy, PayableID, GLAcctID, PaidAmount, PaymentKey_FK, PaidInFullFlag, PayToCode, ChargingParty, RevenueFee_Amt,
-                          InvoiceID, CoverageID, SplitLineKey_FK, ComputeAgtComm, ComputeAgyComm, FlagSplitPayable, ContractID, MarketID, DBCommExp_Amt, FlagManualEdit,
-                          FlagFullyEarned, ReturnFactor, ReturnPremium, ReturnMethodID, TermPremium, FlagAdjustment, MinimumPremium, MEP, OwedByCode, RiskCompanyID,
-                          BasisAmount, LimitsValue, Limits, Deductible, DeductibleValue, ItemDueDate, DateReported, LineKey_FK, FlagSuppressReport, QuoteID, LineSlip, Tax5_Amt,
-                          Tax6_Amt, Tax7_Amt, Tax8_Amt, TaxRate, ContactID, OrigInvoiceKey_FK, OrigInvoiceDetailKey_FK, FleetUnitKey_FK, InstallmentID
-            FROM         InvoiceDetail WITH (NOLOCK)
-            WHERE     (InvoiceKey_FK = 91404)
-            ORDER BY InvoiceDetailKey_PK, PayableID
-             */
-            aimsql.eachRow("SELECT     InvoiceKey_FK, InvoiceDetailKey_PK, TransCd, Description, Amount, GrossComm, AgentComm, Revenue_Amt, Expense_Amt, AP_Amt, AR_Amt, Tax1_Amt, Tax2_Amt, \n" +
-                    "                      Tax3_Amt, Tax4_Amt, LineTypeID, CollectedBy, PayableID, GLAcctID, PaidAmount, PaymentKey_FK, PaidInFullFlag, PayToCode, ChargingParty, RevenueFee_Amt, \n" +
-                    "                      InvoiceID, CoverageID, SplitLineKey_FK, ComputeAgtComm, ComputeAgyComm, FlagSplitPayable, ContractID, MarketID, DBCommExp_Amt, FlagManualEdit, \n" +
-                    "                      FlagFullyEarned, ReturnFactor, ReturnPremium, ReturnMethodID, TermPremium, FlagAdjustment, MinimumPremium, MEP, OwedByCode, RiskCompanyID, \n" +
-                    "                      BasisAmount, LimitsValue, Limits, Deductible, DeductibleValue, ItemDueDate, DateReported, LineKey_FK, FlagSuppressReport, QuoteID, LineSlip, Tax5_Amt, \n" +
-                    "                      Tax6_Amt, Tax7_Amt, Tax8_Amt, TaxRate, ContactID, OrigInvoiceKey_FK, OrigInvoiceDetailKey_FK, FleetUnitKey_FK, InstallmentID\n" +
-                    "FROM         InvoiceDetail WITH (NOLOCK)\n" +
-                    "WHERE     (InvoiceKey_FK = 91404)\n" +
-                    "ORDER BY InvoiceDetailKey_PK, PayableID") {
-                log.info "InvoiceDetail: " + it
-            }
-            //****************************************************************************************************************
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     ISNULL(T.CstCtr, ISNULL(D.Entity, C.CstCtr)) AS CstCtr, ISNULL(T.Entity, ISNULL(D.Entity, C.Entity)) AS Entity
-            FROM         Division AS D INNER JOIN
-                                  Team AS T ON D.DivisionID = T.DivisionID CROSS JOIN
-                                  Control AS C
-            WHERE     (T.TeamID = '01')
-             */
-            aimsql.eachRow("SELECT     ISNULL(T.CstCtr, ISNULL(D.Entity, C.CstCtr)) AS CstCtr, ISNULL(T.Entity, ISNULL(D.Entity, C.Entity)) AS Entity\n" +
-                    "FROM         Division AS D INNER JOIN\n" +
-                    "                      Team AS T ON D.DivisionID = T.DivisionID CROSS JOIN\n" +
-                    "                      Control AS C\n" +
-                    "WHERE     (T.TeamID = '01')") {
-                log.info "Division join Team join Control: " + it
-            }
-            //****************************************************************************************************************
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-//      EXEC spComputeDueDates 'TVD', 'SAFELL', '01', '3/2/2017', '0623191'
+//          EXEC spComputeDueDates 'TVD', 'SAFELL', '01', '3/2/2017', '0623191'
             p1 = producerID
             p2 = marketID
             p3 = teamID
@@ -3265,190 +2653,6 @@ class AIMSQL {
                 log.info "spComputeDueDates $num"
             }
             log.info "spComputeDueDatesRows: " + spComputeDueDatesRows
-            //****************************************************************************************************************
-
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     Description, InvoiceTypeID
-            FROM         dvInvoiceTypeCode WITH (NOLOCK)
-            ORDER BY Description
-             */
-            aimsql.eachRow("SELECT     Description, InvoiceTypeID\n" +
-                    "FROM         dvInvoiceTypeCode WITH (NOLOCK)\n" +
-                    "ORDER BY Description") {
-                log.info "dvInvoiceTypeCode: " + it
-            }
-            //****************************************************************************************************************
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     TeamID AS DivisionID, Name
-            FROM         Team WITH (NOLOCK)
-            ORDER BY Name
-             */
-            aimsql.eachRow("SELECT     TeamID AS DivisionID, Name\n" +
-                    "FROM         Team WITH (NOLOCK)\n" +
-                    "ORDER BY Name") {
-                log.info "Team: " + it
-            }
-            //****************************************************************************************************************
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     Teamid, Name, Phone, Fax, Divisionid, Activeflag
-            FROM         lkpTeam
-            ORDER BY Name
-             */
-            aimsql.eachRow("SELECT     Teamid, Name, Phone, Fax, Divisionid, Activeflag\n" +
-                    "FROM         lkpTeam\n" +
-                    "ORDER BY Name") {
-                log.info "lkpTeam: " + it
-            }
-            //****************************************************************************************************************
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     Description, Message
-            FROM         InvoiceMessage WITH (NOLOCK)
-            WHERE     (ActiveFlag <> 'N')
-            ORDER BY Message
-             */
-            aimsql.eachRow("SELECT     Description, Message\n" +
-                    "FROM         InvoiceMessage WITH (NOLOCK)\n" +
-                    "WHERE     (ActiveFlag <> 'N')\n" +
-                    "ORDER BY Message") {
-                log.info "InvoiceMessage: " + it
-            }
-            //****************************************************************************************************************
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     FlagUseProductionSplit
-            FROM         Control WITH (NOLOCK)
-             */
-            aimsql.eachRow("SELECT     FlagUseProductionSplit\n" +
-                    "FROM         Control WITH (NOLOCK)") {
-                log.info "Control: " + it
-            }
-            //****************************************************************************************************************
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     FlagUseCoverageDetail
-            FROM         Control WITH (NOLOCK)
-             */
-            aimsql.eachRow("SELECT     FlagUseCoverageDetail\n" +
-                    "FROM         Control WITH (NOLOCK)") {
-                log.info "Control2: " + it
-            }
-            //****************************************************************************************************************
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     FlagAllowPlansOnInvoice
-            FROM         Control WITH (NOLOCK)
-             */
-            aimsql.eachRow("SELECT     FlagAllowPlansOnInvoice\n" +
-                    "FROM         Control WITH (NOLOCK)") {
-                log.info "Control3: " + it
-            }
-            //****************************************************************************************************************
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     FlagAllowInvContractAll
-            FROM         Control WITH (NOLOCK)
-             */
-            aimsql.eachRow("SELECT     FlagAllowInvContractAll\n" +
-                    "FROM         Control WITH (NOLOCK)") {
-                log.info "Company4: " + it
-            }
-            //****************************************************************************************************************
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     LvlChangePaidByStatement
-            FROM         Control WITH (NOLOCK)
-             */
-            aimsql.eachRow("SELECT     LvlChangePaidByStatement\n" +
-                    "FROM         Control WITH (NOLOCK)") {
-                log.info "Control5: " + it
-            }
-            //****************************************************************************************************************
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     CompanyID, CurrentContractNbr, FlagContractRequired
-            FROM         Company WITH (NOLOCK)
-            WHERE     (CompanyID = 'SAFELL')
-             */
-            aimsql.eachRow("SELECT     CompanyID, CurrentContractNbr, FlagContractRequired\n" +
-                    "FROM         Company WITH (NOLOCK)\n" +
-                    "WHERE     (CompanyID = 'SAFELL')") {
-                log.info "Company: " + it
-            }
-            //****************************************************************************************************************
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     C.FlagContractRequired, P.FlagContractRequired AS Expr1
-            FROM         Product AS P WITH (NOLOCK) INNER JOIN
-                                  Company AS C WITH (NOLOCK) ON P.CompanyID = C.CompanyID
-            WHERE     (P.ProductID = 'EPKG37')
-             */
-            aimsql.eachRow("SELECT     C.FlagContractRequired, P.FlagContractRequired AS Expr1\n" +
-                    "FROM         Product AS P WITH (NOLOCK) INNER JOIN\n" +
-                    "                      Company AS C WITH (NOLOCK) ON P.CompanyID = C.CompanyID\n" +
-                    "WHERE     (P.ProductID = 'EPKG37')") {
-                log.info "Product join Company: " + it
-            }
-            //****************************************************************************************************************
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     FlagPremiumAllocationReq
-            FROM         Product WITH (NOLOCK)
-            WHERE     (CompanyID = 'SAFELL')
-             */
-            aimsql.eachRow("SELECT     FlagPremiumAllocationReq\n" +
-                    "FROM         Product WITH (NOLOCK)\n" +
-                    "WHERE     (CompanyID = 'SAFELL')") {
-                log.info "Product: " + it
-            }
-            //****************************************************************************************************************
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     QuoteID
-            FROM         taaPremiumAllocation WITH (NOLOCK)
-            WHERE     (QuoteID = '0623191') AND (FlagMaster = 'Y') AND (PremiumRecordKey_PK > 0)
-             */
-            aimsql.eachRow("SELECT     QuoteID\n" +
-                    "FROM         taaPremiumAllocation WITH (NOLOCK)\n" +
-                    "WHERE     (QuoteID = '0623191') AND (FlagMaster = 'Y') AND (PremiumRecordKey_PK > 0)") {
-                log.info "taaPremiumAllocation: " + it
-            }
-            //****************************************************************************************************************
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     QuoteID
-            FROM         taaPolicyCoverageDetail WITH (NOLOCK)
-            WHERE     (QuoteID = '0623191')
-             */
-            aimsql.eachRow("SELECT     QuoteID\n" +
-                    "FROM         taaPolicyCoverageDetail WITH (NOLOCK)\n" +
-                    "WHERE     (QuoteID = '0623191')") {
-                log.info "taaPolicyCoverageDetail: " + it
-            }
             //****************************************************************************************************************
 
 
@@ -3466,62 +2670,7 @@ class AIMSQL {
             //****************************************************************************************************************
 
             ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     QuoteID, InvoiceKey_FK, PremiumRecordKey_PK, FlagMaster, EndorsementKey_FK, CoverageID, GrossComm, AgentComm, MarketID, TreatyKey_FK,
-                          BillToCompanyID, WrittenPremium, BilledPremium, LineSlip, CompanyName, ContractNumber, Limits, AttachPoint, PartOf, MEP, RiskCompanyID, InvoiceLine,
-                          BasisAmount, LimitsLineSlip, CoverageSectionID, LineKey_FK, LimitsGL, LimitsLineSlipGL, PremiumGL, LineSlipGL, LimitsLineSlipOther, LineSlipOther,
-                          PremiumOther, PremiumTotal, LimitsOther, CRPartLimit
-            FROM         taaPremiumAllocation
-            WHERE     (QuoteID = '0623191') AND (InvoiceKey_FK = 91404)
-            ORDER BY QuoteID, InvoiceKey_FK
-             */
-            aimsql.eachRow("SELECT     QuoteID, InvoiceKey_FK, PremiumRecordKey_PK, FlagMaster, EndorsementKey_FK, CoverageID, GrossComm, AgentComm, MarketID, TreatyKey_FK, \n" +
-                    "                      BillToCompanyID, WrittenPremium, BilledPremium, LineSlip, CompanyName, ContractNumber, Limits, AttachPoint, PartOf, MEP, RiskCompanyID, InvoiceLine, \n" +
-                    "                      BasisAmount, LimitsLineSlip, CoverageSectionID, LineKey_FK, LimitsGL, LimitsLineSlipGL, PremiumGL, LineSlipGL, LimitsLineSlipOther, LineSlipOther, \n" +
-                    "PremiumOther, PremiumTotal, LimitsOther, CRPartLimit\n" +
-                    "FROM         taaPremiumAllocation\n" +
-                    "WHERE     (QuoteID = '0623191') AND (InvoiceKey_FK = 91404)\n" +
-                    "ORDER BY QuoteID, InvoiceKey_FK") {
-                log.info "taaPremiumAllocation: " + it
-            }
-            //****************************************************************************************************************
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     CompanyKey_FK, ContractKey_PK, Effective, ContractYear, ContractNumber, Expiration, GrossComm, CoverageID, ProductID, DateAdded, DateModified, AggPremium,
-                          AggClaims, AggFees, Description, FlagAllLines, StatusID, MaxGrossComm, MaxLimits, CompanyID, ActiveFlag, CoverageSectionID, FlagLeadContract,
-                          LimitsLineSlipGL, LimitsLineSlip, LineSlip, LineSlipGL, LineSlipOther, LimitsLineSlipOther
-            FROM         taaCompanyContract WITH (NOLOCK)
-            WHERE     (CompanyID = 'SAFELL') AND ('3/2/2017' BETWEEN Effective AND Expiration)
-            ORDER BY Description
-             */
-            aimsql.eachRow("SELECT     CompanyKey_FK, ContractKey_PK, Effective, ContractYear, ContractNumber, Expiration, GrossComm, CoverageID, ProductID, DateAdded, DateModified, AggPremium, \n" +
-                    "                      AggClaims, AggFees, Description, FlagAllLines, StatusID, MaxGrossComm, MaxLimits, CompanyID, ActiveFlag, CoverageSectionID, FlagLeadContract, \n" +
-                    "                      LimitsLineSlipGL, LimitsLineSlip, LineSlip, LineSlipGL, LineSlipOther, LimitsLineSlipOther\n" +
-                    "FROM         taaCompanyContract WITH (NOLOCK)\n" +
-                    "WHERE     (CompanyID = 'SAFELL') AND ('3/2/2017' BETWEEN Effective AND Expiration)\n" +
-                    "ORDER BY Description") {
-                log.info "taaCompanyContract: " + it
-            }
-            //****************************************************************************************************************
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     MailAddress1 AS Address1, MailAddress2 AS Address2, MailCity AS City, MailState AS State, MailZip AS Zip
-            FROM         Producer WITH (NOLOCK)
-            WHERE     (ProducerID = 'TVD')
-             */
-            aimsql.eachRow("SELECT     MailAddress1 AS Address1, MailAddress2 AS Address2, MailCity AS City, MailState AS State, MailZip AS Zip\n" +
-                    "FROM         Producer WITH (NOLOCK)\n" +
-                    "WHERE     (ProducerID = 'TVD')") {
-                log.info "Producer: " + it
-            }
-            //****************************************************************************************************************
-
-
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-//      EXEC spGetRemitToAddress '01'
+//          EXEC spGetRemitToAddress '01'
             p1 = teamID
 
             def spGetRemitToAddressRows = aimsql.callWithRows("{call dbo.spGetRemitToAddress('$p1')}") { num ->
@@ -3529,20 +2678,931 @@ class AIMSQL {
             }
             log.info "spGetRemitToAddressRows: " + spGetRemitToAddressRows
             //****************************************************************************************************************
+        }
+
+    }
+
+    def invoice(){
+
+        /*****************************************************************************************************************
+         Inserting Invoice
+         ******************************************************************************************************************/
 
 
-            ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
-            /*
-            SELECT     LvlChgBillingMethod
-            FROM         Control WITH (NOLOCK)
-             */
-            aimsql.eachRow("SELECT     LvlChgBillingMethod\n" +
-                    "FROM         Control WITH (NOLOCK)") {
-                log.info "Control: " + it
-            }
-            //****************************************************************************************************************
+        ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
+        /*
+         declare @p1 int
+        set @p1=513029
+        exec dbo.spAddSuspense  @SuspenseID=@p1 output,@ReferenceID='0623945',@AlternateID='NEBF16-017',@ReasonID='ISS',@UserID='jason',@SuspendedByID='web',@TypeID='F',@TeamID='01',@DateEntered='2017-05-22 00:00:00:000',@SuspenseDate='2017-05-22 00:00:00:000',@Comments=NULL
+        select @p1
+         */
+        /*
+        EXEC spInvCheckInvoiceStatus '0623945', 0
+        //GETS THE NUMBER OF INVOICES ASSOCIATED WITH THIS QUOTE ID
+        */
+        p1 = params.aimQuoteID
+        p2 = 0 //Endorse Key
+        aimsql.call("{call dbo.spInvCheckInvoiceStatus('$p1', $p2)}") { num ->
+            log.info "Checking Invoice Status: $num"
+        }
+        //****************************************************************************************************************
+
+
+        ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
+        /*
+        declare @p1 int
+        set @p1=93109 -> InvoiceKey_PK in InvoiceHeader table
+        exec dbo.GetKeyField  @KeyValue=@p1 output,@FieldName='ReferenceID'
+        select @p1
+        RETURNS THE InvoiceKey_PK to be inserted into the InvoiceHeaderTable
+        */
+        p1 = ""
+        p2 = "ReferenceID" //Endorse Key
+        def invoiceKey = 0;
+        aimsql.call("{call dbo.GetKeyField('$p1', '$p2')}") { num ->
+            log.info "InvoiceKey_PK: $num"
+            invoiceKey = num;
+        }
+        //****************************************************************************************************************
+
+
+        ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
+        /*
+        EXEC spComputeDueDates 'TVD', 'SAFELL', '01', '5/16/2017', '0623945
+        */
+        p1 = producerID //ProducerID
+        p2 = marketID //MarketID
+        p3 = teamID //TeamID
+        p4 = effective //EffectiveDate
+        p5 = params.aimQuoteID //QuoteID
+        def spComputeDueDates = aimsql.call("{call dbo.spComputeDueDates('$p1', '$p2', '$p3', '$p4', '$p5')}") { num ->
+            log.info "spComputeDueDates: $num"
+        }
+        log.info "spComputeDueDatesRows: $spComputeDueDates"
+        //****************************************************************************************************************
+
+
+        ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
+        /*
+        exec dbo.spCreatePremiumAllocation  @QuoteID='0623945',@InvoiceKey=93109,@EndorsementKey=0,@Premium=$1128.0000
+         */
+        p1 = params.aimQuoteID //QuoteID
+        // producerID //ProducerID
+        p2 = marketID //MarketID
+        p3 = teamID //TeamID
+        p4 = effective //EffectiveDate
+        aimsql.call("{call dbo.spCreatePremiumAllocation('$p1', '$p2', '$p3', '$p4', '$p5')}") { num ->
+            log.info "spCreatePremiumAllocation: $num"
+        }
+        //****************************************************************************************************************
+
+
+        ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
+        /*
+        EXEC spGetRemitToAddress '01'
+         */
+        p1 = teamID //QuoteID
+        def spGetRemitAddressRows = aimsql.call("{call dbo.spGetRemitToAddress('$p1')}") { num ->
+            log.info "spGetRemitToAddress: $num"
+        }
+        log.info "spGetRemitAddressRows: $spGetRemitAddressRows"
+        //****************************************************************************************************************
+
+
+        /*
+        declare @p1 int
+        set @p1=3200681
+        exec dbo.GetKeyField  @KeyValue=@p1 output,@FieldName='RecordKey'
+        select @p1
+         */
+
+        /*
+        declare @p1 int
+        set @p1=3200682
+        exec dbo.GetKeyField  @KeyValue=@p1 output,@FieldName='RecordKey'
+        select @p1
+         */
+
+        /*
+        declare @p1 int
+        set @p1=3200683
+        exec dbo.GetKeyField  @KeyValue=@p1 output,@FieldName='RecordKey'
+        select @p1
+         */
+
+        /*
+        declare @p1 int
+        set @p1=3200684
+        exec dbo.GetKeyField  @KeyValue=@p1 output,@FieldName='RecordKey'
+        select @p1
+         */
+
+
+        //////////////////////////////// GETTING TAXES /////////////////////////////////////////////////////////
+        def taxString = "";
+        def taxCodes = [:];
+        aimsql.eachRow("SELECT     TransCode, TransTypeID, Description, FlatAmount_Flag, Rate, CollectedBy, AllowOverRide, State, FlagUserSelected, AP_AccountID, IncludeFees, RoundingRule, \n" +
+                "RecordKey_PK, PremiumBasis, BasisSection, FlatRateFlag, TaxValue, TaxCodeID, FlagFullyEarned, FlagPolicyOnly, TaxRate, MinAmount, MaxAmount, AppliesTo, \n" +
+                "CompanyID, Municipality\n" +
+                "FROM      dvTaxTable with (NOLOCK)\n" +
+                "WHERE     (State LIKE '${params.state}') AND (ISNULL(Municipality, '') = '') OR\n" +
+                "           (State LIKE '${params.state}') AND (Municipality = '')\n" +
+                "ORDER BY Description") {
+            taxCodes["${it.TransCode}"] =  it.Description;
+        }
+
+        def taxMap = [:]
+        aimsql.eachRow("SELECT     State, TaxValue, FlatRateFlag, Effective, Expiration, IncludeFees, PK_TaxID, CountyID, TaxCodeID, CompanyID, TaxValueNew, CollectedBy, PaidTo, AllowOverRide, \n" +
+                "RoundingRule, TaxLine, TaxPercentange, CoverageID_Old, TaxPercentage, StateName, DateAdded, CreatedByID, SystemReq, RecordKey_PK, CoverageID, \n" +
+                "FlagPolicyOnly, AdmittedTax, FlagFullyEarned, ZipCodeStart, ZipCodeEnd, FlagUserSelected, MinAmount, MaxAmount, PremiumBasis, BasisSection, \n" +
+                "FlagNonResidentTax, AppliesTo, ExcludeTRIA, FlagUseEndorsementDate, Municipality, ExemptInsuredTax\n" +
+                "FROM       TaxTable WITH (NOLOCK)\n" +
+                "WHERE     (State = '${params.state}') AND ('11/27/2016' BETWEEN Effective AND Expiration) AND (ISNULL(AppliesTo, 'ALL') = 'ALL') AND (ISNULL(AdmittedTax, 'N') = 'N') AND \n" +
+                "(ISNULL(ExemptInsuredTax, 'N') = 'N') OR\n" +
+                "(State = '${params.state}') AND ('11/27/2016' BETWEEN Effective AND Expiration) AND (ISNULL(AdmittedTax, 'N') = 'N') AND (ISNULL(ExemptInsuredTax, 'N') = 'N') AND \n" +
+                "(AppliesTo = 'RES')\n" +
+                "ORDER BY TaxLine, SUBSTRING(CoverageID, 1, 25)") {
+            def taxDescription = taxCodes["${it.TaxCodeID}"];
+            taxString = taxString + it.TaxCodeID + "&,&" + taxDescription + "&,&" + it.TaxValue +  "&;;&";
+        }
+        log.info "TAX STRING ==== " +taxString
+        //****************************************************************************************************************
+
+        /*
+        declare @p1 int
+        set @p1=15757
+        exec dbo.GetKeyField  @KeyValue=@p1 output,@FieldName='InvoiceID'
+        select @p1
+        */
+        p1 = ""
+        p2 = "InvoiceID" //FieldName
+        def invoiceID = 0;
+
+        aimsql.call("{call dbo.GetKeyField('$p1', '$p2')}") { num ->
+            log.info "InvoiceID: $num"
+            invoiceID = num;
+        }
+
+        /*
+        insert into InvoiceDetail
+          (InvoiceKey_FK, InvoiceDetailKey_PK, InvoiceID, LineTypeID, TransCd,
+           Description, Amount, GrossComm, AgentComm, Revenue_Amt, Expense_Amt,
+           AP_Amt, AR_Amt, RevenueFee_Amt, CollectedBy, PayableID, CoverageID,
+           ComputeAgtComm, ComputeAgyComm, MarketID, ContractID, DBCommExp_Amt,
+           FlagManualEdit, FlagSplitPayable, SplitLineKey_FK, PaidAmount, TermPremium,
+           FlagAdjustment, MinimumPremium, MEP, PayToCode, RiskCompanyID, BasisAmount,
+           LimitsValue, Limits, Deductible, DeductibleValue, LineKey_FK, DateReported,
+           FlagSuppressReport, TaxRate)
+        values
+          (93109, 1, NULL, 'P', 'NBS',
+           'Entertainment Package', 1128.0, 28.0, 15.0, 315.84, 169.2,
+           812.16, 958.8, NULL, 'C', 'SAFELL', 'EPKG',
+           'Y', NULL, 'SAFELL', '', NULL,
+           NULL, NULL, NULL, NULL, 1128.0,
+           NULL, NULL, '', 'SAFELL', 'RM0057',
+           1128.0, NULL, NULL, NULL, NULL,
+           0, NULL, NULL, NULL)
+        */
+        def premDistArray = params.premiumDistString.split("&;&");
+
+        for(def c=0; c < premDistArray; c++){
+            def invoiceDetailMap = [
+                    InvoiceKey_FK: invoiceKey,
+                    InvoiceDetailKey_PK: c,
+                    InvoiceID: "NULL",
+                    LineTypeID: dataMap.LineTypeID,
+                    TransCd: dataMap.TransCd,
+                    Description: dataMap.Description,
+                    Amount: dataMap.Amount,
+                    GrossComm: "",
+                    AgentComm: "",
+                    Revenue_Amt: "",
+                    Expense_Amt: "",
+                    AP_Amt: "",
+                    AR_Amt: "",
+                    RevenueFee_Amt: "",
+                    CollectedBy: "",
+                    PayableID: "",
+                    CoverageID: "",
+                    ComputeAgtComm: "",
+                    ComputeAgyComm: "",
+                    MarketID: "",
+                    ContractID: "",
+                    DBCommExp_Amt: "",
+                    FlagManualEdit: "",
+                    FlagSplitPayable: "",
+                    SplitLineKey_FK: "",
+                    PaidAmount: "",
+                    TermPremium: "",
+                    FlagAdjustment: "",
+                    MinimumPremium: "",
+                    MEP: "",
+                    PayToCode: "",
+                    RiskCompanyID: "",
+                    BasisAmount: "",
+                    LimitsValue: "",
+                    Limits: "",
+                    Deductible: "",
+                    DeductibleValue: "",
+                    LineKey_FK: "",
+                    DateReported: "",
+                    FlagSuppressReport: "",
+                    TaxRate: ""
+            ]
+
+
+            aimsql.execute("insert into InvoiceDetail\n" +
+                    "(InvoiceKey_FK, InvoiceDetailKey_PK, InvoiceID, LineTypeID, TransCd,\n" +
+                    " Description, Amount, GrossComm, AgentComm, Revenue_Amt, Expense_Amt,\n" +
+                    " AP_Amt, AR_Amt, RevenueFee_Amt, CollectedBy, PayableID, CoverageID,\n" +
+                    " ComputeAgtComm, ComputeAgyComm, MarketID, ContractID, DBCommExp_Amt,\n" +
+                    " FlagManualEdit, FlagSplitPayable, SplitLineKey_FK, PaidAmount, TermPremium,\n" +
+                    " FlagAdjustment, MinimumPremium, MEP, PayToCode, RiskCompanyID, BasisAmount,\n" +
+                    " LimitsValue, Limits, Deductible, DeductibleValue, LineKey_FK, DateReported,\n" +
+                    " FlagSuppressReport, TaxRate) " +
+                    "VALUES ('$invoiceDetailMap.InvoiceKey_FK', '$invoiceDetailMap.InvoiceDetailKey_PK', '$invoiceDetailMap.InvoiceID', '$invoiceDetailMap.LineTypeID', '$invoiceDetailMap.TransCd', \n" +
+                    "'$invoiceDetailMap.Description', '$invoiceDetailMap.Amount', '$invoiceDetailMap.GrossComm', '$invoiceDetailMap.AgentComm', '$invoiceDetailMap.Revenue_Amt', '$invoiceDetailMap.Expense_Amt', \n" +
+                    "'$invoiceDetailMap.AP_Amt', '$invoiceDetailMap.AR_Amt', '$invoiceDetailMap.RevenueFee_Amt', '$invoiceDetailMap.CollectedBy', '$invoiceDetailMap.PayableID', '$invoiceDetailMap.CoverageID', \n" +
+                    "'$invoiceDetailMap.ComputeAgtComm', '$invoiceDetailMap.ComputeAgyComm', '$invoiceDetailMap.MarketID', '$invoiceDetailMap.ContractID', '$invoiceDetailMap.DBCommExp_Amt', \n" +
+                    "'$invoiceDetailMap.FlagManualEdit', '$invoiceDetailMap.FlagSplitPayable', '$invoiceDetailMap.SplitLineKey_FK', '$invoiceDetailMap.PaidAmount', '$invoiceDetailMap.TermPremium', \n" +
+                    "'$invoiceDetailMap.FlagAdjustment', '$invoiceDetailMap.MinimumPremium', '$invoiceDetailMap.MEP', '$invoiceDetailMap.PayToCode', '$invoiceDetailMap.RiskCompanyID', '$invoiceDetailMap.BasisAmount', \n" +
+                    "'$invoiceDetailMap.LimitsValue', '$invoiceDetailMap.Limits', '$invoiceDetailMap.Deductible', '$invoiceDetailMap.DeductibleValue', '$invoiceDetailMap.LineKey_FK', '$invoiceDetailMap.DateReported', \n" +
+                    "'$invoiceDetailMap.FlagSuppressReport', '$invoiceDetailMap.TaxRate)")
+            log.info "Rows Updated (Insert into InvoiceDetail): " + aimsql.getUpdateCount()
+
 
         }
+
+
+        /*
+           insert into InvoiceDetail
+          (InvoiceKey_FK, InvoiceDetailKey_PK, InvoiceID, LineTypeID, TransCd,
+           Description, Amount, GrossComm, AgentComm, Revenue_Amt, Expense_Amt,
+           AP_Amt, AR_Amt, RevenueFee_Amt, CollectedBy, PayableID, CoverageID,
+           ComputeAgtComm, ComputeAgyComm, MarketID, ContractID, DBCommExp_Amt,
+           FlagManualEdit, FlagSplitPayable, SplitLineKey_FK, PaidAmount, TermPremium,
+           FlagAdjustment, MinimumPremium, MEP, PayToCode, RiskCompanyID, BasisAmount,
+           LimitsValue, Limits, Deductible, DeductibleValue, LineKey_FK, DateReported,
+           FlagSuppressReport, TaxRate)
+        values
+          (93109, 2, NULL, 'F', 'FEE',
+           'Policy Fee', 15.0, 100.0, NULL, 15.0, NULL,
+           0.0, 15.0, 15.0, 'A', '00', 'EPKG',
+           'Y', NULL, '00', '', NULL,
+           NULL, NULL, NULL, NULL, NULL,
+           NULL, NULL, NULL, '00', 'RM0057',
+           15.0, NULL, NULL, NULL, NULL,
+           0, NULL, NULL, NULL)
+
+        insert into InvoiceDetail
+          (InvoiceKey_FK, InvoiceDetailKey_PK, InvoiceID, LineTypeID, TransCd,
+           Description, Amount, GrossComm, AgentComm, Revenue_Amt, Expense_Amt,
+           AP_Amt, AR_Amt, RevenueFee_Amt, CollectedBy, PayableID, CoverageID,
+           ComputeAgtComm, ComputeAgyComm, MarketID, ContractID, DBCommExp_Amt,
+           FlagManualEdit, FlagSplitPayable, SplitLineKey_FK, PaidAmount, TermPremium,
+           FlagAdjustment, MinimumPremium, MEP, PayToCode, RiskCompanyID, BasisAmount,
+           LimitsValue, Limits, Deductible, DeductibleValue, LineKey_FK, DateReported,
+           FlagSuppressReport, TaxRate)
+        values
+          (93109, 3, NULL, 'T', 'SLT',
+           'Surplus Lines Tax', 33.84, NULL, NULL, NULL, NULL,
+           33.84, 33.84, NULL, 'A', 'CADOI', 'EPKG',
+           'Y', NULL, 'CADOI', '', NULL,
+           NULL, NULL, NULL, NULL, NULL,
+           NULL, NULL, NULL, 'CADOI', 'CADOI',
+           33.84, NULL, NULL, NULL, NULL,
+           0, NULL, NULL, 0.03)
+
+         insert into InvoiceDetail
+          (InvoiceKey_FK, InvoiceDetailKey_PK, InvoiceID, LineTypeID, TransCd,
+           Description, Amount, GrossComm, AgentComm, Revenue_Amt, Expense_Amt,
+           AP_Amt, AR_Amt, RevenueFee_Amt, CollectedBy, PayableID, CoverageID,
+           ComputeAgtComm, ComputeAgyComm, MarketID, ContractID, DBCommExp_Amt,
+           FlagManualEdit, FlagSplitPayable, SplitLineKey_FK, PaidAmount, TermPremium,
+           FlagAdjustment, MinimumPremium, MEP, PayToCode, RiskCompanyID, BasisAmount,
+           LimitsValue, Limits, Deductible, DeductibleValue, LineKey_FK, DateReported,
+           FlagSuppressReport, TaxRate)
+        values
+          (93109, 4, NULL, 'T', 'SOF',
+           'Stamping Office Fee', 2.26, NULL, NULL, NULL, NULL,
+           2.26, 2.26, NULL, 'A', 'CA_SLA', 'EPKG',
+           'Y', NULL, 'CA_SLA', '', NULL,
+           NULL, NULL, NULL, NULL, NULL,
+           NULL, NULL, NULL, 'CA_SLA', 'CA_SLA',
+           2.26, NULL, NULL, NULL, NULL,
+           0, NULL, NULL, 0.002)
+         */
+
+
+
+        /*
+        insert into InvoiceHeader
+          (InvoiceID, InvoiceKey_PK, QuoteID, PolicyKey_FK, Effective, ProducerID,BillingType, BillToCode, Premium, Non_Premium, Misc_Premium, NonTax_Premium,
+           Tax1, Tax2, Tax3, Tax4, InvoiceTypeID, PolicyID, Description, TaxState,InvoiceTotal, BillToAddressID, PaymentToAddressID, MemoInvoiceFlag,
+           OutStandingAmt, DirectBillFlag, InstallmentPlanID, DueDate, NumberOfPayments,TotalGrossComm, TotalAgentComm, TotalDue, TotalPayable, Note, GrossComm,
+           AgentComm, CompanyCollectedFees, AgencyCollectedFees, TotalPremium,InstallmentID, PayableID, InstallmentFlag, Message, TaxPaidBy, Taxed,
+           TaxesPaidByID, UserHoldFlag, CourtesyFilingID, DefaultPayableID, Ledger,ReversedFlag, PostDate, FrequencyID, IncludeAgentComm, IncludeCompanyFee,
+           IncludeAgencyComm, IncludeAgencyFee, DownPercent, StatusID, InstallmentItem,Initial_InvoiceFlag, PayToCode, AcuityTargetCompanyID, InsuredID, TeamID,
+           InvoicedByID, AcuityStatusID, InvoiceDate, OwnerKey_FK, InstallmentTotal,Address1, Address2, City, State, Zip, RemitAddress1, RemitAddress2,
+           RemitCity, RemitState, RemitZip, InvTypeID, EndorsementKey_FK, ExportDate,HeldSuspenseKey, InvoiceTerms, InstallPayOOBFlag, AgencyCollectedTaxes,
+           TotalFeeRevenue, TotalNetDueCompany, AccountingEffectiveDate, ReversedInvoiceKey,ExportStatusID, AcuityBatchKey, ProgramID, TotalInstallmentsDue, RiskLimits,
+           RiskZip, RiskCounty, PaidByStatement, DownPaymentAmt, PayToDueDate,DateCreated, FinanceID, FlagFinanced, Endorsement, CompanyCollectedTaxes,
+           TotalTaxes, FlagSplit, MarketID, ContractID, OtherTaxes, OtherExpense,AcctExec, CurrencyType, CurrencyAmount, ProductID, CoverageID, OwnerKey_SK,
+           ZipPlus, TotalFeeExpense, TotalRevenue, DatePrinted, GLPeriod, FlagRebill,TotalPayments, TermPremium, MinimumPremium, ProcessBatchKey_FK, DivisionID,
+           DateTaxesFiled, FlagMultiPremium, DatePremiumReported, AdmittedPremium,FlagOverrideComm, CommissionSplitKey_FK, ProductionSplitKey_FK, TotalAgentCommOnly,
+           TotalAgentFeeTaxes, TotalAPCompany, TotalAPTax, TotalNetFeeRevenue,TotalNetComm, Expiration, TotalNetRevenue, TotalFees, FlagCourtesyFiler,
+           FlagProductionSplit, SourcePremium, RebillInvoiceKey_FK, DownPaymentMemo,TotalBasisAmount, CompanyID, InvoicePostedByID, FlagSuppress, AggregateLimits)
+        values
+          ('015757', 93109, '0623945', 93108, '20170516 00:00:00.000', 'TVD','AB', 'TVD', 1128.0, 0.0, 0.0, 15.0,33.84, 2.26, 0.0, 0.0, 'NBS', 'NEBF16-017', 'New Business',
+           'CA', 1179.1, 0, NULL, NULL,NULL, 'N', NULL, '20170601 00:00:00.000', NULL,315.84, 169.2, 1009.9, 848.26, '', 28.0,15.0, 0.0, 15.0, 1128.0,NULL, NULL, 'N', '', NULL,
+           'Y', NULL, NULL, NULL, 'SAFELL',NULL, NULL, NULL, NULL, NULL,NULL, NULL, NULL, NULL,'P', NULL, NULL, NULL, '01','92975', '01', 'web', NULL, '20170522 00:00:00.000', NULL,NULL, '6767 Forest Lawn Drive, #301', '', 'Los Angeles', 'CA', '90068', '1611 S. Catalina Avenue, Suite 208',
+           '', 'Redondo Beach', 'CA', '90277', NULL, NULL,NULL, NULL, 10, NULL, 36.1,15.0, 812.16, '20170522 00:00:00.000', NULL,NULL, NULL, NULL, NULL,NULL, NULL, NULL, 'N', NULL,
+           '20170621 00:00:00.000', '20170522 16:48:53.770', NULL, 'N', NULL,0.0, 36.1, NULL, 'SAFELL', '',0.0, 0.0, 'jason', '', NULL,'PIP CHOI', 'EPKG', NULL, NULL, NULL, NULL,NULL, NULL, 'N', NULL, 1128.0,
+           0.0, NULL, '00', NULL,'N', '20170522 00:00:00.000', 0.0, NULL,1, 0, 169.2,0.0, 812.16, NULL, 15.0,146.64, '20170615 00:00:00.000', NULL, 15.0, '',
+           'N', 1128.0, NULL, NULL,1179.1, 'RM0057', NULL, NULL, 50000.0)
+         */
+        def invoiceHeaderMap = [
+                InvoiceID: "",
+                InvoiceKey_PK: "",
+                QuoteID: "",
+                PolicyKey_FK: "",
+                Effective: "",
+                ProducerID: "",
+                BillingType: "",
+                BillToCode: "",
+                Premium: "",
+                Non_Premium: "",
+                Misc_Premium: "",
+                NonTax_Premium: "",
+                Tax1: "",
+                Tax2: "",
+                Tax3: "",
+                Tax4: "",
+                InvoiceTypeID: "",
+                PolicyID: "",
+                Description: "",
+                TaxState: "",InvoiceTotal: "",
+                BillToAddressID: "",
+                PaymentToAddressID: "",
+                MemoInvoiceFlag: "",
+                OutStandingAmt: "",
+                DirectBillFlag: "",
+                InstallmentPlanID: "",
+                DueDate: "",
+                NumberOfPayments: "",TotalGrossComm: "",
+                TotalAgentComm: "",
+                TotalDue: "",
+                TotalPayable: "",
+                Note: "",
+                GrossComm: "",
+                AgentComm: "",
+                CompanyCollectedFees: "",
+                AgencyCollectedFees: "",
+                TotalPremium: "",InstallmentID: "",
+                PayableID: "",
+                InstallmentFlag: "",
+                Message: "",
+                TaxPaidBy: "",
+                Taxed: "",
+                TaxesPaidByID: "",
+                UserHoldFlag: "",
+                CourtesyFilingID: "",
+                DefaultPayableID: "",
+                Ledger: "",ReversedFlag: "",
+                PostDate: "",
+                FrequencyID: "",
+                IncludeAgentComm: "",
+                IncludeCompanyFee: "",
+                IncludeAgencyComm: "",
+                IncludeAgencyFee: "",
+                DownPercent: "",
+                StatusID: "",
+                InstallmentItem: "",Initial_InvoiceFlag: "",
+                PayToCode: "",
+                AcuityTargetCompanyID: "",
+                InsuredID: "",
+                TeamID: "",
+                InvoicedByID: "",
+                AcuityStatusID: "",
+                InvoiceDate: "",
+                OwnerKey_FK: "",
+                InstallmentTotal: "",Address1: "",
+                Address2: "",
+                City: "",
+                State: "",
+                Zip: "",
+                RemitAddress1: "",
+                RemitAddress2: "",
+                RemitCity: "",
+                RemitState: "",
+                RemitZip: "",
+                InvTypeID: "",
+                EndorsementKey_FK: "",
+                ExportDate: "",HeldSuspenseKey: "",
+                InvoiceTerms: "",
+                InstallPayOOBFlag: "",
+                AgencyCollectedTaxes: "",
+                TotalFeeRevenue: "",
+                TotalNetDueCompany: "",
+                AccountingEffectiveDate: "",
+                ReversedInvoiceKey: "",ExportStatusID: "",
+                AcuityBatchKey: "",
+                ProgramID: "",
+                TotalInstallmentsDue: "",
+                RiskLimits: "",
+                RiskZip: "",
+                RiskCounty: "",
+                PaidByStatement: "",
+                DownPaymentAmt: "",
+                PayToDueDate: "",DateCreated: "",
+                FinanceID: "",
+                FlagFinanced: "",
+                Endorsement: "",
+                CompanyCollectedTaxes: "",
+                TotalTaxes: "",
+                FlagSplit: "",
+                MarketID: "",
+                ContractID: "",
+                OtherTaxes: "",
+                OtherExpense: "",AcctExec: "",
+                CurrencyType: "",
+                CurrencyAmount: "",
+                ProductID: "",
+                CoverageID: "",
+                OwnerKey_SK: "",
+                ZipPlus: "",
+                TotalFeeExpense: "",
+                TotalRevenue: "",
+                DatePrinted: "",
+                GLPeriod: "",
+                FlagRebill: "",TotalPayments: "",
+                TermPremium: "",
+                MinimumPremium: "",
+                ProcessBatchKey_FK: "",
+                DivisionID: "",
+                DateTaxesFiled: "",
+                FlagMultiPremium: "",
+                DatePremiumReported: "",
+                AdmittedPremium: "",FlagOverrideComm: "",
+                CommissionSplitKey_FK: "",
+                ProductionSplitKey_FK: "",
+                TotalAgentCommOnly: "",
+                TotalAgentFeeTaxes: "",
+                TotalAPCompany: "",
+                TotalAPTax: "",
+                TotalNetFeeRevenue: "",TotalNetComm: "",
+                Expiration: "",
+                TotalNetRevenue: "",
+                TotalFees: "",
+                FlagCourtesyFiler: "",
+                FlagProductionSplit: "",
+                SourcePremium: "",
+                RebillInvoiceKey_FK: "",
+                DownPaymentMemo: "",TotalBasisAmount: "",
+                CompanyID: "",
+                InvoicePostedByID: "",
+                FlagSuppress: "",
+                AggregateLimits: ""
+        ]
+
+//            aimsql.execute("insert into InvoiceHeader\n" +
+//                    "(InvoiceID, InvoiceKey_PK, QuoteID, PolicyKey_FK, Effective, ProducerID,BillingType, BillToCode, Premium, Non_Premium, Misc_Premium, NonTax_Premium,\n" +
+//                    "Tax1, Tax2, Tax3, Tax4, InvoiceTypeID, PolicyID, Description, TaxState,InvoiceTotal, BillToAddressID, PaymentToAddressID, MemoInvoiceFlag,\n" +
+//                    "OutStandingAmt, DirectBillFlag, InstallmentPlanID, DueDate, NumberOfPayments,TotalGrossComm, TotalAgentComm, TotalDue, TotalPayable, Note, GrossComm,\n" +
+//                    "AgentComm, CompanyCollectedFees, AgencyCollectedFees, TotalPremium,InstallmentID, PayableID, InstallmentFlag, Message, TaxPaidBy, Taxed,\n" +
+//                    "TaxesPaidByID, UserHoldFlag, CourtesyFilingID, DefaultPayableID, Ledger,ReversedFlag, PostDate, FrequencyID, IncludeAgentComm, IncludeCompanyFee,\n" +
+//                    "IncludeAgencyComm, IncludeAgencyFee, DownPercent, StatusID, InstallmentItem,Initial_InvoiceFlag, PayToCode, AcuityTargetCompanyID, InsuredID, TeamID,\n" +
+//                    "InvoicedByID, AcuityStatusID, InvoiceDate, OwnerKey_FK, InstallmentTotal,Address1, Address2, City, State, Zip, RemitAddress1, RemitAddress2,\n" +
+//                    "RemitCity, RemitState, RemitZip, InvTypeID, EndorsementKey_FK, ExportDate,HeldSuspenseKey, InvoiceTerms, InstallPayOOBFlag, AgencyCollectedTaxes,\n" +
+//                    "TotalFeeRevenue, TotalNetDueCompany, AccountingEffectiveDate, ReversedInvoiceKey,ExportStatusID, AcuityBatchKey, ProgramID, TotalInstallmentsDue, RiskLimits,\n" +
+//                    "RiskZip, RiskCounty, PaidByStatement, DownPaymentAmt, PayToDueDate,DateCreated, FinanceID, FlagFinanced, Endorsement, CompanyCollectedTaxes,\n" +
+//                    "TotalTaxes, FlagSplit, MarketID, ContractID, OtherTaxes, OtherExpense,AcctExec, CurrencyType, CurrencyAmount, ProductID, CoverageID, OwnerKey_SK,\n" +
+//                    "ZipPlus, TotalFeeExpense, TotalRevenue, DatePrinted, GLPeriod, FlagRebill,TotalPayments, TermPremium, MinimumPremium, ProcessBatchKey_FK, DivisionID,\n" +
+//                    "DateTaxesFiled, FlagMultiPremium, DatePremiumReported, AdmittedPremium,FlagOverrideComm, CommissionSplitKey_FK, ProductionSplitKey_FK, TotalAgentCommOnly,\n" +
+//                    "TotalAgentFeeTaxes, TotalAPCompany, TotalAPTax, TotalNetFeeRevenue,TotalNetComm, Expiration, TotalNetRevenue, TotalFees, FlagCourtesyFiler,\n" +
+//                    "FlagProductionSplit, SourcePremium, RebillInvoiceKey_FK, DownPaymentMemo,TotalBasisAmount, CompanyID, InvoicePostedByID, FlagSuppress, AggregateLimits) \n" +
+//                    "VALUES ('$invoiceHeaderMap.InvoiceID', '$invoiceHeaderMap.'$invoiceHeaderMap.InvoiceKey_PK', '$invoiceHeaderMap.QuoteID', '$invoiceHeaderMap.PolicyKey_FK', " +
+//                    "'$invoiceHeaderMap.Effective', '$invoiceHeaderMap.ProducerID,BillingType', '$invoiceHeaderMap.BillToCode', '$invoiceHeaderMap.Premium', '$invoiceHeaderMap.Non_Premium', " +
+//                    "'$invoiceHeaderMap.Misc_Premium', '$invoiceHeaderMap.NonTax_Premium', '$invoiceHeaderMap.Tax1', '$invoiceHeaderMap.Tax2', '$invoiceHeaderMap.Tax3', " +
+//                    "'$invoiceHeaderMap.Tax4', '$invoiceHeaderMap.InvoiceTypeID', '$invoiceHeaderMap.PolicyID', '$invoiceHeaderMap.Description', " +
+//                    "'$invoiceHeaderMap.TaxState,InvoiceTotal', '$invoiceHeaderMap.BillToAddressID', '$invoiceHeaderMap.PaymentToAddressID', " +
+//                    "'$invoiceHeaderMap.MemoInvoiceFlag', '$invoiceHeaderMap.OutStandingAmt', '$invoiceHeaderMap.DirectBillFlag', '$invoiceHeaderMap.InstallmentPlanID', " +
+//                    "'$invoiceHeaderMap.DueDate', '$invoiceHeaderMap.NumberOfPayments,TotalGrossComm', '$invoiceHeaderMap.TotalAgentComm', '$invoiceHeaderMap.TotalDue', " +
+//                    "'$invoiceHeaderMap.TotalPayable', '$invoiceHeaderMap.Note', '$invoiceHeaderMap.GrossComm', '$invoiceHeaderMap.AgentComm', " +
+//                    "'$invoiceHeaderMap.CompanyCollectedFees', '$invoiceHeaderMap.AgencyCollectedFees', '$invoiceHeaderMap.TotalPremium,InstallmentID', " +
+//                    "'$invoiceHeaderMap.PayableID', '$invoiceHeaderMap.InstallmentFlag', '$invoiceHeaderMap.Message', '$invoiceHeaderMap.TaxPaidBy', " +
+//                    "'$invoiceHeaderMap.Taxed', '$invoiceHeaderMap.TaxesPaidByID', '$invoiceHeaderMap.UserHoldFlag', '$invoiceHeaderMap.CourtesyFilingID', " +
+//                    "'$invoiceHeaderMap.DefaultPayableID', '$invoiceHeaderMap.Ledger,ReversedFlag', '$invoiceHeaderMap.PostDate', '$invoiceHeaderMap.FrequencyID', " +
+//                    "'$invoiceHeaderMap.IncludeAgentComm', '$invoiceHeaderMap.IncludeCompanyFee', '$invoiceHeaderMap.IncludeAgencyComm', '$invoiceHeaderMap.IncludeAgencyFee', " +
+//                    "'$invoiceHeaderMap.DownPercent', '$invoiceHeaderMap.StatusID', '$invoiceHeaderMap.InstallmentItem,Initial_InvoiceFlag', '$invoiceHeaderMap.PayToCode', " +
+//                    "'$invoiceHeaderMap.AcuityTargetCompanyID', '$invoiceHeaderMap.InsuredID', '$invoiceHeaderMap.TeamID', '$invoiceHeaderMap.InvoicedByID', " +
+//                    "'$invoiceHeaderMap.AcuityStatusID', '$invoiceHeaderMap.InvoiceDate', '$invoiceHeaderMap.OwnerKey_FK', '$invoiceHeaderMap.InstallmentTotal,Address1', " +
+//                    "'$invoiceHeaderMap.Address2', '$invoiceHeaderMap.City', '$invoiceHeaderMap.State', '$invoiceHeaderMap.Zip', '$invoiceHeaderMap.RemitAddress1', " +
+//                    "'$invoiceHeaderMap.RemitAddress2', '$invoiceHeaderMap.RemitCity', '$invoiceHeaderMap.RemitState', '$invoiceHeaderMap.RemitZip', " +
+//                    "'$invoiceHeaderMap.InvTypeID', '$invoiceHeaderMap.EndorsementKey_FK', '$invoiceHeaderMap.ExportDate,HeldSuspenseKey', " +
+//                    "'$invoiceHeaderMap.InvoiceTerms', '$invoiceHeaderMap.InstallPayOOBFlag', '$invoiceHeaderMap.AgencyCollectedTaxes', " +
+//                    "'$invoiceHeaderMap.TotalFeeRevenue', '$invoiceHeaderMap.TotalNetDueCompany', '$invoiceHeaderMap.AccountingEffectiveDate', " +
+//                    "'$invoiceHeaderMap.ReversedInvoiceKey,ExportStatusID', '$invoiceHeaderMap.AcuityBatchKey', '$invoiceHeaderMap.ProgramID', " +
+//                    "'$invoiceHeaderMap.TotalInstallmentsDue', '$invoiceHeaderMap.RiskLimits', '$invoiceHeaderMap.RiskZip', '$invoiceHeaderMap.RiskCounty', " +
+//                    "'$invoiceHeaderMap.PaidByStatement', '$invoiceHeaderMap.DownPaymentAmt', '$invoiceHeaderMap.PayToDueDate,DateCreated', '$invoiceHeaderMap.FinanceID', " +
+//                    "'$invoiceHeaderMap.FlagFinanced', '$invoiceHeaderMap.Endorsement', '$invoiceHeaderMap.CompanyCollectedTaxes', '$invoiceHeaderMap.TotalTaxes', " +
+//                    "'$invoiceHeaderMap.FlagSplit', '$invoiceHeaderMap.MarketID', '$invoiceHeaderMap.ContractID', '$invoiceHeaderMap.OtherTaxes', " +
+//                    "'$invoiceHeaderMap.OtherExpense,AcctExec', '$invoiceHeaderMap.CurrencyType', '$invoiceHeaderMap.CurrencyAmount', '$invoiceHeaderMap.ProductID', " +
+//                    "'$invoiceHeaderMap.CoverageID', '$invoiceHeaderMap.OwnerKey_SK', '$invoiceHeaderMap.ZipPlus', '$invoiceHeaderMap.TotalFeeExpense', " +
+//                    "'$invoiceHeaderMap.TotalRevenue', '$invoiceHeaderMap.DatePrinted', '$invoiceHeaderMap.GLPeriod', '$invoiceHeaderMap.FlagRebill,TotalPayments', " +
+//                    "'$invoiceHeaderMap.TermPremium', '$invoiceHeaderMap.MinimumPremium', '$invoiceHeaderMap.ProcessBatchKey_FK', '$invoiceHeaderMap.DivisionID', " +
+//                    "'$invoiceHeaderMap.DateTaxesFiled', '$invoiceHeaderMap.FlagMultiPremium', '$invoiceHeaderMap.DatePremiumReported', " +
+//                    "'$invoiceHeaderMap.AdmittedPremium,FlagOverrideComm', '$invoiceHeaderMap.CommissionSplitKey_FK', '$invoiceHeaderMap.ProductionSplitKey_FK', " +
+//                    "'$invoiceHeaderMap.TotalAgentCommOnly', '$invoiceHeaderMap.TotalAgentFeeTaxes', '$invoiceHeaderMap.TotalAPCompany', '$invoiceHeaderMap.TotalAPTax', " +
+//                    "'$invoiceHeaderMap.TotalNetFeeRevenue,TotalNetComm', '$invoiceHeaderMap.Expiration', '$invoiceHeaderMap.TotalNetRevenue', '$invoiceHeaderMap.TotalFees', " +
+//                    "'$invoiceHeaderMap.FlagCourtesyFiler', '$invoiceHeaderMap.FlagProductionSplit', '$invoiceHeaderMap.SourcePremium', " +
+//                    "'$invoiceHeaderMap.RebillInvoiceKey_FK', '$invoiceHeaderMap.DownPaymentMemo,TotalBasisAmount', '$invoiceHeaderMap.CompanyID', " +
+//                    "'$invoiceHeaderMap.InvoicePostedByID', '$invoiceHeaderMap.FlagSuppress', '$invoiceHeaderMap.AggregateLimits)")
+
+//            log.info "Rows Updated (Insert into InvoiceDetail): " + aimsql.getUpdateCount()
+
+        /*
+        Exec spInvUpdatePremiumAllocation "0623945", 93109
+         */
+//            p1 = params.aimQuoteID //QuoteID
+//            p2 = invoiceKey //InvoiceKey
+//            aimsql.call("{call dbo.spInvUpdatePremiumAllocation('$p1', $p2)}") { num ->
+//                log.info "spInvUpdatePremiumAllocation: $num"
+//            }
+
+        /*
+        exec dbo.AddTransaction  @ReferenceID='0623945',@UserID='web',@Description='Invoice #015757 created by web',@Date='2017-05-22 16:52:51:653',
+        @StatusID='INV',@ImageID='93109',@TypeID='I', @QuoteVersion=NULL,@ToNameKey=NULL,@DocTemplateID=NULL,@AttachmentIcon=NULL,
+        @SourceDateTime='1899-12-30 00:00:00:000'
+         */
+        now = new Date();
+        timestamp = now.format(dateFormat, timeZone);
+        p1 = params.aimQuoteID
+        p2 = "web"
+        p3 = "Invoice #$invoiceID created by web"
+        p4 = timestamp
+        p5 = "INV"
+        p6 = invoiceKey //InvoiceKey
+        p7 = I  //I
+        p8 = null //QuoteVersion
+        p9 = null //ToNameKey
+        p10 = null //DocTemplateID
+        p11 = null //AttachmentIcon
+        p12 = '1899-12-30 00:00:00:000' //SourceDateTime
+        aimsql.call("{call dbo.AddTransaction( '$p1', '$p2', '$p3', '$p4', '$p5', $p6, " +
+                "$p7, '$p8', '$p9', $p10, '$p11', '$p12')}") { num ->
+            log.info "addTransaction: $num"
+        }
+
+        /*
+        EXEC spInvUpdatePremiumRecord '0623945', 93109, 'Y'
+         */
+        p1 = params.aimQuoteID //QuoteID
+        p2 = invoiceKey //InvoiceKey
+        p3 = "Y"
+        aimsql.call("{call dbo.spInvUpdatePremiumRecord('$p1', $p2, '$p3')}") { num ->
+            log.info "spInvUpdatePremiumRecord: $num"
+        }
+
+        /*
+        UPDATE dbo.Policy SET Invoiced='Y',InvoiceDate='20170522 00:00:00.000',AIM_TransDate='20170522 16:52:57.873',InvoiceKey_FK=93109
+        WHERE QuoteID='0623945' AND PolicyID='NEBF16-017' AND PolicyKey_PK=93108 AND Version='0' AND PolicyGrpID IS NULL
+        AND Effective='20170516 00:00:00.000' AND Expiration='20170615 00:00:00.000' AND Inception='20170516 00:00:00.000'
+        AND Term=30 AND BillingType IS NULL  AND NewAccountIndicator IS NULL  AND RateDate IS NULL  AND MailToCode IS NULL
+        AND PolicyStatusDate IS NULL  AND BillingAccountNumber IS NULL  AND Bound='20170522 00:00:00.000' AND BoundTime IS NULL
+        AND SetupDate IS NULL  AND MailoutDate IS NULL  AND FinanceCompanyID IS NULL  AND Cancellation IS NULL  AND
+        CancelEffective IS NULL  AND CancellationReason IS NULL  AND NonRenewalCode IS NULL  AND NonRenewBy IS NULL
+        AND Reinstated IS NULL  AND Invoiced IS NULL  AND Units IS NULL  AND UnitType IS NULL  AND LocationZip IS NULL
+        AND ClaimsPending IS NULL  AND ClaimsMade IS NULL  AND LossesPaid IS NULL  AND BillToCode IS NULL  AND StatusID='PIF'
+        AND Endorsement='1' AND AdditionalInsureds IS NULL  AND InspectionOrdered IS NULL  AND EC IS NULL  AND Operations IS NULL
+        AND SICID IS NULL  AND CancelTime_Old IS NULL  AND CancelRequestedBy IS NULL  AND ReturnPrem IS NULL  AND ReturnRate IS NULL
+        AND PolicySource='R' AND CompanyID='RM0057' AND ProductID='PIP CHOI' AND ContractID IS NULL  AND WrittenPremium IS NULL  AND
+        Control_State IS NULL  AND Financed IS NULL  AND BinderType IS NULL  AND RewriteCompanyID IS NULL  AND RewritePolicyID IS NULL
+        AND RewriteDate IS NULL  AND TypeID IS NULL  AND BillTo IS NULL  AND RenewalQuoteID IS NULL  AND AuditID IS
+        NULL  AND AuditInception IS NULL  AND AuditType IS NULL  AND AuditPremium IS NULL  AND AuditOutstanding IS NULL
+        AND DeductType IS NULL  AND PolicyForm IS NULL  AND InstallID IS NULL  AND SuspID IS NULL  AND InvoiceDate IS NULL  AND
+        TermPremiumAdj IS NULL  AND PolicyPrintDate IS NULL  AND EffectiveTime='12:01 AM' AND ActivePolicyFlag='Y'
+        AND Limit1 IS NULL  AND Coverage1 IS NULL  AND Limit2 IS NULL  AND Coverage2 IS NULL  AND Limit3 IS NULL  AND Coverage3 IS NULL
+        AND Limit4 IS NULL  AND Coverage4 IS NULL  AND AIM_TransDate='20170522 16:47:57.343' AND PolicyGroupKey_FK=93108
+        AND AccountKey_FK=92975 AND CancelTime IS NULL  AND PolicyTerm IS NULL  AND InspectionCo_FK IS NULL  AND LoanNumber IS NULL
+        AND ReinsuranceCategory IS NULL  AND PendingNOCKey_FK IS NULL  AND ContractName IS NULL  AND ContractKey_FK IS NULL
+        AND DateInspectionOrdered IS NULL  AND DateNOC IS NULL  AND DateRenewalNotice IS NULL  AND AmountFinanced IS NULL
+        AND CountCancelled IS NULL  AND CountEndorsed IS NULL  AND CountRenewed IS NULL  AND CountClaims IS NULL
+        AND PremiumWritten=convert(money,'1128.00') AND PremiumBilled IS NULL  AND PremiumAdjustments IS NULL
+        AND PremiumTerm=convert(money,'1128.00') AND PremiumReturn IS NULL  AND DateRenewalLetter IS NULL
+        AND FlagFinancingFunded IS NULL  AND FlagSubjectToAudit IS NULL  AND FlagConfirmation IS NULL
+        AND DateAuditReviewed IS NULL AND AuditReceivedBy IS NULL  AND DateAuditReceived IS NULL  AND AuditReviewedBy IS NULL
+        AND InspectionOrderedBy IS NULL  AND DateInspectionReceived IS NULL  AND InspectionReceivedBy IS NULL  AND DateInspectionReviewed IS NULL
+        AND InspectionReviewedBy IS NULL  AND FlagInspectionRequired='N' AND InspectionFile IS NULL  AND DatePolicyReceived IS NULL
+        AND DateReceived IS NULL  AND FlagOverrideServiceUW='N' AND TRIAReceivedDate IS NULL  AND ERPEffective IS NULL
+        AND ERPExpiration IS NULL  AND DefaultBillingType='AB' AND ProductionSplitKey_FK IS NULL  AND InvoiceKey_FK IS NULL
+        AND BasisPremiumTerm IS NULL  AND FlagLapseInCoverage IS NULL  AND DateInspectionBilled IS NULL  AND InspectionInvoiceNumber IS NULL
+        AND InspectionCost IS NULL  AND InspectionPhotosRecvd IS NULL  AND InspectionInvoiceDate IS NULL
+        AND FlagPremFinAgentFunded IS NULL  AND PremiumConvertedTerm IS NULL  AND DateInspectionReordered IS NULL
+        AND InspectionReorderedBy IS NULL  AND MasterInstallKey_FK IS NULL  AND LastInstallExported IS NULL  AND EscrowInvoiceKey_FK IS NULL
+        AND EscrowPremium IS NULL  AND EscrowInvoiceDate IS NULL  AND EscrowInvoiced IS NULL
+        */
+        aimsql.execute("dbo.Policy " +
+                "SET Invoiced='Y',InvoiceDate='20170522 00:00:00.000',AIM_TransDate='20170522 16:52:57.873',InvoiceKey_FK=93109 " +
+                "WHERE QuoteID='0623945' AND PolicyID='NEBF16-017' AND PolicyKey_PK=93108 AND Version='0' AND PolicyGrpID IS NULL" +
+                "AND Effective='20170516 00:00:00.000' AND Expiration='20170615 00:00:00.000' AND Inception='20170516 00:00:00.000'" +
+                "AND Term=30 AND BillingType IS NULL  AND NewAccountIndicator IS NULL  AND RateDate IS NULL  AND MailToCode IS NULL" +
+                "AND PolicyStatusDate IS NULL  AND BillingAccountNumber IS NULL  AND Bound='20170522 00:00:00.000' AND BoundTime IS NULL" +
+                "AND SetupDate IS NULL  AND MailoutDate IS NULL  AND FinanceCompanyID IS NULL  AND Cancellation IS NULL  AND" +
+                "CancelEffective IS NULL  AND CancellationReason IS NULL  AND NonRenewalCode IS NULL  AND NonRenewBy IS NULL " +
+                "AND Reinstated IS NULL  AND Invoiced IS NULL  AND Units IS NULL  AND UnitType IS NULL  AND LocationZip IS NULL " +
+                "AND ClaimsPending IS NULL  AND ClaimsMade IS NULL  AND LossesPaid IS NULL  AND BillToCode IS NULL  AND StatusID='PIF'" +
+                "AND Endorsement='1' AND AdditionalInsureds IS NULL  AND InspectionOrdered IS NULL  AND EC IS NULL  AND Operations IS NULL" +
+                "AND SICID IS NULL  AND CancelTime_Old IS NULL  AND CancelRequestedBy IS NULL  AND ReturnPrem IS NULL  AND ReturnRate IS NULL" +
+                "AND PolicySource='R' AND CompanyID='RM0057' AND ProductID='PIP CHOI' AND ContractID IS NULL  AND WrittenPremium IS NULL  AND" +
+                "Control_State IS NULL  AND Financed IS NULL  AND BinderType IS NULL  AND RewriteCompanyID IS NULL  AND RewritePolicyID IS NULL" +
+                "AND RewriteDate IS NULL  AND TypeID IS NULL  AND BillTo IS NULL  AND RenewalQuoteID IS NULL  AND AuditID IS" +
+                "NULL  AND AuditInception IS NULL  AND AuditType IS NULL  AND AuditPremium IS NULL  AND AuditOutstanding IS NULL" +
+                "AND DeductType IS NULL  AND PolicyForm IS NULL  AND InstallID IS NULL  AND SuspID IS NULL  AND InvoiceDate IS NULL  AND" +
+                "TermPremiumAdj IS NULL  AND PolicyPrintDate IS NULL  AND EffectiveTime='12:01 AM' AND ActivePolicyFlag='Y' AND Limit1 IS NULL" +
+                "AND Coverage1 IS NULL  AND Limit2 IS NULL  AND Coverage2 IS NULL  AND Limit3 IS NULL  AND Coverage3 IS NULL" +
+                "AND Limit4 IS NULL  AND Coverage4 IS NULL  AND AIM_TransDate='20170522 16:47:57.343' AND PolicyGroupKey_FK=93108" +
+                "AND AccountKey_FK=92975 AND CancelTime IS NULL  AND PolicyTerm IS NULL  AND InspectionCo_FK IS NULL  AND LoanNumber IS NULL" +
+                "AND ReinsuranceCategory IS NULL  AND PendingNOCKey_FK IS NULL  AND ContractName IS NULL  AND ContractKey_FK IS NULL" +
+                "AND DateInspectionOrdered IS NULL  AND DateNOC IS NULL  AND DateRenewalNotice IS NULL  AND AmountFinanced IS NULL" +
+                "AND CountCancelled IS NULL  AND CountEndorsed IS NULL  AND CountRenewed IS NULL  AND CountClaims IS NULL" +
+                "AND PremiumWritten=convert(money,'1128.00') AND PremiumBilled IS NULL  AND PremiumAdjustments IS NULL" +
+                "AND PremiumTerm=convert(money,'1128.00') AND PremiumReturn IS NULL  AND DateRenewalLetter IS NULL" +
+                "AND FlagFinancingFunded IS NULL  AND FlagSubjectToAudit IS NULL  AND FlagConfirmation IS NULL  AND DateAuditReviewed IS NULL" +
+                "AND AuditReceivedBy IS NULL  AND DateAuditReceived IS NULL  AND AuditReviewedBy IS NULL  AND InspectionOrderedBy IS NULL" +
+                "AND DateInspectionReceived IS NULL  AND InspectionReceivedBy IS NULL  AND DateInspectionReviewed IS NULL" +
+                "AND InspectionReviewedBy IS NULL  AND FlagInspectionRequired='N' AND InspectionFile IS NULL  AND DatePolicyReceived IS NULL" +
+                "AND DateReceived IS NULL  AND FlagOverrideServiceUW='N' AND TRIAReceivedDate IS NULL  AND ERPEffective IS NULL" +
+                "AND ERPExpiration IS NULL  AND DefaultBillingType='AB' AND ProductionSplitKey_FK IS NULL  AND InvoiceKey_FK IS NULL" +
+                "AND BasisPremiumTerm IS NULL  AND FlagLapseInCoverage IS NULL  AND DateInspectionBilled IS NULL  AND InspectionInvoiceNumber IS NULL" +
+                "AND InspectionCost IS NULL  AND InspectionPhotosRecvd IS NULL  AND InspectionInvoiceDate IS NULL  AND FlagPremFinAgentFunded IS NULL" +
+                "AND PremiumConvertedTerm IS NULL  AND DateInspectionReordered IS NULL AND InspectionReorderedBy IS NULL  AND MasterInstallKey_FK IS NULL" +
+                "AND LastInstallExported IS NULL  AND EscrowInvoiceKey_FK IS NULL  AND EscrowPremium IS NULL  AND EscrowInvoiceDate IS NULL" +
+                "AND EscrowInvoiced IS NULL")
+        log.info "Rows Updated (Update into Quo): " + aimsql.getUpdateCount()
+
+
+        /*
+        EXEC spGetStateProductMessage 'CA', 'PIP CHOI', 1
+         */
+
+//            p1 = taxState //QuoteID
+//            p2 = productID //InvoiceKey
+//            p3 = "Y"
+//            aimsql.call("{call dbo.spGetStateProductMessage('$p1', $p2, '$p3')}") { num ->
+//                log.info "spInvUpdatePremiumRecord: $num"
+//            }
+
+//            def invoiceMap = [InvoiceID: '',
+//                              InvoiceKey_PK: '',
+//                              QuoteID: '',
+//                              PolicyKey_FK: '',
+//                              Effective: '',
+//                              ProducerID: '',
+//                              BillingType: '',
+//                              BillToCode: '',
+//                              Premium: '',
+//                              Non_Premium: '',
+//                              Misc_Premium: '',
+//                              NonTax_Premium: '',
+//                              Tax1: '',
+//                              Tax2: '',
+//                              Tax3: '',
+//                              Tax4: '',
+//                              InvoiceTypeID: '',
+//                              PolicyID: '',
+//                              Description: '',
+//                              TaxState: '',
+//                              InvoiceTotal: '',
+//                              BillToAddressID: '',
+//                              PaymentToAddressID: '',
+//                              MemoInvoiceFlag: '',
+//                              OutStandingAmt: '',
+//                              DirectBillFlag: '',
+//                              InstallmentPlanID: '',
+//                              DueDate: '',
+//                              NumberOfPayments: '',
+//                              TotalGrossComm: '',
+//                              TotalAgentComm: '',
+//                              TotalDue: '',
+//                              TotalPayable: '',
+//                              Note: '',
+//                              GrossComm: '', AgentComm: '',
+//                              CompanyCollectedFees: '',
+//                              AgencyCollectedFees: '',
+//                              TotalPremium: '',
+//                              InstallmentID: '',
+//                              PayableID: '',
+//                              InstallmentFlag: '',
+//                              Message: '',
+//                              TaxPaidBy: '',
+//                              Taxed: '',
+//                              TaxesPaidByID: '',
+//                              UserHoldFlag: '',
+//                              CourtesyFilingID: '',
+//                              DefaultPayableID: '',
+//                              Ledger: '',
+//                              ReversedFlag: '',
+//                              PostDate: '',
+//                              FrequencyID: '',
+//                              IncludeAgentComm: '',
+//                              IncludeCompanyFee: '',
+//                              IncludeAgencyComm: '',
+//                              IncludeAgencyFee: '',
+//                              DownPercent: '',
+//                              StatusID: '',
+//                              InstallmentItem: '',
+//                              Initial_InvoiceFlag: '',
+//                              PayToCode: '',
+//                              AcuityTargetCompanyID: '',
+//                              InsuredID: '',
+//                              TeamID: '',
+//                              InvoicedByID: '',
+//                              AcuityStatusID: '',
+//                              InvoiceDate: '',
+//                              OwnerKey_FK: '',
+//                              InstallmentTotal: '',
+//                              Address1: '',
+//                              Address2: '',
+//                              City: '',
+//                              State: '',
+//                              Zip: '',
+//                              RemitAddress1: '',
+//                              RemitAddress2: '',
+//                              RemitCity: '',
+//                              RemitState: '',
+//                              RemitZip: '',InvTypeID: '',
+//                              EndorsementKey_FK: '',
+//                              ExportDate: '',
+//                              HeldSuspenseKey: '',
+//                              InvoiceTerms: '',
+//                              InstallPayOOBFlag: '',
+//                              AgencyCollectedTaxes: '',
+//                              TotalFeeRevenue: '',
+//                              TotalNetDueCompany: '',
+//                              AccountingEffectiveDate: '',
+//                              ReversedInvoiceKey: '',
+//                              ExportStatusID: '',
+//                              AcuityBatchKey: '',
+//                              ProgramID: '',
+//                              TotalInstallmentsDue: '',
+//                              RiskLimits: '',
+//                              RiskZip: '',
+//                              RiskCounty: '',
+//                              PaidByStatement: '',
+//                              DownPaymentAmt: '',
+//                              PayToDueDate: '',
+//                              DateCreated: '',
+//                              FinanceID: '',
+//                              FlagFinanced: '',
+//                              Endorsement: '',
+//                              CompanyCollectedTaxes: '',
+//                              TotalTaxes: '',
+//                              FlagSplit: '',
+//                              MarketID: '',
+//                              ContractID: '',
+//                              OtherTaxes: '',
+//                              OtherExpense: '',
+//                              AcctExec: '',
+//                              CurrencyType: '',
+//                              CurrencyAmount: '',
+//                              ProductID: '',
+//                              CoverageID: '',
+//                              OwnerKey_SK: '',
+//                              ZipPlus: '',
+//                              TotalFeeExpense: '',
+//                              TotalRevenue: '',
+//                              TotalFeeCommission: '',
+//                              DatePrinted: '',
+//                              GLPeriod: '',
+//                              FlagRebill: '',
+//                              TotalPayments: '',
+//                              TermPremium: '',
+//                              MinimumPremium: '',
+//                              ProcessBatchKey_FK: '',
+//                              EffectiveDate: '',
+//                              DivisionID: '',
+//                              DateTaxesFiled: '',
+//                              FlagMultiPremium: '',
+//                              DatePremiumReported: '',
+//                              AdmittedPremium: '',
+//                              FlagOverrideComm: '',
+//                              CommissionSplitKey_FK: '',
+//                              Entity: '',
+//                              CstCtr: '',
+//                              ProductionSplitKey_FK: '',
+//                              TotalAgentCommOnly: '',
+//                              TotalAgentFeeTaxes: '',
+//                              TotalAPCompany: '',
+//                              TotalAPTax: '',
+//                              TotalNetFeeRevenue: '',
+//                              TotalNetComm: '',
+//                              Expiration: '',
+//                              TotalNetRevenue: '',
+//                              TotalFees: '',
+//                              FlagCourtesyFiler: '',
+//                              FlagProductionSplit: '',
+//                              SourcePremium: '',
+//                              RebillInvoiceKey_FK: '',
+//                              DownPaymentMemo: '',
+//                              TotalBasisAmount: '',
+//                              CompanyID: '',
+//                              InvoicePostedByID: '',
+//                              TerrorismPremium_GL: '',
+//                              TerrorismPremium: '',
+//                              FlagSuppress: '',
+//                              FlaggedAR: '',
+//                              FlaggedAP: '',
+//                              MapToID: '',
+//                              Tax5: '',
+//                              Tax6: '',
+//                              Tax7: '',
+//                              Tax8: '',
+//                              AddToExisting: '',
+//                              AR_AccountID: '',
+//                              BatchID: '',
+//                              StatusID_Old: '',
+//                              StatusID_Old2: '',
+//                              OLD_AcuityTargetCompanyID: '',
+//                              DateBackOutFiled: '',
+//                              PerArchFiled: '',
+//                              ArchBatchKey: '',
+//                              FlagCancelFiledToArch: '',
+//                              TaxKeyPK: '',
+//                              OrigPolNum: '',
+//                              DateTaxesAccepted: '',
+//                              FlagFileSLSO: '',
+//                              SLSOErrorType: '',
+//                              SLSOBatchKey_FK: '',
+//                              MasterInstallKey_FK: '',
+//                              FlagMasterInstall: '',
+//                              DepositPremium: '',
+//                              InstallmentNo: '',
+//                              AggregateLimits: '',
+//                              FlagMailedOut: '',
+//                              FlagEscrow: ''
+//            ]
+//
+//            aimsql.execute("Insert into dbo.InvoiceHeader (InvoiceID, InvoiceKey_PK, QuoteID, PolicyKey_FK, Effective, ProducerID, BillingType, BillToCode, Premium, Non_Premium, Misc_Premium, NonTax_Premium, Tax1, \n" +
+//                    "Tax2, Tax3, Tax4, InvoiceTypeID, PolicyID, Description, TaxState, InvoiceTotal, BillToAddressID, PaymentToAddressID, MemoInvoiceFlag, OutStandingAmt, \n" +
+//                    "DirectBillFlag, InstallmentPlanID, DueDate, NumberOfPayments, TotalGrossComm, TotalAgentComm, TotalDue, TotalPayable, Note, GrossComm, AgentComm, \n" +
+//                    "CompanyCollectedFees, AgencyCollectedFees, TotalPremium, InstallmentID, PayableID, InstallmentFlag, Message, TaxPaidBy, Taxed, TaxesPaidByID, UserHoldFlag, \n" +
+//                    "CourtesyFilingID, DefaultPayableID, Ledger, ReversedFlag, PostDate, FrequencyID, IncludeAgentComm, IncludeCompanyFee, IncludeAgencyComm, \n" +
+//                    "IncludeAgencyFee, DownPercent, StatusID, InstallmentItem, Initial_InvoiceFlag, PayToCode, AcuityTargetCompanyID, InsuredID, TeamID, InvoicedByID, \n" +
+//                    "AcuityStatusID, InvoiceDate, OwnerKey_FK, InstallmentTotal, Address1, Address2, City, State, Zip, RemitAddress1, RemitAddress2, RemitCity, RemitState, RemitZip, \n" +
+//                    "InvTypeID, EndorsementKey_FK, ExportDate, HeldSuspenseKey, InvoiceTerms, InstallPayOOBFlag, AgencyCollectedTaxes, TotalFeeRevenue, TotalNetDueCompany, \n" +
+//                    "AccountingEffectiveDate, ReversedInvoiceKey, ExportStatusID, AcuityBatchKey, ProgramID, TotalInstallmentsDue, RiskLimits, RiskZip, RiskCounty, PaidByStatement, \n" +
+//                    "DownPaymentAmt, PayToDueDate, DateCreated, FinanceID, FlagFinanced, Endorsement, CompanyCollectedTaxes, TotalTaxes, FlagSplit, MarketID, ContractID, \n" +
+//                    "OtherTaxes, OtherExpense, AcctExec, CurrencyType, CurrencyAmount, ProductID, CoverageID, OwnerKey_SK, ZipPlus, TotalFeeExpense, TotalRevenue, \n" +
+//                    "TotalFeeCommission, DatePrinted, GLPeriod, FlagRebill, TotalPayments, TermPremium, MinimumPremium, ProcessBatchKey_FK, EffectiveDate, DivisionID, \n" +
+//                    " DateTaxesFiled, FlagMultiPremium, DatePremiumReported, AdmittedPremium, FlagOverrideComm, CommissionSplitKey_FK, Entity, CstCtr, ProductionSplitKey_FK, \n" +
+//                    "TotalAgentCommOnly, TotalAgentFeeTaxes, TotalAPCompany, TotalAPTax, TotalNetFeeRevenue, TotalNetComm, Expiration, TotalNetRevenue, TotalFees, \n" +
+//                    "FlagCourtesyFiler, FlagProductionSplit, SourcePremium, RebillInvoiceKey_FK, DownPaymentMemo, TotalBasisAmount, CompanyID, InvoicePostedByID, \n" +
+//                    "TerrorismPremium_GL, TerrorismPremium, FlagSuppress, FlaggedAR, FlaggedAP, MapToID, Tax5, Tax6, Tax7, Tax8, AddToExisting, AR_AccountID, BatchID, \n" +
+//                    "StatusID_Old, StatusID_Old2, OLD_AcuityTargetCompanyID, DateBackOutFiled, PerArchFiled, ArchBatchKey, FlagCancelFiledToArch, TaxKeyPK, OrigPolNum, \n" +
+//                    "DateTaxesAccepted, FlagFileSLSO, SLSOErrorType, SLSOBatchKey_FK, MasterInstallKey_FK, FlagMasterInstall, DepositPremium, InstallmentNo, AggregateLimits, \n" +
+//                    "FlagMailedOut, FlagEscrow)  " +
+//                    "VALUES ('$invoiceMap.InvoiceID', '$invoiceMap.InvoiceKey_PK', '$invoiceMap.QuoteID', '$invoiceMap.PolicyKey_FK', '$invoiceMap.Effective', " +
+//                    "'$invoiceMap.ProducerID', '$invoiceMap.BillingType', '$invoiceMap.BillToCode', '$invoiceMap.Premium', '$invoiceMap.Non_Premium', '$invoiceMap.Misc_Premium', " +
+//                    "'$invoiceMap.NonTax_Premium', '$invoiceMap.Tax1', '$invoiceMap.Tax2', '$invoiceMap.Tax3', '$invoiceMap.Tax4', '$invoiceMap.InvoiceTypeID', '$invoiceMap.PolicyID', " +
+//                    "'$invoiceMap.Description', '$invoiceMap.TaxState', '$invoiceMap.InvoiceTotal', '$invoiceMap.BillToAddressID', '$invoiceMap.PaymentToAddressID', " +
+//                    "'$invoiceMap.MemoInvoiceFlag', '$invoiceMap.OutStandingAmt', '$invoiceMap.DirectBillFlag', '$invoiceMap.InstallmentPlanID', '$invoiceMap.DueDate', " +
+//                    "'$invoiceMap.NumberOfPayments', '$invoiceMap.TotalGrossComm', '$invoiceMap.TotalAgentComm', '$invoiceMap.TotalDue', '$invoiceMap.TotalPayable', " +
+//                    "'$invoiceMap.Note', '$invoiceMap.GrossComm', '$invoiceMap.AgentComm', '$invoiceMap.CompanyCollectedFees', '$invoiceMap.AgencyCollectedFees', " +
+//                    "'$invoiceMap.TotalPremium', '$invoiceMap.InstallmentID', '$invoiceMap.PayableID', '$invoiceMap.InstallmentFlag', '$invoiceMap.Message', " +
+//                    "'$invoiceMap.TaxPaidBy', '$invoiceMap.Taxed', '$invoiceMap.TaxesPaidByID', '$invoiceMap.UserHoldFlag', '$invoiceMap.CourtesyFilingID', " +
+//                    "'$invoiceMap.DefaultPayableID', '$invoiceMap.Ledger', '$invoiceMap.ReversedFlag', '$invoiceMap.PostDate', '$invoiceMap.FrequencyID', " +
+//                    "'$invoiceMap.IncludeAgentComm', '$invoiceMap.IncludeCompanyFee', '$invoiceMap.IncludeAgencyComm', '$invoiceMap.IncludeAgencyFee', " +
+//                    "'$invoiceMap.DownPercent', '$invoiceMap.StatusID', '$invoiceMap.InstallmentItem', '$invoiceMap.Initial_InvoiceFlag', '$invoiceMap.PayToCode', " +
+//                    "'$invoiceMap.AcuityTargetCompanyID', '$invoiceMap.InsuredID', '$invoiceMap.TeamID', '$invoiceMap.InvoicedByID', '$invoiceMap.AcuityStatusID', " +
+//                    "'$invoiceMap.InvoiceDate', '$invoiceMap.OwnerKey_FK', '$invoiceMap.InstallmentTotal', '$invoiceMap.Address1', '$invoiceMap.Address2', " +
+//                    "'$invoiceMap.City', '$invoiceMap.State', '$invoiceMap.Zip', '$invoiceMap.RemitAddress1', '$invoiceMap.RemitAddress2', '$invoiceMap.RemitCity', " +
+//                    "'$invoiceMap.RemitState', '$invoiceMap.RemitZip', '$invoiceMap.InvTypeID', '$invoiceMap.EndorsementKey_FK', '$invoiceMap.ExportDate', " +
+//                    "'$invoiceMap.HeldSuspenseKey', '$invoiceMap.InvoiceTerms', '$invoiceMap.InstallPayOOBFlag', '$invoiceMap.AgencyCollectedTaxes', " +
+//                    "'$invoiceMap.TotalFeeRevenue', '$invoiceMap.TotalNetDueCompany', '$invoiceMap.AccountingEffectiveDate', '$invoiceMap.ReversedInvoiceKey', " +
+//                    "'$invoiceMap.ExportStatusID', '$invoiceMap.AcuityBatchKey', '$invoiceMap.ProgramID', '$invoiceMap.TotalInstallmentsDue', '$invoiceMap.RiskLimits', " +
+//                    "'$invoiceMap.RiskZip', '$invoiceMap.RiskCounty', '$invoiceMap.PaidByStatement', '$invoiceMap.DownPaymentAmt', '$invoiceMap.PayToDueDate', " +
+//                    "'$invoiceMap.DateCreated', '$invoiceMap.FinanceID', '$invoiceMap.FlagFinanced', '$invoiceMap.Endorsement', '$invoiceMap.CompanyCollectedTaxes', " +
+//                    "'$invoiceMap.TotalTaxes', '$invoiceMap.FlagSplit', '$invoiceMap.MarketID', '$invoiceMap.ContractID', '$invoiceMap.OtherTaxes', " +
+//                    "'$invoiceMap.OtherExpense', '$invoiceMap.AcctExec', '$invoiceMap.CurrencyType', '$invoiceMap.CurrencyAmount', '$invoiceMap.ProductID', " +
+//                    "'$invoiceMap.CoverageID', '$invoiceMap.OwnerKey_SK', '$invoiceMap.ZipPlus', '$invoiceMap.TotalFeeExpense', '$invoiceMap.TotalRevenue', " +
+//                    "'$invoiceMap.TotalFeeCommission', '$invoiceMap.DatePrinted', '$invoiceMap.GLPeriod', '$invoiceMap.FlagRebill', '$invoiceMap.TotalPayments', " +
+//                    "'$invoiceMap.TermPremium', '$invoiceMap.MinimumPremium', '$invoiceMap.ProcessBatchKey_FK', '$invoiceMap.EffectiveDate', '$invoiceMap.DivisionID', " +
+//                    "'$invoiceMap.DateTaxesFiled', '$invoiceMap.FlagMultiPremium', '$invoiceMap.DatePremiumReported', '$invoiceMap.AdmittedPremium', " +
+//                    "'$invoiceMap.FlagOverrideComm', '$invoiceMap.CommissionSplitKey_FK', '$invoiceMap.Entity', '$invoiceMap.CstCtr', '$invoiceMap.ProductionSplitKey_FK', " +
+//                    "'$invoiceMap.TotalAgentCommOnly', '$invoiceMap.TotalAgentFeeTaxes', '$invoiceMap.TotalAPCompany', '$invoiceMap.TotalAPTax', " +
+//                    "'$invoiceMap.TotalNetFeeRevenue', '$invoiceMap.TotalNetComm', '$invoiceMap.Expiration', '$invoiceMap.TotalNetRevenue', '$invoiceMap.TotalFees', " +
+//                    "'$invoiceMap.FlagCourtesyFiler', '$invoiceMap.FlagProductionSplit', '$invoiceMap.SourcePremium', '$invoiceMap.RebillInvoiceKey_FK', " +
+//                    "'$invoiceMap.DownPaymentMemo', '$invoiceMap.TotalBasisAmount', '$invoiceMap.CompanyID', '$invoiceMap.InvoicePostedByID', " +
+//                    "'$invoiceMap.TerrorismPremium_GL', '$invoiceMap.TerrorismPremium', '$invoiceMap.FlagSuppress', '$invoiceMap.FlaggedAR', " +
+//                    "'$invoiceMap.FlaggedAP', '$invoiceMap.MapToID', '$invoiceMap.Tax5', '$invoiceMap.Tax6', '$invoiceMap.Tax7', '$invoiceMap.Tax8', " +
+//                    "'$invoiceMap.AddToExisting', '$invoiceMap.AR_AccountID', '$invoiceMap.BatchID', '$invoiceMap.StatusID_Old', '$invoiceMap.StatusID_Old2', " +
+//                    "'$invoiceMap.OLD_AcuityTargetCompanyID', '$invoiceMap.DateBackOutFiled', '$invoiceMap.PerArchFiled', '$invoiceMap.ArchBatchKey', " +
+//                    "'$invoiceMap.FlagCancelFiledToArch', '$invoiceMap.TaxKeyPK', '$invoiceMap.OrigPolNum', '$invoiceMap.DateTaxesAccepted', '$invoiceMap.FlagFileSLSO', " +
+//                    "'$invoiceMap.SLSOErrorType', '$invoiceMap.SLSOBatchKey_FK', '$invoiceMap.MasterInstallKey_FK', '$invoiceMap.FlagMasterInstall', " +
+//                    "'$invoiceMap.DepositPremium', '$invoiceMap.InstallmentNo', '$invoiceMap.AggregateLimits', '$invoiceMap.FlagMailedOut', '$invoiceMap.FlagEscrow)")
+//
+
 
     }
 
@@ -3585,6 +3645,74 @@ class AIMSQL {
         return rows
     }
 
+    def getKeyField(keyFieldName, aimsql){
+        def returnValue = "";
+        aimsql.call("{call dbo.GetKeyField(${Sql.INTEGER}, 'ReferenceID')}") { num ->
+            returnValue = num
+        }
+
+        return returnValue;
+    }
+
+    //CLEANS DATA BEFORE INSERT OR UPDATES, ALSO CHECKS LENGTHS TO AVOID ERRORS
+    def cleanSQLMap(map, tableName, dataSource_aim){
+        log.info "Cleaning Map for $tableName"
+        def cleanedMap = [:]
+        def columnIsNullableMap = getTableColumnsIsNullableMap(tableName, dataSource_aim)
+        def columnTypeLengthMap = getTableColumnsTypeLengthMap(tableName, dataSource_aim)
+
+        map.each{ k, v -> //k = Column Name, v = Value to be Inserted
+//            log.info "${k}:${v}"
+//            log.info "Original: " + v
+//            log.info "Class: " + v.getClass();
+
+
+            //CHECK IF VALUE IS  A STRING
+            if(v instanceof String || v instanceof GString){
+                def tempString = v.trim();
+
+                //CHECK IF STRING IS SUPPOSED TO REPRESENT NULL
+                if(tempString.equalsIgnoreCase("null")){
+                    //CHECK IF THIS COLUMN IS ALLOWED TO BE NULL FOR THIS SQL TABLE
+                    if(columnIsNullableMap["${k}"]){
+                        cleanedMap["${k}"] = "NULL";
+                    }
+                    else{
+                        throw new Exception("Not a valid entry for $k. Cannot be Null");
+                    }
+
+                }
+                else{
+                    //CHECK IF VALUE STARTS AND END WITH QUOTES
+                    if(tempString.startsWith("'") && tempString.endsWith("'") ) {
+                        //REMOVE THE QUTOES TEMPORARILY TO GET ACTUAL VALUE OF STRING
+                        tempString = tempString.substring(1, tempString.length() - 1);
+                    }
+
+                    //CHECK IF STRING LENGTH WILL FIT INTO SQL DB
+                    def colWidth = columnTypeLengthMap["${k}"].getAt(1);
+
+                    if(tempString.size() > colWidth){
+                        throw new Exception("Not a valid entry for $k. Max length of entry should be $colWidth");
+                    }
+
+                    tempString = tempString.replace("\"", "\\\"").replace("'", "''")
+
+
+                    cleanedMap["${k}"] = "'$tempString'";
+//                    log.info "Changed : " + cleanedMap["${k}"]
+//                    log.info "Changed : " + cleanedMap["${k}"].getClass()
+                }
+            }
+            else{
+                cleanedMap["${k}"] = v
+//                log.info "Not Changed : " + v
+            }
+        }
+
+        return cleanedMap
+    }
+
     def printTableInfo(table, dataSource_aim){
         log.info "AIMDAO PRINT COLUMN INFO ABOUT TABLE: $table";
 
@@ -3602,8 +3730,45 @@ class AIMSQL {
 //                log.info meta.getColumnDisplaySize(index+1)
 //                log.info meta.isCurrency(index+1)
 //                log.info meta.isNullable(index+1)
+//                log.info meta.getColumnDisplaySize(int column)
             }
         }
+    }
+
+    def getTableColumnsIsNullableMap(table, dataSource_aim){
+        log.info "AIMDAO getTableColumnsIsNullableMap INFO ABOUT TABLE: $table";
+
+        Sql aimsql = new Sql(dataSource_aim)
+        def meta;
+        def columnIsNullableMap= [:]
+        aimsql.eachRow("SELECT  top 1   * \n" +
+                "FROM         $table") {
+            meta = it.getMetaData();
+
+            it.toRowResult().eachWithIndex { rowItem, index ->
+                columnIsNullableMap["$rowItem.key"] = meta.isNullable(index+1) == 1 ? true : false
+            }
+        }
+
+        return columnIsNullableMap
+    }
+
+    def getTableColumnsTypeLengthMap(table, dataSource_aim){
+        log.info "AIMDAO getTableColumnsTypeLengthMap INFO ABOUT TABLE: $table";
+
+        Sql aimsql = new Sql(dataSource_aim)
+        def meta;
+        def columnTypeLengthMap= [:]
+        aimsql.eachRow("SELECT  top 1   * \n" +
+                "FROM         $table") {
+
+            meta = it.getMetaData();
+            it.toRowResult().eachWithIndex { rowItem, index ->
+                columnTypeLengthMap["$rowItem.key"] = [ meta.getColumnTypeName(index+1), meta.getColumnDisplaySize(index+1) ]
+            }
+        }
+
+        return columnTypeLengthMap
     }
 
     def selectAllFromTableWhereWithFormatting(table, where, dataSource_aim){
@@ -3646,7 +3811,7 @@ class AIMSQL {
                     log.info d.split(" ").size()
                     if(rowItem.value == null){
                         string = ""
-                    }  
+                    }
                     else if(d.split(" ").size()>1){
                         string = d.split(" ")[0].replace("-","") + " " + d.split(" ")[1];
                     }

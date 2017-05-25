@@ -1780,7 +1780,7 @@
                         </div>
 
                         %{--TOTAL PREMIUM--}%
-                        <div class="premDistributionInsert">
+                        <div class="premDistributionInsertTotal">
                             <div class="totalSaleContainer">
                                 <div class="row TotalPremiumRow">
                                     <div class="col-xs-4">
@@ -1802,11 +1802,11 @@
                             <div id="brokerFeePremiumContainer" style="display:none">
                                 <div class="row">
                                     <div class="col-xs-4">
-                                        <span class="lineOfBusinessSpan" id="brokerFeePremiumName">Broker Fee</span>
+                                        <span class="" id="brokerFeePremiumName">Broker Fee</span>
                                     </div>
 
                                     <div class="col-xs-3">
-                                        <span class="premiumSpan brokerFeePremiumCost"
+                                        <span class=" brokerFeePremiumCost"
                                               id="brokerFeePremiumCost"></span>
                                     </div>
                                 </div>
