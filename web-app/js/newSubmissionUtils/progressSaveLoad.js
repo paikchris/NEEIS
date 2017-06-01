@@ -1,3 +1,5 @@
+var lastSaveTime
+
 
 //CHECK IF SAVED SUBMISSIONS AVAILABLE, AND SHOW LOAD BUTTON IF EXISTS
 function showLoadButtonIfSavedSubmissionsExist(){
@@ -11,6 +13,119 @@ function showLoadButtonIfSavedSubmissionsExist(){
     else {
         $('#loadProgress').css('display', 'none');
     }
+
+    $.ajax({
+        method: "POST",
+        url: "/Async/getSavedSubmissions",
+        data: {
+        }
+    })
+        .done(function(msg) {
+            console.log(JSON.parse(msg))
+            var savedSubmissionsObjectArray = JSON.parse(msg)
+
+            //CHECK THE LIST COMING BACK FROM DATABASE WITH ITEMS IN LOCAL STORAGE AND COOKIES
+            //If it exists in the database list, delete from local and cookies
+            checkAndClearLocalStorage(savedSubmissionsObjectArray)
+
+            for(var i=0; i< savedSubmissionsObjectArray.length; i++){
+                console.log(savedSubmissionsObjectArray[i])
+                console.log(savedSubmissionsObjectArray[i].autosaveFlag)
+                if(savedSubmissionsObjectArray[i].autosaveFlag === "Y"){
+                    //SHOW CONTINUE PREVIOUS SUBMISSION?
+                    console.log("ASK to continue")
+
+                    $('#previousSubmissionExistsAlert').css('display', '');
+                    $('#loadProgress').css('display', '');
+                }
+            }
+        });
+}
+
+function checkAndClearLocalStorage(dbObjectArray){
+    console.log("CLEARING LOCAL")
+    try{
+        for(var i=0; i<dbObjectArray.length; i++){
+            //CHECK IF DB SAVED ITEM EXISTS IN LOCAL ITEMS
+            if (localStorage.getItem(dbObjectArray[i].saveName) === null) { //IF IT DOESN'T EXIST, KEEP TO UPLOAD AT END
+
+            }
+            else{ //IF IT DOES EXIST IN DB LIST, DELETE FROM LOCAL LIST
+                localStorage.removeItem(dbObjectArray[i].saveName)
+            }
+        }
+
+        //UPLOAD REMAINING
+        for(var i=0; i<localStorage.length; i++){
+            var lsKey = localStorage.key(i)
+            console.log(localStorage.getItem(lsKey))
+            var savedMap = JSON.parse(localStorage.getItem(lsKey))
+            var isAutoSave = savedMap["isAutoSave"]
+            var savedName = savedMap["saveName"]
+            $.ajax({
+                method: "POST",
+                url: "/Async/saveSubmissionProgress",
+                data: {
+                    savedDataMap : JSON.stringify(savedMap),
+                    autosave: isAutoSave,
+                    saveName: savedName
+                },
+                lsKey: lsKey
+            })
+                .done(function(msg) {
+                    if(msg === "Success"){
+                        localStorage.removeItem(this.lsKey)
+                    }
+                });
+        }
+
+        console.log("CLEARING COOKIES")
+        for(var i=0; i<dbObjectArray.length; i++){
+            //CHECK IF DB SAVED ITEM EXISTS IN LOCAL ITEMS
+            if (Cookies.get(dbObjectArray[i].saveName) === undefined) { //IF IT DOESN'T EXIST, KEEP TO UPLOAD AT END
+
+            }
+            else{ //IF IT DOES EXIST IN DB LIST, DELETE FROM LOCAL LIST
+                Cookies.remove(dbObjectArray[i].saveName)
+            }
+        }
+        //UPLOAD REMAINING
+        //LOOK AT COOKIES
+        var cookieSaves = Object.keys(Cookies.get()).filter(function(name) {
+            return name.indexOf("saveData_") > -1;
+        });
+        cookieSaves.forEach(function(name, i) {
+            console.log(i);
+            var cookieKey = name
+            console.log(Cookies.get(cookieKey))
+            var savedMap = JSON.parse(Cookies.get(cookieKey))
+            var isAutoSave = savedMap["isAutoSave"]
+            var savedName = savedMap["saveName"]
+            $.ajax({
+                method: "POST",
+                url: "/Async/saveSubmissionProgress",
+                data: {
+                    savedDataMap: JSON.stringify(savedMap),
+                    autosave: isAutoSave,
+                    saveName: savedName
+                },
+                cookieKey: cookieKey
+            })
+                .done(function (msg) {
+                    if (msg === "Success") {
+                        Cookies.remove(this.cookieKey)
+                    }
+                });
+        });
+    }
+    catch(e){
+        console.log(e)
+        console.log("Error Cleaning Local")
+    }
+}
+
+function saveItemToSubmissionsTable(saveName, autoSaveMap, autosaveFlag){
+
 }
 
 //SET THE INTERVAL FOR THE SUBMISSION PAGE TO AUTOSAVE, EX. EVERY 10000 MS
@@ -44,33 +159,27 @@ function initializeSubmissionSaveAndLoadButtons(){
         saveProgress();
         setTimeout(function() {
             $('#loadingModal').modal('hide');
+            $('#loadProgress').css('display', "")
         }, 2000);
     });
-    $(document).on('click', '#loadProgress', function() {
-        savedSubmissions = Object.keys(Cookies.get()).filter(function(name) {
-            return name.indexOf("saveData_") > -1;
-        });
-        var savedSubmissionHtmlString = "";
-        savedSubmissions.forEach(function(name, i) {
-            console.log(i);
-            if (i < 10) {
-                savedSubmissionHtmlString = savedSubmissionHtmlString +
-                    " <a href='#' class='list-group-item' style='font-weight: 500'>" +
-                    "<i class='fa fa-file-text-o' aria-hidden='true'></i>  <span class='rowLoadName'> " + name + "</span>" +
-                    "</a>";
-            }
-            else {
-
-            }
-        });
-        $('#savedSubmissionsContainer').html(savedSubmissionHtmlString);
-
-        $('#loadSaveModal').modal('show');
+    $(document).on('click', '.loadProgress', function() {
+        fillLoadModal();
     });
-    $(document).on('click', '.rowLoadName', function() {
+    $(document).on('click', '.savedSubmissionDataRow', function() {
         $('#loadSaveModal').modal('hide');
-        var loadName = $(this).html().trim();
-        var loadMap = Cookies.getJSON(loadName);
+        var loadMap;
+        if($(this).hasClass('database')){
+            loadMap = JSON.parse($(this).attr('data-savedata'))
+        }
+        else if($(this).hasClass('cookies')){
+            loadMap = JSON.parse($(this).attr('data-savedata'))
+        }
+        else if($(this).hasClass('localStorage')){
+            loadMap = JSON.parse($(this).attr('data-savedata'))
+        }
+        // var loadName = $(this).html().trim();
+        // var loadMap = Cookies.getJSON(loadName);
+
         loadSaveFunction(loadMap);
     });
 }
@@ -87,34 +196,211 @@ function initializeAutoSaveLoadProgressButtons(){
     });
 }
 
+function fillLoadModal(){
+    var savedSubmissionHtmlString = "";
+
+    $.ajax({
+        method: "POST",
+        url: "/Async/getSavedSubmissions",
+        data: {
+        }
+    })
+        .done(function(msg) {
+            console.log(JSON.parse(msg))
+            var savedSubmissionsObjectArray = JSON.parse(msg)
+
+            for(var i=0; i < savedSubmissionsObjectArray.length; i++){
+
+                if (true) {
+                    // savedSubmissionHtmlString = savedSubmissionHtmlString +
+                    //     " <a href='#' class='list-group-item' style='font-weight: 500'>" +
+                    //     "<i class='fa fa-file-text-o' aria-hidden='true'></i>  " +
+                    //     "<span class='rowLoadName database' data-saveID='" + savedSubmissionsObjectArray[i].id + "' data-saveData='" + savedSubmissionsObjectArray[i].saveData + "'> "
+                    //     + savedSubmissionsObjectArray[i].saveName + "</span>" +
+                    //     "</a>";
+
+                    var riskTypeOfSave = savedSubmissionsObjectArray[i].saveName.split("saveData_")[1]
+                    var nameOfInsured = savedSubmissionsObjectArray[i].saveName.split("saveData_")[2]
+                    var timeOfSave = savedSubmissionsObjectArray[i].saveName.split("saveData_")[3]
+                    var autoSaveText = ""
+                    console.log(savedSubmissionsObjectArray[i].isAutoSave)
+                    if(savedSubmissionsObjectArray[i].autosaveFlag === "Y"){
+                        autoSaveText = " (Autosaved)"
+                    }
+
+                    savedSubmissionHtmlString = savedSubmissionHtmlString +
+                        "<div class='row savedSubmissionDataRow database' data-saveID='" + savedSubmissionsObjectArray[i].id + "' " +
+                        "data-saveData='" + savedSubmissionsObjectArray[i].saveData + "'>" +
+                            "<div class='col-xs-5'>" +
+                                "<span>" + riskTypeOfSave + autoSaveText + "</span>" +
+                            "</div>" +
+                            "<div class='col-xs-4'>" +
+                                "<span>" + nameOfInsured + "</span>" +
+                            "</div>" +
+                            "<div class='col-xs-3'>" +
+                                "<span>" + timeOfSave.split(" ")[0] + "</span>" +
+                            "</div>" +
+                        "</div>"
+                }
+                else {
+
+                }
+            }
+
+            //LOOK AT COOKIES
+            var savedSubmissions = Object.keys(Cookies.get()).filter(function(name) {
+                return name.indexOf("saveData_") > -1;
+            });
+            console.log(savedSubmissions)
+
+            savedSubmissions.forEach(function(name, i) {
+                console.log(i);
+                if (true) {
+                    // savedSubmissionHtmlString = savedSubmissionHtmlString +
+                    //     " <a href='#' class='list-group-item' style='font-weight: 500'>" +
+                    //     "<i class='fa fa-file-text-o' aria-hidden='true'></i>  " +
+                    //     "<span class='rowLoadName cookies' data-saveID='" + name + "' data-saveData='" + Cookies.get(name) + "'> "
+                    //     + name + "</span>" +
+                    //     "</a>";
+
+
+                    var riskTypeOfSave = name.split("saveData_")[1]
+                    var nameOfInsured = name.split("saveData_")[2]
+                    var timeOfSave = name.split("saveData_")[3]
+
+                    var tempMap = JSON.parse(Cookies.get(name))
+                    var autoSaveText = ""
+                    if(tempMap.isAutoSave === "true"){
+                        autoSaveText = "(Autosaved) "
+                    }
+
+                    savedSubmissionHtmlString = savedSubmissionHtmlString +
+                        "<div class='row savedSubmissionDataRow cookies' data-saveID='" + name + "' " +
+                        "data-saveData='" + Cookies.get(name) + "'>" +
+                        "<div class='col-xs-5'>" +
+                        "<span>" + riskTypeOfSave + autoSaveText + "</span>" +
+                        "</div>" +
+                        "<div class='col-xs-4'>" +
+                        "<span>" + nameOfInsured + "</span>" +
+                        "</div>" +
+                        "<div class='col-xs-3'>" +
+                        "<span>" + timeOfSave.split(" ")[0] + "</span>" +
+                        "</div>" +
+                        "</div>"
+                }
+                else {
+
+                }
+            });
+
+
+            //LOOK AT LOCAL STORAGE
+            for(var i=0; i<localStorage.length; i++){
+                if(localStorage.key(i).indexOf("autosaveMap") > -1){
+                    // savedSubmissionHtmlString = savedSubmissionHtmlString +
+                    //     " <a href='#' class='list-group-item' style='font-weight: 500'>" +
+                    //     "<i class='fa fa-file-text-o' aria-hidden='true'></i>  " +
+                    //     "<span class='rowLoadName localStorage' data-saveID='" + localStorage.key(i) + "' data-saveData='" + localStorage.getItem(localStorage.key(i)) + "'> "
+                    //     + localStorage.key(i) + "</span>" +
+                    //     "</a>";
+
+                    var riskTypeOfSave = localStorage.key(i).split("saveData_")[1]
+                    var nameOfInsured = localStorage.key(i).split("saveData_")[2]
+                    var timeOfSave = localStorage.key(i).split("saveData_")[3]
+
+                    var tempMap = JSON.parse(localStorage.getItem(localStorage.key(i)))
+                    var autoSaveText = ""
+                    if(tempMap.isAutoSave === "true"){
+                        autoSaveText = "(Autosaved) "
+                    }
+
+                    savedSubmissionHtmlString = savedSubmissionHtmlString +
+                        "<div class='row savedSubmissionDataRow localStorage' data-saveID='" + localStorage.key(i) + "' " +
+                        "data-saveData='" + localStorage.getItem(localStorage.key(i)) + "'>" +
+                        "<div class='col-xs-5'>" +
+                        "<span>" + riskTypeOfSave + autoSaveText + "</span>" +
+                        "</div>" +
+                        "<div class='col-xs-4'>" +
+                        "<span>" + nameOfInsured + "</span>" +
+                        "</div>" +
+                        "<div class='col-xs-3'>" +
+                        "<span>" + timeOfSave.split(" ")[0] + "</span>" +
+                        "</div>" +
+                        "</div>"
+                }
+            }
+
+            $('#savedSubmissionsContainer').html(savedSubmissionHtmlString);
+            $('#loadSaveModal').modal('show');
+        });
+
+
+
+
+
+}
+
 
 function loadSaveFunction(loadMap) {
+    loadingSaveInProgress = true;
+    loadedSubmissionMap = loadMap;
+    var loadingStep = 1;
+    currentStep = 1;
+
+
     $('#progressBarHeader').html("Loading saved submission")
     $('.progress-bar').attr('aria-valuenow', "0").css("width", "0%");
     $('#progressBarModal').modal('show');
     $('.progress-bar').attr('aria-valuenow', "75").animate({
         width: "75%"
-    }, 3000);
+    }, 5000);
     var value;
     riskChosen = loadMap['riskChosen'];
 
     $('a').each(function() {
         if ($(this).html() === loadMap['riskChosen']) {
 
-            //alert("click " + $(this).html())
+            // alert("click " + $(this).html())
             var domObject = $(this);
-            //console.log($(domObject).html())
+            // console.log($(domObject).html())
             $(domObject).trigger('click');
         }
     });
 
+
     if (loadMap['proposedEffectiveDate'].length > 0) {
-        $('#proposedEffectiveDate').val(loadMap['proposedEffectiveDate']);
+        var dateTemp = loadMap['proposedEffectiveDate']
+        var monthsTemp = parseInt(dateTemp.split("/")[0])
+        var daysTemp = parseInt(dateTemp.split("/")[1])
+        var yearsTemp = parseInt(dateTemp.split("/")[2])
+        if(monthsTemp < 10){
+            monthsTemp = '0' + monthsTemp;
+
+        }
+        if(daysTemp < 10 ){
+            daysTemp = '0' + daysTemp;
+        }
+        var finalDateString = monthsTemp + "/" + daysTemp + "/" + yearsTemp
+         $('#proposedEffectiveDate').val(finalDateString);
         $("#proposedEffectiveDate").trigger("change");
+
     }
     if (loadMap['proposedExpirationDate'].length > 0) {
-        $('#proposedExpirationDate').val(loadMap['proposedExpirationDate']);
+        var dateTemp = loadMap['proposedExpirationDate']
+        var monthsTemp = parseInt(dateTemp.split("/")[0])
+        var daysTemp = parseInt(dateTemp.split("/")[1])
+        var yearsTemp = parseInt(dateTemp.split("/")[2])
+        if(monthsTemp < 10){
+            monthsTemp = '0' + monthsTemp;
+        }
+        if(daysTemp < 10 ){
+            daysTemp = '0' + daysTemp;
+        }
+        var finalDateString = monthsTemp + "/" + daysTemp + "/" + yearsTemp
+
+        $('#proposedExpirationDate').val(finalDateString);
         $("#proposedExpirationDate").trigger("change");
+
     }
     if (loadMap['proposedTermLength'].length > 0) {
         $('#proposedTermLength').val(loadMap['proposedTermLength']);
@@ -132,13 +418,20 @@ function loadSaveFunction(loadMap) {
         loadSavedAttachedFiles(loadMap['attachedFiles']);
     }
 
+
+    // simulateClickNext(2)
+    //
+    // $('#coverageOptionsReview').html(loadedSubmissionMap["coverageOptionsDiv"])
+    // console.log(loadedSubmissionMap["coverageOptionsDiv"])
+
+
     setTimeout(function() {
-        //console.log("wait")
+        console.log("spec films loaded: " + specFilmsScriptLoaded)
         Object.keys(loadMap).forEach(function(key) {
 
             value = loadMap[key];
-            //console.log("COOKIE VALUE = " + key + "-" + value);
             var domObject = $('#' + key);
+            console.log($(domObject).attr('id') + " == " + $(domObject).val())
             if ($(domObject).css("display") != "none") {
                 $(domObject).css('display', '');
             }
@@ -188,38 +481,58 @@ function loadSaveFunction(loadMap) {
         if (loadMap['proposedEffectiveDate'].length == 0) {
             $('#proposedEffectiveDate').val("");
             //$("#proposedEffectiveDate").trigger("change");
+
         }
         if (loadMap['proposedExpirationDate'].length == 0) {
             $('#proposedExpirationDate').val("");
             //$("#proposedExpirationDate").trigger("change");
         }
-
-
-        
         $('.progress-bar').attr('aria-valuenow', "100").css("width", "100%");
         $('#progressBarModal').modal('hide');
-    }, 2000);
-
-
-
-
-
-
+        loadingSaveInProgress = false;
+    }, 3000);
 
     //
 
 }
 
+function eventFire(el, etype){
+    if (el.fireEvent) {
+        el.fireEvent('on' + etype);
+    } else {
+        var evObj = document.createEvent('Events');
+        evObj.initEvent(etype, true, false);
+        el.dispatchEvent(evObj);
+    }
+}
+
+function simulateClickNext(toStep){
+    loadingStep = toStep;
+    currentStep = toStep;
+    var curStepLoad = $("#buttonCircleStep" + loadingStep).closest(".setup-content"),
+        curStepBtnLoad = curStepLoad.attr("id"),
+        nextStepWizardLoad = $('div.setup-panel div a[href="#step-' + curStepBtnLoad + '"]').parent().next().children("a"),
+        curInputsLoad = curStepLoad.find("input[type='text'],input[type='url']")
+    var $target = $($("#buttonCircleStep" + loadingStep).attr('href')),
+        $item = $(this);
+    var navListItems = $('div.setup-panel div a'),
+        allWells = $('.setup-content'),
+        allNextBtn = $('.nextBtn'),
+        allPrevBtn = $('.prevBtn');
+    allWells.hide();
+    navListItems.removeClass('btn-primary').addClass('btn-default');
+    $("#buttonCircleStep" + loadingStep).addClass('btn-primary');
+    allWells.hide();
+    $target.show();
+    $target.find('input:eq(0)').focus();
+
+    $('html,body').scrollTop(0);
+}
+
 function autoSaveFunction() {
-    //$( "*").each(function () {
-    //    autoSaveMap[$(this).attr('id')] = $(this).val();
-    //    //alert(autoSaveMap);
-    //
-    //});
-    //console.log("AUTOSAVING")
+
     autoSaveMap['riskChosen'] = getRiskTypeChosen();
 
-    //ALL VISIBLE INPUTS
     $("input, select").each(function() {
         if ($(this).css("display") != "none") {
             if ($(this).is("select")) {
@@ -233,7 +546,6 @@ function autoSaveFunction() {
             }
             else if ($(this).is(':radio')) {
                 if ($(this).is(":checked")) {
-                    //alert($(this).val());
                     autoSaveMap[$(this).attr('id')] = true;
                 }
             }
@@ -242,17 +554,36 @@ function autoSaveFunction() {
             else {
                 autoSaveMap[$(this).attr('id')] = $(this).val();
             }
-
         }
     });
+
+    autoSaveMap["attachedFiles"] = attachedFileMap;
+
     //console.log(JSON.stringify(autoSaveMap))
-    Cookies.set("autosaveData", JSON.stringify(autoSaveMap), {
-        expires: 7
-    });
+    // Cookies.set("autosaveData", JSON.stringify(autoSaveMap), {
+    //     expires: 2
+    // });
+
+    // $.ajax({
+    //     method: "POST",
+    //     url: "/Async/autoSaveProgress",
+    //     data: {
+    //         savedDataMap : JSON.stringify(autoSaveMap)
+    //     }
+    // })
+    //     .done(function(msg) {
+    //
+    //     });
 }
 
 function saveProgress() {
-    if(checkCookie()){
+    var autosave = false;
+
+    lastSaveTime = new Date();
+    if(arguments[0] === "autosave"){
+        autosave = true;
+    }
+    if(true){
         console.log("Saving Progress")
         autoSaveMap['riskChosen'] = getRiskTypeChosen();
 
@@ -286,50 +617,59 @@ function saveProgress() {
             }
         });
 
-
-        // //SAVE ATTACHED FILES
-        // var saveUUID = generateUUID();
-        // autoSaveMap["saveUUID"] = saveUUID;
-        // var formData = new FormData();
-        // var formDataNew = getFormDataWithAllAttachedFilesNew();
-        //
-        // var submissionHasFile = false;
-        // $('input:file').each(function(){
-        //     var file = $(this).get(0).files[0];
-        //     if(file){
-        //         submissionHasFile = true;
-        //         formData.append($(this).attr('id'), file);
-        //     }
-        // });
-        //
-        // if (submissionHasFile) {
-        //     formData.append('uuid', saveUUID);
-        //
-        //     $.ajax({
-        //         method: "POST",
-        //         url: "/async/saveProgressStoreAttachedFiles",
-        //         data: formData,
-        //         cache: false,
-        //         contentType: false,
-        //         processData: false
-        //     })
-        //         .done(function(msg) {
-        //             alert(msg)
-        //         });
-        // }
-
         autoSaveMap["attachedFiles"] = attachedFileMap;
 
+        var saveName = "saveData_" + autoSaveMap['riskChosen'] + "saveData_" + autoSaveMap['namedInsured'] + "saveData_" + moment().format('MM/DD/YY HH:mm');
+        autoSaveMap["saveName"] = saveName
+        autoSaveMap["isAutoSave"] = autosave
+        //autoSaveMap["coverageOptionsDiv"] = $('#coverageOptionsReview').html()
 
 
-        Cookies.set("saveData_" + autoSaveMap['riskChosen'] + "_" + moment().format('MM/DD/YY HH:mm'), JSON.stringify(autoSaveMap), {
-            expires: 3
-        });
+        //SAVE TO LOCAL STORAGE FIRST JUST IN CASE
+        if(autosave){
+            try {
+                localStorage.setItem(saveName, JSON.stringify(autoSaveMap))
+            } catch(e) {
+                if(checkCookie()){
+                    Cookies.set(saveName, JSON.stringify(autoSaveMap), {
+                        expires: 3
+                    });
+                }
+                else{
 
-        var test = Object.keys(Cookies.get()).filter(function(name) {
-            return name.indexOf("saveData_") > -1;
-        });
-        console.log(test);
+                }
+
+            }
+
+        }
+
+        $.ajax({
+            method: "POST",
+            url: "/Async/saveSubmissionProgress",
+            data: {
+                savedDataMap : JSON.stringify(autoSaveMap),
+                autosave: autosave,
+                saveName: saveName
+            }
+        })
+            .done(function(msg) {
+                if(msg === "Error"){
+                    try {
+                        localStorage.setItem(saveName, JSON.stringify(autoSaveMap))
+                    } catch(e) {
+                        if(checkCookie()){
+                            Cookies.set(saveName, JSON.stringify(autoSaveMap), {
+                                expires: 3
+                            });
+                        }
+                        else{
+                            alert("Save Not Successful")
+                        }
+
+                    }
+
+                }
+            });
     }
 }
 

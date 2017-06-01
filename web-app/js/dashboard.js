@@ -1,5 +1,13 @@
 $(document).ready(function () {
-    var thisUser = $("#thisUserIs").html().trim();
+    var thisUser
+
+    try{
+        thisUser = $('#thisUserIs').html().trim();
+    }
+    catch(e){
+        console.log("Could not verify user")
+        thisUser = "";
+    }
 
     $(".messageDate").each(function(){
         var dateFormattedString = convertUTCDateToLocalDate_messages($(this).html().trim().split(".")[0]);

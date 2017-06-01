@@ -2,10 +2,12 @@ package portal
 
 import grails.util.Environment
 import groovy.xml.*
+import net.sf.json.JSON
 import org.apache.commons.lang.StringUtils
 import wslite.soap.*
 import wslite.http.auth.*
 import com.google.gson.JsonObject
+import com.google.gson.Gson
 import groovy.sql.Sql
 import helper.Utils;
 import groovy.json.JsonOutput
@@ -381,16 +383,21 @@ class AsyncController {
     def addNewInsured(){
         log.info "SAVING ADDITIONAL INSURED"
         log.info params
+
+        def renderString = ""
         try{
             def newAdditionalInsured = new Certwords (description: params.description, producerid: session.user.company, additionalInsured: params.additionalInsured, ops: params.ops)
             newAdditionalInsured.save(flush: true, failOnError: true)
+            log.info(newAdditionalInsured.id)
+            renderString = "Success:" + newAdditionalInsured.id
+
         }
         catch(Exception e){
             log.info (e)
-            render "error"
+            renderString = "error"
         }
 
-        render "good"
+        render renderString
 
     }
 
@@ -728,7 +735,7 @@ class AsyncController {
 
 
             if(record['Expiration'] != null){
-                params['genEnd']= record['Expiration']
+                params['genEnd']= ""
             }
             else {
                 params['genEnd'] = ""
@@ -777,8 +784,8 @@ class AsyncController {
                     }
 
                     try{
-                        record['Effective'] =  it.Effective.format(dateSimple, timeZone)
-                        record['Expiration'] = it.Expiration.format(dateSimple, timeZone)
+                        record['Effective'] =  it.Effective.format(dateSimple)
+                        record['Expiration'] = it.Expiration.format(dateSimple)
                     }
                     catch(Exception e){
                         StringWriter sw = new StringWriter();
@@ -911,14 +918,30 @@ class AsyncController {
                         else if(StringUtils.containsIgnoreCase(limitDesc, "Medical Payments")){
                             limitTag = "genMedLimit"
                         }
-                        else if(StringUtils.containsIgnoreCase(limitDesc, "Personal &amp; Advertising Injury")){
+                        else if(StringUtils.containsIgnoreCase(limitDesc, "Personal & Advertising Injury")){
                             limitTag = "genPersonalLimit"
                         }
                         else if(StringUtils.containsIgnoreCase(limitDesc, "General Aggregate Limit")){
                             limitTag = "genAggregateLimit"
                         }
-                        else if(StringUtils.containsIgnoreCase(limitDesc, "Products &amp; Completed Operations")){
+                        else if(StringUtils.containsIgnoreCase(limitDesc, "Products & Completed Operations")){
                             limitTag = "genProductsLimit"
+                        }
+//                            SPECIAL EVENTS
+                        else if(StringUtils.containsIgnoreCase(limitDesc, "Each Event (Premises Damage Limit)")) {
+                            limitTag = "genFireLimit"
+                        }
+                        else if(StringUtils.containsIgnoreCase(limitDesc, "Products &amp; Completed Work Total Limit")){
+                            limitTag = "genProductsLimit"
+                        }
+                        else if(StringUtils.containsIgnoreCase(limitDesc, "Each Event (Medical Expense Limit)")){
+                            limitTag = "genMedLimit"
+                        }
+                        else if(StringUtils.containsIgnoreCase(limitDesc, "Each Event Limit")){
+                            limitTag = "genEachLimit"
+                        }
+                        else if(StringUtils.containsIgnoreCase(limitDesc, "Personal Injury (Each Person Limit)")){
+                            limitTag = "genPersonalLimit"
                         }
 
                         if(limitDesc.length()>0 && limitAmount.matches(".*\\d+.*")){
@@ -1009,7 +1032,7 @@ class AsyncController {
                     record['Limits'].split(/\r\n|\n|\r/).each {
                         limitAmount = it.split('\t').size() > 1 ? it.split('\t')[0] : "";
                         limitDesc = it.split('\t').size() > 1 ? it.split('\t')[1] : it.split('\t')[0];
-                        if (StringUtils.containsIgnoreCase(limitDesc, "Non-Owned &amp; Hired Auto Liability")) {
+                        if (StringUtils.containsIgnoreCase(limitDesc, "Non-Owned & Hired Auto Liability")) {
                             number = format.parse(limitAmount);
                             params['autoCombinedSingleLimit'] = number.toString()
                         }
@@ -1076,11 +1099,12 @@ class AsyncController {
             log.info params.h
             params['additionalRemarks']= params.r
             params['certificateHolder']= params.h
+            params['submissionPolicyID'] = record['PolicyID']
 
 
             //GENERATE CERT AND SAVE IT TO LOCAL AND AIM SERVER
             def pathToCert = intelledoxHelper.createCertPDF(params, dataSource_aim);
-
+            log.info("PATH TO CERT FILE: " + pathToCert)
             def certFile = new File(pathToCert)
             if (certFile.exists()) {
                 log.info("building response" + certFile.exists())
@@ -3858,7 +3882,11 @@ class AsyncController {
 
             //SET LOGO
             def agencyRecord = Agency.findAllWhere(agencyID: session.user.company)
-            if(agencyRecord != null && agencyRecord.logoFileName != null){
+            if (agencyRecord.empty) {
+                // logic for handling no rows
+                dataMap.logoFile = "Barbican.png"
+            }
+            else if(agencyRecord != null && agencyRecord.logoFileName != null){
                 if(agencyRecord.logoFileName == "default"){
                     dataMap.logoFile = "Barbican.png"
                 }
@@ -4595,21 +4623,22 @@ class AsyncController {
 
     }
 
+    def autoSaveProgress(){
+        log.info "AUTO SAVE SUBMISSION"
+//        log.info params
+        def savedDataMap = new JsonSlurper().parseText(params.savedDataMap)
 
-    def saveSubmissionDraft(){
-        log.info "SAVE DRAFT SUBMISSION"
-        log.info params
-
+        def now = new Date()
         def timestamp = now.format(dateFormat, timeZone)
-        log.info timestamp
+//        log.info timestamp
 
         SavedSubmissions m;
         try {
             m = new portal.SavedSubmissions(saveName: "autoSave_" + timestamp,
                     user: session.user.id, //firstMessage, replyMessage,
                     saveDateTime: timestamp,
-                    autosaveFlag: "Y");
-
+                    autosaveFlag: "Y",
+                    saveData: params.savedDataMap);
             m.save(flush: true, failOnError: true)
 
         }
@@ -4623,6 +4652,109 @@ class AsyncController {
         }
 
         render "good"
+    }
+
+    def saveSubmissionProgress(){
+        log.info "SAVE SUBMISSION"
+        log.info params
+        def savedDataMap = new JsonSlurper().parseText(params.savedDataMap)
+
+        def namedInsured = savedDataMap.namedInsured
+        def riskType = savedDataMap.riskChosen
+
+        def now = new Date()
+        def timestamp = now.format(dateFormat, timeZone)
+
+        SavedSubmissions m;
+        def responseString ="";
+        def autosaveFlag = "N"
+        if(params.autosave == "true"){
+            autosaveFlag = "Y"
+        }
+        try {
+            m = new portal.SavedSubmissions(saveName: params.saveName,
+                    user: session.user.id, //firstMessage, replyMessage,
+                    saveDateTime: timestamp,
+                    autosaveFlag: autosaveFlag,
+                    saveData: params.savedDataMap);
+            m.save(flush: true, failOnError: true)
+            responseString = "Success"
+
+
+            //CLEAN UP OLD AUTOSAVES
+            Integer sessionUserID = (int) (long) session.user.id;
+            def oldSubmissions = SavedSubmissions.findAll(sort:"saveDateTime") {
+                user == sessionUserID && autosaveFlag == "Y"
+            }
+
+
+            log.info "oldSubmissions Size: " + oldSubmissions.size()
+            def maxAutoSavesAllowed = 4
+            if(oldSubmissions.size() > maxAutoSavesAllowed){
+                log.info "TIME TO DELETE: "
+
+                for(def i = 0; i < (oldSubmissions.size()-maxAutoSavesAllowed); i++){
+                    //THIS LOOP WILL DELETE OLD SUBMISSIONS UNTIL THERE ARE ONLY A MAX OF 10 SAVED FOR USER
+                    log.info "DELETING SUBMISSION SAVE: " + oldSubmissions.get(i)
+
+                    def submissionToDelete = oldSubmissions.get(i)
+                    submissionToDelete.delete(flush: true, failOnError: true);
+
+                }
+            }
+
+            //cleanup Old submission saves
+            if(false){ //USE THIS IF YOU NEED TO LIMIT USERS TO A CERTAIN NUMBER OF SAVES
+                oldSubmissions = SavedSubmissions.findAll("from SavedSubmissions as s where s.user=? order by s.saveDateTime",
+                        [sessionUserID], [max: 20, offset: 0])
+                log.info "oldSubmissions Size: " + oldSubmissions.size()
+                if(oldSubmissions.size() > 10){
+                    log.info "TIME TO DELETE: "
+
+                    for(def i = 0; i < (oldSubmissions.size()-10); i++){
+                        //THIS LOOP WILL DELETE OLD SUBMISSIONS UNTIL THERE ARE ONLY A MAX OF 10 SAVED FOR USER
+                        log.info "DELETING SUBMISSION SAVE: " + oldSubmissions.get(i)
+
+                        def submissionToDelete = oldSubmissions.get(i)
+                        submissionToDelete.delete(flush: true, failOnError: true);
+
+                    }
+                }
+            }
+
+
+
+            log.info oldSubmissions
+
+
+        }
+        catch (Exception e) {
+            StringWriter writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter( writer );
+            e.printStackTrace( printWriter );
+            printWriter.flush();
+            String stackTrace = writer.toString();
+            log.info("Error Details - " + stackTrace)
+            responseString = "Error"
+        }
+        log.info responseString
+        render responseString
+    }
+
+    def getSavedSubmissions(){ 
+        log.info "GET SAVED SUBMISSION"
+        log.info params
+        def builder = new JsonBuilder()
+
+        Integer userID = (int) (long) session.user.id;
+
+        def savedSubmissions = SavedSubmissions.findAll("from SavedSubmissions as s where s.user=? order by s.saveDateTime desc",
+                [userID], [max: 10, offset: 0])
+
+        log.info savedSubmissions.getClass()
+        String jsonString = new Gson().toJson(savedSubmissions);
+
+        render jsonString
     }
 
     def bindPrepare(){
@@ -4643,16 +4775,17 @@ class AsyncController {
         log.info "BINDING, ASSIGN POLICY NUMBER, REVIEW SUBMISSION DETAILS"
         log.info params
 
-        render  JsonOutput.toJson(aimDAO.bindReviewSubmission(params, dataSource_aim));
-
+//        render  JsonOutput.toJson(aimDAO.bindReviewSubmission(params, dataSource_aim));
+        render "good"
     }
 
     def bindSubmission(){
         log.info "BIND SUBMISSION"
         log.info params
 
-        def dataMap = new JsonSlurper().parseText(params.dataMap)
+//        def dataMap = new JsonSlurper().parseText(params.dataMap)
 
-        render  JsonOutput.toJson(aimDAO.bind(params, dataMap, dataSource_aim));
+        render  JsonOutput.toJson(aimDAO.bind(params, dataSource_aim));
     }
+
 }

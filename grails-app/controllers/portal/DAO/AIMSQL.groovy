@@ -182,7 +182,7 @@ class AIMSQL {
             insuredID = num
         }
 
-        def map = [InsuredID        : "'${insuredID}'",
+        def tempMap = [InsuredID        : "'${insuredID}'",
                    NamedInsured     : "'${dataMap.getAt("namedInsured").replaceAll("'", "''")}'",
                    NameType         : "'B'",
                    DBAName          : "'${dataMap.getAt("namedInsured").replaceAll("'", "''")}'",
@@ -259,6 +259,8 @@ class AIMSQL {
                    ParentInsuredName: 'NULL'
         ]
 
+        def insuredMap = cleanSQLMap(tempMap, "Insured", dataSource_aim)
+
 
         aimsql.execute "insert into Insured (InsuredID, NamedInsured, NameType, DBAName, Prefix, First_Name, Last_Name,\n" +
                 "                Middle_Name, Suffix, CombinedName, Address1, Address2, City, State,\n" +
@@ -272,15 +274,15 @@ class AIMSQL {
                 "                MapToID, Notes, Country, FileNo, DateConverted, UserDefinedStr1, UserDefinedStr2,\n" +
                 "                UserDefinedStr3, UserDefinedStr4, UserDefinedDate1, UserDefinedValue1,\n" +
                 "                CountryID, ParentInsuredName) values " +
-                "($map.InsuredID, $map.NamedInsured, $map.NameType, $map.DBAName, $map.Prefix, $map.First_Name, $map.Last_Name, $map.Middle_Name, " +
-                "$map.Suffix, $map.CombinedName, $map.Address1, $map.Address2, $map.City, $map.State, $map.Zip, $map.AddressID, $map.ProducerID, $map.AcctExec, " +
-                "$map.AcctAsst, $map.CSR, $map.Entity, $map.FormMakerName, $map.DirectBillFlag, $map.MailAddress1, $map.MailAddress2, $map.MailCity, $map.MailState, " +
-                "$map.MailZip, $map.ContactName, $map.Phone, $map.Fax, $map.EMail, $map.DateOfBirth, $map.SSN, $map.PhoneExt, $map.WorkPhone, $map.AcctExecID, " +
-                "$map.AcuityKey, $map.DateAdded, $map.VehicleCount, $map.BusinessStructureID, $map.NCCI, $map.Employees, $map.Payroll, $map.SicID, $map.Attention, " +
-                "$map.ContactID, $map.ClaimCount, $map.PolicyCount, $map.TeamID, $map.InsuredKey_PK, $map.GroupKey_FK, $map.FlagProspect, $map.FlagAssigned, " +
-                "$map.MembershipTypeID, $map.ParentKey_FK, $map.License, $map.CareOfKey_FK, $map.Website, $map.SLA, $map.Exempt, $map.RackleyClientKey_FK, $map.MapToID, " +
-                "$map.Notes, $map.Country, $map.FileNo, $map.DateConverted, $map.UserDefinedStr1, $map.UserDefinedStr2, $map.UserDefinedStr3, $map.UserDefinedStr4, " +
-                "$map.UserDefinedDate1, $map.UserDefinedValue1, $map.CountryID, $map.ParentInsuredName)"
+                "($insuredMap.InsuredID, $insuredMap.NamedInsured, $insuredMap.NameType, $insuredMap.DBAName, $insuredMap.Prefix, $insuredMap.First_Name, $insuredMap.Last_Name, $insuredMap.Middle_Name, " +
+                "$insuredMap.Suffix, $insuredMap.CombinedName, $insuredMap.Address1, $insuredMap.Address2, $insuredMap.City, $insuredMap.State, $insuredMap.Zip, $insuredMap.AddressID, $insuredMap.ProducerID, $insuredMap.AcctExec, " +
+                "$insuredMap.AcctAsst, $insuredMap.CSR, $insuredMap.Entity, $insuredMap.FormMakerName, $insuredMap.DirectBillFlag, $insuredMap.MailAddress1, $insuredMap.MailAddress2, $insuredMap.MailCity, $insuredMap.MailState, " +
+                "$insuredMap.MailZip, $insuredMap.ContactName, $insuredMap.Phone, $insuredMap.Fax, $insuredMap.EMail, $insuredMap.DateOfBirth, $insuredMap.SSN, $insuredMap.PhoneExt, $insuredMap.WorkPhone, $insuredMap.AcctExecID, " +
+                "$insuredMap.AcuityKey, $insuredMap.DateAdded, $insuredMap.VehicleCount, $insuredMap.BusinessStructureID, $insuredMap.NCCI, $insuredMap.Employees, $insuredMap.Payroll, $insuredMap.SicID, $insuredMap.Attention, " +
+                "$insuredMap.ContactID, $insuredMap.ClaimCount, $insuredMap.PolicyCount, $insuredMap.TeamID, $insuredMap.InsuredKey_PK, $insuredMap.GroupKey_FK, $insuredMap.FlagProspect, $insuredMap.FlagAssigned, " +
+                "$insuredMap.MembershipTypeID, $insuredMap.ParentKey_FK, $insuredMap.License, $insuredMap.CareOfKey_FK, $insuredMap.Website, $insuredMap.SLA, $insuredMap.Exempt, $insuredMap.RackleyClientKey_FK, $insuredMap.MapToID, " +
+                "$insuredMap.Notes, $insuredMap.Country, $insuredMap.FileNo, $insuredMap.DateConverted, $insuredMap.UserDefinedStr1, $insuredMap.UserDefinedStr2, $insuredMap.UserDefinedStr3, $insuredMap.UserDefinedStr4, " +
+                "$insuredMap.UserDefinedDate1, $insuredMap.UserDefinedValue1, $insuredMap.CountryID, $insuredMap.ParentInsuredName)"
 
 
         def referenceID = 0;
@@ -359,7 +361,7 @@ class AIMSQL {
 
         log.info "TAX AMOUNT ++"  +  taxString
 
-        def versionmap = [QuoteID: "'${quoteID}'",
+        tempMap = [QuoteID: "'${quoteID}'",
                           VerOriginal: "'A'",
                           Version: "'A'",
                           Financed: "'Y'",
@@ -472,6 +474,9 @@ class AIMSQL {
                           InsuredDepositwoTRIA:"'0.00'",
                           ReferenceKey_FK:"'${referenceID}'"
         ]
+
+        def versionMap = cleanSQLMap(tempMap, "Version", dataSource_aim)
+        
         aimsql.execute "INSERT INTO dbo.Version (QuoteID, VerOriginal, Version, Financed, Taxed, Brokerage, Indicator, DirectBillFlag, ProposedTerm, UnderLyingCoverage, " +
                 "PolicyTerm, VersionID, CompanyID, ProductID, Premium, Quoted, Limits, Subject, Endorsement, MEP, Rate, GrossComm, AgentComm, Deductible, " +
                 "CoInsure, StatusID, MarketID, Tax1, Tax2, Tax3, Tax4, FormID, RateInfo, CommPaid, ProposedEffective, ProposedExpiration, TaxDistrib, " +
@@ -483,20 +488,20 @@ class AIMSQL {
                 "TaxwoTRIA6, Tax6Name, TaxwoTRIA7, Tax7Name, TaxwoTRIA8, Tax8Name, Tax6, Tax7, Tax8, InsuredDeposit, AgentDepositwoTRIA, InsuredDepositwoTRIA," +
                 "Non_Premium, NonTax_Premium, FlagFeeCalc, TaxesPaidBy, TaxesPaidByID, FeeSchedule, PremDistrib, LobDistribSched, LobDistrib, ReferenceKey_FK) " +
                 "values " +
-                "($versionmap.QuoteID, $versionmap.VerOriginal, $versionmap.Version, $versionmap.Financed, $versionmap.Taxed, $versionmap.Brokerage, $versionmap.Indicator, $versionmap.DirectBillFlag, $versionmap.ProposedTerm, $versionmap.UnderLyingCoverage, " +
-                "$versionmap.PolicyTerm, $versionmap.VersionID, $versionmap.CompanyID, $versionmap.ProductID, $versionmap.Premium, $versionmap.Quoted, $versionmap.Limits, $versionmap.Subject, $versionmap.Endorsement, $versionmap.MEP, $versionmap.Rate, $versionmap.GrossComm, $versionmap.AgentComm, $versionmap.Deductible, " +
-                "$versionmap.CoInsure, $versionmap.StatusID, $versionmap.MarketID, $versionmap.Tax1, $versionmap.Tax2, $versionmap.Tax3, $versionmap.Tax4, $versionmap.FormID, $versionmap.RateInfo, $versionmap.CommPaid, $versionmap.ProposedEffective, $versionmap.ProposedExpiration, $versionmap.TaxDistrib, " +
-                "$versionmap.DeductType, $versionmap.LOB_Limit1, $versionmap.LOB_Limit2, $versionmap.LOB_Limit3, $versionmap.LOB_Limit4, $versionmap.LOB_Limit5, $versionmap.LOB_Limit6, $versionmap.LOB_Deduct1, $versionmap.LOB_Deduct2, $versionmap.LOB_Limit1Value, $versionmap.LOB_Limit2Value, " +
-                "$versionmap.LOB_Limit3Value, $versionmap.LOB_Limit4Value, $versionmap.LOB_Limit5Value, $versionmap.LOB_Limit6Value, $versionmap.LOB_Deduct1Value, $versionmap.LOB_Deduct2Value, $versionmap.TerrorActStatus, $versionmap.FlagOverrideCalc, " +
-                "$versionmap.TerrorTaxes, $versionmap.FlagMultiOption, $versionmap.LOB_Coverage1, $versionmap.LOB_Coverage2, $versionmap.LOB_Coverage3, $versionmap.LOB_Coverage4, $versionmap.LOB_Coverage5, $versionmap.LOB_Coverage6, $versionmap.LOB_DeductType1, $versionmap.LOB_DeductType2, " +
-                "$versionmap.TaxwoTRIA1, $versionmap.TaxwoTRIA2, $versionmap.TaxwoTRIA3, $versionmap.TaxwoTRIA4, $versionmap.LOB_Coverage7, $versionmap.LOB_Coverage8, $versionmap.LOB_Limit7, $versionmap.LOB_Limit8, $versionmap.LOB_Limit7Value, $versionmap.LOB_Limit8Value, $versionmap.PremiumProperty, " +
-                "$versionmap.PremiumLiability, $versionmap.PremiumOther, $versionmap.Tax1Name, $versionmap.Tax2Name, $versionmap.Tax3Name, $versionmap.Tax4Name, $versionmap.AgentDeposit, $versionmap.TaxwoTRIA5, $versionmap.Tax5, $versionmap.Tax5Name, $versionmap.LOB_Coverage9, $versionmap.LOB_Limit9, $versionmap.LOB_Limit9Value, " +
-                "$versionmap.TaxwoTRIA6, $versionmap.Tax6Name, $versionmap.TaxwoTRIA7, $versionmap.Tax7Name, $versionmap.TaxwoTRIA8, $versionmap.Tax8Name, $versionmap.Tax6, $versionmap.Tax7, $versionmap.Tax8, $versionmap.InsuredDeposit, $versionmap.AgentDepositwoTRIA, $versionmap.InsuredDepositwoTRIA," +
-                "$versionmap.Non_Premium, $versionmap.NonTax_Premium, $versionmap.FlagFeeCalc, $versionmap.TaxesPaidBy, $versionmap.TaxesPaidByID, $versionmap.FeeSchedule, $versionmap.PremDistrib, $versionmap.LobDistribSched, $versionmap.LobDistrib, $versionmap.ReferenceKey_FK)"
+                "($versionMap.QuoteID, $versionMap.VerOriginal, $versionMap.Version, $versionMap.Financed, $versionMap.Taxed, $versionMap.Brokerage, $versionMap.Indicator, $versionMap.DirectBillFlag, $versionMap.ProposedTerm, $versionMap.UnderLyingCoverage, " +
+                "$versionMap.PolicyTerm, $versionMap.VersionID, $versionMap.CompanyID, $versionMap.ProductID, $versionMap.Premium, $versionMap.Quoted, $versionMap.Limits, $versionMap.Subject, $versionMap.Endorsement, $versionMap.MEP, $versionMap.Rate, $versionMap.GrossComm, $versionMap.AgentComm, $versionMap.Deductible, " +
+                "$versionMap.CoInsure, $versionMap.StatusID, $versionMap.MarketID, $versionMap.Tax1, $versionMap.Tax2, $versionMap.Tax3, $versionMap.Tax4, $versionMap.FormID, $versionMap.RateInfo, $versionMap.CommPaid, $versionMap.ProposedEffective, $versionMap.ProposedExpiration, $versionMap.TaxDistrib, " +
+                "$versionMap.DeductType, $versionMap.LOB_Limit1, $versionMap.LOB_Limit2, $versionMap.LOB_Limit3, $versionMap.LOB_Limit4, $versionMap.LOB_Limit5, $versionMap.LOB_Limit6, $versionMap.LOB_Deduct1, $versionMap.LOB_Deduct2, $versionMap.LOB_Limit1Value, $versionMap.LOB_Limit2Value, " +
+                "$versionMap.LOB_Limit3Value, $versionMap.LOB_Limit4Value, $versionMap.LOB_Limit5Value, $versionMap.LOB_Limit6Value, $versionMap.LOB_Deduct1Value, $versionMap.LOB_Deduct2Value, $versionMap.TerrorActStatus, $versionMap.FlagOverrideCalc, " +
+                "$versionMap.TerrorTaxes, $versionMap.FlagMultiOption, $versionMap.LOB_Coverage1, $versionMap.LOB_Coverage2, $versionMap.LOB_Coverage3, $versionMap.LOB_Coverage4, $versionMap.LOB_Coverage5, $versionMap.LOB_Coverage6, $versionMap.LOB_DeductType1, $versionMap.LOB_DeductType2, " +
+                "$versionMap.TaxwoTRIA1, $versionMap.TaxwoTRIA2, $versionMap.TaxwoTRIA3, $versionMap.TaxwoTRIA4, $versionMap.LOB_Coverage7, $versionMap.LOB_Coverage8, $versionMap.LOB_Limit7, $versionMap.LOB_Limit8, $versionMap.LOB_Limit7Value, $versionMap.LOB_Limit8Value, $versionMap.PremiumProperty, " +
+                "$versionMap.PremiumLiability, $versionMap.PremiumOther, $versionMap.Tax1Name, $versionMap.Tax2Name, $versionMap.Tax3Name, $versionMap.Tax4Name, $versionMap.AgentDeposit, $versionMap.TaxwoTRIA5, $versionMap.Tax5, $versionMap.Tax5Name, $versionMap.LOB_Coverage9, $versionMap.LOB_Limit9, $versionMap.LOB_Limit9Value, " +
+                "$versionMap.TaxwoTRIA6, $versionMap.Tax6Name, $versionMap.TaxwoTRIA7, $versionMap.Tax7Name, $versionMap.TaxwoTRIA8, $versionMap.Tax8Name, $versionMap.Tax6, $versionMap.Tax7, $versionMap.Tax8, $versionMap.InsuredDeposit, $versionMap.AgentDepositwoTRIA, $versionMap.InsuredDepositwoTRIA," +
+                "$versionMap.Non_Premium, $versionMap.NonTax_Premium, $versionMap.FlagFeeCalc, $versionMap.TaxesPaidBy, $versionMap.TaxesPaidByID, $versionMap.FeeSchedule, $versionMap.PremDistrib, $versionMap.LobDistribSched, $versionMap.LobDistrib, $versionMap.ReferenceKey_FK)"
 
         def submitGroupID = quoteID
 
-        def quotemap = [QuoteID: "'${quoteID}'",
+        tempMap = [QuoteID: "'${quoteID}'",
                         ProducerID:"'${user.company}'",
                         ProductID:"'${productID}'" ,
                         NamedInsured:"'${dataMap.getAt("namedInsured").replaceAll("'","''")}'",
@@ -551,23 +556,26 @@ class AIMSQL {
                         ContactID:"'${user.aimContactID}'",
                         UserDefinedStr1:"'${user.id}'", //keep track of which agent created quotes
         ]
+
+        def quoteMap = cleanSQLMap(tempMap, "Quote", dataSource_aim)
+
         aimsql.execute "INSERT INTO dbo.Quote (QuoteID ,ProducerID , ProductID, NamedInsured ,UserID ,Received , Acknowledged, Quoted, TeamID ,DivisionID ,StatusID ,CreatedID ,\n" +
                 "                Renewal ,OpenItem ,VersionCounter ,InsuredID ,Description ,Address1 ,Address2 ,City ,State ,Zip ,AcctExec ,\n" +
                 "                CsrID ,ReferenceID ,SubmitGrpID ,TaxState ,CoverageID ,SuspenseFlag ,ClaimsFlag ,ActivePolicyFlag ,LossHistory ,\n" +
                 "                LargeLossHistory ,Exposures ,AIM_TransDate ,AccountKey_FK ,CompanyID ,SubmitTypeID ,FlagRPG ,CountryID ,FlagTaxExempt ,\n" +
                 "                FlagNonResidentAgt ,DBAName ,MailAddress1 ,MailAddress2 ,MailCity ,MailState ,MailZip, Attention, UserDefinedStr1, ContactID ) values " +
-                "($quotemap.QuoteID ,$quotemap.ProducerID , $quotemap.ProductID, $quotemap.NamedInsured ,$quotemap.UserID ,$quotemap.Received ,$quotemap.Acknowledged ,$quotemap.Quoted,$quotemap.TeamID ,$quotemap.DivisionID ,$quotemap.StatusID ,$quotemap.CreatedID ," +
-                "$quotemap.Renewal ,$quotemap.OpenItem ,$quotemap.VersionCounter ,$quotemap.InsuredID ,$quotemap.Description ,$quotemap.Address1 ,$quotemap.Address2 ,$quotemap.City ,$quotemap.State ,$quotemap.Zip ,$quotemap.AcctExec ," +
-                "$quotemap.CsrID ,$quotemap.ReferenceID ,$quotemap.SubmitGrpID ,$quotemap.TaxState ,$quotemap.CoverageID ,$quotemap.SuspenseFlag ,$quotemap.ClaimsFlag ,$quotemap.ActivePolicyFlag ,$quotemap.LossHistory ," +
-                "$quotemap.LargeLossHistory ,$quotemap.Exposures ,$quotemap.AIM_TransDate ,$quotemap.AccountKey_FK ,$quotemap.CompanyID ,$quotemap.SubmitTypeID ,$quotemap.FlagRPG ,$quotemap.CountryID ,$quotemap.FlagTaxExempt ," +
-                "$quotemap.FlagNonResidentAgt ,$quotemap.DBAName ,$quotemap.MailAddress1 ,$quotemap.MailAddress2 ,$quotemap.MailCity ,$quotemap.MailState ,$quotemap.MailZip, $quotemap.Attention, $quotemap.UserDefinedStr1, $quotemap.ContactID )"
+                "($quoteMap.QuoteID ,$quoteMap.ProducerID , $quoteMap.ProductID, $quoteMap.NamedInsured ,$quoteMap.UserID ,$quoteMap.Received ,$quoteMap.Acknowledged ,$quoteMap.Quoted,$quoteMap.TeamID ,$quoteMap.DivisionID ,$quoteMap.StatusID ,$quoteMap.CreatedID ," +
+                "$quoteMap.Renewal ,$quoteMap.OpenItem ,$quoteMap.VersionCounter ,$quoteMap.InsuredID ,$quoteMap.Description ,$quoteMap.Address1 ,$quoteMap.Address2 ,$quoteMap.City ,$quoteMap.State ,$quoteMap.Zip ,$quoteMap.AcctExec ," +
+                "$quoteMap.CsrID ,$quoteMap.ReferenceID ,$quoteMap.SubmitGrpID ,$quoteMap.TaxState ,$quoteMap.CoverageID ,$quoteMap.SuspenseFlag ,$quoteMap.ClaimsFlag ,$quoteMap.ActivePolicyFlag ,$quoteMap.LossHistory ," +
+                "$quoteMap.LargeLossHistory ,$quoteMap.Exposures ,$quoteMap.AIM_TransDate ,$quoteMap.AccountKey_FK ,$quoteMap.CompanyID ,$quoteMap.SubmitTypeID ,$quoteMap.FlagRPG ,$quoteMap.CountryID ,$quoteMap.FlagTaxExempt ," +
+                "$quoteMap.FlagNonResidentAgt ,$quoteMap.DBAName ,$quoteMap.MailAddress1 ,$quoteMap.MailAddress2 ,$quoteMap.MailCity ,$quoteMap.MailState ,$quoteMap.MailZip, $quoteMap.Attention, $quoteMap.UserDefinedStr1, $quoteMap.ContactID )"
 
 
         def notesFormatted = "";
         uwQuestionsOrder.each{
             notesFormatted = notesFormatted + "${it}: " + uwQuestionsMap.getAt(it) + "\n";
         }
-        def noteMap = [ReferenceID: "'${quoteID}'",
+        tempMap = [ReferenceID: "'${quoteID}'",
                        UserID:"'web'",
                        DateTime: "'${timestamp}'",
                        Subject: "'Underwriter Questions'",
@@ -579,7 +587,7 @@ class AIMSQL {
                        AddedByUserID: 'NULL'
         ]
 
-
+        def noteMap = cleanSQLMap(tempMap, "Notes", dataSource_aim)
 
         aimsql.execute "INSERT INTO dbo.Notes (ReferenceID, UserID, DateTime, Subject, Note, PurgeDate, StatusID, AlternateRefID, DateAddedTo, \n" +
                 "AddedByUserID) values " +
@@ -2125,12 +2133,14 @@ class AIMSQL {
         //****************************************************************************************************************
     }
 
-    def bind(params, dataMap, dataSource_aim) {
+    def bind(params, dataSource_aim) {
         log.info "AIMDAO BIND"
         log.info params
 
         Sql aimsql = new Sql(dataSource_aim)
 
+        bindReviewSubmission(params, dataSource_aim)
+        
         def producerID;
         def statusID;
         def flag;
@@ -2295,6 +2305,7 @@ class AIMSQL {
         //****************************************************************************************************************
 
         aimsql.withTransaction {
+            def p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12
             //STARTING TRANSACTION
             ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
             log.info params.aimQuoteID
@@ -2444,21 +2455,27 @@ class AIMSQL {
             ///////////////////////////////////////////////////////SQL/////////////////////////////////////////////////////////
 //          set @p4=29828
 //          exec dbo.ImagePost1  @origID=NULL,@img=0x7B5C727466315C616E73695C64656,@att=NULL,@newID=@p4 output,@Update=NULL,@ReferenceID=91265,@Type='B',@Version=NULL,@DocumentID='BINDER'
-            p1 = null //@origID
-            p2 = 23333443 //Binary data for Image file
-            p3 = null //@att
-            p4 = null //@imageID
-            p5 = null //@Update
-            p6 = 91265 //@ReferenceID
-            p7 = 'B' //@Type
-            p8 = null //@Version
-            p9 = "Binder" //@DocumentID
 
-            def imagePost1 = aimsql.callWithRows("{call dbo.imagePost1('$p1', '$p2', '$p3', ${Sql.ALL_RESULT_SETS}, '$p5', '$p6', " +
-                    "'$p7', '$p8', '$p9')}") { num ->
-                log.info "New ImageID $num"
-            }
-            log.info "imagePost1: " + imagePost1
+
+//            p1 = null //@origID
+//            p2 = 23333443 //Binary data for Image file
+//            p3 = null //@att
+//            p4 = null //@imageID
+//            p5 = null //@Update
+//            p6 = 91265 //@ReferenceID
+//            p7 = 'B' //@Type
+//            p8 = null //@Version
+//            p9 = "Binder" //@DocumentID
+//
+//            log.info("{call dbo.imagePost1('$p1', $p2, '$p3', ${Sql.ALL_RESULT_SETS}, '$p5', $p6, " +
+//                    "'$p7', '$p8', '$p9')}")
+//            def imagePost1 = aimsql.callWithRows("{call dbo.imagePost1($p1, $p2, $p3, ${Sql.ALL_RESULT_SETS}, $p5, $p6, " +
+//                    "'$p7', $p8, '$p9')}") { num ->
+//                log.info "New ImageID $num"
+//            }
+//            log.info "imagePost1: " + imagePost1
+
+
             //****************************************************************************************************************
 
 
@@ -2564,6 +2581,23 @@ class AIMSQL {
             log.info quotenow
             def quotetimestamp = quotenow.format(dateFormat, timeZone);
             quotetimestamp = quotetimestamp.split(" ")[0].replace("-", "") + " " + "00:00:00.000"
+            log.info("UPDATE    Quote \n" +
+                    "SET VersionBound = 'A', " +
+                    "StatusID = 'BIF', " +
+                    "PolicyID = '${params.policyNumber}', " +
+                    "Bound = '$quotetimestamp', " +
+                    "BndPremium = CONVERT(money, ${quoteRecordMap['BndPremium']}), \n" +
+                    "BndFee = CONVERT(money, ${quoteRecordMap['BndFee']}), " +
+                    "ProductID = '$productID', " +
+                    "Effective = '${proposedEffective}', " +  //WILL NEED TO CHANGE
+                    "Expiration = '${proposedExpiration}', " + //WILL NEED TO CHANGE
+                    "PolicyVer = '0', " +
+                    "ActivePolicyFlag = 'Y', " +
+                    "AIM_TransDate = '$quotetimestamp', " +
+                    "BndMarketID = '$marketID', " +
+                    "PolicyInception = '$quotetimestamp', " +
+                    "CoverageExpired = ${quoteRecordMap['Expiration']} \n" + //WILL NEED TO CHANGE
+                    "WHERE     (QuoteID = ${quoteRecordMap['QuoteID']}) AND (ProducerID = ${quoteRecordMap['ProducerID']}) ")
             aimsql.execute("UPDATE    Quote \n" +
                     "SET VersionBound = 'A', " +
                     "StatusID = 'BIF', " +
@@ -2572,8 +2606,8 @@ class AIMSQL {
                     "BndPremium = CONVERT(money, ${quoteRecordMap['BndPremium']}), \n" +
                     "BndFee = CONVERT(money, ${quoteRecordMap['BndFee']}), " +
                     "ProductID = '$productID', " +
-                    "Effective = ${quoteRecordMap['Effective']}, " +  //WILL NEED TO CHANGE
-                    "Expiration = ${quoteRecordMap['Expiration']}, " + //WILL NEED TO CHANGE
+                    "Effective = '${proposedEffective}', " +  //WILL NEED TO CHANGE
+                    "Expiration = '${proposedExpiration}', " + //WILL NEED TO CHANGE
                     "PolicyVer = '0', " +
                     "ActivePolicyFlag = 'Y', " +
                     "AIM_TransDate = '$quotetimestamp', " +

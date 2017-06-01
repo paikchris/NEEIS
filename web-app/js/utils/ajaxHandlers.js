@@ -17,11 +17,15 @@ $(document).ready(function () {
     });
 
     $( document ).ajaxComplete(function( event, xhr, settings ) {
-            if(xhr.responseText.split(',')[0] === "Session Expired"){
-                console.log( "Triggered ajaxComplete handler. The result is " + xhr.responseText );
+            // console.log(JSON.stringify(xhr, null, 4) )
+            if(xhr.hasOwnProperty('responseText')){
+                if(xhr.responseText.indexOf("Session Expired") > -1){
+                    console.log( "Triggered ajaxComplete handler. The result is " + xhr.responseText );
 
-                // window.location.href = "" + xhr.responseText.split(',')[1]
-                alert("Your session has expired. Please log in")
+                    // window.location.href = "" + xhr.responseText.split(',')[1]
+                    alert("Your session has expired. Please log back in")
+                }
             }
+
     });
 });

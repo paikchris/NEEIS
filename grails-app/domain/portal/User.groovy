@@ -12,6 +12,7 @@ class User {
     String defaultUnderwriter
     String admin
     String aimContactID //
+    String autoSaveData
 
 
     String toString(){

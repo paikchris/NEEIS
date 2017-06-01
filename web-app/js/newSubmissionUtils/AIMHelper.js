@@ -176,6 +176,8 @@ function getProductsForRisk() {
                 //console.log("CALL FROM GETPRODUCTS FOR RISK")
                 ratePremiums($('#totalBudgetConfirm'));
 
+
+
             });
         $('#limitsDeductPremiumInsert').html("");
         $('#premDistributionInsert').html("");
@@ -575,87 +577,88 @@ function getSubmissionMap() {
     var productArray = [];
 
     //EPKG PRODUCT
-    if (submissionMap.riskChosen === "Film Projects With Cast (No Work Comp)") {
-        if ($('#EPKGcoverage').is(':checked')) {
+    if ($('#EPKGcoverage').is(':checked')) {
+        if (submissionMap.riskChosen === "Film Projects With Cast (No Work Comp)") {
             productArray.push("EPKG37");
-        }
-        submissionMap.EPKGRateInfo = $('#EPKG_RateInfo').html();
-        submissionMap.EPKGIndicationRateInfo = $('#EPKG_IndicationRateInfo').html();
-
-    }
-    else {
-        if ($('#PIPChoiceInputRadio').is(':checked')) {
-            productArray.push("PIP CHOI");
-
-            var indicationRateInfo = "";
-            $('div#reviewLimitsDeducts div.EPKG_LOBRow').each(function() {
-                var cov = $(this).find('.coverageColumn').children().first().html();
-                var lim = $(this).find('.limitColumn').children().first().html();
-                var ded = $(this).find('.deductibleColumn').children().first().html();
-                var prem = $(this).find('.premiumColumn').children().first().html();
-                var twoSpaces = "  ";
-
-                if(cov.trim() === "Miscellaneous Rented Equipment"){
-                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + "Miscellaneous Rented Equipment\t\n";
-                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Rate\t0.5\n";
-                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Limit\t" + lim + "\n";
-                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Min Premium\t\$100\n";
-                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Rated Premium\t" + prem + "\n";
-                }
-                if(cov.trim() === "Extra Expense"){
-                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + "Extra Expense\t\n";
-                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Rate\t0.1\n";
-                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Limit\t" + lim + "\n";
-                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Min Premium\t\$100\n";
-                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Rated Premium\t" + prem + "\n";
-                }
-                if(cov.trim() === "Props, Sets &amp; Wardrobe"){
-                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + "Props, Sets & Wardrobe\t\n";
-                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Rate\t0.5\n";
-                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Limit\t" + lim + "\n";
-                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Min Premium\t\$100\n";
-                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Rated Premium\t" + prem + "\n";
-                }
-                if(cov.trim() === "Third Party Prop Damage Liab"){
-                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + "Third Party Prop Damage Liab\t\n";
-                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Rate\t0.5\n";
-                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Limit\t" + lim + "\n";
-                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Min Premium\t\$100\n";
-                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Rated Premium\t" + prem + "\n";
-                }
-                if(cov.trim() === "Hired Auto Physical Damage"){
-                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + "Hired Auto Physical Damage\t\n";
-                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Rate\tflat\n";
-                    indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Premium\t" + prem + "\n";
-                }
-
-            });
-
-            indicationRateInfo = indicationRateInfo + "Entertainment Package Premium\t" + $('#PIPCHOIPremiumTotal').html().trim() + "\n";
-
-            $('#EPKG_IndicationRateInfo').html(indicationRateInfo);
-        }
-        if ($('#PIP1InputRadio').is(':checked')) {
-            productArray.push("PIP 1");
-        }
-        if ($('#PIP2InputRadio').is(':checked')) {
-            productArray.push("PIP 2");
-        }
-        if ($('#PIP3InputRadio').is(':checked')) {
-            productArray.push("PIP 3");
-        }
-        if ($('#PIP4InputRadio').is(':checked')) {
-            productArray.push("PIP 4");
-        }
-        if ($('#PIP5InputRadio').is(':checked')) {
-            productArray.push("PIP 5");
-        }
-        if ($('#EPKGcoverage').is(':checked')) {
             submissionMap.EPKGRateInfo = $('#EPKG_RateInfo').html();
             submissionMap.EPKGIndicationRateInfo = $('#EPKG_IndicationRateInfo').html();
-        }
 
+        }
+        else {
+            if ($('#PIPChoiceInputRadio').is(':checked')) {
+                productArray.push("PIP CHOI");
+
+                var indicationRateInfo = "";
+                $('div#reviewLimitsDeducts div.EPKG_LOBRow').each(function() {
+                    var cov = $(this).find('.coverageColumn').children().first().html();
+                    var lim = $(this).find('.limitColumn').children().first().html();
+                    var ded = $(this).find('.deductibleColumn').children().first().html();
+                    var prem = $(this).find('.premiumColumn').children().first().html();
+                    var twoSpaces = "  ";
+
+                    if(cov.trim() === "Miscellaneous Rented Equipment"){
+                        indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + "Miscellaneous Rented Equipment\t\n";
+                        indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Rate\t0.5\n";
+                        indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Limit\t" + lim + "\n";
+                        indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Min Premium\t\$100\n";
+                        indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Rated Premium\t" + prem + "\n";
+                    }
+                    if(cov.trim() === "Extra Expense"){
+                        indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + "Extra Expense\t\n";
+                        indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Rate\t0.1\n";
+                        indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Limit\t" + lim + "\n";
+                        indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Min Premium\t\$100\n";
+                        indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Rated Premium\t" + prem + "\n";
+                    }
+                    if(cov.trim() === "Props, Sets &amp; Wardrobe"){
+                        indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + "Props, Sets & Wardrobe\t\n";
+                        indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Rate\t0.5\n";
+                        indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Limit\t" + lim + "\n";
+                        indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Min Premium\t\$100\n";
+                        indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Rated Premium\t" + prem + "\n";
+                    }
+                    if(cov.trim() === "Third Party Prop Damage Liab"){
+                        indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + "Third Party Prop Damage Liab\t\n";
+                        indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Rate\t0.5\n";
+                        indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Limit\t" + lim + "\n";
+                        indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Min Premium\t\$100\n";
+                        indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Rated Premium\t" + prem + "\n";
+                    }
+                    if(cov.trim() === "Hired Auto Physical Damage"){
+                        indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + "Hired Auto Physical Damage\t\n";
+                        indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Rate\tflat\n";
+                        indicationRateInfo = indicationRateInfo + twoSpaces + twoSpaces + twoSpaces + "Premium\t" + prem + "\n";
+                    }
+
+                });
+
+                indicationRateInfo = indicationRateInfo + "Entertainment Package Premium\t" + $('#PIPCHOIPremiumTotal').html().trim() + "\n";
+
+                $('#EPKG_IndicationRateInfo').html(indicationRateInfo);
+            }
+            if ($('#PIP1InputRadio').is(':checked')) {
+                productArray.push("PIP 1");
+            }
+            if ($('#PIP2InputRadio').is(':checked')) {
+                productArray.push("PIP 2");
+            }
+            if ($('#PIP3InputRadio').is(':checked')) {
+                productArray.push("PIP 3");
+            }
+            if ($('#PIP4InputRadio').is(':checked')) {
+                productArray.push("PIP 4");
+            }
+            if ($('#PIP5InputRadio').is(':checked')) {
+                productArray.push("PIP 5");
+            }
+            if ($('#EPKGcoverage').is(':checked')) {
+                submissionMap.EPKGRateInfo = $('#EPKG_RateInfo').html();
+                submissionMap.EPKGIndicationRateInfo = $('#EPKG_IndicationRateInfo').html();
+            }
+
+        }
     }
+
 
     if ($('#CPKInputRadio').is(':checked')) {
         if (submissionMap.proposedTermLength > 30) {
@@ -896,7 +899,8 @@ function getSubmissionMapSP(){
         principalPhone: $('#principalPhone').val(),
         contactRepName: $('#insuredContact').val(),
         contactRepEmail: $('#insuredContactEmail').val(),
-        contactRepPhone: $('#insuredContactPhone').val()
+        contactRepPhone: $('#insuredContactPhone').val(),
+        CGLIndicationRateInfo: specialEventsRateInfoCalculator(),
 
     };
 
@@ -925,9 +929,9 @@ function getSubmissionMapSP(){
 // TABLE COMMERCIAL GENERAL LIABILITY (CGL)
     $('div#reviewLimitsDeductsSP div.tableCGL div.lobRow').each(function() {
         submissionMap.lobString = submissionMap.lobString + $(this).find('.coverageColumn').children().first().html() + " \t" + $(this).find('.limitColumn').children().first().html() + " \t" +
-            "" + "\n";
+            $(this).find('.deductibleColumn').children().first().html() + " \t"  + "\n";
         submissionMap.cglLOB = submissionMap.cglLOB + $(this).find('.coverageColumn').children().first().html() + " \t" + $(this).find('.limitColumn').children().first().html() + " \t" +
-            "" + "\n";
+            $(this).find('.deductibleColumn').children().first().html() + " \t"  + "\n";
         submissionMap.limitsString = submissionMap.limitsString + $(this).find('.limitColumn').children().first().html() + "\tCGL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
         submissionMap.deductsString = submissionMap.deductsString + $(this).find('.deductibleColumn').children().first().html() + "\tCGL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
     });
@@ -935,9 +939,9 @@ function getSubmissionMapSP(){
 // TABLE ALCOHOL LIABILITY
     $('div#reviewLimitsDeductsSP div.tableALCOHOL div.lobRow').each(function() {
         submissionMap.lobString = submissionMap.lobString + $(this).find('.coverageColumn').children().first().html() + " \t" + $(this).find('.limitColumn').children().first().html() + " \t" +
-            "" + "\n";
+            $(this).find('.deductibleColumn').children().first().html() + " \t"  + "\n";
         submissionMap.alcoholLOB = submissionMap.alcoholLOB + $(this).find('.coverageColumn').children().first().html() + " \t" + $(this).find('.limitColumn').children().first().html() + " \t" +
-            "" + "\n";
+            $(this).find('.deductibleColumn').children().first().html() + " \t"  + "\n";
         submissionMap.limitsString = submissionMap.limitsString + $(this).find('.limitColumn').children().first().html() + "\tALCOHOL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
         submissionMap.deductsString = submissionMap.deductsString + $(this).find('.deductibleColumn').children().first().html() + "\tALCOHOL:" + $(this).find('.coverageColumn').children().first().html() + "\n";
     });

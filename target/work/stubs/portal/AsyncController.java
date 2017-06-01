@@ -77,7 +77,9 @@ public  java.lang.Object markMessagesRead() { return null;}
 public  java.lang.Object assignSubmissionToUW() { return null;}
 public  java.lang.Object changeSubmissionStatus() { return null;}
 public  java.lang.Object getQuestionAnswers() { return null;}
-public  java.lang.Object saveSubmissionDraft() { return null;}
+public  java.lang.Object autoSaveProgress() { return null;}
+public  java.lang.Object saveSubmissionProgress() { return null;}
+public  java.lang.Object getSavedSubmissions() { return null;}
 public  java.lang.Object bindPrepare() { return null;}
 public  java.lang.Object bindGetPolicyNumbersFromRegister() { return null;}
 public  java.lang.Object bindReviewSubmissionDetails() { return null;}

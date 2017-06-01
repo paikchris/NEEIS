@@ -127,14 +127,14 @@ class Intelledox {
             }</riskDescription>
 \t\t<locationOfRiskAddress>${XmlUtil.escapeXml(jsonSerial.getAt("filmingLocation"))}</locationOfRiskAddress>
 \t\t<insuranceCoverage>${coverages}</insuranceCoverage>
-\t\t<cbGDY>cb</cbGDY>
-\t\t<cbGDN>cb</cbGDN>
-\t\t<cbCAARPY>cb</cbCAARPY>
-\t\t<cbCAARPN>cb</cbCAARPN>
-\t\t<cbCAARPIneligibleY>cb</cbCAARPIneligibleY>
-\t\t<cbCAARPIneligibleN>cb</cbCAARPIneligibleN>
-\t\t<cbHealthY>cb</cbHealthY>
-\t\t<cbHealthN>cb</cbHealthN>
+\t\t<cbGDY>x</cbGDY>
+\t\t<cbGDN>x</cbGDN>
+\t\t<cbCAARPY>x</cbCAARPY>
+\t\t<cbCAARPN>x</cbCAARPN>
+\t\t<cbCAARPIneligibleY>x</cbCAARPIneligibleY>
+\t\t<cbCAARPIneligibleN>x</cbCAARPIneligibleN>
+\t\t<cbHealthY>x</cbHealthY>
+\t\t<cbHealthN>x</cbHealthN>
 \t\t<RiskPurchasingGroupName></RiskPurchasingGroupName>
 \t\t<RiskPurchasingGroupAddress></RiskPurchasingGroupAddress>
 \t\t<nameOtherAgent></nameOtherAgent>
@@ -208,8 +208,7 @@ class Intelledox {
 
                     }
                 }
-            }
-            else {
+            } else {
                 log.info jsonSerial.getAt("premiumAllLOBTotal")
                 soapXML = soapXML + """
 \\t\\t<premiumSummary package="Total">
@@ -220,9 +219,8 @@ class Intelledox {
 \t\t</premiumSummaryRow>
 \t</premiumSummaryTable>""";
 
-
             ///////////////////Product descriptions and Limit/Deduct Breakdowns
-            if(jsonSerial.getAt("cpkLOB").length() > 1){
+            if (jsonSerial.getAt("cpkLOB").length() > 1) {
                 soapXML = soapXML + """
 \t<coverageTable>
 \t\t<coverageHeader>Commercial Package - Limits/Deductibles</coverageHeader>
@@ -232,7 +230,7 @@ class Intelledox {
                         soapXML = soapXML + """
 \t\t<coverage coveragePackage="${it.split("\t")[0]}">
 \t\t\t<coverageLimit> ${it.split("\t")[1]} </coverageLimit>
-\t\t\t<coverageDeductible> ${it.split("\t").size() >=3 ? it.split("\t")[2] : ""} </coverageDeductible>
+\t\t\t<coverageDeductible> ${it.split("\t").size() >= 3 ? it.split("\t")[2] : ""} </coverageDeductible>
 \t\t</coverage>
 \t"""
                     }
@@ -240,8 +238,7 @@ class Intelledox {
                 soapXML = soapXML + """
 \t\t</coverageRow>
 \t</coverageTable>"""
-            }
-            else if(jsonSerial.getAt("cglLOB").length() > 1) {
+            } else if (jsonSerial.getAt("cglLOB").length() > 1) {
                 soapXML = soapXML + """
 \t<coverageTable>
 \t\t<coverageHeader>Commercial General Liability - Limits/Deductibles</coverageHeader>
@@ -645,17 +642,8 @@ class Intelledox {
             if (jsonSerial.getAt("cglLOB").length() > 1) {
                 coverages = coverages + "CGL "
             }
-            if (jsonSerial.getAt("cumbLOB").length() > 1) {
-                coverages = coverages + "CUMB "
-            }
             if (jsonSerial.getAt("alcoholLOB").length() > 1) {
                 coverages = coverages + "ALCOHOL "
-            }
-            if (jsonSerial.getAt("wcLOB").length() > 1) {
-                coverages = coverages + "WC "
-            }
-            if (jsonSerial.getAt("noalLOB").length() > 1) {
-                coverages = coverages + "NOAL "
             }
 
             //BROKER HEADER STUFF
@@ -848,24 +836,6 @@ class Intelledox {
                 soapXML = soapXML + """
 \t\t</coverageRow>
 \t</coverageTable>"""
-            } else if (jsonSerial.getAt("cumbLOB").length() > 1) {
-                soapXML = soapXML + """
-\t<coverageTable>
-\t\t<coverageHeader>Host Liquor - Limits/Deductibles</coverageHeader>
-\t\t<coverageRow>""";
-                jsonSerial.getAt("cumbLOB").split("\n").each {
-                    if (it.length() > 0) {
-                        soapXML = soapXML + """
-\t\t<coverage coveragePackage="${it.split("\t")[0]}">
-\t\t\t<coverageLimit> ${it.split("\t")[1]} </coverageLimit>
-\t\t\t<coverageDeductible> ${it.split("\t").size() >= 3 ? it.split("\t")[2] : ""} </coverageDeductible>
-\t\t</coverage>
-\t"""
-                    }
-                }
-                soapXML = soapXML + """
-\t\t</coverageRow>
-\t</coverageTable>"""
             }
             if (jsonSerial.getAt("alcoholLOB").length() > 1) {
                 soapXML = soapXML + """
@@ -873,44 +843,6 @@ class Intelledox {
 \t\t<coverageHeader>Non-Owned and Hired Automobile- Limits/Deductibles</coverageHeader>
 \t\t<coverageRow>""";
                 jsonSerial.getAt("alcoholLOB").split("\n").each {
-                    if (it.length() > 0) {
-                        soapXML = soapXML + """
-\t\t<coverage coveragePackage="${it.split("\t")[0]}">
-\t\t\t<coverageLimit> ${it.split("\t")[1]} </coverageLimit>
-\t\t\t<coverageDeductible> ${it.split("\t").size() >= 3 ? it.split("\t")[2] : ""} </coverageDeductible>
-\t\t</coverage>
-\t"""
-                    }
-                }
-                soapXML = soapXML + """
-\t\t</coverageRow>
-\t</coverageTable>"""
-            }
-            if (jsonSerial.getAt("wcLOB").length() > 1) {
-                soapXML = soapXML + """
-\t<coverageTable>
-\t\t<coverageHeader>Umbrella- Limits/Deductibles</coverageHeader>
-\t\t<coverageRow>""";
-                jsonSerial.getAt("wcLOB").split("\n").each {
-                    if (it.length() > 0) {
-                        soapXML = soapXML + """
-\t\t<coverage coveragePackage="${it.split("\t")[0]}">
-\t\t\t<coverageLimit> ${it.split("\t")[1]} </coverageLimit>
-\t\t\t<coverageDeductible> ${it.split("\t").size() >= 3 ? it.split("\t")[2] : ""} </coverageDeductible>
-\t\t</coverage>
-\t"""
-                    }
-                }
-                soapXML = soapXML + """
-\t\t</coverageRow>
-\t</coverageTable>"""
-            }
-            if (jsonSerial.getAt("noalLOB").length() > 1) {
-                soapXML = soapXML + """
-\t<coverageTable>
-\t\t<coverageHeader>Workers Compensation- Limits/Deductibles</coverageHeader>
-\t\t<coverageRow>""";
-                jsonSerial.getAt("noalLOB").split("\n").each {
                     if (it.length() > 0) {
                         soapXML = soapXML + """
 \t\t<coverage coveragePackage="${it.split("\t")[0]}">
@@ -1054,7 +986,40 @@ class Intelledox {
 \t\t\t\t<applicantInformationColTwo>${XmlUtil.escapeXml(jsonSerial.getAt("namedInsuredEmail"))} </applicantInformationColTwo>
 \t\t\t</applicantInformation>
 \t\t</applicantInformationRow>
-\t</applicantInformationTable>
+\t</applicantInformationTable>"""
+
+            soapXML = soapXML + """
+\t<ratingTable>
+\t\t<ratingHeader>Rating</ratingHeader>
+\t"""
+            if (jsonSerial.getAt("CGLIndicationRateInfo") != null) {
+                soapXML = soapXML + """
+\t\t<ratingRow>
+\t\t\t<rating ratingName="Commercial General Liability">
+\t\t\t\t<ratingPrice>  </ratingPrice>
+\t\t\t</rating>"""
+
+                jsonSerial.getAt("CGLIndicationRateInfo").split("\n").eachWithIndex { row, index ->
+                    log.info("ROW: " + row)
+                    if (row.split("\t").size() > 1) {
+                        soapXML = soapXML + """
+\t\t\t<rating ratingName="${row.split("\t")[0]}">
+\t\t\t\t<ratingPrice> ${XmlUtil.escapeXml(row.split("\t")[1])}</ratingPrice>
+\t\t\t</rating>"""
+                    } else {
+                        soapXML = soapXML + """
+\t\t\t<rating ratingName="${row.split("\t")[0]}">
+\t\t\t\t<ratingPrice></ratingPrice>
+\t\t\t</rating>"""
+                    }
+                }
+                soapXML = soapXML + """
+\t\t</ratingRow>"""
+            }
+            soapXML = soapXML + """
+\t</ratingTable>
+\t
+
 
 
 </application>]]></int:Data>
@@ -1136,7 +1101,7 @@ class Intelledox {
         <int:GenerateWithData>
             <int:userName>admin</int:userName>
             <int:password>admin</int:password>
-            <int:projectGroupGuid>${projectGUID}</int:projectGroupGuid>
+            <int:projectGroupGuid>d83d80e6-3683-4589-a747-24e98b14765c</int:projectGroupGuid>
             <int:providedData>
                 <int:ProvidedData>
                     <int:DataServiceGuid>2c1ce06a-100f-40c8-b4d4-af4057349532</int:DataServiceGuid>
@@ -1145,15 +1110,15 @@ class Intelledox {
 \t<certificate>
 \t\t
 \t\t<date>${params.date}</date>
-\t\t<producer>${params.producer}</producer>
-\t\t<producerAddress>${params.producerAddress}</producerAddress>
+\t\t<brokerCompanyName>${params.producer}</brokerCompanyName>
+\t\t<brokerCompanyAddress>${params.producerAddress}</brokerCompanyAddress>
 \t\t<insured>${params.insured}</insured>
 \t\t<insuredAddress>${params.insuredAddress}</insuredAddress>
-\t\t<contactName>${params.contactName}</contactName>
-\t\t<contactPhone>${params.contactPhone}</contactPhone>
-\t\t<contactFax>${params.contactFax}</contactFax>
-\t\t<contactEmail>${params.contactEmail}</contactEmail>
-\t\t<insurer>${params.insurer}</insurer>
+\t\t<agentName>${params.contactName}</agentName>
+\t\t<agentPhone>${params.contactPhone}</agentPhone>
+\t\t<agentFax>${params.contactFax}</agentFax>
+\t\t<agentEmail>${params.contactEmail}</agentEmail>
+\t\t<insuranceCompanyName>${XmlUtil.escapeXml(params.insurer)}</insuranceCompanyName>
 \t\t<NAIC>${params.NAIC}</NAIC>
 \t\t<certificateNumber>${params.certificateNumber}</certificateNumber>
 \t\t<revisionNumber>${params.revisionNumber}</revisionNumber>
@@ -1241,76 +1206,77 @@ class Intelledox {
 \t\t<nameOfOrganizationInformation>${params.additionalRemarks}</nameOfOrganizationInformation>
 \t</certificate>"""
 
-        ////CPK GENERAL LIABILITY TABLE
-        if (params.getAt("cpkLOB").length() > 1) {
-            soapXML = soapXML + """
-\t<GeneralTable>
-\t\t<GeneralROW>""";
-            params.getAt("cpkLOB").split(";&&;").each {
-                if (it.length() > 0) {
-                    soapXML = soapXML + """
-\t\t\t<General packageGeneral="${it.split(";&;")[0]}">
-\t\t\t\t<limitGeneral> ${it.split(";&;")[1]} </limitGeneral>
-\t\t\t\t<deductibleGeneral> ${it.split(";&;").size() >= 3 ? it.split(";&;")[2] : ""} </deductibleGeneral>
-\t\t\t</General>"""
-                }
-            }
-            soapXML = soapXML + """
-\t\t</GeneralROW>
-\t</GeneralTable>"""
+        if (params.ai == "true") {
+            soapXML = soapXML + """    
+\t<aOneForm>
+\t\t<policyNumber>${params.submissionPolicyID}</policyNumber>
+\t</aOneForm>"""
         }
 
-        ////CGL GENERAL LIABILITY TABLE
-        if (params.getAt("cglLOB").length() > 1) {
-            soapXML = soapXML + """
-\t<GeneralTable>
-\t\t<GeneralROW>""";
-            params.getAt("cglLOB").split(";&&;").each {
-                if (it.length() > 0) {
-                    soapXML = soapXML + """
-\t\t\t<General packageGeneral="${it.split(";&;")[0]}">
-\t\t\t\t<limitGeneral> ${it.split(";&;")[1]} </limitGeneral>
-\t\t\t\t<deductibleGeneral> ${it.split(";&;").size() >= 3 ? it.split(";&;")[2] : ""} </deductibleGeneral>
-\t\t\t</General>"""
-                }
-            }
-            soapXML = soapXML + """
-\t\t</GeneralROW>
-\t</GeneralTable>"""
-        }
 
-        ////EPKG TABLE
         if (params.getAt("epkgLOB").length() > 1) {
-            soapXML = soapXML + """
-\t<EPKTable>
-\t\t<EPKROW>""";
-            params.getAt("epkgLOB").split(";&&;").each {
-                if (it.length() > 0) {
-                    soapXML = soapXML + """
-\t\t\t<EPK packageEPK="${it.split(";&;")[0]}">
-\t\t\t\t<limitEPK> ${it.split(";&;")[1]} </limitEPK>
-\t\t\t\t<deductibleEPK> ${it.split(";&;").size() >= 3 ? it.split(";&;")[2] : ""} </deductibleEPK>
-\t\t\t</EPK>"""
+
+            ////CPK GENERAL LIABILITY TABLE
+            if (params.getAt("cpkLOB").length() > 1) {
+                soapXML = soapXML + """
+\t<coverageTable>
+\t\t<coverageHeader>Commercial Package - Limits/Deductibles</coverageHeader>
+\t\t<coverageRow>""";
+                params.getAt("cpkLOB").split(";&&;").each {
+                    if (it.length() > 0) {
+                        soapXML = soapXML + """
+\t\t\t<coverage coveragePackage="${XmlUtil.escapeXml(it.split(";&;")[0])}">
+\t\t\t\t<coverageLimit> ${it.split(";&;")[1]} </coverageLimit>
+\t\t\t\t<coverageDeductible> ${it.split(";&;").size() >= 3 ? it.split(";&;")[2] : ""} </coverageDeductible>
+\t\t\t</coverage>"""
+                    }
                 }
+                soapXML = soapXML + """
+\t\t</coverageRow>
+\t</coverageTable>"""
             }
-            soapXML = soapXML + """
-\t\t</EPKROW>
-\t</EPKTable>"""
+            ////CGL GENERAL LIABILITY TABLE
+            if (params.getAt("cglLOB").length() > 1) {
+                soapXML = soapXML + """
+\t<coverageTable>
+\t\t<coverageHeader>Commercial General Liability - Limits/Deductibles</coverageHeader>
+\t\t<coverageRow>""";
+                params.getAt("cglLOB").split(";&&;").each {
+                    if (it.length() > 0) {
+                        soapXML = soapXML + """
+\t\t\t<coverage coveragePackage="${XmlUtil.escapeXml(it.split(";&;")[0])}">
+\t\t\t\t<coverageLimit> ${it.split(";&;")[1]} </coverageLimit>
+\t\t\t\t<coverageDeductible> ${it.split(";&;").size() >= 3 ? it.split(";&;")[2] : ""} </coverageDeductible>
+\t\t\t</coverage>"""
+                    }
+                }
+                soapXML = soapXML + """
+\t\t</coverageRow>
+\t</coverageTable>"""
+            }
+            ////EPKG TABLE
+            if (params.getAt("epkgLOB").length() > 1) {
+                soapXML = soapXML + """
+\t<coverageTable>
+\t\t<coverageHeader>Entertainment Package - Limits/Deductibles</coverageHeader>
+\t\t<coverageRow>""";
+                params.getAt("epkgLOB").split(";&&;").each {
+                    if (it.length() > 0) {
+                        soapXML = soapXML + """
+\t\t\t<coverage coveragePackage="${XmlUtil.escapeXml(it.split(";&;")[0])}">
+\t\t\t\t<coverageLimit> ${it.split(";&;")[1]} </coverageLimit>
+\t\t\t\t<coverageDeductible> ${it.split(";&;").size() >= 3 ? it.split(";&;")[2] : ""} </coverageDeductible>
+\t\t\t</coverage>"""
+                    }
+                }
+                soapXML = soapXML + """
+\t\t</coverageRow>
+\t</coverageTable>"""
+            }
         }
 
-//\t<AutoTable>
-//\t\t<AutoROW>
-//\t\t\t<Auto packageAuto="Employee Benefits Liability">
-//\t\t\t\t<limitAuto> \$1,000 </limitAuto>
-//\t\t\t\t<deductibleAuto> \$500 </deductibleAuto>
-//\t\t\t</Auto>
-//\t\t\t<Auto packageAuto="Employee Benefits Liability2">
-//\t\t\t\t<limitAuto> \$1,000 </limitAuto>
-//\t\t\t\t<deductibleAuto> \$500 </deductibleAuto>
-//\t\t\t</Auto>
-//\t\t</AutoROW>
-//\t</AutoTable>
         soapXML = soapXML + """
+
 </application>]]></int:Data>
 \t\t\t\t</int:ProvidedData>
 \t\t\t</int:providedData>
@@ -1339,12 +1305,16 @@ class Intelledox {
         def pdfBinaryFile = nodeToSerialize.text();
 
 //        def quoteID = it.split(";")[0]
+        def tempFolderPath = org.codehaus.groovy.grails.web.context.ServletContextHolder.getServletContext().getRealPath("/attachments/temp")
         def folderPath = org.codehaus.groovy.grails.web.context.ServletContextHolder.getServletContext().getRealPath("/attachments/${params.quoteID}")
         log.info folderPath
 
-        fileName = fileHelper.ftpFileToAIM(fileName, folderPath, params.quoteID, dataSource_aim);
+        fileHelper.saveBinaryFileToLocalPath(pdfBinaryFile, tempFolderPath, fileName);
+
+        fileName = fileHelper.ftpFileToAIM(fileName, tempFolderPath, params.quoteID, dataSource_aim);
 
         fileHelper.saveBinaryFileToLocalPath(pdfBinaryFile, folderPath, fileName);
+
 
 
 
@@ -1379,19 +1349,26 @@ class Intelledox {
 \t\t<effectiveDate>${jsonSerial.getAt("proposedEffectiveDate")} - ${jsonSerial.getAt("proposedExpirationDate")} </effectiveDate>
 \t\t<endDate>${jsonSerial.getAt("proposedExpirationDate")}</endDate>
 \t\t<broker>${jsonSerial.getAt("brokerFirstName")} ${jsonSerial.getAt("brokerLastName")}</broker>
-\t\t<brokerCompany></brokerCompany>
 \t\t<insured>${XmlUtil.escapeXml(jsonSerial.getAt('namedInsured'))}</insured>
 \t\t<insuredStreet>${jsonSerial.getAt("streetNameMailing")}</insuredStreet>
 \t\t<insuredCity>${jsonSerial.getAt("cityMailing")}</insuredCity>
 \t\t<insuredState>${jsonSerial.getAt("stateMailing")}</insuredState>
 \t\t<insuredZip>${jsonSerial.getAt("zipCodeMailing")}</insuredZip>
 \t\t<coverageType>${coverages}</coverageType>
-\t\t<emailBody></emailBody>
+\t\t<emailBody>We are pleased to enclose the attached Insurance Binder as per your Binding Instructions. We will forward the insurance policy as soon as received from the carrier. 
+ 
+Please note that premium is due within 20 days from the effective date of this binder regardless of when the policy is issued. 
+ 
+Thank you for your order.  We appreciate your business. 
+ 
+Should you have any questions, please do not hesitate to call. 
+ 
+</emailBody>
 \t\t<insurer>${jsonSerial.getAt("insuranceCompany")}</insurer>
 \t\t<fees></fees>
 \t\t<policyNumber></policyNumber>
 \t\t<premium></premium>
-\t\t<producer></producer>
+\t\t<producer>${brokerCompanyName}</producer>
 \t\t<referenceNumber></referenceNumber>
 \t\t<term></term>
 \t\t<total></total>

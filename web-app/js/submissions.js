@@ -4,10 +4,27 @@
 
 var reviewRiskChosen = "";
 var ratesMapToSave;
+var downloadFrameCount = 0;
 
 $(document).ready(function () {
-    var userRole = $('#userRole').html().trim();
-    var neeisUWList = $('#neeisUWListHidden').html().trim().slice(1, -1).split(",");
+    var userRole, neeisUWList;
+    try{
+        userRole = $('#userRole').html().trim();
+    }
+    catch(e){
+        console.log("Could not verify user, continuing as a Broker")
+        userRole = "Broker"
+    }
+
+    try{
+        neeisUWList = $('#neeisUWListHidden').html().trim().slice(1, -1).split(",");
+    }
+    catch(e){
+        neeisUWList = []
+    }
+
+
+
     //$('#loadingModal').modal('show');
     $('#smartwizard').smartWizard({
         theme: 'arrows',
@@ -119,11 +136,17 @@ $(document).ready(function () {
     });
 
 
+    //FIXES MODAL CLOSE AND REOPEN, CORRECTING SCROLLING OF BACKGROUND
+    $('.modal').on('show.bs.modal',function(){
+        setTimeout(function(){
+            $('body').addClass('modal-open');
+        },800);
+    });
 
     $(document).on('click', '#addInsuredButton', function () {
-        $('#addInsuredDiv').toggle();
+        $('body').addClass("modal-open")
     });
-    $(document).on('click', '#saveInsuredButton', function () {
+    $(document).on('click', '#saveAdditionalInsuredButton', function () {
         $('#progressBarHeader').html("Saving...");
         $('#progressBarModal').modal('show');
         $('.progress-bar').attr('aria-valuenow', "75").animate({
@@ -138,13 +161,22 @@ $(document).ready(function () {
             }
         })
             .done(function (msg) {
+                var addInsuredID = msg.split(":")[1]
+                var htmlString = "<option value='" + addInsuredID + "'>" + $('#descriptionInput').val().trim() + "</option>"
+                // $('#additionalInsuredList').prepend(htmlString)
+                $('#additionalInsuredList').children("option").first().after(htmlString)
                 $('.progress-bar').attr('aria-valuenow', "100").css("width", "100%");
                 $('#progressBarModal').modal('hide');
                 //alert(msg);
                 //$('#some_id').click(function() {
                 //
                 //});
-                window.location='/main/submissions';
+                $("#closeAdditionalInsuredModalButton").trigger("click")
+
+
+
+
+                // window.location='/main/submissions';
             });
     });
 
@@ -636,6 +668,10 @@ $(document).ready(function () {
 
     $(document).on('click', '#bindFinalButton', function () {
         var thisQuoteID = $('#reviewQuoteID').html().trim();
+
+        $('#bindStep4Container').css("display", "none")
+        $('#bindStep4Spinner').css("display", "")
+
 
         /*
         var dataMap = [];
@@ -1173,30 +1209,7 @@ $(document).ready(function () {
        ratePremiums("runRatesButton");
     });
 
-    //{"riskChosen":"Film Projects Without Cast (No Work Comp)",
-    // "proposedEffectiveDate":"02/09/2017","proposedExpirationDate":"02/09/2018",
-    // "proposedTermLength":"365 Days",
-    // "totalBudgetConfirm":"$23,233",
-    // "EPKGcoverage":true,
-    // "PIP3InputRadio":true,
-    // "castEssentialInput":"",
-    // "costOfHireInput":"$",
-    // "brokerFeeInput":"",
-    // "namedInsured":"Slkdf",
-    // "phoneNumber":"(234) 234-2344",
 
-    // "namedInsuredEmail":"sldkf@sldkjf.com","website":"","googleAutoAddress":"","cityMailing":"Richmond",
-    // "zipCodeMailing":"23220","stateMailing":"VA","nameOfProductionCompany":"Slkdf","titleOfProduction":"",
-    // "isReshootNo":true,"nameOfPrincipal":"","numberOfYearsOfExperience":"","listOfPriorLosses":"","
-    // productionType_Documentary":true,"productionInvolvesNoneAbove":true,
-    // "postProductionForOthersNo_RadioButton":true,
-    // "filmDistributionNo_RadioButton":true,"insuranceCancelledNo_RadioButton":true,"insuredCancelledExplain":"",
-    // "equipmentOwnedRentedNo_RadioButton":true,"foreignGLNo_RadioButton":true,"errorOmissionsLiabilityNo_RadioButton":true,"totalBudgetInput":"$23,233",
-    // "principalPhotographyDateStart":"02/09/2017","principalPhotographyDateEnd":"02/09/2018","producer":"","director":"","completionBondRequiredNo_RadioButton":true,
-    // "filmingLocation":"","filmLocationStartDate":"","filmLocationEndDate":"","story":"","castMembersFilmAfterThisNo":true,"projectsOutsideUS":"",
-    // "totalNumEmployees":"","annualPayroll":"","umbrellaLimitRequested":"","primaryWorkCompCoverageNo_RadioButton":true,"undefined":"","state":"invalid",
-    // "interestSelect":"corporation","businessStructureSelect":"soleProprietorship","FEINSSN":"","SIC":"","NCCI":"","firstName":"Andee","lastName":"Abad",
-    // "company":"NEEIS","email":"andee@neeis.com","recipientSelect":"invalid","messageSubject":""}
 
     $(document).on('click', '.generateCert', function () {
         //window.location='/main/certs';
@@ -1208,6 +1221,7 @@ $(document).ready(function () {
 
 
     });
+
     $(document).on('click', '#createCertButton', function () {
         //var currentStatus = $(this).closest('.submissionQuickOptions').find('.QOstatusCode').html().trim();
 
@@ -1230,13 +1244,19 @@ $(document).ready(function () {
             $('.progress-bar').attr('aria-valuenow', "0")
             $('#progressBarHeader_cert').html("Downloading");
             $('#progressBarModal_cert').modal('show');
-            window.location='/async/downloadCert?quoteID='+certQuoteID +"&r=" + certRemarks + "&h=" + certHolder + "&ai=" + useAcordform ;
-            //$('#progressBarHeader').css('z-index', 3000);
 
+
+            // downloadURL('/async/downloadCert?quoteID='+certQuoteID +"&r=" + certRemarks + "&h=" + certHolder + "&ai=" + useAcordform ,
+            //     function() {
+            //         console.log("Cert Download")
+            //     });
+
+
+            window.location='/async/downloadCert?quoteID='+certQuoteID +"&r=" + certRemarks + "&h=" + certHolder + "&ai=" + useAcordform ;
 
             $('.progress-bar').attr('aria-valuenow', "75").animate({
                 width: "100%"
-            }, 2000, function() {
+            }, 4000, function() {
                 $('#progressBarModal_cert').modal('hide');
                 $('#progressBarModal_cert').on('hidden.bs.modal', function (e) {
                     if($('#certsModal').is(':visible')){
@@ -1277,7 +1297,7 @@ $(document).ready(function () {
                     var AIText = msg.split("&;&")[1];
                     $('#operationTextArea').val(opsText);
                     $('#AITextArea').val(AIText);
-                    $('#userDefined').prop("checked", true)
+                    // $('#userDefined').prop("checked", true)
                     //alert(msg);
                     //$('#some_id').click(function() {
                     //
@@ -1287,10 +1307,9 @@ $(document).ready(function () {
         }
     });
 
-    $(document).on('change', '#stdLossPayee', function () {
-        if($('#stdLossPayee').is(':checked')){
-            $('#operationTextArea').val("The certificate holder is named as an Additional Insured but solely as respects to claims arising out of negligence of the Named Insured and is Loss Payee for rented property as their interests may appear.");
-        }
+    $(document).on('click', '#stdLossPayee', function () {
+        $('#operationTextArea').val("The certificate holder is named as an Additional Insured but solely as respects to claims arising out of negligence of the Named Insured and is Loss Payee for rented property as their interests may appear.");
+
     });
     $(document).on('change', '#evidenceOfInsurance', function () {
         if($('#evidenceOfInsurance').is(':checked')){
@@ -1538,6 +1557,7 @@ $(document).ready(function () {
 ////////////////////// START REVIEW MODAL FUNCTIONS/////////////////////
 });
 
+
 $(document).on('click', '.attachmentsLink', function () {
     $('#attachmentsViewModal').modal('show');
 
@@ -1683,99 +1703,100 @@ function clearProductChoices(){
     $('#DICEOptions').css("display", "none");
     $('#SPECIFICOptions').css("display", "none");
 }
-function loadSaveFunction(loadMap){
-    var value;
 
-    $('a').each(function (){
-        if( $(this).html() ===  loadMap['riskChosen']){
-
-            //alert("click " + $(this).html())
-            var domObject = $(this);
-            //console.log($(domObject).html())
-            $(domObject).trigger('click');
-        }
-    });
-
-    if(loadMap['proposedEffectiveDate'].length > 0){
-        $('#proposedEffectiveDate').val(loadMap['proposedEffectiveDate']);
-        $("#proposedEffectiveDate").trigger("change");
-    }
-    if(loadMap['proposedExpirationDate'].length > 0){
-        $('#proposedExpirationDate').val(loadMap['proposedExpirationDate']);
-        $("#proposedExpirationDate").trigger("change");
-    }
-    if(loadMap['proposedTermLength'].length > 0){
-        $('#proposedTermLength').val(loadMap['proposedTermLength']);
-        //$("#proposedTermLength").trigger("change");
-    }
-    if(loadMap['totalBudgetConfirm'].length > 0){
-        $('#totalBudgetConfirm').val(loadMap['totalBudgetConfirm']);
-        $("#totalBudgetConfirm").trigger("change");
-
-    }
-
-    getProductsForRisk();
-    setTimeout(function() {
-
-        //console.log("wait")
-        Object.keys(loadMap).forEach(function(key) {
-
-            value = loadMap[key];
-            //console.log("COOKIE VALUE = " + key + "-" + value);
-            var domObject = $('#' + key);
-            if ($(domObject).css("display") != "none") {
-                $(domObject).css('display', '');
-            }
-
-            if ($(domObject).is("select")) {
-                $(domObject).val(value);
-                //console.log("SELECT TYPE = " + domObject);
-                $(domObject).trigger("change");
-            }
-            else if ($(domObject).is(':checkbox')) {
-                //console.log("CHECKBOX TYPE = " + domObject);
-                if(value === true) {
-                    $(domObject).prop("checked", true);
-
-                }
-                else {
-                    $(domObject).prop("checked", false);
-                }
-                $(domObject).trigger("change");
-
-            }
-            else if ($(domObject).is(':radio')) {
-                //console.log("RADIO TYPE = " + domObject);
-                if(value === true) {
-                    $(domObject).prop("checked", true);
-                }
-                else {
-                    //$(domObject).prop("checked", false);
-                }
-                $(domObject).trigger("change");
-
-            }
-            else{
-                //console.log("ELSE TYPE = " + domObject);
-                $(domObject).val(value);
-                $(domObject).trigger("change");
-
-            }
-
-        });
-
-        if(loadMap['proposedEffectiveDate'].length == 0){
-            $('#proposedEffectiveDate').val("");
-            //$("#proposedEffectiveDate").trigger("change");
-        }
-        if(loadMap['proposedExpirationDate'].length == 0){
-            $('#proposedExpirationDate').val("");
-            //$("#proposedExpirationDate").trigger("change");
-        }
-
-    },2000);
-
-}
+// function loadSaveFunction(loadMap){
+//     var value;
+//
+//     $('a').each(function (){
+//         if( $(this).html() ===  loadMap['riskChosen']){
+//
+//             //alert("click " + $(this).html())
+//             var domObject = $(this);
+//             //console.log($(domObject).html())
+//             $(domObject).trigger('click');
+//         }
+//     });
+//
+//     if(loadMap['proposedEffectiveDate'].length > 0){
+//         $('#proposedEffectiveDate').val(loadMap['proposedEffectiveDate']);
+//         $("#proposedEffectiveDate").trigger("change");
+//     }
+//     if(loadMap['proposedExpirationDate'].length > 0){
+//         $('#proposedExpirationDate').val(loadMap['proposedExpirationDate']);
+//         $("#proposedExpirationDate").trigger("change");
+//     }
+//     if(loadMap['proposedTermLength'].length > 0){
+//         $('#proposedTermLength').val(loadMap['proposedTermLength']);
+//         //$("#proposedTermLength").trigger("change");
+//     }
+//     if(loadMap['totalBudgetConfirm'].length > 0){
+//         $('#totalBudgetConfirm').val(loadMap['totalBudgetConfirm']);
+//         $("#totalBudgetConfirm").trigger("change");
+//
+//     }
+//
+//     getProductsForRisk();
+//     setTimeout(function() {
+//
+//         //console.log("wait")
+//         Object.keys(loadMap).forEach(function(key) {
+//
+//             value = loadMap[key];
+//             //console.log("COOKIE VALUE = " + key + "-" + value);
+//             var domObject = $('#' + key);
+//             if ($(domObject).css("display") != "none") {
+//                 $(domObject).css('display', '');
+//             }
+//
+//             if ($(domObject).is("select")) {
+//                 $(domObject).val(value);
+//                 //console.log("SELECT TYPE = " + domObject);
+//                 $(domObject).trigger("change");
+//             }
+//             else if ($(domObject).is(':checkbox')) {
+//                 //console.log("CHECKBOX TYPE = " + domObject);
+//                 if(value === true) {
+//                     $(domObject).prop("checked", true);
+//
+//                 }
+//                 else {
+//                     $(domObject).prop("checked", false);
+//                 }
+//                 $(domObject).trigger("change");
+//
+//             }
+//             else if ($(domObject).is(':radio')) {
+//                 //console.log("RADIO TYPE = " + domObject);
+//                 if(value === true) {
+//                     $(domObject).prop("checked", true);
+//                 }
+//                 else {
+//                     //$(domObject).prop("checked", false);
+//                 }
+//                 $(domObject).trigger("change");
+//
+//             }
+//             else{
+//                 //console.log("ELSE TYPE = " + domObject);
+//                 $(domObject).val(value);
+//                 $(domObject).trigger("change");
+//
+//             }
+//
+//         });
+//
+//         if(loadMap['proposedEffectiveDate'].length == 0){
+//             $('#proposedEffectiveDate').val("");
+//             //$("#proposedEffectiveDate").trigger("change");
+//         }
+//         if(loadMap['proposedExpirationDate'].length == 0){
+//             $('#proposedExpirationDate').val("");
+//             //$("#proposedExpirationDate").trigger("change");
+//         }
+//
+//     },2000);
+//
+// }
 
 function getProductsForRisk(){
     riskChosen = reviewRiskChosen
@@ -1985,6 +2006,16 @@ function formatTaxAndFee(value){
             return ("$"+floatValue+"").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
     }
+}
+
+function downloadURL(url, callback){
+    var hiddenIFrameID = 'hiddenDownloader' + downloadFrameCount++;
+    var iframe = document.createElement('iframe');
+    iframe.id = hiddenIFrameID;
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+    iframe.src = url;
+    callback();
 }
 
 function getTaxInfo(){

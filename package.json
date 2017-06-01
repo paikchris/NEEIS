@@ -1,0 +1,25 @@
+{
+  "name": "neeis",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "jasmine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paikchris/Neeis.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/paikchris/Neeis/issues"
+  },
+  "homepage": "https://github.com/paikchris/Neeis#readme",
+  "devDependencies": {
+    "jasmine": "^2.6.0"
+  }
+}

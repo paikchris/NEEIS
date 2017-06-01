@@ -84,6 +84,22 @@ i.fa.fa-times-circle.castRowDeleteIcon:hover {
     color: #646669;
 }
 
+div.savedSubmissionDataRow{
+    cursor: pointer;
+    background-color: rgba(52, 133, 197, 0.16);
+    margin: 8px -8px;
+    padding: 8px 0px;
+    border-radius: 4px
+}
+
+div.savedSubmissionDataRow:hover{
+    background-color: rgba(50, 128, 189, 0.56);
+}
+
+.savedSubmissionDataHeaderRow{
+    margin: 4px -8px;
+    border-radius: 4px
+}
 
 
 

@@ -23,7 +23,7 @@ $(document).ready(function () {
         riskChosen = getRiskTypeChosen();
     }
     else {
-        alert("bananas")
+        // alert("bananas")
     }
     console.log(riskChosen)
 

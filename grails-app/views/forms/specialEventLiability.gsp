@@ -1404,11 +1404,11 @@
                             </div>
 
                             <div class="col-xs-2 premiumColumn">
-                                <span class="premiumGeneralAggregate premium"></span>
+                                <span class="premiumGeneralAggregate premium">incl</span>
                             </div>
 
                             <div class="col-xs-2 deductibleColumn">
-                                <span class="deductible"></span>
+                                <span class="deductible">Nil</span>
                             </div>
                         </div>
                         %{--PRODUCT COMPLETED WORK TOTAL LIMIT--}%
@@ -1425,11 +1425,11 @@
                             </div>
 
                             <div class="col-xs-2 premiumColumn">
-                                <span class="premiumProductAndCompletedOperations premium"></span>
+                                <span class="premiumProductAndCompletedOperations premium">incl</span>
                             </div>
 
                             <div class="col-xs-2 deductibleColumn">
-                                <span class="deductible"></span>
+                                <span class="deductible">Nil</span>
                             </div>
                         </div>
                         %{--PERSONAL INJURY EACH PERSON LIMIT--}%
@@ -1444,11 +1444,11 @@
                             </div>
 
                             <div class="col-xs-2 premiumColumn">
-                                <span class="premium"></span>
+                                <span class="premium">incl</span>
                             </div>
 
                             <div class="col-xs-2 deductibleColumn">
-                                <span class="deductible"></span>
+                                <span class="deductible">Nil</span>
                             </div>
 
                         </div>
@@ -1463,11 +1463,11 @@
                             </div>
 
                             <div class="col-xs-2 premiumColumn">
-                                <span class="premium"></span>
+                                <span class="premium">incl</span>
                             </div>
 
                             <div class="col-xs-2 deductibleColumn">
-                                <span class="deductible"></span>
+                                <span class="deductible">Nil</span>
                             </div>
                         </div>
                         %{--EACH EVENT LIMIT--}%
@@ -1482,11 +1482,11 @@
                             </div>
 
                             <div class="col-xs-2 premiumColumn">
-                                <span class="premium"></span>
+                                <span class="premium">incl</span>
                             </div>
 
                             <div class="col-xs-2 deductibleColumn">
-                                <span class="deductible"></span>
+                                <span class="deductible">Nil</span>
                             </div>
 
                         </div>
@@ -1507,11 +1507,11 @@
                             </div>
 
                             <div class="col-xs-2 premiumColumn">
-                                <span class="premiumPremisesDamage premium"></span>
+                                <span class="premiumPremisesDamage premium">incl</span>
                             </div>
 
                             <div class="col-xs-2 deductibleColumn">
-                                <span class="deductible"></span>
+                                <span class="deductible">Nil</span>
                             </div>
                         </div>
                         %{--EACH EVENT MEDICAL EXPENSE LIMIT--}%
@@ -1533,7 +1533,7 @@
                             </div>
 
                             <div class="col-xs-2 deductibleColumn">
-                                <span class="deductible"></span>
+                                <span class="deductible">Nil</span>
                             </div>
                         </div>
                         %{--INLAND MARINE CONTAINER--}%
@@ -1574,7 +1574,7 @@
                             </div>
 
                             <div class="col-xs-2 deductibleColumn">
-                                <span class="deductible deductibleMiscellaneous"></span>
+                                <span class="deductible deductibleMiscellaneous">Nil</span>
                             </div>
 
                         </div>
@@ -1594,7 +1594,7 @@
                             </div>
 
                             <div class="col-xs-2 deductibleColumn">
-                                <span class="deductible deductibleThirdParty"></span>
+                                <span class="deductible deductibleThirdParty">Nil</span>
                             </div>
 
                         </div>
@@ -1677,11 +1677,11 @@
                             </div>
 
                             <div class="col-xs-2 premiumColumn">
-                                <span class="premium"></span>
+                                <span class="premium">incl</span>
                             </div>
 
                             <div class="col-xs-2 deductibleColumn">
-                                <span class="deductible"></span>
+                                <span class="deductible">Nil</span>
                             </div>
                         </div>
 
@@ -1695,11 +1695,11 @@
                             </div>
 
                             <div class="col-xs-2 premiumColumn">
-                                <span class="premium"></span>
+                                <span class="premium">incl</span>
                             </div>
 
                             <div class="col-xs-2 deductibleColumn">
-                                <span class="deductible"></span>
+                                <span class="deductible">Nil</span>
                             </div>
                         </div>
 

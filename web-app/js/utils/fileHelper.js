@@ -204,7 +204,7 @@ function totalUploadSizeOverLimit(){
     // alert(totalUploadSize)
 
 
-    if(totalUploadSize < 10485760){
+    if(totalUploadSize < 20971520){
         return false;
     }
     else{
@@ -218,7 +218,7 @@ function calculateModalFileListTotalUploadSize(){
         totalUploadSize = totalUploadSize + parseInt($(this).html());
     });
 
-    if(totalUploadSize < 10485760){
+    if(totalUploadSize < 20971520){
         $("#totalUploadSizeSpan").html(formatBytes(totalUploadSize))
         return true;
     }

@@ -123,7 +123,7 @@
                                     <th scope="row"><a href="#" class="aimQuoteIDTD">${s.aimQuoteID}</a></th>
                                 </g:if>
                                 <g:elseif test="${user.userRole == "Underwriter"}">
-                                    <th scope="row"><a href="./../main/submissionView?s=${s.aimQuoteID}" class="aimQuoteIDTD">${s.aimQuoteID}</a></th>
+                                    <th scope="row"><a href="#" class="aimQuoteIDTD">${s.aimQuoteID}</a></th>
                                 </g:elseif>
 
                                     <td class="namedInsuredTD">${s.namedInsured}</td>
@@ -1056,152 +1056,158 @@
 
                                                 </div>
                                                 <div id="step-4" class="" style="display:none">
-                                                    <div class="col-xs-12">
-                                                        <div class="col-xs-6">
-                                                            <h4 id="submitBindPolicyNumber"></h4>
-                                                        </div>
-                                                        <div class="col-xs-6">
-                                                            <h4 id="submitBindNamedInsured"></h4>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xs-12">
-                                                        <div class="col-xs-9" style="margin-bottom:40px;">
-                                                            <div class="col-xs-12">
-                                                                <span style="font-weight:500">Company</span><br>
-                                                                <i class="fa fa-building" aria-hidden="true"></i>
-                                                                <span class="DAOspan " data-daoName="Company-Name" >Company Name</span>
-                                                                <br>
-                                                                <span style="font-weight:500">Product</span><br>
-                                                                <i class="fa fa-star" aria-hidden="true"></i>
-                                                                <span class="DAOspan" data-daoName="Product-Description" >Product Desc</span>
+                                                    <div id="bindStep4Container">
+                                                        <div class="col-xs-12">
+                                                            <div class="col-xs-6">
+                                                                <h4 id="submitBindPolicyNumber"></h4>
                                                             </div>
                                                             <div class="col-xs-6">
-                                                                <span style="font-weight:500">Proposed Dates</span><br>
-                                                                <i class="fa fa-calendar" aria-hidden="true"></i>
-                                                                <span class="DAOspan dateDAO proposedEffective" data-daoName="Version-ProposedEffective" >10/19/2016</span> - <span class="DAOspan dateDAO proposedExpiration" data-daoName="Version-ProposedExpiration" >10/29/2016</span>
-                                                            </div>
-                                                            <div class="col-xs-2">
-                                                                <span style="font-weight:500">Term</span><br>
-                                                                <span class="DAOspan" data-daoName="Version-Term" >Term</span>
-                                                            </div>
-                                                            <div class="col-xs-2">
-                                                                <span style="font-weight:500">Time</span><br>
-                                                                <i class="fa fa-clock-o" aria-hidden="true"></i>
-                                                                <span class="">12:01 AM</span>
-                                                            </div>
-                                                            <div class="col-xs-2">
-                                                                <span style="font-weight:500">Binder Expires</span><br>
-                                                                <span class="">Input</span>
-                                                            </div>
-                                                            <div class="col-xs-6">
-                                                                <span style="font-weight:500">Billing Method</span><br>
-                                                                <i class="fa fa-university" aria-hidden="true"></i>
-                                                                <span class="">Input: (Agency Billed) / (Direct Bill / Insured Bill) / (Direct Bill / Company to Insured) / (Hybrid Bill)</span>
-                                                            </div>
-                                                            <div class="col-xs-6">
-                                                                <span style="font-weight:500">Agent License</span><br>
-                                                                <i class="fa fa-suitcase" aria-hidden="true"></i>
-                                                                <span class="">Input</span>
+                                                                <h4 id="submitBindNamedInsured"></h4>
                                                             </div>
                                                         </div>
-                                                        <div class="col-xs-3" style="margin-bottom:40px;">
-                                                            <div class="col-xs-12">
-                                                                <span style="font-weight:500">Premium</span><br>
-                                                                <span class="DAOspan" data-daoName="Version-Premium" >$$$</span>
-                                                                <br>
-                                                                <span style="font-weight:500">TRIA</span><br>
-                                                                <span class="DAOspan" data-daoName="Version-TerrorActStatus">Status</span>
-                                                                <br>
-                                                                <span style="font-weight:500">Fee (Taxable)</span><br>
-                                                                <span class="DAOspan" data-daoName="Version-Non_Premium" >Fees</span>
-                                                                <br>
-                                                                <span style="font-weight:500">Fee (Non-Taxable)</span><br>
-                                                                <span class="DAOspan" data-daoName="Version-NonTax_Premium" >Taxable Fee</span>
-                                                                <br>
-                                                                <span style="font-weight:500">Taxes</span><br>
-                                                                <span class="DAOspan " data-daoName="Version-Tax1Name"></span> <span class="DAOspan " data-daoName="Version-Tax1" ></span><br>
-                                                                <span class="DAOspan " data-daoName="Version-Tax2Name"></span> <span class="DAOspan " data-daoName="Version-Tax2" ></span><br>
-                                                                %{--<span class="DAOspan " data-daoName="Version-Tax3Name"></span> <span class="DAOspan " data-daoName="Version-Tax3" ></span><br>--}%
-                                                                %{--<span class="DAOspan " data-daoName="Version-Tax4Name"></span> <span class="DAOspan " data-daoName="Version-Tax4" ></span><br>--}%
-                                                                %{--<br>--}%
-                                                                <span style="font-weight:500">Premium Finance Fee</span><br>
-                                                                <span class="" data-daoName="" >$$$$</span>
+                                                        <div class="col-xs-12">
+                                                            <div class="col-xs-9" style="margin-bottom:40px;">
+                                                                <div class="col-xs-12">
+                                                                    <span style="font-weight:500">Company</span><br>
+                                                                    <i class="fa fa-building" aria-hidden="true"></i>
+                                                                    <span class="DAOspan " data-daoName="Company-Name" >Company Name</span>
+                                                                    <br>
+                                                                    <span style="font-weight:500">Product</span><br>
+                                                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                                                    <span class="DAOspan" data-daoName="Product-Description" >Product Desc</span>
+                                                                </div>
+                                                                <div class="col-xs-6">
+                                                                    <span style="font-weight:500">Proposed Dates</span><br>
+                                                                    <i class="fa fa-calendar" aria-hidden="true"></i>
+                                                                    <span class="DAOspan dateDAO proposedEffective" data-daoName="Version-ProposedEffective" >10/19/2016</span> - <span class="DAOspan dateDAO proposedExpiration" data-daoName="Version-ProposedExpiration" >10/29/2016</span>
+                                                                </div>
+                                                                <div class="col-xs-2">
+                                                                    <span style="font-weight:500">Term</span><br>
+                                                                    <span class="DAOspan" data-daoName="Version-Term" >Term</span>
+                                                                </div>
+                                                                <div class="col-xs-2">
+                                                                    <span style="font-weight:500">Time</span><br>
+                                                                    <i class="fa fa-clock-o" aria-hidden="true"></i>
+                                                                    <span class="">12:01 AM</span>
+                                                                </div>
+                                                                <div class="col-xs-2">
+                                                                    <span style="font-weight:500">Binder Expires</span><br>
+                                                                    <span class="">Input</span>
+                                                                </div>
+                                                                <div class="col-xs-6">
+                                                                    <span style="font-weight:500">Billing Method</span><br>
+                                                                    <i class="fa fa-university" aria-hidden="true"></i>
+                                                                    <span class="">Input: (Agency Billed) / (Direct Bill / Insured Bill) / (Direct Bill / Company to Insured) / (Hybrid Bill)</span>
+                                                                </div>
+                                                                <div class="col-xs-6">
+                                                                    <span style="font-weight:500">Agent License</span><br>
+                                                                    <i class="fa fa-suitcase" aria-hidden="true"></i>
+                                                                    <span class="">Input</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xs-3" style="margin-bottom:40px;">
+                                                                <div class="col-xs-12">
+                                                                    <span style="font-weight:500">Premium</span><br>
+                                                                    <span class="DAOspan" data-daoName="Version-Premium" >$$$</span>
+                                                                    <br>
+                                                                    <span style="font-weight:500">TRIA</span><br>
+                                                                    <span class="DAOspan" data-daoName="Version-TerrorActStatus">Status</span>
+                                                                    <br>
+                                                                    <span style="font-weight:500">Fee (Taxable)</span><br>
+                                                                    <span class="DAOspan" data-daoName="Version-Non_Premium" >Fees</span>
+                                                                    <br>
+                                                                    <span style="font-weight:500">Fee (Non-Taxable)</span><br>
+                                                                    <span class="DAOspan" data-daoName="Version-NonTax_Premium" >Taxable Fee</span>
+                                                                    <br>
+                                                                    <span style="font-weight:500">Taxes</span><br>
+                                                                    <span class="DAOspan " data-daoName="Version-Tax1Name"></span> <span class="DAOspan " data-daoName="Version-Tax1" ></span><br>
+                                                                    <span class="DAOspan " data-daoName="Version-Tax2Name"></span> <span class="DAOspan " data-daoName="Version-Tax2" ></span><br>
+                                                                    %{--<span class="DAOspan " data-daoName="Version-Tax3Name"></span> <span class="DAOspan " data-daoName="Version-Tax3" ></span><br>--}%
+                                                                    %{--<span class="DAOspan " data-daoName="Version-Tax4Name"></span> <span class="DAOspan " data-daoName="Version-Tax4" ></span><br>--}%
+                                                                    %{--<br>--}%
+                                                                    <span style="font-weight:500">Premium Finance Fee</span><br>
+                                                                    <span class="" data-daoName="" >$$$$</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xs-9">
+                                                                <div class="col-xs-4">
+                                                                    <span style="font-weight:500">Loc Info</span><br>
+                                                                    <span>TBD</span>
+                                                                </div>
+                                                                <div class="col-xs-4">
+                                                                    <span style="font-weight:500">EC</span><br>
+                                                                    <span>TBD</span>
+                                                                </div>
+                                                                <div class="col-xs-4">
+                                                                    <span style="font-weight:500">RE Cat</span><br>
+                                                                    <span>TBD</span>
+                                                                </div>
+                                                                <div class="col-xs-8">
+                                                                    <span style="font-weight:500">SIC</span><br>
+                                                                    <span>TBD</span>
+                                                                </div>
+                                                                <div class="col-xs-4">
+                                                                    <span style="font-weight:500">SIC ID</span><br>
+                                                                    <span>TBD</span>
+                                                                </div>
+                                                                <div class="col-xs-8">
+                                                                    <span style="font-weight:500">Finance Co</span><br>
+                                                                    <span>TBD</span>
+                                                                </div>
+                                                                <div class="col-xs-4">
+                                                                    <span style="font-weight:500">Finance Co ID</span><br>
+                                                                    <span>TBD</span>
+                                                                </div>
+                                                                <div class="col-xs-8">
+                                                                    <span style="font-weight:500">Contract Nbr</span><br>
+                                                                    <span>TBD</span>
+                                                                </div>
+                                                                <div class="col-xs-4">
+                                                                    <span style="font-weight:500">Contract ID</span><br>
+                                                                    <span>TBD</span>
+                                                                </div>
+                                                                <div class="col-xs-8">
+                                                                    <span style="font-weight:500">ISO Code</span><br>
+                                                                    <span>TBD</span>
+                                                                </div>
+                                                                <div class="col-xs-4">
+                                                                    <span style="font-weight:500">SLA</span><br>
+                                                                    <span>TBD</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xs-3">
+                                                                <div class="col-xs-12">
+                                                                    <label>
+                                                                        <input type="checkbox"> Order Inspection
+                                                                    </label>
+                                                                    <br>
+                                                                    <label>
+                                                                        <input type="checkbox"> Rewrite
+                                                                    </label>
+                                                                    <label>
+                                                                        <input type="checkbox"> Subject to Audit
+                                                                    </label>
+                                                                    <br>
+                                                                    <label>
+                                                                        <input type="checkbox"> Issue Confirmation
+                                                                    </label>
+                                                                    <label>
+                                                                        <input type="checkbox"> Courtesy - Invoice Taxes Only
+                                                                    </label>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                        <div class="col-xs-9">
-                                                            <div class="col-xs-4">
-                                                                <span style="font-weight:500">Loc Info</span><br>
-                                                                <span>TBD</span>
-                                                            </div>
-                                                            <div class="col-xs-4">
-                                                                <span style="font-weight:500">EC</span><br>
-                                                                <span>TBD</span>
-                                                            </div>
-                                                            <div class="col-xs-4">
-                                                                <span style="font-weight:500">RE Cat</span><br>
-                                                                <span>TBD</span>
-                                                            </div>
-                                                            <div class="col-xs-8">
-                                                                <span style="font-weight:500">SIC</span><br>
-                                                                <span>TBD</span>
-                                                            </div>
-                                                            <div class="col-xs-4">
-                                                                <span style="font-weight:500">SIC ID</span><br>
-                                                                <span>TBD</span>
-                                                            </div>
-                                                            <div class="col-xs-8">
-                                                                <span style="font-weight:500">Finance Co</span><br>
-                                                                <span>TBD</span>
-                                                            </div>
-                                                            <div class="col-xs-4">
-                                                                <span style="font-weight:500">Finance Co ID</span><br>
-                                                                <span>TBD</span>
-                                                            </div>
-                                                            <div class="col-xs-8">
-                                                                <span style="font-weight:500">Contract Nbr</span><br>
-                                                                <span>TBD</span>
-                                                            </div>
-                                                            <div class="col-xs-4">
-                                                                <span style="font-weight:500">Contract ID</span><br>
-                                                                <span>TBD</span>
-                                                            </div>
-                                                            <div class="col-xs-8">
-                                                                <span style="font-weight:500">ISO Code</span><br>
-                                                                <span>TBD</span>
-                                                            </div>
-                                                            <div class="col-xs-4">
-                                                                <span style="font-weight:500">SLA</span><br>
-                                                                <span>TBD</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-xs-3">
-                                                            <div class="col-xs-12">
-                                                                <label>
-                                                                    <input type="checkbox"> Order Inspection
-                                                                </label>
-                                                                <br>
-                                                                <label>
-                                                                    <input type="checkbox"> Rewrite
-                                                                </label>
-                                                                <label>
-                                                                    <input type="checkbox"> Subject to Audit
-                                                                </label>
-                                                                <br>
-                                                                <label>
-                                                                    <input type="checkbox"> Issue Confirmation
-                                                                </label>
-                                                                <label>
-                                                                    <input type="checkbox"> Courtesy - Invoice Taxes Only
-                                                                </label>
+                                                        <div class="col-xs-10 col-xs-offset-1" style="margin-top:40px">
+                                                            <div class="col-xs-4 col-xs-offset-4">
+                                                                <button class="btn btn-primary form-control"
+                                                                        type="button" id="bindFinalButton">Bind</button>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="col-xs-10 col-xs-offset-1" style="margin-top:40px">
-                                                        <div class="col-xs-4 col-xs-offset-4">
-                                                            <button class="btn btn-primary form-control"
-                                                                    type="button" id="bindFinalButton">Bind</button>
-                                                        </div>
+                                                    <div id="bindStep4Spinner"style="display:none; text-align: center; margin-top: 50px; margin-bottom: 80px; color: rgb(95, 154, 189);">
+                                                        <i class="fa fa-spinner fa-spin fa-5x fa-fw"></i>
                                                     </div>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -1257,7 +1263,6 @@
                                         </div>
 
                                         <div class="form-group col-xs-6">
-                                            <label class="control-label"></label>
                                             <select class="form-control showReview" name="additionalInsured" data-reviewName="additionalInsured"
                                                     id="additionalInsuredList">
                                                 <option value="invalid" selected="selected">Select Additional Insured</option>
@@ -1267,6 +1272,9 @@
                                             </select>
                                         </div>
 
+                                        <div class="col-xs-6">
+                                            <button type="button" class="btn btn-xs btn-success" id="addInsuredButton" data-toggle="modal" data-target="#addInsuredModal" data-dismiss="modal">Add New Additional Insured</button>
+                                        </div>
                                         <div class="form-group col-xs-12">
 
                                             <input type="radio" name="additionalInsuredFilter"
@@ -1296,44 +1304,8 @@
                                                    style="margin-left:10px;"> Other
                                         </div>
 
-                                        <div class="col-xs-12">
-                                            <button type="button" class="btn btn-default" id="addInsuredButton">Add New Additional Insured</button>
-                                        </div>
-                                        <div class="col-xs-12" style="display:none" id="addInsuredDiv">
-                                            <br>
-                                            <div class="row">
-                                                <div class="col-xs-12">
-                                                    <div class="form-group">
-                                                        <label>Description</label>
-                                                        <input class="form-control" type="text" id="descriptionInput" data-fieldName="description" placeholder="Description">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-xs-12">
-                                                    <div class="form-group">
-                                                        <label>Operations</label>
-                                                        <textarea class="form-control" rows="5" id="operationsInput" data-fieldName="ops" placeholder="Operations"></textarea>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-xs-12">
-                                                    <div class="form-group">
-                                                        <label>Additional Insured</label>
-                                                        <textarea class="form-control" rows="5" id="additionaInsuredInput" data-fieldName="additionalInsured" placeholder="Additional Insured Name"></textarea>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-xs-12">
-                                                    <button type="button" class="btn btn-primary" id="saveInsuredButton">Save</button>
-                                                </div>
-                                            </div>
 
 
-
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1345,7 +1317,7 @@
 
                         <div class="panel panel-primary">
                             <div class="panel-heading">
-                                <h3 class="panel-title" style="font-size: 20px;">Operations</h3>
+                                <h3 class="panel-title" style="font-size: 20px;">Description</h3>
                             </div>
 
                             <div class="panel-body">
@@ -1357,16 +1329,17 @@
                                         </div>
 
                                         <div class="form-group col-xs-12">
-                                            <input type="radio" name="opsRadio"
-                                                   class=""
-                                                   value="stdLossPayee"
-                                                   id="stdLossPayee"
-                                                   checked="checked"> Std Loss Payee
-                                            <input type="radio" name="opsRadio"
-                                                   class=""
-                                                   value="userDefined"
-                                                   id="userDefined"
-                                                   style="margin-left:10px;"> User Defined
+                                            %{--<input type="radio" name="opsRadio"--}%
+                                                   %{--class=""--}%
+                                                   %{--value="stdLossPayee"--}%
+                                                   %{--id="stdLossPayee"--}%
+                                                   %{--checked="checked"> Std Loss Payee--}%
+                                            <button type="button" class="btn btn-default pull-right" id="stdLossPayee"> Use Standard Loss Payeee</button>
+                                            %{--<input type="radio" name="opsRadio"--}%
+                                                   %{--class=""--}%
+                                                   %{--value="userDefined"--}%
+                                                   %{--id="userDefined"--}%
+                                                   %{--style="margin-left:10px;"> User Defined--}%
                                         </div>
                                     </div>
                                 </div>
@@ -1379,7 +1352,7 @@
 
                         <div class="panel panel-primary">
                             <div class="panel-heading">
-                                <h3 class="panel-title" style="font-size: 20px;">Additional Insured</h3>
+                                <h3 class="panel-title" style="font-size: 20px;">Additional Insured Info</h3>
                             </div>
 
                             <div class="panel-body">
@@ -1387,10 +1360,10 @@
                                     <div class="row">
                                         <div class="col-xs-12">
                                             <div class="form-group">
-                                                <p class="control-label"><input type="checkbox" class="evidenceOfInsuranceCheckbox showReview"
-                                                                                data-reviewName="Evidence Of Insurance" name="evidenceOfInsurance"
-                                                                                value="Evidence of Insurance"
-                                                                                id="evidenceOfInsurance"/> Evidence of Insurance</p>
+                                                %{--<p class="control-label"><input type="checkbox" class="evidenceOfInsuranceCheckbox showReview"--}%
+                                                                                %{--data-reviewName="Evidence Of Insurance" name="evidenceOfInsurance"--}%
+                                                                                %{--value="Evidence of Insurance"--}%
+                                                                                %{--id="evidenceOfInsurance"/> Evidence of Insurance</p>--}%
                                             </div>
                                         </div>
                                         <div class="form-group col-xs-12">
@@ -1436,6 +1409,52 @@
 
                 <button type="button" class="btn btn-primary" data-dismiss="modal" aria-label="Close">Done</button>
                 <button class="btn btn-primary" id="createCertButton" type="button" value="Upload" >Create Certificate</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" tabindex="-1" role="dialog" id="addInsuredModal">
+    <div class="modal-dialog" role="document" style="width: 820px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">New Additional Insured</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row" style="
+                padding-left: 40px;
+                padding-right: 40px;">
+                    <div class="col-xs-12" style="" id="addInsuredDiv">
+                        <br>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="form-group">
+                                    <label>Name</label>
+                                    <input class="form-control" type="text" id="descriptionInput" data-fieldname="description" placeholder="Description">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="form-group">
+                                    <label>Descriptions</label>
+                                    <textarea class="form-control" rows="5" id="operationsInput" data-fieldname="ops" placeholder="Operations"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="form-group">
+                                    <label>Additional Insured Info</label>
+                                    <textarea class="form-control" rows="5" id="additionaInsuredInput" data-fieldname="additionalInsured" placeholder="Additional Insured Name"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="closeAdditionalInsuredModalButton" data-toggle="modal" data-target="#certsModal" data-dismiss="modal" aria-label="Close">Cancel</button>
+                <button class="btn btn-primary" id="saveAdditionalInsuredButton" type="button" value="Upload" >Add</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->

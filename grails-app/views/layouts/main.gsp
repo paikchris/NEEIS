@@ -181,10 +181,6 @@
 	</script>
 
 	%{--STORE.JS PLUGIN--}%
-	<script src="${resource(dir: 'js/utils', file: 'store.everything.min.js')}" ></script>
-	<script>
-
-	</script>
 
 
 

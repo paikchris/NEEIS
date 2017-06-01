@@ -25,6 +25,9 @@ class TestController {
     def SpecRunner(){
         [user: session.user]
     }
+    def TestApp(){
+        [user: session.user]
+    }
 
 
 }

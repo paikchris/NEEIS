@@ -1,12 +1,22 @@
 var riskChosen;
-var attendance
-var rate
-var eventDays
 var minimumPremium
 var liquorRate
 var brokerPremium
 var liquorPremium
 var riskRate
+
+// GLOBAL VARIABLE USED IN newSubmission
+var attendance
+var rate
+var eventDays
+var liquorMinimumPremium
+var liquorTotalPremium
+var liquorRatePremium
+var lrate
+var temptermLenghtDays
+var termLenghtDays
+var limit
+var miscMinimum
 // RATES BASED OFF RISK TYPE
 var classOne = 0.25
 var classTwo = 0.35
@@ -19,13 +29,13 @@ $(document).ready(function () {
         riskChosen = getRiskTypeChosen();
     }
     else {
-        alert("bananas")
+        // alert("bananas")
     }
     console.log(riskChosen)
     console.log(riskChosen)
     // alert (riskChosen)
     rate = riskTypeRate(riskRate);
-    // alert ("RATE" + rate)
+    // alert ("RATE" +
 
 // MONEY FORMAT
     inputMoneyFormat();
@@ -98,7 +108,7 @@ $(document).ready(function () {
                     getFinalTotalPremium()
                 }
                 else if (CGLPremiumInt >= 1000) {
-                    CGLPremium = getCGLPremium(a)
+                    CGLPremium = getCGLPremium()
 
                     $(".commercialGeneralLiabilityPremiumCost").html("$" + CGLPremium);
                     $("#policyFeePremiumCost").html("$" + 25);
@@ -550,25 +560,15 @@ $(document).ready(function () {
     });
 // YES NO CHECK BOX HIDDEN QUESTIONS / TABLES
 
+
 // ADDITIONAL COVERAGES
 // SELECT MISC EQUIPMENT CONTAINER ADDITIONAL QUESTION
     $(document.body).on('change', '.miscCheckbox', function () {
-        var clickedElement = $(this)
-        if (clickedElement.prop = ('checked', true)) {
-            $(this).prop('checked', false);
+        $('.miscCheckbox').not(this).prop('checked', false);
+        if ($('.limitMiscellaneous').val().length > 0) {
+            getMiscellaneousEquipmentDeductible()
+            getMiscellaneousEquipmentRating();
         }
-        else if (clickedElement.prop = ('checked', false)) {
-            $(".miscCheckbox").each(function () {
-                if (clickedElement == $(this)) {
-                    $(this).prop('checked', true);
-                }
-                else {
-                    $(this).prop('checked', false);
-                }
-                $(this).prop('checked', true);
-            })
-        }
-
 
         if ($(".miscCheckbox").is(':checked')) {
             $('.inlandMarineContainer').css("display", "");
@@ -577,6 +577,8 @@ $(document).ready(function () {
         else {
             $('.inlandMarineContainer').css("display", "none");
             $('.miscContainer').css("display", "none");
+            $(".premiumMiscellaneous").removeClass("effectsTotal");
+            additionalCLGPremiums()
         }
     });
     $(document.body).on('change', '.limitMiscellaneous', function () {
@@ -597,8 +599,6 @@ $(document).ready(function () {
             additionalCLGPremiums()
         }
     });
-
-
 // GENERAL AGGREGATE LIMIT
     $('.limitGeneralAggregate').change(function () {
         // $(document.body).on('change', '#securityType' ,function () {
@@ -612,7 +612,7 @@ $(document).ready(function () {
         }
         if (option == "standard") {
             $(".premiumGeneralAggregate").removeClass("effectsTotal");
-            $(".premiumGeneralAggregate").html("");
+            $(".premiumGeneralAggregate").html("incl");
             additionalCLGPremiums()
         }
     });
@@ -627,7 +627,7 @@ $(document).ready(function () {
             additionalCLGPremiums()
         }
         if (option == "standard") {
-            $(".premiumProductAndCompletedOperations").html("");
+            $(".premiumProductAndCompletedOperations").html("incl");
             $(".premiumProductAndCompletedOperations").removeClass("effectsTotal");
             additionalCLGPremiums()
         }
@@ -639,8 +639,8 @@ $(document).ready(function () {
         // alert(option);
         if (option == "additional") {
 
-            var temptermLenghtDays = $("#proposedTermLength").val().split(" ")[0]
-            var termLenghtDays = parseInt(temptermLenghtDays)
+            temptermLenghtDays = $("#proposedTermLength").val().split(" ")[0]
+            termLenghtDays = parseInt(temptermLenghtDays)
 
             if (termLenghtDays > 0 && termLenghtDays <= 90) {
                 $(".premiumPremisesDamage").html("$" + "100");
@@ -662,7 +662,7 @@ $(document).ready(function () {
         }
         if (option == "standard") {
             $(".premiumPremisesDamage").removeClass("effectsTotal");
-            $(".premiumPremisesDamage").html("");
+            $(".premiumPremisesDamage").html("incl");
             additionalCLGPremiums()
         }
     });
@@ -687,77 +687,8 @@ $(document).ready(function () {
 })
 ;
 
-
-// FUNCTIONS
-function setStateRate(state) {
-    var lrate = 0;
-    if (state == "DE" ||
-        state == "KS" ||
-        state == "MD" ||
-        state == "NV" ||
-        state == "SD" ||
-        state == "VA") {
-        lrate = 8
-    }
-    else if (state == "AR" ||
-        state == "CA" ||
-        state == "CO" ||
-        state == "GA" ||
-        state == "ID" ||
-        state == "IL" ||
-        state == "KY" ||
-        state == "LA" ||
-        state == "ME" ||
-        state == "MN" ||
-        state == "MS" ||
-        state == "MO" ||
-        state == "NE" ||
-        state == "NJ" ||
-        state == "OH" ||
-        state == "OR" ||
-        state == "TN") {
-        lrate = 12
-    }
-    else if (state == "AZ" ||
-        state == "IN" ||
-        state == "MA" ||
-        state == "MI" ||
-        state == "MT" ||
-        state == "NM" ||
-        state == "NY" ||
-        state == "NC" ||
-        state == "ND" ||
-        state == "OK" ||
-        state == "RI" ||
-        state == "SC" ||
-        state == "TX" ||
-        state == "UT") {
-        lrate = 14
-    }
-    else if (state == "DC" ||
-        state == "IA" ||
-        state == "PA" ||
-        state == "WV") {
-        lrate = 15
-    }
-    else if (state == "AL" ||
-        state == "VT") {
-        lrate = 50
-    }
-    else if (state == "AK" ||
-        state == "CT" ||
-        state == "DC" ||
-        state == "FL" ||
-        state == "NH" ||
-        state == "WA" ||
-        state == "HI") {
-        alert("STATE NOT ELIGIBLE FOR LIQUOR COVERAGE")
-    }
-
-    return lrate;
-
-
-}
+// CGL PREMIUMS
+// CGL BASE RATE CLASS FROM RISK TYPE
 function riskTypeRate(riskRate) {
     var riskClass
 
@@ -957,46 +888,18 @@ function riskTypeRate(riskRate) {
     }
     return riskClass;
 }
-function inputMoneyFormat() {
-// MONEY FORMAT
-    $('.alcoholSales').maskMoney({prefix: '$', precision: "0"});
-    $('.equipmentLimit').maskMoney({prefix: '$', precision: "0"});
-    $('.brokerFeeInput').maskMoney({prefix: '$', precision: "0"});
-    $('.costVehicles').maskMoney({prefix: '$', precision: "0"});
-    $('.totalReceipts').maskMoney({prefix: '$', precision: "0"});
-    $('.totalPayroll').maskMoney({prefix: '$', precision: "0"});
-    $('.limitMiscellaneous').maskMoney({prefix: '$', precision: "0"});
-};
-function validate(value, min, max) {
-    // MIN MAX LIMIT FOR EVENT DAYS
-    if (parseInt(value) < min || isNaN(parseInt(value))) {
-        return "";
-    }
-    else if (parseInt(value) > max) {
-        alert("Please contact your underwriter if your event exceeds 90 days");
-        return 90;
-    }
-    else return value;
+// CGL BASE PREMIUM CALCULATION
+function getCGLBasePremium(){
+    attendance = $("#estimatedTotalAttendance").val()
+    eventDays = $("#howManyDaysIsTheEvent").val()
+
+    var attendanceValue = parseFloat(attendance)
+    var eventDaysValue = parseFloat(eventDays)
+    var rateValue = parseFloat(rate)
+
+    CGLBasePremium = attendanceValue * rateValue
+    return CGLBasePremium
 }
-function alcoholPercentage(totalPercent) {
-
-    var total = 0;
-
-    $(".whatKindOfLiquorIsServed").each(function () {
-        if ($(this).val().length > 0) {
-            var tempVal = ($(this).val())
-            var tempVal = parseFloat(tempVal);
-            // alert(tempVal)
-            // var totalPremiumValue = parseFloat $(this)
-            total = total + tempVal
-            // alert (total)
-        }
-    });
-    return total
-    // alert(total)
-}
-
-
 // GET CGL PREMIUM BASED OFF EVENT DAYS AND ATTENDANCE
 function getCGLPremium() {
     var totalPremium
@@ -1477,7 +1380,7 @@ function getCGLTotalPremium() {
     checkCGLPremium = getCGLPremium()
     // alert(checkCGLPremium + "TWO")
 
-    $(".effectsTotal").each(function () {
+    $('div#commercialGeneralLiabilityRequestedContainer div.premiumColumn span.effectsTotal').each(function() {
         if ($(this).html().length > 0) {
             var tempCoverage = parseFloat($(this).html().replace('$', '').replace(/,/g, ''));
             checkCGLPremium = checkCGLPremium + tempCoverage
@@ -1485,38 +1388,9 @@ function getCGLTotalPremium() {
     });
     return checkCGLPremium
 }
-// TRIGGERS CHANGE IN TOTAL PREMIUM
-function getFinalTotalPremium() {
-
-    attendance = $("#estimatedTotalAttendance").val()
-    eventDays = $("#howManyDaysIsTheEvent").val()
-    var attendanceValue = parseFloat(attendance)
-    var eventDaysValue = parseFloat(eventDays)
-    // var rateValue = parseFloat(rate)
-    if (attendance.length > 0 && eventDays.length > 0) {
-        var totalPremiumTotal = 0
-        totalPremiumTotal = getTotalPremium()
-        $("#totalSalePremiumCost").html("$" + totalPremiumTotal);
-    }
-}
-// CALCULATES TOTAL PREMIUM TOTAL
-function getTotalPremium() {
-
-    var totalCoveragePremium = 0
-
-    $(".effectsTotalPremium").each(function () {
-        if ($(this).html().length > 0) {
-            var tempVal = parseFloat($(this).html().replace('$', '').replace(/,/g, ''));
-            // var totalPremiumValue = parseFloat $(this)
-            totalCoveragePremium = totalCoveragePremium + tempVal
-            // alert (totalPremium)
-        }
-    });
-    // alert("TOTALCOVERAGE" + totalCoveragePremium)
-    return totalCoveragePremium
-}
 
 
+// ADDITIONAL COVERAGES OPTIONAL ADD ONS TO CGL PREMIUM
 // CALCULATES LIQUOR PREMIUM TOTAL
 function getLiquorPremium(totalPremiumLiquor) {
 
@@ -1535,10 +1409,7 @@ function getLiquorPremium(totalPremiumLiquor) {
     var liquorMinimum15Above25000 = 900
     var liquorMinimum50Above25000 = 2500
 
-    var liquorRatePremium
     var liquorSale
-    var liquorTotalPremium
-    var liquorMinimumPremium
     var liquorTotalPremiumBelow25000
     var liquorTotalPremiumAbove25000
 // ALCOHOL PREMIUMS
@@ -1685,9 +1556,77 @@ function getLiquorPremium(totalPremiumLiquor) {
     }
     return liquorTotalPremium
 }
+// LIQUOR RATE PER STATE
+function setStateRate(state) {
+    lrate = 0;
+    if (state == "DE" ||
+        state == "KS" ||
+        state == "MD" ||
+        state == "NV" ||
+        state == "SD" ||
+        state == "VA") {
+        lrate = 8
+    }
+    else if (state == "AR" ||
+        state == "CA" ||
+        state == "CO" ||
+        state == "GA" ||
+        state == "ID" ||
+        state == "IL" ||
+        state == "KY" ||
+        state == "LA" ||
+        state == "ME" ||
+        state == "MN" ||
+        state == "MS" ||
+        state == "MO" ||
+        state == "NE" ||
+        state == "NJ" ||
+        state == "OH" ||
+        state == "OR" ||
+        state == "TN") {
+        lrate = 12
+    }
+    else if (state == "AZ" ||
+        state == "IN" ||
+        state == "MA" ||
+        state == "MI" ||
+        state == "MT" ||
+        state == "NM" ||
+        state == "NY" ||
+        state == "NC" ||
+        state == "ND" ||
+        state == "OK" ||
+        state == "RI" ||
+        state == "SC" ||
+        state == "TX" ||
+        state == "UT") {
+        lrate = 14
+    }
+    else if (state == "DC" ||
+        state == "IA" ||
+        state == "PA" ||
+        state == "WV") {
+        lrate = 15
+    }
+    else if (state == "AL" ||
+        state == "VT") {
+        lrate = 50
+    }
+    else if (state == "AK" ||
+        state == "CT" ||
+        state == "DC" ||
+        state == "FL" ||
+        state == "NH" ||
+        state == "WA" ||
+        state == "HI") {
+        alert("STATE NOT ELIGIBLE FOR LIQUOR COVERAGE")
+    }
+
+    return lrate;
 
 
-// CALCULATES MISCELLANEOUS EQUIPMENT RATING / PREMIUM / DEDUCTIBLE
+}
+// CALCULATES MISCELLANEOUS EQUIPMENT DEDUCTIBLE
 function getMiscellaneousEquipmentDeductible() {
     var tempMiscellaneousDeductible = $("#limitMiscellaneous").val()
     tempMiscellaneousDeductible = tempMiscellaneousDeductible.replace('$', '').replace(/,/g, '')
@@ -1709,43 +1648,81 @@ function getMiscellaneousEquipmentDeductible() {
         alert("refer to company")
     }
 }
+// CALCULATES MISCELLANEOUS EQUIPMENT RATING / PREMIUM
 function getMiscellaneousEquipmentRating() {
     var inlandRate = 0
     var eventDay = parseFloat($("#howManyDaysIsTheEvent").val());
     var tempMiscellaneousLimit = $("#limitMiscellaneous").val()
     tempMiscellaneousLimit = tempMiscellaneousLimit.replace('$', '').replace(/,/g, '')
     var tempLimit = parseFloat(tempMiscellaneousLimit)
+    micsMinimum = 0
 
     if ($("#miscUsaCheckbox").is(':checked')) {
         if (eventDay > 0 && eventDay <= 30) {
+            miscMinimum = 100
             var tempDividedLimit = tempLimit / 100
-            var limit = tempDividedLimit * 0.50
-            $(".premiumMiscellaneous").html("$" + limit);
-            $(".premiumMiscellaneous").addClass("effectsTotal");
-            additionalCLGPremiums()
+            limit = 0
+            limit = tempDividedLimit * 0.50
+            if (limit > miscMinimum) {
+                $(".premiumMiscellaneous").html("$" + limit);
+                $(".premiumMiscellaneous").addClass("effectsTotal");
+                additionalCLGPremiums()
+            }
+            else if (limit < miscMinimum) {
+                $(".premiumMiscellaneous").html("$" + miscMinimum);
+                $(".premiumMiscellaneous").addClass("effectsTotal");
+                additionalCLGPremiums()
+            }
         }
         else if (eventDay > 31 && eventDay <= 90) {
+            miscMinimum = 250
             var tempDividedLimit = tempLimit / 100
-            var limit = tempDividedLimit * 0.75
-            $(".premiumMiscellaneous").html("$" + limit);
-            $(".premiumMiscellaneous").addClass("effectsTotal");
-            additionalCLGPremiums()
+            limit = 0
+            limit = tempDividedLimit * 0.75
+            if (limit > miscMinimum) {
+                $(".premiumMiscellaneous").html("$" + limit);
+                $(".premiumMiscellaneous").addClass("effectsTotal");
+                additionalCLGPremiums()
+            }
+            else if (limit < miscMinimum) {
+                $(".premiumMiscellaneous").html("$" + miscMinimum);
+                $(".premiumMiscellaneous").addClass("effectsTotal");
+                additionalCLGPremiums()
+            }
         }
     }
     else if ($("#miscWorldCheckbox").is(':checked')) {
         if (eventDay > 0 && eventDay <= 30) {
+            miscMinimum = 125
             var tempDividedLimit = tempLimit / 100
-            var limit = tempDividedLimit * 0.63
-            $(".premiumMiscellaneous").html("$" + limit);
-            $(".premiumMiscellaneous").addClass("effectsTotal");
-            additionalCLGPremiums()
+            limit = 0
+            limit = tempDividedLimit * 0.63
+            if (limit > miscMinimum) {
+                $(".premiumMiscellaneous").html("$" + limit);
+                $(".premiumMiscellaneous").addClass("effectsTotal");
+                additionalCLGPremiums()
+            }
+            else if (limit < miscMinimum) {
+                $(".premiumMiscellaneous").html("$" + miscMinimum);
+                $(".premiumMiscellaneous").addClass("effectsTotal");
+                additionalCLGPremiums()
+            }
         }
         else if (eventDay > 31 && eventDay <= 90) {
+            miscMinimum = 313
             var tempDividedLimit = tempLimit / 100
-            var limit = tempDividedLimit * 0.94
-            $(".premiumMiscellaneous").html("$" + limit);
-            $(".premiumMiscellaneous").addClass("effectsTotal");
-            additionalCLGPremiums()
+            limit = 0
+            limit = tempDividedLimit * 0.94
+            if (limit > miscMinimum) {
+                $(".premiumMiscellaneous").html("$" + limit);
+                $(".premiumMiscellaneous").addClass("effectsTotal");
+                additionalCLGPremiums()
+            }
+            else if (limit < miscMinimum) {
+                $(".premiumMiscellaneous").html("$" + miscMinimum);
+                $(".premiumMiscellaneous").addClass("effectsTotal");
+                additionalCLGPremiums()
+            }
         }
     }
 }
@@ -1777,6 +1754,43 @@ function getThirdPartyRating() {
 }
 
 
+// TOTAL PREMIUM
+// TRIGGERS CHANGE IN TOTAL PREMIUM
+function getFinalTotalPremium() {
+
+    attendance = $("#estimatedTotalAttendance").val()
+    eventDays = $("#howManyDaysIsTheEvent").val()
+    var attendanceValue = parseFloat(attendance)
+    var eventDaysValue = parseFloat(eventDays)
+    // var rateValue = parseFloat(rate)
+    if (attendance.length > 0 && eventDays.length > 0) {
+        var totalPremiumTotal = 0
+        totalPremiumTotal = getTotalPremium()
+        $("#totalSalePremiumCost").html("$" + totalPremiumTotal);
+    }
+}
+// CALCULATES TOTAL PREMIUM TOTAL
+function getTotalPremium() {
+
+    var totalCoveragePremium = 0
+    console.log("prior to total cycle" + totalCoveragePremium)
+
+    $('div#premiumDistDivContainer div.premDistributionInsert span.effectsTotalPremium').each(function() {
+        if ($(this).html().length > 0) {
+            var tempVal = parseFloat($(this).html().replace('$', '').replace(/,/g, ''));
+            // var totalPremiumValue = parseFloat $(this)
+            console.log("cycle" + $(this))
+            console.log("cycle" + tempVal)
+            console.log("cycle" + totalCoveragePremium)
+            totalCoveragePremium = totalCoveragePremium + tempVal
+            // alert (totalPremium)
+        }
+    });
+    // alert("TOTALCOVERAGE" + totalCoveragePremium)
+    return totalCoveragePremium
+}
+
+
 // BROKER FEE
 function getBrokerPremium(brokerFeeTotal) {
     var brokerFee
@@ -1788,6 +1802,48 @@ function getBrokerPremium(brokerFeeTotal) {
     }
     return brokerFeeValue
 }
+// MASKS INPUT INTO MONEY FORMAT
+function inputMoneyFormat() {
+// MONEY FORMAT
+    $('.alcoholSales').maskMoney({prefix: '$', precision: "0"});
+    $('.equipmentLimit').maskMoney({prefix: '$', precision: "0"});
+    $('.brokerFeeInput').maskMoney({prefix: '$', precision: "0"});
+    $('.costVehicles').maskMoney({prefix: '$', precision: "0"});
+    $('.totalReceipts').maskMoney({prefix: '$', precision: "0"});
+    $('.totalPayroll').maskMoney({prefix: '$', precision: "0"});
+    $('.limitMiscellaneous').maskMoney({prefix: '$', precision: "0"});
+};
+// MIN MAX VALUES FOR EVENT DAYS
+function validate(value, min, max) {
+    // MIN MAX LIMIT FOR EVENT DAYS
+    if (parseInt(value) < min || isNaN(parseInt(value))) {
+        return "";
+    }
+    else if (parseInt(value) > max) {
+        alert("Please contact your underwriter if your event exceeds 90 days");
+        return 90;
+    }
+    else return value;
+}
+// ALCOHOL PERCENT CALCULATOR
+function alcoholPercentage(totalPercent) {
+
+    var total = 0;
+
+    $(".whatKindOfLiquorIsServed").each(function () {
+        if ($(this).val().length > 0) {
+            var tempVal = ($(this).val())
+            var tempVal = parseFloat(tempVal);
+            // alert(tempVal)
+            // var totalPremiumValue = parseFloat $(this)
+            total = total + tempVal
+            // alert (total)
+        }
+    });
+    return total
+    // alert(total)
+}
+
 
 
 // OLD FUNCTIONS THAT ARE NOT BEING USED

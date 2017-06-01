@@ -4,13 +4,15 @@ class SavedSubmissions {
 
     String saveName
     Integer user
-    String saveDateTime
+    Date saveDateTime
     String autosaveFlag
+    String saveData
 
 
 
 
 
     static constraints = {
+        saveData(maxSize: 18000)
     }
 }

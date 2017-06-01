@@ -36,6 +36,8 @@ public  java.lang.String getAdmin() { return (java.lang.String)null;}
 public  void setAdmin(java.lang.String value) { }
 public  java.lang.String getAimContactID() { return (java.lang.String)null;}
 public  void setAimContactID(java.lang.String value) { }
+public  java.lang.String getAutoSaveData() { return (java.lang.String)null;}
+public  void setAutoSaveData(java.lang.String value) { }
 public static  java.lang.Object getConstraints() { return null;}
 public static  void setConstraints(java.lang.Object value) { }
 public  java.lang.String toString() { return (java.lang.String)null;}

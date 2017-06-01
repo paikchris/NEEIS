@@ -325,8 +325,8 @@ class FileTransferHelper {
 
         } catch (Exception e) {
             log.info "Connected to " + server + ".";
-            log.info ftp.getReplyString();
-            log.info ftp.getReplyCode();
+            log.info ftpClient.getReplyString();
+            log.info ftpClient.getReplyCode();
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
             String exceptionAsString = sw.toString();

@@ -41,7 +41,7 @@ public  java.lang.Object getAttachmentsList(java.lang.Object quoteID, java.lang.
 public  java.lang.Object bindPrepare(java.lang.Object params, java.lang.Object dataSource_aim) { return null;}
 public  java.lang.Object bindGetPolicyNumberFromRegister(java.lang.Object params, java.lang.Object dataSource_aim) { return null;}
 public  java.lang.Object bindReviewSubmission(java.lang.Object params, java.lang.Object dataSource_aim) { return null;}
-public  java.lang.Object bind(java.lang.Object params, java.lang.Object dataMap, java.lang.Object dataSource_aim) { return null;}
+public  java.lang.Object bind(java.lang.Object params, java.lang.Object dataSource_aim) { return null;}
 public  java.lang.Object invoice() { return null;}
 public  java.lang.Object testAIM(java.lang.Object table, java.lang.Object where, java.lang.Object dataSource_aim) { return null;}
 public  java.lang.Object getKeyField(java.lang.Object keyFieldName, java.lang.Object aimsql) { return null;}

@@ -4,7 +4,15 @@
 
 
 $(document).ready(function () {
-    var thisUser = $('#thisUserIs').html().trim();
+    var thisUser
+
+    try{
+        thisUser = $('#thisUserIs').html().trim();
+    }
+    catch(e){
+        console.log("Could not verify user")
+        thisUser = "";
+    }
     //Mark Message Chain Container as Unread even if there is just ONE unread message in the chain
 
     $(".messageChainContainer").each(function(){
