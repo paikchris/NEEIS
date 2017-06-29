@@ -58,6 +58,29 @@ function initializeDateInputAndFunctions() {
                 var yearTemp = mdyEffectiveDateObject.getFullYear();
                 yearTemp = mdyEffectiveDateObjectTemp.getFullYear() + 1;
                 $("#proposedExpirationDate").val((monthIndexTemp) + "/" + dayTemp + "/" + yearTemp);
+                $("#proposedExpirationDate").prop('placeholder', '');
+                $('#proposedTermLength').val(365 + " Days");
+                pulseInputChange($('#proposedTermLength'));
+            }
+            else if (riskChosen === "Film Projects Without Cast (No Work Comp)") {
+                var termLengthTemp;
+                var datesAreValidTemp = true;
+                var todayTemp = new Date();
+                todayTemp.setHours(0, 0, 0, 0);
+                var mdyEffectiveTemp = $('#proposedEffectiveDate').val().split('/');
+                var mdyEffectiveDateObjectTemp = new Date(mdyEffectiveTemp[2], mdyEffectiveTemp[0] - 1, mdyEffectiveTemp[1]);
+                var dayTemp = mdyEffectiveDateObjectTemp.getDate();
+                if (dayTemp < 10) {
+                    dayTemp = '0' + dayTemp;
+                }
+                var monthIndexTemp = mdyEffectiveDateObjectTemp.getMonth() + 1;
+                if (monthIndexTemp < 10) {
+                    monthIndexTemp = '0' + monthIndexTemp;
+                }
+                var yearTemp = mdyEffectiveDateObject.getFullYear();
+                yearTemp = mdyEffectiveDateObjectTemp.getFullYear() + 1;
+                $("#proposedExpirationDate").val((monthIndexTemp) + "/" + dayTemp + "/" + yearTemp);
+                $("#proposedExpirationDate").prop('placeholder', '');
                 $('#proposedTermLength').val(365 + " Days");
                 pulseInputChange($('#proposedTermLength'));
             }
@@ -111,7 +134,7 @@ function initializeDateInputAndFunctions() {
         }
 
 
-        if ($('#proposedEffectiveDate').val().length > 0 && $('#proposedExpirationDate').val().length > 0) {
+        if ($('#proposedEffectiveDate').val().length == 10 && $('#proposedExpirationDate').val().length == 10) {
             var mdyEffective = $('#proposedEffectiveDate').val().split('/');
             var mdyEffectiveDateObject = new Date(mdyEffective[2], mdyEffective[0] - 1, mdyEffective[1]);
             var mdyExpiration = $('#proposedExpirationDate').val().split('/');
