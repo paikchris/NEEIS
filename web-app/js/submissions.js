@@ -172,9 +172,9 @@ function initializeListeners(){
     });
 
     $(document).on('click', '.createVersionButton', function () {
-        //createNewVersionAction(this);
+        createNewVersionAction(this);
 
-        alert("This Feature is currently under development")
+        // alert("This Feature is currently under development")
     });
 
 
@@ -1495,7 +1495,7 @@ function submissionRowClickAction(element){
 
 
         //Check for other Versions
-        //getVersionsOfQuote(aimQuoteID)
+        getVersionsOfQuote(aimQuoteID)
 
         //alert(statusCode);
         if(userRole === "Broker" ){

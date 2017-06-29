@@ -114,45 +114,52 @@ class AsyncController {
                                     "WHERE (ProductID = 'PIP CHOI') AND (ActiveFlag = 'Y')") {
                                 renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
                             }
+
+                            aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
+                                    "FROM lkpProduct with (NOLOCK) " +
+                                    "WHERE (ProductID = 'PIP 1') AND (ActiveFlag = 'Y')") {
+                                renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
+                            }
+
+                            aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
+                                    "FROM lkpProduct with (NOLOCK) " +
+                                    "WHERE (ProductID = 'PIP 2') AND (ActiveFlag = 'Y')") {
+                                renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
+                            }
+
+
+                            aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
+                                    "FROM lkpProduct with (NOLOCK) " +
+                                    "WHERE (ProductID = 'PIP 3') AND (ActiveFlag = 'Y')") {
+                                renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
+                            }
+
+                            aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
+                                    "FROM lkpProduct with (NOLOCK) " +
+                                    "WHERE (ProductID = 'PIP 4') AND (ActiveFlag = 'Y')") {
+                                renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
+                            }
+
+
                             aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
                                     "FROM lkpProduct with (NOLOCK) " +
                                     "WHERE (ProductID = 'PIP 5') AND (ActiveFlag = 'Y')") {
                                 renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
                             }
                             if ((params.totalGrossBudget.toFloat() <= 100000)) {
-                                aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                        "FROM lkpProduct with (NOLOCK) " +
-                                        "WHERE (ProductID = 'PIP 1') AND (ActiveFlag = 'Y')") {
-                                    renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
-                                }
+                                
                             }
-                            if ((params.totalGrossBudget.toFloat() > 100000 && params.totalGrossBudget.toFloat() <= 200000)) {
-                                aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                        "FROM lkpProduct with (NOLOCK) " +
-                                        "WHERE (ProductID = 'PIP 2') AND (ActiveFlag = 'Y')") {
-                                    renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
-                                }
+                            if ((params.totalGrossBudget.toFloat() > 0 && params.totalGrossBudget.toFloat() <= 200000)) {
+
                             }
-                            if ((params.totalGrossBudget.toFloat() > 200000 && params.totalGrossBudget.toFloat() <= 300000)) {
-                                aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                        "FROM lkpProduct with (NOLOCK) " +
-                                        "WHERE (ProductID = 'PIP 3') AND (ActiveFlag = 'Y')") {
-                                    renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
-                                }
+                            if ((params.totalGrossBudget.toFloat() > 0 && params.totalGrossBudget.toFloat() <= 300000)) {
+
                             }
                             if ((params.totalGrossBudget.toFloat() > 300000 && params.totalGrossBudget.toFloat() <= 400000)) {
-                                aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                        "FROM lkpProduct with (NOLOCK) " +
-                                        "WHERE (ProductID = 'PIP 4') AND (ActiveFlag = 'Y')") {
-                                    renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
-                                }
+
                             }
                             if ((params.totalGrossBudget.toFloat() > 400000)) {
-                                aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                        "FROM lkpProduct with (NOLOCK) " +
-                                        "WHERE (ProductID = 'PIP 4') AND (ActiveFlag = 'Y')") {
-                                    renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
-                                }
+
                             }
                         }
 
