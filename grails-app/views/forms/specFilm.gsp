@@ -783,7 +783,7 @@
                                    placeholder="Hidden Text Field To Adjust Focus off Date" name="hiddenField"
                                    style="display: none;"/>
                             <input class="form-control datepicker filmLocationStart" name="date" id="filmingStart1" placeholder="MM/DD/YYY" data-reviewName="Start Date (1)"
-                                   type="text" id="filmLocationStartDate"/>
+                                   type="text" id="filmLocationStartDate " data-provide="datepicker" />
                             %{--</div>--}%
                         </div>
 
@@ -791,7 +791,7 @@
                             %{--<div class="form-group"> <!-- Date input -->--}%
                             <h5 class="endDateHeader" style="font-size: 16px;">End Date</h5>
                             <input class="form-control datepicker filmLocationEnd" name="date" id="filmingEnd1" placeholder="MM/DD/YYY" data-reviewName="End Date (1)"
-                                   type="text" id="filmLocationEndDate"/>
+                                   type="text" id="filmLocationEndDate" data-provide="datepicker" />
 
                             %{--</div>--}%
                         </div>
@@ -1368,7 +1368,7 @@
             <div class="col-xs-12" style="padding-top: 5px;padding-left: 20px; display:none" id="costOfHireDiv">
                 <label style="margin-bottom: 0px;">Cost Of Hire</label><br>
                 <input type="text" style='font-size: 12px;margin-top: 0px; margin-bottom:30px;' name="commercial"
-                       class="CPK" value="$" id="costOfHireInput"><br>
+                       class="CPK rateAdjust" value="$" id="costOfHireInput"><br>
             </div>
             <span class='coverageInput' id="CGLInput"><input type="radio" name="commercial"
                                                              class="coverageRadioButton CGL" value="BARCPKGC"

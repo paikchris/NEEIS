@@ -9,12 +9,12 @@
             <div class="form-group">
                 <label>Will the Event be held Outdoors?</label><br>
                 <input type="radio" name="willEventBeHeldOutdoors"
-                       class="showReview"
+                       class="showReview additionalQuestionOnChangeRadio"
                        value="Yes"
                        data-reviewName="Will the Event be held Outdoors?"
                        id="willEventBeHeldOutdoorsYes_RadioButton"> Yes
                 <input type="radio" name="willEventBeHeldOutdoors"
-                       class=""
+                       class="additionalQuestionOnChangeRadio"
                        value="No"
                        data-reviewName="Will the Event be held Outdoors?"
                        id="willEventBeHeldOutdoorsNo_RadioButton"
@@ -22,19 +22,19 @@
             </div>
         </div>
         %{--EVENT OUTDOORS CONTAINER--}%
-        <div id="eventOutdoorContainer" style="display:none">
+        <div id="willEventBeHeldOutdoorsContainer" style="display:none">
 
             %{--IS THE FACILITY FENCED?--}%
             <div class="col-xs-12">
                 <div class="form-group">
                     <label>Is the facility fenced?</label><br>
                     <input type="radio" name="facilityFenced"
-                           class="eventOutdoor"
+                           class="willEventBeHeldOutdoorsShowReview additionalQuestionOnChangeRadio"
                            value="Yes"
                            data-reviewName="Is the facility fenced?"
                            id="facilityFencedYes_RadioButton"> Yes
                     <input type="radio" name="facilityFenced"
-                           class=""
+                           class="additionalQuestionOnChangeRadio"
                            value="No"
                            data-reviewName="Is the facility fenced?"
                            id="facilityFencedNo_RadioButton"
@@ -43,11 +43,11 @@
             </div>
 
             %{--WHAT TYPE OF FENCE?--}%
-            <div id="fenceTypeContainer" style="display:none">
+            <div id="facilityFencedContainer" style="display:none">
                 <div class="col-xs-12">
                     <div class="form-group">
                         <label for="numberOfGuards">What is the type of Fence?</label>
-                        <input type="text" class="form-control facilityFence" name="fenceType" placeholder=""
+                        <input type="text" class="form-control facilityFencedShowReview" name="fenceType" placeholder=""
                                data-reviewname="What is the type of Fence?"
                                id="fenceType">
                     </div>
@@ -59,7 +59,7 @@
                 <div class="form-group">
                     <label>Does the event end prior to sundown?</label><br>
                     <input type="radio" name="eventEndBeforeSundown"
-                           class="eventOutdoor"
+                           class="willEventBeHeldOutdoorsShowReview"
                            value="Yes"
                            data-reviewName="Does the event end prior to sundown?"
                            id="eventEndBeforeSundownYes_RadioButton"> Yes
@@ -77,7 +77,7 @@
                 <div class="form-group">
                     <label>Is there adequate lighting for a night time Event?</label><br>
                     <input type="radio" name="adequateLighting"
-                           class="eventOutdoor"
+                           class="willEventBeHeldOutdoorsShowReview"
                            value="Yes"
                            data-reviewName="Is there adequate lighting for a night time Event?"
                            id="adequateLightingYes_RadioButton"> Yes
@@ -94,15 +94,15 @@
         <div class="col-xs-12">
             <div class="form-group">
                 <label for="numberOfSeatsInTheater">What is the number of seats in the Theater/Venue?</label>
-                <input type="number" id="numberSeats" class=" showReview form-control" name="numberSeats"
+                <input type="number" id="numberSeats" class="form-control numberSeatsShowReview additionalQuestionOnChangeInput" name="numberSeats"
                        data-reviewname="What is the number of seats in the Theater/Venue"
                        placeholder="Number of Seats">
             </div>
         </div>
         %{--TYPE OF SEATING--}%
-        <div class="form-group col-xs-12">
+        <div class="form-group numberSeatsContainer col-xs-12"style="display:none">
             <label class="control-label">Type of Seating</label>
-            <select class="form-control seatingTypeSelect showReview" name="seatingType"
+            <select class="form-control seatingTypeSelect numberSeatsShowReview" name="seatingType"
                     data-reviewname="Seating Type" id="seatingType">
                 <option value="invalid" selected="selected">Permanent</option>
                 <option value="pullDownSeat" selected="selected">Pull Down</option>
@@ -116,28 +116,21 @@
             <div class="form-group">
                 <label>Does applicant have a formal evacuation plan?</label><br>
                 <input type="radio" name="evacuationFormalPlan"
-                       class="showReview"
+                       class="showReview additionalQuestionOnChangeRadio"
                        value="Yes"
-                       data-reviewName="Will the Event be held Outdoors?"
+                       data-reviewName="Does applicant have a formal evacuation plan?"
                        id="evacuationFormalPlanYes_RadioButton"> Yes
                 <input type="radio" name="evacuationFormalPlan"
-                       class=""
+                       class="additionalQuestionOnChangeRadio"
                        value="No"
-                       data-reviewName="Will the Event be held Outdoors?"
+                       data-reviewName="Does applicant have a formal evacuation plan?"
                        id="evacuationFormalPlanNo_RadioButton"
                        checked="checked"> No
             </div>
         </div>
         %{--ATTACHMENT CONTAINER FORMAL EVACUATION PLAN--}%
-        <div class="row" id="evacuationAttachContainer" style="margin-bottom: 20px; display:none">
+        <div class="row" id="evacuationFormalPlanContainer" style="margin-bottom: 20px; display:none">
             <div class="col-xs-3" style="margin-left:20px">
-                %{--<form enctype="multipart/form-data">--}%
-                %{--<div class="fileUpload btn btn-primary">--}%
-                %{--<span>Attach File</span>--}%
-                %{--<input name="evacuationFile" type="file" class="file" id="evacuationFile"--}%
-                %{--style="width:120px"/>--}%
-                %{--</div>--}%
-                %{--</form>--}%
                 <button class="btn btn-primary attachButton " id="" type="button" value="">Attach Files</button>
             </div>
 
@@ -150,21 +143,21 @@
         <div class="col-xs-12">
             <div class="form-group">
                 <label>Are there any swimming pools, lakes or bodies of water?</label><br>
-                <input type="radio" name="bodiesOfWater" class="showReview" value="Yes"
+                <input type="radio" name="bodiesOfWater" class="additionalQuestionOnChangeRadio showReview" value="Yes"
                        data-reviewname="Are there any swimming pools, lakes or bodies of water?"
                        id="bodiesOfWaterYes_RadioButton"> Yes
-                <input type="radio" name="bodiesOfWater" class="" value="No"
+                <input type="radio" name="bodiesOfWater" class="additionalQuestionOnChangeRadio" value="No"
                        data-reviewname="Are there any swimming pools, lakes or bodies of water?"
                        id="bodiesOfWaterNo_RadioButton" checked="checked"> No
             </div>
         </div>
         %{--BODY OF WATER NEAR EVENT CONTAINER--}%
-        <div id="waterContainer" style="display:none">
+        <div id="bodiesOfWaterContainer" style="display:none">
             %{--IS SWIMMING ALLOWED?--}%
             <div class="col-xs-12">
                 <div class="form-group">
                     <label>Is swimming allowed?</label><br>
-                    <input type="radio" name="swimmingAllowed" class="water" value="Yes"
+                    <input type="radio" name="swimmingAllowed" class="bodiesOfWaterShowReview" value="Yes"
                            data-reviewname="Is swimming allowed?"
                            id="swimmingAllowedYes_RadioButton"> Yes
                     <input type="radio" name="swimmingAllowed" class="" value="No"
@@ -176,7 +169,7 @@
             <div class="col-xs-12">
                 <div class="form-group">
                     <label>Life guard on duty?</label><br>
-                    <input type="radio" name="lifeGuard" class="water" value="Yes"
+                    <input type="radio" name="lifeGuard" class="bodiesOfWaterShowReview" value="Yes"
                            data-reviewname="Life guard on duty?"
                            id="lifeGuardYes_RadioButton"> Yes
                     <input type="radio" name="lifeGuard" class="" value="No"
@@ -188,21 +181,21 @@
             <div class="col-xs-12">
                 <div class="form-group">
                     <label>Is water hazard fenced?</label><br>
-                    <input type="radio" name="waterHazardFenced" class="water" value="Yes"
+                    <input type="radio" name="waterHazardFenced" class="bodiesOfWaterShowReview additionalQuestionOnChangeRadio" value="Yes"
                            data-reviewname="Is water hazard fenced?"
                            id="waterHazardFencedYes_RadioButton"> Yes
-                    <input type="radio" name="waterHazardFenced" class="" value="No"
+                    <input type="radio" name="waterHazardFenced" class="additionalQuestionOnChangeRadio" value="No"
                            data-reviewname="Is water hazard fenced?"
                            id="waterHazardFencedNo_RadioButton" checked="checked"> No
                 </div>
             </div>
             %{--FENCE CONTAINER--}%
-            <div id="waterHazardNotFencedContainer" style="display:none">
+            <div id="waterHazardFencedContainer" style="">
                 %{--EXPLAIN IF NO TO WATER HAZARD FENCED--}%
                 <div class="col-xs-12">
                     <div class="form-group">
                         <label for="parkingSquareFoot">If No, give details</label>
-                        <input type="text" class="form-control waterHazardNotFenced" name="waterHazardNotFenced"
+                        <input type="text" class="form-control waterHazardFencedShowReview" name="waterHazardNotFenced"
                                placeholder=""
                                data-reviewname="Is water hazard fenced? If No, give details"
                                id="waterHazardNotFenced">
@@ -214,13 +207,6 @@
         %{--ATTACHMENT CONTAINER PRECAUTIONARY MEASURE IN THE EVENT OF STORM FLOOD HIGH WINDS--}%
         <div class="row" id="precautionaryMeasureAttachContainer" style="margin-bottom: 20px">
             <div class="col-xs-3" style="margin-left:20px">
-                %{--<form enctype="multipart/form-data">--}%
-                %{--<div class="fileUpload btn btn-primary">--}%
-                %{--<span>Attach File</span>--}%
-                %{--<input name="precautionaryMeasureFile" type="file" class="file" id="precautionaryMeasureFile"--}%
-                %{--style="width:120px"/>--}%
-                %{--</div>--}%
-                %{--</form>--}%
                 <button class="btn btn-primary attachButton " id="" type="button" value="">Attach Files</button>
             </div>
 
@@ -240,22 +226,22 @@
         %{--WHO IS RESPONSIBLE FOR SETTING UP THE STAGE AND SEATING--}%
         <div class="form-group col-xs-12">
             <label for="responsibleStageSeating">Who is responsible for setting up the stage and seating?</label>
-            <input type="text" class="form-control showReview" name="responsibleStageSeating"
+            <input type="text" class="form-control additionalQuestionOnChangeInput showReview" name="responsibleStageSeating"
                    id="responsibleStageSeating"
                    data-reviewName="Who is responsible for setting up the stage and seating?"
                    placeholder=""/>
         </div>
         %{--SEATING STAGE INDEPENDENT FIRM Y/N--}%
-        <div class="form-group col-xs-12">
+        <div class="form-group responsibleStageSeatingContainer col-xs-12" style="display:none">
             <div class="">
                 <label>Is above handled by an independent firm?</label><br>
                 <input type="radio" name="independentFirmStageSeating"
-                       class="showReview"
+                       class="responsibleStageSeatingShowReview additionalQuestionOnChangeRadio"
                        value="Yes"
                        data-reviewName="Is above handled by an independent firm?"
                        id="independentFirmStageSeatingYes_RadioButton"> Yes
                 <input type="radio" name="independentFirmStageSeating"
-                       class=""
+                       class="additionalQuestionOnChangeRadio"
                        value="No"
                        data-reviewName="Is above handled by an independent firm?"
                        id="independentFirmStageSeatingNo_RadioButton"
@@ -263,15 +249,8 @@
             </div>
         </div>
         %{--ATTACHMENT CONTAINER SEATING STAGE INDEPENDENT FIRM--}%
-        <div class="row" id="stageSeatingAttachContainer" style="margin-bottom: 20px; display:none">
+        <div class="row" id="independentFirmStageSeatingContainer" style="margin-bottom: 20px; display:none">
             <div class="col-xs-3" style="margin-left:20px">
-                %{--<form enctype="multipart/form-data">--}%
-                %{--<div class="fileUpload btn btn-primary">--}%
-                %{--<span>Attach File</span>--}%
-                %{--<input name="stageSeatingFile" type="file" class="file" id="stageSeatingFile"--}%
-                %{--style="width:120px"/>--}%
-                %{--</div>--}%
-                %{--</form>--}%
                 <button class="btn btn-primary attachButton " id="" type="button" value="">Attach Files</button>
             </div>
 
@@ -287,8 +266,8 @@
         </div>
         %{--PROVIDE SAFETY FEATURES USED TO PROTECT PERSONS AND PROPERTIES--}%
         <div class="form-group col-xs-12">
-            <label for="safteyFeatures">Provide safety features used to protect persons and property</label>
-            <input type="text" class="form-control showReview" name="safteyFeatures" id="safteyFeatures"
+            <label for="safetyFeatures">Provide safety features used to protect persons and property</label>
+            <input type="text" class="form-control additionalQuestionOnChangeInput safetyFeaturesShowReview" name="safetyFeatures" id="safetyFeatures"
                    data-reviewName="Provide safety features used to protect persons and property"
                    placeholder=""/>
         </div>
@@ -297,12 +276,12 @@
             <div class="">
                 <label>Is Participant Accident Medical coverage in place?</label><br>
                 <input type="radio" name="pamc"
-                       class="showReview"
+                       class="showReview additionalQuestionOnChangeRadio"
                        value="Yes"
                        data-reviewName="Is Participant Accident Medical coverage in place?"
                        id="pamcYes_RadioButton">Yes
                 <input type="radio" name="pamc"
-                       class=""
+                       class="additionalQuestionOnChangeRadio"
                        value="No"
                        data-reviewName="Is Participant Accident Medical coverage in place?"
                        id="pamcNo_RadioButton"
@@ -310,15 +289,8 @@
             </div>
         </div>
         %{--ATTACHMENT CONTAINER PARTICIPANT ACCIDENT MEDICAL COVERAGE--}%
-        <div class="row" id="pamcAttachContainer" style="margin-bottom: 20px; display:none">
+        <div class="row" id="pamcContainer" style="margin-bottom: 20px; display:none">
             <div class="col-xs-3" style="margin-left:20px">
-                %{--<form enctype="multipart/form-data">--}%
-                %{--<div class="fileUpload btn btn-primary">--}%
-                %{--<span>Attach File</span>--}%
-                %{--<input name="pamcFile" type="file" class="file" id="pamcFile"--}%
-                %{--style="width:120px"/>--}%
-                %{--</div>--}%
-                %{--</form>--}%
                 <button class="btn btn-primary attachButton " id="" type="button" value="">Attach Files</button>
             </div>
 
@@ -327,10 +299,27 @@
             </div>
 
         </div>
+        %{--PRODUCTS SOLD OTHER THAN CONCESSIONS FOOD AND BEVERAGES PRODUCTS Y/N--}%
+        <div class="col-xs-12">
+            <div class="form-group">
+                <label>Will there be products sold other than concessions, food and beverage products?</label><br>
+                <input type="radio" name="productsOtherSold"
+                       class="showReview additionalQuestionOnChangeRadio"
+                       value="Yes"
+                       data-reviewName="Will there be products sold other than concessions, food and beverage products?"
+                       id="productsOtherYes_RadioButton"> Yes
+                <input type="radio" name="productsOtherSold"
+                       class="additionalQuestionOnChangeRadio"
+                       value="No"
+                       data-reviewName="Will there be products sold other than concessions, food and beverage products?"
+                       id="productsOtherNo_RadioButton"
+                       checked="checked"> No
+            </div>
+        </div>
         %{--DESCRIBE PRODUCTS SOLD OTHER THAN CONCESSIONS FOOD AND BEVERAGES PRODUCTS--}%
-        <div class="form-group col-xs-12">
+        <div class="form-group productsOtherSoldContainer col-xs-12" style="display:none">
             <label for="productsOther">Describe products sold other than concessions, food and beverage products</label>
-            <input type="text" class="form-control showReview" name="productsOther" id="productsOther"
+            <input type="text" class="form-control productsOtherSoldShowReview" name="productsOther" id="productsOther"
                    data-reviewName="Describe products sold other than concessions, food and beverage products"
                    placeholder=""/>
         </div>
@@ -342,14 +331,14 @@
         %{--LIMIT ACCIDENTAL DEATH AND DISMEMBERMENT--}%
         <div class="form-group col-xs-12">
             <label for="addCoverage">What Limit of Accidental Death & Dismemberment (AD&D) Medical Coverage is obtained for each participant?</label>
-            <input type="text" class="form-control showReview" name="addCoverage" id="addCoverage"
+            <input type="text" class="form-control additionalQuestionOnChangeInput addCoverageShowReview" name="addCoverage" id="addCoverage"
                    data-reviewName="What Limit of Accidental Death & Dismemberment (AD&D) Medical Coverage is obtained for each participant?"
                    placeholder=""/>
         </div>
         %{--WAIVER SIGNING Y/N--}%
         <div class="col-xs-12">
             <div class="form-group">
-                <label>Are Participants Signing Waivers??</label><br>
+                <label>Are Participants Signing Waivers?</label><br>
                 <input type="radio" name="signingWaivers"
                        class="showReview"
                        value="Yes"
@@ -368,12 +357,12 @@
             <div class="form-group">
                 <label>Do volunteers sign waivers?</label><br>
                 <input type="radio" name="signingVolunteersWaivers"
-                       class="showReview"
+                       class="showReview additionalQuestionOnChangeRadio"
                        value="Yes"
                        data-reviewName="Do volunteers sign waivers?"
                        id="signingVolunteersWaiversYes_RadioButton"> Yes
                 <input type="radio" name="signingVolunteersWaivers"
-                       class=""
+                       class="additionalQuestionOnChangeRadio"
                        value="No"
                        data-reviewName="Do volunteers sign waivers?"
                        id="signingVolunteersWaiversNo_RadioButton"
@@ -381,15 +370,8 @@
             </div>
         </div>
         %{--ATTACHMENT CONTAINER VOLUNTEERS WAIVER SIGNING SAMPLE--}%
-        <div class="row" id="volunteerAttachContainer" style="margin-bottom: 20px; display:none">
+        <div class="row" id="signingVolunteersWaiversContainer" style="margin-bottom: 20px; display:none">
             <div class="col-xs-3" style="margin-left:20px">
-                %{--<form enctype="multipart/form-data">--}%
-                %{--<div class="fileUpload btn btn-primary">--}%
-                %{--<span>Attach File</span>--}%
-                %{--<input name="volunteerFile" type="file" class="file" id="volunteerFile"--}%
-                %{--style="width:120px"/>--}%
-                %{--</div>--}%
-                %{--</form>--}%
                 <button class="btn btn-primary attachButton " id="" type="button" value="">Attach Files</button>
             </div>
 
@@ -517,15 +499,15 @@
                                                 value="athleticEvent"/> Athletic Event</p>
                 %{--HAZARDOUS ACTIVITIES OR OTHER AMUSEMENTS--}%
                 <p class="control-label"><input type="checkbox"
-                                                class="productionInvolvesCheckbox showReview"
+                                                class="productionInvolvesCheckbox additionalQuestionOnChangeChecked showReview"
                                                 data-reviewName="Special Hazard Declared"
                                                 name="amusement"
                                                 id="amusementCheckbox"
                                                 value="amusement"/> Hazardous activities or other amusements</p>
                 %{--TYPE OF HAZARDOUS ACTIVITY--}%
-                <div class="form-group hazardousContainer col-xs-12" style="display:none">
+                <div class="form-group amusementContainer col-xs-12" style="display:none">
                     <label for="typeAmusement">Type of hazardous activity or amusement</label>
-                    <input type="text" class="form-control typeAmusement" name="typeAmusement" id="typeAmusement"
+                    <input type="text" class="form-control amusementShowReview" name="typeAmusement" id="typeAmusement"
                            data-reviewName="Type of hazardous activity or amusement"
                            placeholder=""/>
                 </div>
@@ -533,21 +515,15 @@
 
                 %{--PYROTECHNIC CHECKBOX--}%
                 <p class="control-label"><input type="checkbox"
-                                                class="riskHazard productionInvolvesCheckbox pyrotechnicsActivites showReview"
+                                                class="riskHazard productionInvolvesCheckbox additionalQuestionOnChangeChecked showReview"
                                                 data-reviewName="Special Hazard Declared"
                                                 name="pyrotechnicsActivities"
                                                 id="pyrotechnicsCheckbox"
                                                 value="Pyrotechnic Activities(Supplemental Application)"/> Pyrotechnic Activities(Supplemental Application)
                 </p>
                 %{--PYROTECHNICS CONTAINER--}%
-                <div class="row" id="pyrotechnicsAttachContainer" style="margin-bottom: 20px; display:none">
+                <div class="row pyrotechnicsActivitiesContainer" style="margin-bottom: 20px; display:none">
                     <div class="col-xs-3" style="margin-left:20px">
-                        %{--<form enctype="multipart/form-data">--}%
-                        %{--<div class="fileUpload btn btn-primary">--}%
-                        %{--<span>Attach File</span>--}%
-                        %{--<input name="pyroFile" type="file" class="file" id="pyroFile" style="width:120px"/>--}%
-                        %{--</div>--}%
-                        %{--</form>--}%
                         <button class="btn btn-primary attachButton " id="" type="button" value="">Attach Files</button>
                     </div>
 
@@ -558,23 +534,16 @@
                 </div>
                 %{--STUNTS OR HAZARDS CHECKBOX--}%
                 <p class="control-label"><input type="checkbox"
-                                                class="productionInvolvesCheckbox stuntsOrHazardousActivites showReview"
+                                                class="productionInvolvesCheckbox additionalQuestionOnChangeChecked showReview"
                                                 data-reviewName="Special Hazard Declared"
                                                 name="stuntsOrHazardousActivities"
                                                 id="stuntsHazardousCheckbox"
                                                 value="Stunts or Hazardous Activities(Supplemental Application)"/> Stunts or Hazardous Activities (Supplemental Application)
                 </p>
                 %{--CONTAINER // ATTACHMENT FOR STUNTS OR HAZARDS--}%
-                <div class="row" id="stuntsHazardousActivitiesAttachContainer"
+                <div class="row stuntsOrHazardousActivitiesContainer"
                      style="margin-bottom: 20px; display:none">
                     <div class="col-xs-3" style="margin-left:20px">
-                        %{--<form enctype="multipart/form-data">--}%
-                        %{--<div class="fileUpload btn btn-primary">--}%
-                        %{--<span>Attach File</span>--}%
-                        %{--<input name="stuntsFile" type="file" class="file" id="stuntsFile"--}%
-                        %{--style="width:120px"/>--}%
-                        %{--</div>--}%
-                        %{--</form>--}%
                         <button class="btn btn-primary attachButton " id="" type="button" value="">Attach Files</button>
                     </div>
 
@@ -592,7 +561,7 @@
             %{--TYPE OF SECURITY AT EVENT--}%
             <div class="form-group col-xs-12">
                 <label class="control-label">What Type of Security will be at the Event?</label>
-                <select class="form-control securityTypeSelect showReview" name="securityType"
+                <select class="form-control additionalQuestionOnChangeSelect showReview" name="securityType"
                         data-reviewName="What Type of Security will be at the Event?" id="securityType">
                     <option value="invalid">None</option>
                     <option value="Unarmed Security">Unarmed Crowd Control Security</option>
@@ -601,12 +570,12 @@
                 </select>
             </div>
             %{--SECURITY GUARDS CONTAINER--}%
-            <div id="securityContainer" style="display:none">
+            <div class="securityTypeContainer" style="display:none">
                 %{--NUMBER OF SECURITY GUARDS--}%
                 <div class="col-xs-12">
                     <div class="form-group">
                         <label for="numberOfGuards">Number of Guards:</label>
-                        <input type="number" class="form-control securityGuards" name="numberOfGuards"
+                        <input type="number" class="form-control securityTypeShowReview" name="numberOfGuards"
                                placeholder=""
                                data-reviewname="Number of Guards:"
                                id="numberOfGuards">
@@ -615,7 +584,7 @@
                 %{--NAME OF SECURITY--}%
                 <div class="form-group col-xs-12">
                     <label for="securityName">Name of security</label>
-                    <input type="text" class="form-control securityGuards" name="securityName" id="securityName"
+                    <input type="text" class="form-control securityTypeShowReview" name="securityName" id="securityName"
                            data-reviewName="Name of security"
                            placeholder=""/>
                 </div>
@@ -624,12 +593,12 @@
                     <div class="">
                         <label>Is above handled by an independent firm?</label><br>
                         <input type="radio" name="independentFirmSecurity"
-                               class="securityGuards"
+                               class="securityTypeShowReview additionalQuestionOnChangeRadio"
                                value="Yes"
                                data-reviewName="Is above handled by an independent firm?"
                                id="independentFirmSecurityYes_RadioButton"> Yes
                         <input type="radio" name="independentFirmSecurity"
-                               class=""
+                               class="additionalQuestionOnChangeRadio"
                                value="No"
                                data-reviewName="Is above handled by an independent firm?"
                                id="independentFirmSecurityNo_RadioButton"
@@ -637,11 +606,11 @@
                     </div>
                 </div>
                 %{--SECURITY INDEPENDENT CONTAINER--}%
-                <div id="securityIndependentContainer" style="display:none">
+                <div id="independentFirmSecurityContainer" style="display:none">
                     %{--DETAILS OF SECURITY OR FIRM--}%
                     <div class="form-group col-xs-12">
                         <label for="securityDetails">Provide details of Security Firm or Individual(s) in charge of security for the event</label>
-                        <input type="text" class="form-control securityDetails" name="securityDetails"
+                        <input type="text" class="form-control independentFirmSecurityShowReview" name="securityDetails"
                                id="securityDetails"
                                data-reviewName="Provide details of Security Firm or Individual(s) in charge of security for the event"
                                placeholder=""/>
@@ -650,7 +619,7 @@
                 %{--DETAILS OF SECURITY ANTI TERRORISM--}%
                 <div class="form-group col-xs-12">
                     <label for="securityAntiTerrorism">Describe anti-terrorism precautions/measures/detection for weapons and explosives procedure</label>
-                    <input type="text" class="form-control securityGuards" name="securityAntiTerrorism"
+                    <input type="text" class="form-control securityTypeShowReview" name="securityAntiTerrorism"
                            id="securityAntiTerrorism"
                            data-reviewName="Describe anti-terrorism precautions/measures/detection for weapons and explosives procedure"
                            placeholder=""/>
@@ -664,7 +633,7 @@
             %{--TYPE OF FIRST AID AT EVENT--}%
             <div class="form-group col-xs-12">
                 <label class="control-label">What Type of First Aid will be available the Event?</label>
-                <select class="form-control firstAidTypeSelect showReview" name="firstAidType"
+                <select class="form-control additionalQuestionOnChangeSelect showReview" name="firstAidType"
                         data-reviewName="What Type of First Aid will be available the Event?" id="firstAidType">
                     <option value="invalid">None</option>
                     <option value="City Paramedics">City Paramedics</option>
@@ -673,12 +642,12 @@
                 </select>
             </div>
             %{--MEDICAL QUESTION CONTAINER--}%
-            <div id="medicalContainer" style="display:none">
+            <div class="firstAidTypeContainer" style="display:none">
                 %{--NUMBER OF MEDICAL PERSONNEL--}%
                 <div class="col-xs-12">
                     <div class="form-group">
                         <label for="numberMedical">Number of medical personnel:</label>
-                        <input type="number" class="form-control medicalSelected numberMedical" name="numberMedical"
+                        <input type="number" class="form-control firstAidTypeShowReview numberMedical" name="numberMedical"
                                placeholder=""
                                data-reviewname="Number of medical personnel:"
                                id="numberMedical">
@@ -689,12 +658,12 @@
                     <div class="form-group">
                         <label>Is applicant indemnified by written contract? (EMT)</label><br>
                         <input type="radio" name="medicalIndemnified"
-                               class="medicalSelected"
+                               class="firstAidTypeShowReview additionalQuestionOnChangeRadio"
                                value="Yes"
                                data-reviewName="Is applicant indemnified by written contract (EMT)?"
                                id="medicalIndemnifiedYes_RadioButton"> Yes
                         <input type="radio" name="medicalIndemnified"
-                               class=""
+                               class="additionalQuestionOnChangeRadio"
                                value="No"
                                data-reviewName="Is applicant indemnified by written contract (EMT)?"
                                id="medicalIndemnifiedNo_RadioButton"
@@ -702,15 +671,8 @@
                     </div>
                 </div>
                 %{--ATTACHMENT CONTAINER CONFIRM APPLICANT INDEMNIFIED AND HELD HARMLESS--}%
-                <div class="row" id="medicalAttachContainer" style="margin-bottom: 20px; display:none">
+                <div class="row" id="medicalIndemnifiedContainer" style="margin-bottom: 20px; display:none">
                     <div class="col-xs-3" style="margin-left:20px">
-                        %{--<form enctype="multipart/form-data">--}%
-                        %{--<div class="fileUpload btn btn-primary">--}%
-                        %{--<span>Attach File</span>--}%
-                        %{--<input name="medicalFile" type="file" class="file" id="medicalFile"--}%
-                        %{--style="width:120px"/>--}%
-                        %{--</div>--}%
-                        %{--</form>--}%
                         <button class="btn btn-primary attachButton " id="" type="button" value="">Attach Files</button>
                     </div>
 
@@ -724,12 +686,12 @@
                     <div class="">
                         <label>Will EMT's be Off-Site or On-Site?</label><br>
                         <input type="radio" name="emtOutsideOnsite"
-                               class="medicalSelected"
+                               class="firstAidTypeShowReview additionalQuestionOnChangeRadio"
                                value="Yes"
                                data-reviewName="Will EMT's be Outside or On-Site?"
                                id="emtOutsideOnsiteYes_RadioButton">Off Site
                         <input type="radio" name="emtOutsideOnsite"
-                               class=""
+                               class="additionalQuestionOnChangeRadio"
                                value="No"
                                data-reviewName="Will EMT's be Outside or On-Site?"
                                id="emtOutsideOnsiteNo_RadioButton"
@@ -737,11 +699,11 @@
                     </div>
                 </div>
                 %{--MEDICAL OFF SITE QUESTION CONTAINER--}%
-                <div id="medicalOffSiteContainer" style="display:none">
+                <div id="emtOutsideOnsiteContainer" style="display:none">
                     %{--OFFSITE RESPONSE TIME--}%
                     <div class="form-group col-xs-12">
                         <label for="responseTimeEMT">What is the Off Site response time?</label>
-                        <input type="text" class="form-control responseTimeEMT" name="responseTimeEMT"
+                        <input type="text" class="form-control emtOutsideOnsiteShowReview" name="responseTimeEMT"
                                id="responseTimeEMT"
                                data-reviewName="What is the OffSite response time?"
                                placeholder=""/>
@@ -752,26 +714,26 @@
                     <div class="">
                         <label>Are EMT's employees?</label><br>
                         <input type="radio" name="emtEmployees"
-                               class="medicalSelected"
+                               class="firstAidTypeShowReview additionalQuestionOnChangeRadioReverse"
                                value="Yes"
                                data-reviewName="Are EMT's employees?"
                                id="emtEmployeesYes_RadioButton"
                                checked="checked">Yes
                         <input type="radio" name="emtEmployees"
-                               class=""
+                               class="additionalQuestionOnChangeRadioReverse"
                                value="No"
                                data-reviewName="Are EMT's employees?"
                                id="emtEmployeesNo_RadioButton"> No
                     </div>
                 </div>
                 %{--MEDICAL EMPLOYEE N CONTAINER--}%
-                <div id="medicalNotEmployeesContainer" style="display:none">
+                <div id="emtEmployeesContainer" style="display:none">
                     %{--MEDICAL INSURED Y/N--}%
                     <div class="form-group col-xs-12">
                         <div class="">
                             <label>If EMT's are not employees, are EMT's insured elsewhere?</label><br>
                             <input type="radio" name="emtInsured"
-                                   class="medicalEmployeeNo"
+                                   class="emtEmployeesShowReview"
                                    value="Yes"
                                    data-reviewName="If EMT's are not employees, are EMT's insured elsewhere?"
                                    id="emtInsuredYes_RadioButton">Yes
@@ -786,7 +748,7 @@
                     %{--CARRIER NAME FOR MEDICAL INSURED--}%
                     <div class="form-group col-xs-12">
                         <label for="carrierName">Carrier's Name</label>
-                        <input type="text" class="form-control medicalEmployeeNo" name="carrierName" id="carrierName"
+                        <input type="text" class="form-control emtEmployeesShowReview" name="carrierName" id="carrierName"
                                data-reviewName="Carrier's Name"
                                placeholder=""/>
                     </div>
@@ -817,12 +779,12 @@
                 <div class="">
                     <label>Will there be overnight camping?</label><br>
                     <input type="radio" name="overnight"
-                           class="showReview"
+                           class="showReview additionalQuestionOnChangeRadio"
                            value="Yes"
                            data-reviewName="Will there be overnight camping?"
                            id="overnightYes_RadioButton"> Yes
                     <input type="radio" name="overnight"
-                           class=""
+                           class="additionalQuestionOnChangeRadio"
                            value="No"
                            data-reviewName="Will there be overnight camping?"
                            id="overnightNo_RadioButton"
@@ -835,7 +797,7 @@
                 <div class="col-xs-12">
                     <div class="form-group">
                         <label for="campers">Number of campers:</label>
-                        <input type="number" class="form-control camperReview" name="campers"
+                        <input type="number" class="form-control overnightShowReview" name="campers"
                                placeholder=""
                                data-reviewname="Number of medical campers:"
                                id="campers">
@@ -845,7 +807,7 @@
                 <div class="col-xs-12">
                     <div class="form-group">
                         <label for="campSite">Number of camp sites:</label>
-                        <input type="number" class="form-control camperReview" name="campSite"
+                        <input type="number" class="form-control overnightShowReview" name="campSite"
                                placeholder=""
                                data-reviewname="Number of camp sites:"
                                id="campSite">
@@ -855,7 +817,7 @@
                 <div class="col-xs-12">
                     <div class="form-group">
                         <label for="campersPerDay">Number of campers per day:</label>
-                        <input type="number" class="form-control camperReview" name="campersPerDay"
+                        <input type="number" class="form-control overnightShowReview" name="campersPerDay"
                                placeholder=""
                                data-reviewname="Number of campers per day:"
                                id="campersPerDay">
@@ -865,7 +827,7 @@
                 <div class="col-xs-12">
                     <div class="form-group">
                         <label for="campersPerSite">Number of campers per site:</label>
-                        <input type="number" class="form-control camperReview" name="campersPerSite"
+                        <input type="number" class="form-control overnightShowReview" name="campersPerSite"
                                placeholder=""
                                data-reviewname="Number of campers per site:"
                                id="campersPerSite">
@@ -876,12 +838,12 @@
                     <div class="">
                         <label>Will there be overnight camping security and patrol?</label><br>
                         <input type="radio" name="overnightSecurity"
-                               class="camperReview"
+                               class="overnightShowReview additionalQuestionOnChangeRadio"
                                value="Yes"
                                data-reviewName="Will there be overnight camping security and patrol?"
                                id="overnightSecurityYes_RadioButton"> Yes
                         <input type="radio" name="overnightSecurity"
-                               class=""
+                               class="additionalQuestionOnChangeRadio"
                                value="No"
                                data-reviewName="Will there be overnight camping security and patrol?"
                                id="overnightSecurityNo_RadioButton"
@@ -893,7 +855,7 @@
                     %{--PROVIDE FULL DESCRIPTION OF OVERNIGHT SECURITY--}%
                     <div class="form-group col-xs-12 ">
                         <label for="descriptionOfOvernightEvent">Provide full description of overnight security</label>
-                        <input type="text" class="form-control overnightSecurityReview" name="descriptionOvernight"
+                        <input type="text" class="form-control overnightSecurityShowReview" name="descriptionOvernight"
                                id="descriptionOvernight"
                                data-reviewName="Provide full description of overnight events"
                                placeholder="Describe"/>
@@ -904,7 +866,7 @@
                     <div class="">
                         <label>Will there be children in these overnight events?</label><br>
                         <input type="radio" name="overnightChildren"
-                               class="camperReview"
+                               class="overnightShowReview"
                                value="Yes"
                                data-reviewName="Will there be children in these overnight events?"
                                id="overnightChildrenYes_RadioButton"> Yes
@@ -921,7 +883,7 @@
                     <div class="">
                         <label>Are EMT's provided on campgrounds?</label><br>
                         <input type="radio" name="emtCampgrounds"
-                               class="camperReview"
+                               class="overnightShowReview"
                                value="Yes"
                                data-reviewName="Are EMT's provided on campgrounds?"
                                id="emtCampgroundsYes_RadioButton"> Yes
@@ -936,21 +898,14 @@
                 %{--WHAT ARE THE CURFEW HOURS?--}%
                 <div class="form-group col-xs-12 ">
                     <label for="curfewHours">What are the curfew hours?</label>
-                    <input type="text" class="form-control camperReview" name="curfewHours"
+                    <input type="text" class="form-control overnightShowReview" name="curfewHours"
                            id="curfewHours"
                            data-reviewName="What are the curfew hours?"
                            placeholder=""/>
                 </div>
                 %{--ATTACHMENT CONTAINER PROVIDE CAMPING GROUND RULES--}%
-                <div class="row" id="campRulesAttachContainer" style="margin-bottom: 20px; display:none">
+                <div class="row" id="overnightShowReviewContainer" style="margin-bottom: 20px; display:none">
                     <div class="col-xs-3" style="margin-left:20px">
-                        %{--<form enctype="multipart/form-data">--}%
-                        %{--<div class="fileUpload btn btn-primary">--}%
-                        %{--<span>Attach File</span>--}%
-                        %{--<input name="campRulesFile" type="file" class="file" id="campRulesFile"--}%
-                        %{--style="width:120px"/>--}%
-                        %{--</div>--}%
-                        %{--</form>--}%
                         <button class="btn btn-primary attachButton " id="" type="button" value="">Attach Files</button>
                     </div>
 
@@ -964,7 +919,7 @@
                     <div class="">
                         <label>Will there be bonfires on the camp grounds?</label><br>
                         <input type="radio" name="bonfires"
-                               class="camperReview"
+                               class="overnightShowReview"
                                value="Yes"
                                data-reviewName="Will there be bonfires on the camp grounds?"
                                id="bonfiresYes_RadioButton"> Yes
@@ -979,7 +934,7 @@
                 %{--WHAT PRECAUTIONS ARE IN PLACE TO PREVENT OUTSIDE ALCOHOL?--}%
                 <div class="form-group col-xs-12 ">
                     <label for="precautionsAlcohol">What precautions are in place to prevent outside alcohol?</label>
-                    <input type="text" class="form-control camperReview" name="precautionsAlcohol"
+                    <input type="text" class="form-control overnightShowReview" name="precautionsAlcohol"
                            id="precautionsAlcohol"
                            data-reviewName="What precautions are in place to prevent outside alcohol?"
                            placeholder=""/>
@@ -993,8 +948,8 @@
             %{--TYPE OF PATHWAY--}%
             <div class="form-group col-xs-12">
                 <label class="control-label">Type of parking</label>
-                <select class="form-control parkingTypeSelect showReview" name="parkingType"
-                        data-reviewName="What Type of Security will be at the Event?" id="parkingType">
+                <select class="form-control additionalQuestionOnChangeSelect showReview" name="parkingType"
+                        data-reviewName="What Type of Parking will be at the Event?" id="parkingType">
                     <option value="invalid">None</option>
                     <option value="Dirt">Dirt</option>
                     <option value="Gravel">Gravel</option>
@@ -1004,32 +959,32 @@
                 </select>
             </div>
             %{--PARKING CONTAINER --}%
-            <div id="parkingMainContainer" style="display:none">
+            <div id="parkingTypeContainer" style="display:none">
                 %{--ARE YOU RESPONSIBLE FOR PARKING? Y/N --}%
                 <div class="col-xs-12">
                     <div class="form-group">
                         <label>Are you responsible for Parking?</label><br>
-                        <input type="radio" name="responsibleForParking" class="parkingReview" value="Yes"
+                        <input type="radio" name="responsibleForParking" class="parkingTypeShowReview additionalQuestionOnChangeRadioReverse" value="Yes"
                                data-reviewname="Are you responsible for Parking?"
                                id="responsibleForParkingYes_RadioButton" checked="checked"> Yes
-                        <input type="radio" name="responsibleForParking" class="" value="No"
+                        <input type="radio" name="responsibleForParking" class="additionalQuestionOnChangeRadioReverse" value="No"
                                data-reviewname="Are you responsible for Parking?"
                                id="responsibleForParkingNo_RadioButton"> No
                     </div>
                 </div>
                 %{--PARKING CONTAINER NO --}%
-                <div id="parkingContainer" style="display:none">
+                <div id="responsibleForParkingContainer" style="display:none">
                     %{--N IS APPLICANT INDEMNIFIED BY WRITTEN CONTRACT PARKING Y/N--}%
                     <div class="col-xs-12">
                         <div class="form-group">
                             <label>Is applicant indemnified by written contract? (parking)</label><br>
                             <input type="radio" name="parkingIndemnified"
-                                   class="parkingIndemnifiedReview"
+                                   class="responsibleForParkingShowReview additionalQuestionOnChangeRadio"
                                    value="Yes"
                                    data-reviewName="Is applicant indemnified by written contract (parking)?"
                                    id="parkingIndemnifiedYes_RadioButton"> Yes
                             <input type="radio" name="parkingIndemnified"
-                                   class=""
+                                   class="additionalQuestionOnChangeRadio"
                                    value="No"
                                    data-reviewName="Is applicant indemnified by written contract (parking)?"
                                    id="parkingIndemnifiedNo_RadioButton"
@@ -1037,15 +992,8 @@
                         </div>
                     </div>
                     %{--ATTACHMENT CONTAINER PARKING--}%
-                    <div class="row" id="parkingAttachContainer" style="margin-bottom: 20px; display:none">
+                    <div class="row" id="parkingIndemnifiedContainer" style="margin-bottom: 20px; display:none">
                         <div class="col-xs-3" style="margin-left:20px">
-                            %{--<form enctype="multipart/form-data">--}%
-                            %{--<div class="fileUpload btn btn-primary">--}%
-                            %{--<span>Attach File</span>--}%
-                            %{--<input name="parkingFile" type="file" class="file" id="parkingFile"--}%
-                            %{--style="width:120px"/>--}%
-                            %{--</div>--}%
-                            %{--</form>--}%
                             <button class="btn btn-primary attachButton " id="" type="button" value="">Attach Files</button>
                         </div>
 
@@ -1059,7 +1007,7 @@
                 <div class="col-xs-12">
                     <div class="form-group">
                         <label>Is there valet parking?</label><br>
-                        <input type="radio" name="valetParking" class="parkingReview" value="Yes"
+                        <input type="radio" name="valetParking" class="parkingTypeShowReview" value="Yes"
                                data-reviewname="Is there valet parking?"
                                id="valetParkingYes_RadioButton"> Yes
                         <input type="radio" name="valetParking" class="" value="No"
@@ -1071,7 +1019,7 @@
                 <div class="col-xs-12">
                     <div class="form-group">
                         <label>Parking secured and well maintained with 24 hr security guards?</label><br>
-                        <input type="radio" name="patrolledParking" class="parkingReview" value="Yes"
+                        <input type="radio" name="patrolledParking" class="parkingTypeShowReview" value="Yes"
                                data-reviewname="Parking secured and well maintained with 24 hr security guards?"
                                id="patrolledParkingYes_RadioButton"> Yes
                         <input type="radio" name="patrolledParking" class="" value="No"
@@ -1083,7 +1031,7 @@
                 <div class="col-xs-12">
                     <div class="form-group">
                         <label for="parkingSquareFoot">What is the square footage of the parking area?</label>
-                        <input type="text" class="form-control parkingReview" name="parkingSquareFoot" placeholder=""
+                        <input type="text" class="form-control parkingTypeShowReview" name="parkingSquareFoot" placeholder=""
                                data-reviewname="What is the square footage of the parking area?"
                                id="parkingSquareFoot">
                     </div>
@@ -1097,10 +1045,10 @@
             <div class="col-xs-12">
                 <div class="form-group">
                     <label>A weather monitoring service or meteorologist is employed in planning, forecasting, and consulting for the Event</label><br>
-                    <input type="radio" name="weather" class="showReview" value="Yes"
+                    <input type="radio" name="weather" class="showReview additionalQuestionOnChangeRadio" value="Yes"
                            data-reviewname="A weather monitoring service or meteorologist is employed in planning, forecasting, and consulting for the Event"
                            id="weatherYes_RadioButton"> Yes
-                    <input type="radio" name="weather" class="" value="No"
+                    <input type="radio" name="weather" class="additionalQuestionOnChangeRadio" value="No"
                            data-reviewname="Are you responsible for Parking?"
                            id="weatherNo_RadioButton" checked="checked"> No
                 </div>
@@ -1111,7 +1059,7 @@
                 <div class="col-xs-12">
                     <div class="form-group">
                         <label>A written weather contingency plan is in place</label><br>
-                        <input type="radio" name="weatherPlan" class="weatherReview" value="Yes"
+                        <input type="radio" name="weatherPlan" class="weatherShowReview" value="Yes"
                                data-reviewname="A written weather contingency plan is in place"
                                id="weatherPlanYes_RadioButton"> Yes
                         <input type="radio" name="weatherPlan" class="" value="No"
@@ -1126,42 +1074,42 @@
                     %{--THESE RISK WILL DISABLE INDICATION--}%
                     %{--THUNDERSTORM ALERT CHECKBOX--}%
                     <p class="control-label"><input type="checkbox"
-                                                    class="productionInvolvesCheckbox weatherReview"
+                                                    class="productionInvolvesCheckbox weatherShowReview"
                                                     data-reviewName="Planning and monitoring include:"
                                                     name="thunderstorm"
                                                     id="thunderstormCheckbox"
                                                     value="thunderstorm"/> Thunderstorm Alert</p>
                     %{--HEAT ALERTS CHECKBOX--}%
                     <p class="control-label"><input type="checkbox"
-                                                    class="productionInvolvesCheckbox weatherReview"
+                                                    class="productionInvolvesCheckbox weatherShowReview"
                                                     data-reviewName="Planning and monitoring include:"
                                                     name="heat"
                                                     id="heatCheckbox"
                                                     value="heat"/> Heat Alert</p>
                     %{--SEVERE THUNDERSTORM ALERTS CHECKBOX--}%
                     <p class="control-label"><input type="checkbox"
-                                                    class="productionInvolvesCheckbox weatherReview"
+                                                    class="productionInvolvesCheckbox weatherShowReview"
                                                     data-reviewName="Planning and monitoring include:"
                                                     name="severeThunderstorm"
                                                     id="severeThunderstormCheckbox"
                                                     value="Severe Thunderstorm Alerts"/> Severe Thunderstorm Alerts</p>
                     %{--HEAVY PRECIPITATION CHECKBOX--}%
                     <p class="control-label"><input type="checkbox"
-                                                    class="productionInvolvesCheckbox weatherReview"
+                                                    class="productionInvolvesCheckbox weatherShowReview"
                                                     data-reviewName="Planning and monitoring include:"
                                                     name="heavyPrecipitation"
                                                     id="heavyPrecipitationCheckbox"
                                                     value="Heavy Precipitation Alerts"/> Heavy Precipitation Alerts</p>
                     %{--INDOOR VENUES NO SPRINKLER CHECKBOX--}%
                     <p class="control-label"><input type="checkbox"
-                                                    class="productionInvolvesCheckbox weatherReview"
+                                                    class="productionInvolvesCheckbox weatherShowReview"
                                                     data-reviewName="Planning and monitoring include:"
                                                     name="surfaceWind"
                                                     id="surfaceWindCheckbox"
                                                     value="Surface Wind Alerts"/> Surface Wind Alerts</p>
                     %{--NO LIQUOR LICENSE SALES CHECKBOX--}%
                     <p class="control-label"><input type="checkbox"
-                                                    class="productionInvolvesCheckbox weatherReview"
+                                                    class="productionInvolvesCheckbox weatherShowReview"
                                                     data-reviewName="Planning and monitoring include:"
                                                     name="nationalWeather"
                                                     id="nationalWeatherCheckbox"
@@ -1219,28 +1167,28 @@
                            checked="checked"> No
                 </div>
                 %{--CHECK BOXES FOR ADDITIONAL COVERAGE CONTAINER--}%
-                <div class="additionalCoverageContainer col-xs-12" style="display:none">
-                    <p class="control-label col-xs-12"><input type="checkbox"
-                                                              class="productionInvolvesCheckbox miscCheckbox showReview"
-                                                              data-reviewName="Additional Coverages Requested"
-                                                              name="miscellaneousEquipment"
-                                                              id="miscUsaCheckbox"
-                                                              value="miscellaneousUsaEquipment"/> Miscellaneous Equipment including props, sets, and wardrobe coverage requested?(USA Only)</p>
+                %{--<div class="additionalCoverageContainer col-xs-12" style="display:none">--}%
+                    %{--<p class="control-label col-xs-12"><input type="checkbox"--}%
+                                                              %{--class="productionInvolvesCheckbox miscCheckbox showReview"--}%
+                                                              %{--data-reviewName="Additional Coverages Requested"--}%
+                                                              %{--name="miscellaneousEquipment"--}%
+                                                              %{--id="miscUsaCheckbox"--}%
+                                                              %{--value="miscellaneousUsaEquipment"/> Miscellaneous Equipment including props, sets, and wardrobe coverage requested?(USA Only)</p>--}%
 
-                    <p class="control-label col-xs-12"><input type="checkbox"
-                                                              class="productionInvolvesCheckbox miscCheckbox showReview"
-                                                              data-reviewName="Additional Coverages Requested"
-                                                              name="miscellaneousEquipment"
-                                                              id="miscWorldCheckbox"
-                                                              value="miscellaneousWorldEquipment"/> Miscellaneous Equipment including props, sets, and wardrobe coverage requested?(Worldwide)</p>
+                    %{--<p class="control-label col-xs-12"><input type="checkbox"--}%
+                                                              %{--class="productionInvolvesCheckbox miscCheckbox showReview"--}%
+                                                              %{--data-reviewName="Additional Coverages Requested"--}%
+                                                              %{--name="miscellaneousEquipment"--}%
+                                                              %{--id="miscWorldCheckbox"--}%
+                                                              %{--value="miscellaneousWorldEquipment"/> Miscellaneous Equipment including props, sets, and wardrobe coverage requested?(Worldwide)</p>--}%
 
-                    <p class="control-label col-xs-12"><input type="checkbox"
-                                                              class="productionInvolvesCheckbox showReview"
-                                                              data-reviewName="Additional Coverages Requested"
-                                                              name="thirdPartyPropertyDamage"
-                                                              id="thirdPartyCheckbox"
-                                                              value="thirdPartyPropertyDamage"/> Third Party Property damage coverage requested?</p>
-                </div>
+                    %{--<p class="control-label col-xs-12"><input type="checkbox"--}%
+                                                              %{--class="productionInvolvesCheckbox showReview"--}%
+                                                              %{--data-reviewName="Additional Coverages Requested"--}%
+                                                              %{--name="thirdPartyPropertyDamage"--}%
+                                                              %{--id="thirdPartyCheckbox"--}%
+                                                              %{--value="thirdPartyPropertyDamage"/> Third Party Property damage coverage requested?</p>--}%
+                %{--</div>--}%
                 %{--ALCOHOL REQUESTED Y/N--}%
                 <div class="form-group col-xs-12">
                     <label>Will alcohol be served?</label><br>
@@ -1261,7 +1209,7 @@
                     %{--WHAT IS THE ESTIMATED TOTAL SALES RECEIPTS--}%
                     <div class="form-group col-xs-12">
                         <label for="estimatedTotalSalesReceipts">What is the Estimated Total Sales Receipts?</label>
-                        <input type="text" id="alcoholSales" class="alcoholSales showReview form-control"
+                        <input type="text" id="alcoholSales" class="alcoholSales moneyFormat form-control"
                                name="alcoholSales"
                                data-reviewName="What is the Estimated Total Sales Receipts?"
                                placeholder="$USD"/>
@@ -1537,105 +1485,105 @@
                             </div>
                         </div>
                         %{--INLAND MARINE CONTAINER--}%
-                        <div class="row inlandMarineContainer" style="display:none">
-                            <div class="col-xs-6 ">
-                                <strong class="coverageCodeString"
-                                        style="font-size:13px">Inland Marine</strong>
-                                <span class="productID_pull" data-cov="CGL" style="display:none">SPEVENTS</span>
-                            </div>
+                        %{--<div class="row inlandMarineContainer" style="display:none">--}%
+                            %{--<div class="col-xs-6 ">--}%
+                                %{--<strong class="coverageCodeString"--}%
+                                        %{--style="font-size:13px">Inland Marine</strong>--}%
+                                %{--<span class="productID_pull" data-cov="CGL" style="display:none">SPEVENTS</span>--}%
+                            %{--</div>--}%
 
-                            <div class="col-xs-2">
-                                <span></span>
-                            </div>
+                            %{--<div class="col-xs-2">--}%
+                                %{--<span></span>--}%
+                            %{--</div>--}%
 
-                            <div class="col-xs-2">
-                                <span></span>
-                            </div>
+                            %{--<div class="col-xs-2">--}%
+                                %{--<span></span>--}%
+                            %{--</div>--}%
 
-                            <div class="col-xs-2">
-                                <span></span>
-                            </div>
+                            %{--<div class="col-xs-2">--}%
+                                %{--<span></span>--}%
+                            %{--</div>--}%
 
-                        </div>
+                        %{--</div>--}%
                         %{--MISCELLANEOUS UNSCHEDULED EQUIPMENT RENTED--}%
-                        <div class="row lobRow miscContainer SPEVENTS CGL" style="display:none">
-                            <div class="col-xs-6 coverageColumn" style="padding-left:20px">
-                                <span class="lob">Miscellaneous Unscheduled Equipment (Rented)</span>
-                            </div>
+                        %{--<div class="row lobRow miscContainer SPEVENTS CGL" style="display:none">--}%
+                            %{--<div class="col-xs-6 coverageColumn" style="padding-left:20px">--}%
+                                %{--<span class="lob">Miscellaneous Unscheduled Equipment (Rented)</span>--}%
+                            %{--</div>--}%
 
-                            <div class="col-xs-2 limitColumn">
-                                <input type="text" id="limitMiscellaneous" class="limit limitInput limitMiscellaneous form-control"
-                                       placeholder="Enter Limit"
-                                       style="font-size: 12px;padding: 2px;margin-top: 3px; margin-bottom:3px; height: 20px;">
-                            </div>
+                            %{--<div class="col-xs-2 limitColumn">--}%
+                                %{--<input type="text" id="limitMiscellaneous" class="limit limitInput limitMiscellaneous form-control"--}%
+                                       %{--placeholder="Enter Limit"--}%
+                                       %{--style="font-size: 12px;padding: 2px;margin-top: 3px; margin-bottom:3px; height: 20px;">--}%
+                            %{--</div>--}%
 
-                            <div class="col-xs-2 premiumColumn">
-                                <span class="premium premiumMiscellaneous"></span>
-                            </div>
+                            %{--<div class="col-xs-2 premiumColumn">--}%
+                                %{--<span class="premium premiumMiscellaneous"></span>--}%
+                            %{--</div>--}%
 
-                            <div class="col-xs-2 deductibleColumn">
-                                <span class="deductible deductibleMiscellaneous"></span>
-                            </div>
+                            %{--<div class="col-xs-2 deductibleColumn">--}%
+                                %{--<span class="deductible deductibleMiscellaneous"></span>--}%
+                            %{--</div>--}%
 
-                        </div>
+                        %{--</div>--}%
                         %{--THIRD PARTY PROPERTY DAMAGE LIABILITY--}%
-                        <div class="row lobRow thirdPartyContainer SPEVENTS CGL"
-                             style="background-color: rgba(38, 80, 159, 0.13); display:none">
-                            <div class="col-xs-6 coverageColumn" style="padding-left:20px">
-                                <span class="lob">Third Party Property Damage Liability</span>
-                            </div>
+                        %{--<div class="row lobRow thirdPartyContainer SPEVENTS CGL"--}%
+                             %{--style="background-color: rgba(38, 80, 159, 0.13); display:none">--}%
+                            %{--<div class="col-xs-6 coverageColumn" style="padding-left:20px">--}%
+                                %{--<span class="lob">Third Party Property Damage Liability</span>--}%
+                            %{--</div>--}%
 
-                            <div class="col-xs-2 limitColumn">
-                                <span class="limit limitSpan">$1,000,000</span>
-                            </div>
+                            %{--<div class="col-xs-2 limitColumn">--}%
+                                %{--<span class="limit limitSpan">$1,000,000</span>--}%
+                            %{--</div>--}%
 
-                            <div class="col-xs-2 premiumColumn">
-                                <span class="premium premiumThirdParty"></span>
-                            </div>
+                            %{--<div class="col-xs-2 premiumColumn">--}%
+                                %{--<span class="premium premiumThirdParty"></span>--}%
+                            %{--</div>--}%
 
-                            <div class="col-xs-2 deductibleColumn">
-                                <span class="deductible deductibleThirdParty"></span>
-                            </div>
+                            %{--<div class="col-xs-2 deductibleColumn">--}%
+                                %{--<span class="deductible deductibleThirdParty"></span>--}%
+                            %{--</div>--}%
 
-                        </div>
+                        %{--</div>--}%
                         %{--HIRED & NON-OWNED AUTO LIABILITY--}%
-                        <div class="row lobRow SPEVENTS CGL">
-                            <div class="col-xs-6 coverageColumn" style="padding-left:20px">
-                                <span class="lob">Hired & Non-Owned Auto Liability</span>
-                            </div>
+                        %{--<div class="row lobRow SPEVENTS CGL">--}%
+                            %{--<div class="col-xs-6 coverageColumn" style="padding-left:20px">--}%
+                                %{--<span class="lob">Hired & Non-Owned Auto Liability</span>--}%
+                            %{--</div>--}%
 
-                            <div class="col-xs-2 limitColumn">
-                                <span class="limit">Not Covered</span>
-                            </div>
+                            %{--<div class="col-xs-2 limitColumn">--}%
+                                %{--<span class="limit">Not Covered</span>--}%
+                            %{--</div>--}%
 
-                            <div class="col-xs-2 premiumColumn">
-                                <span class="premium"></span>
-                            </div>
+                            %{--<div class="col-xs-2 premiumColumn">--}%
+                                %{--<span class="premium"></span>--}%
+                            %{--</div>--}%
 
-                            <div class="col-xs-2 deductibleColumn">
-                                <span class="deductible"></span>
-                            </div>
-                        </div>
+                            %{--<div class="col-xs-2 deductibleColumn">--}%
+                                %{--<span class="deductible"></span>--}%
+                            %{--</div>--}%
+                        %{--</div>--}%
                         %{--HIRED AUTO PHYSICAL DAMAGE--}%
-                        <div class="row lobRow SPEVENTS CGL"
-                             style="background-color: rgba(38, 80, 159, 0.13)">
-                            <div class="col-xs-6 coverageColumn" style="padding-left:20px">
-                                <span class="lob">Hired Auto Physical Damage</span>
-                            </div>
+                        %{--<div class="row lobRow SPEVENTS CGL"--}%
+                             %{--style="background-color: rgba(38, 80, 159, 0.13)">--}%
+                            %{--<div class="col-xs-6 coverageColumn" style="padding-left:20px">--}%
+                                %{--<span class="lob">Hired Auto Physical Damage</span>--}%
+                            %{--</div>--}%
 
-                            <div class="col-xs-2 limitColumn">
-                                <span class="limit">Not Covered</span>
-                            </div>
+                            %{--<div class="col-xs-2 limitColumn">--}%
+                                %{--<span class="limit">Not Covered</span>--}%
+                            %{--</div>--}%
 
-                            <div class="col-xs-2 premiumColumn">
-                                <span class="premium"></span>
-                            </div>
+                            %{--<div class="col-xs-2 premiumColumn">--}%
+                                %{--<span class="premium"></span>--}%
+                            %{--</div>--}%
 
-                            <div class="col-xs-2 deductibleColumn">
-                                <span class="deductible"></span>
-                            </div>
+                            %{--<div class="col-xs-2 deductibleColumn">--}%
+                                %{--<span class="deductible"></span>--}%
+                            %{--</div>--}%
 
-                        </div>
+                        %{--</div>--}%
                         <div class="row" style="border-top: 1px solid rgba(0, 0, 0, 0.19);">
                             <div class="col-xs-10 "><strong style="font-size:13px"></strong>
                             </div>

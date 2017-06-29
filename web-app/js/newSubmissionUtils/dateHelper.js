@@ -3,11 +3,13 @@ function initializeDateInputAndFunctions() {
     var date_input = $('.datepicker'); //our date input has the name "date"
     var container = $('#page-content-wrapper');
     var options = {
+        assumeNearbyYear: true,
+        autoclose: true,
         format: 'mm/dd/yyyy',
         container: container,
         todayHighlight: true,
-        orientation: "auto top",
-        autoclose: true,
+        orientation: "auto bottom",
+        enableOnReadonly: false
     };
     date_input.datepicker(options);
 

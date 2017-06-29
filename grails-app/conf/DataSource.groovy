@@ -34,7 +34,7 @@ environments {
         }
         dataSource_aim{
             dbCreate = "update"
-            url = "jdbc:sqlserver://74.100.162.203:1433;databaseName=Training"
+            url = "jdbc:sqlserver://47.180.31.157:1433;databaseName=Training"
             driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
             username = "web"
             password = "jakePoos521"
@@ -66,7 +66,7 @@ environments {
         }
         dataSource_aim{
             dbCreate = "update"
-            url = "jdbc:sqlserver://74.100.162.203:1433;databaseName=Training"
+            url = "jdbc:sqlserver://47.180.31.157:1433;databaseName=Training"
             driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
             username = "web"
             password = "jakePoos521"
@@ -100,7 +100,7 @@ environments {
 
         dataSource_aim{
             dbCreate = "update"
-            url = "jdbc:sqlserver://74.100.162.203:1433;databaseName=CIS"
+            url = "jdbc:sqlserver://47.180.31.157:1433;databaseName=CIS"
             driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
             username = "web"
             password = "jakePoos521"

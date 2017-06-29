@@ -8,6 +8,19 @@ $(document).ready(function () {
         // alert();
     });
 
+    $(document.body).on('keydown', ':input', function(e) {
+        // console.log(e.which)
+        if( e.which == 9 ) {
+            // alert();
+            var nextIndex = ($(':input:visible').index(e.target) + 1)
+            $(":input:visible").eq(nextIndex).focus();
+
+            // console.log($(":input").eq(nextIndex))
+            e.preventDefault()
+            e.stopPropagation();
+        }
+    });
+
     $("#sidebar-wrapper").hover(function(e) {
         e.preventDefault();
         $("#wrapper").toggleClass("toggled");

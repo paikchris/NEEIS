@@ -28,6 +28,9 @@ class TestController {
     def TestApp(){
         [user: session.user]
     }
+    def SpecialEventTest(){
+        [user: session.user]
+    }
 
 
 }

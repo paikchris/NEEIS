@@ -22,9 +22,13 @@ $(document).ready(function () {
                 if(fileName === "Indication A.pdf"){
 
                 }
+                else if(fileName.trim().startsWith("SL2")){
+
+                }
                 else{
                     count++;
                     var fileSize = it.split("&,&")[1];
+
                     if(fileName.trim().length > 0){
                         var ext = fileName.split('.').pop().toLowerCase();
 

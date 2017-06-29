@@ -4,6 +4,7 @@ class Submissions {
 
     String aimQuoteID
     String submittedBy
+    String aimVersion
     String namedInsured
     String submitDate
     String coverages
@@ -18,8 +19,10 @@ class Submissions {
 
 
 
+
     static constraints = {
         namedInsured(nullable: true)
+        aimVersion(nullable: true)
         coverages(nullable: true)
         underwriter(nullable: true)
         seenByUW(nullable: true)

@@ -152,8 +152,8 @@
 
 
 	<!-- DATE PICKER PLUGIN -->
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js" ></script>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css" />
+	<script src="${resource(dir: 'js/vendor/', file: 'bootstrap-datepicker.js')}" ></script>
+	<link rel="stylesheet" href="${resource(dir: 'css', file: 'bootstrap-datepicker3.css')}" type="text/css">
 
 
 

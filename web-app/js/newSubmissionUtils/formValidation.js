@@ -29,13 +29,22 @@ function initializeListnerForNoBlankRequiredFields(){
             }
         }
 
+        if($(this).attr('id') === "namedInsuredEmail"){
+            if (ValidateEmail($(this).val())) {
+                $(this).closest(".form-group").removeClass("has-error");
+            }
+            else {
+                $(this).closest(".form-group").addClass("has-error");
+            }
+        }
+
     });
 
     //FOCUS OUT
     $(document).on('focusout', ':input[required]:visible', function() {
-        // console.log("FOCUS OUT VALIDATION");
+        console.log("FOCUS OUT VALIDATION: " + $(this).val());
         if ($(this).val().length > 0) {
-            if ($(this).attr("id") === "phoneNumber" && ($(this).val().trim() === "(___) ___-____")) {
+            if ($(this).attr("id") === "phoneNumber" && ($(this).val().trim().indexOf("_") > -1) ) {
                 $(this).closest(".form-group").addClass("has-error");
             }
             else if ($(this).attr("id") === "stateMailing" && ($(this).val() === "invalid")) {
@@ -52,6 +61,15 @@ function initializeListnerForNoBlankRequiredFields(){
         else {
             $(this).closest(".form-group").addClass("has-error");
         }
+
+        if($(this).attr('id') === "namedInsuredEmail"){
+            if (ValidateEmail($(this).val())) {
+                $(this).closest(".form-group").removeClass("has-error");
+            }
+            else {
+                $(this).closest(".form-group").addClass("has-error");
+            }
+        }
     });
 }
 
@@ -65,7 +83,7 @@ function ValidateEmail(email) {
 function validateFields() {
     var valid = true;
     var message = "";
-    console.log("VALIDATING FIELDS")
+    // console.log("VALIDATING FIELDS")
 
     //VALIDATE REQUIRED FIELDS
     $(':input[required]:visible').each(function(index) {

@@ -12,7 +12,8 @@ function getProductsForRisk() {
                 }
             })
             .done(function(msg) {
-                //alert(msg);
+                var longFunctionID = generateAjaxID()
+                outstandingCalls[longFunctionID] = "ratePremiumsFunction"
 
                 clearProductChoices();
                 var coverageAndProductsArray = msg.split("&nextCoverage&");
@@ -177,7 +178,7 @@ function getProductsForRisk() {
                 ratePremiums($('#totalBudgetConfirm'));
 
 
-
+                delete outstandingCalls[longFunctionID]
             });
         $('#limitsDeductPremiumInsert').html("");
         $('#premDistributionInsert').html("");
@@ -540,7 +541,7 @@ function getSubmissionMap() {
         riskChosen: getRiskTypeChosen(),
         riskCategory: getRiskCategoryChosen(),
         premiumAllLOBTotal: $('#premiumAllLOBTotal').html(),
-        filmingLocation: "Blank",
+        filmingLocation: $('.filmLocationLocation').val(),
         productID: [],
         brokerCompany: $('#userDetails-company').html(),
         brokerEmail: $('#userDetails-email').html(),
@@ -1009,4 +1010,109 @@ function validateSubmission(dataMap){
 
 
     return valid;
+}
+
+function submitPolicyToAIM(riskType, totalBudget, proposedTermLength, namedInsured, saveMap, uw_QuestionsMap, uw_QuestionsOrder, dataMap, BOR_Requested){
+    $('#progressBarHeader').html("Please wait, your submission is being processed.")
+    $('.progress-bar').attr('aria-valuenow', "75").animate({
+        width: "75%"
+    }, 25000);
+
+    var newSubmissionConfirmParam = "";
+    autoSaveFunction();
+
+    /////TEST FOR BROKER OF RECORD STATUS
+    $.ajax({
+        method: "POST",
+        url: "/Async/saveSubmissionToAIM",
+        data: {
+            riskType: riskType,
+            totalGrossBudget: totalBudget,
+            proposedTermLength: proposedTermLength,
+            namedInsured: namedInsured,
+            questionAnswerMap: JSON.stringify(saveMap),
+            uwQuestionsMap: JSON.stringify(uw_QuestionsMap),
+            uwQuestionsOrder: uw_QuestionsOrder.join("&;&"),
+            dataMap: JSON.stringify(dataMap),
+            BORrequested: BOR_Requested
+        }
+    })
+        .done(function (msg) {
+            //alert(msg);
+            //0620584,0620585
+            var indicationPDFError = false;
+
+            //IF RESPONSE HAS "INDICATION ERROR" THERE WAS AN ISSUE GENERATING THE INDICATION PDF
+            if (msg.split("&;&")[1] === "Indication Error") {
+                alert("Submission was successful however, the Indication PDF is currently not available. Please contact your underwriter for further details. ");
+                // $('#alertMessageModal').modal('show');
+                indicationPDFError = true;
+            }
+
+            //IF RESPONSE DOESN'T START WITH ERROR, IT WAS SUBMITTED SUCCESSFULLY TO AIM
+            if (!msg.startsWith("Error")) {
+                newSubmissionConfirmParam = msg;
+
+                //ATTACH FILES
+                var formData = new FormData();
+                var formDataNew = getFormDataWithAllAttachedFilesNew();
+                var quoteIDs = msg.split("&;&")[0];
+                var submissionHasFile = false;
+
+                //LOOP THROUGH ATTACH BUTTONS TO GATHER FILES IN FORM DATA
+                if (Object.keys(attachedFileMap).length != 0) {
+                    submissionHasFile = true;
+                    formData.append("attachedFileMap", JSON.stringify(attachedFileMap))
+                }
+
+                //IF ATTACHED FILES EXIST, CALL ATTACH CONTROLLER
+                if (submissionHasFile) {
+                    $('.progress-bar').attr('aria-valuenow', "75").animate({
+                        width: "75%"
+                    }, 2000);
+
+                    formData.append('quoteIDs', quoteIDs);
+                    $.ajax({
+                        method: "POST",
+                        url: "/async/attachAndUploadFiles",
+                        data: formData,
+                        cache: false,
+                        contentType: false,
+                        processData: false
+                    }).done(function (msg) {
+                        //console.log("Finished Uploading");
+                        $('.progress-bar').attr('aria-valuenow', "100").css("width", "100%");
+                        $('#progressBarModal').modal('hide');
+
+                        //CLEAR AUTOSAVE INFO
+                        autoSaveMap = {};
+                        Cookies.remove('autosaveData');
+
+                        //REDIRECT TO SAVE SUCCESSFUL PAGE
+                        window.location.href = "./../main/newSubmissionConfirm.gsp?submissionID=" + newSubmissionConfirmParam + "&pdfError=" + indicationPDFError;
+
+                    });
+                }
+                else {
+                    //console.log ("REDIRECTING");
+                    $('.progress-bar').attr('aria-valuenow', "100").animate({
+                        width: "100%"
+                    }, 2000);
+                    $('#progressBarModal').modal('hide');
+
+                    //CLEAR AUTOSAVE INFO
+                    autoSaveMap = {};
+                    Cookies.remove('autosaveData');
+
+                    //REDIRECT TO SAVE SUCCESSFUL PAGE
+                    window.location.href = "./../main/newSubmissionConfirm.gsp?submissionID=" + newSubmissionConfirmParam + "&pdfError=" + indicationPDFError;
+                }
+            }
+            else {
+                $('#progressBarModal').modal('hide');
+                alert(msg)
+            }
+
+
+        });
 }

@@ -84,4 +84,5 @@ public  java.lang.Object bindPrepare() { return null;}
 public  java.lang.Object bindGetPolicyNumbersFromRegister() { return null;}
 public  java.lang.Object bindReviewSubmissionDetails() { return null;}
 public  java.lang.Object bindSubmission() { return null;}
+public  java.lang.Object getVersionsForQuote() { return null;}
 }

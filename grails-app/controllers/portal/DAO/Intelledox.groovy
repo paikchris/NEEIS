@@ -1,5 +1,6 @@
 package portal.DAO
 
+import grails.util.Environment
 import groovy.json.JsonSlurper
 import groovy.sql.Sql
 import sun.misc.BASE64Decoder
@@ -61,6 +62,14 @@ class Intelledox {
             def brokerCompanyLicense = XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyLicense'));
 
 
+            def environment = ""
+            if (Environment.current == Environment.DEVELOPMENT) {
+                environment = "dev";
+            }
+            else if (Environment.current == Environment.PRODUCTION) {
+                environment = "prod";
+            }
+
             def soapXML = """<x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:int="http://services.dpm.com.au/intelledox/">
     <x:Header/>
     <x:Body>
@@ -74,6 +83,7 @@ class Intelledox {
                     <int:Data><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <application>
 \t<basicInfo>
+\t\t<environment>${environment}</environment>
 \t\t<logo>c:\\IntelledoxLogo\\${XmlUtil.escapeXml(jsonSerial.getAt('logoFile'))}</logo>
 \t\t<nameOfInsured>${XmlUtil.escapeXml(jsonSerial.getAt('namedInsured'))}</nameOfInsured>
 \t\t<brokerCompanyName>${brokerCompanyName}</brokerCompanyName>"""
@@ -111,7 +121,7 @@ class Intelledox {
 \t\t<agentEmail>${XmlUtil.escapeXml(jsonSerial.getAt('brokerEmail'))}</agentEmail>
 \t\t<agentPhone>${XmlUtil.escapeXml(jsonSerial.getAt('brokerPhone'))}</agentPhone>
 \t\t<date>${timestamp}</date>
-\t\t<dateStart>${XmlUtil.escapeXml(jsonSerial.getAt('proposedEffective'))}</dateStart>
+\t\t<dateStart>${XmlUtil.escapeXml(jsonSerial.getAt('proposedEffectiveDate'))}</dateStart>
 \t\t<submission>${XmlUtil.escapeXml(jsonSerial.getAt('allQuoteIDs').split(';')[0])}</submission>
 \t\t<underwriter>${XmlUtil.escapeXml(jsonSerial.getAt('accountExecName'))}</underwriter>
 \t\t<underwriterPhone>${XmlUtil.escapeXml(jsonSerial.getAt('underwriterPhone'))}</underwriterPhone>
@@ -122,22 +132,11 @@ class Intelledox {
 \t\t<addressOfInsured>${XmlUtil.escapeXml(jsonSerial.getAt('streetNameMailing'))}</addressOfInsured>
 \t\t<addressCityOfInsured>${XmlUtil.escapeXml(jsonSerial.getAt('cityMailing'))}</addressCityOfInsured>
 \t\t<addressZipOfInsured>${XmlUtil.escapeXml(jsonSerial.getAt('zipCodeMailing'))}</addressZipOfInsured>
-\t\t<riskDescription>${XmlUtil.escapeXml(jsonSerial.getAt("riskCategoryChosen"))}, ${
-                XmlUtil.escapeXml(jsonSerial.getAt("riskTypeChosen"))
+\t\t<riskDescription>${XmlUtil.escapeXml(jsonSerial.getAt("riskCategory"))}, ${
+                XmlUtil.escapeXml(jsonSerial.getAt("riskChosen"))
             }</riskDescription>
 \t\t<locationOfRiskAddress>${XmlUtil.escapeXml(jsonSerial.getAt("filmingLocation"))}</locationOfRiskAddress>
 \t\t<insuranceCoverage>${coverages}</insuranceCoverage>
-\t\t<cbGDY>x</cbGDY>
-\t\t<cbGDN>x</cbGDN>
-\t\t<cbCAARPY>x</cbCAARPY>
-\t\t<cbCAARPN>x</cbCAARPN>
-\t\t<cbCAARPIneligibleY>x</cbCAARPIneligibleY>
-\t\t<cbCAARPIneligibleN>x</cbCAARPIneligibleN>
-\t\t<cbHealthY>x</cbHealthY>
-\t\t<cbHealthN>x</cbHealthN>
-\t\t<RiskPurchasingGroupName></RiskPurchasingGroupName>
-\t\t<RiskPurchasingGroupAddress></RiskPurchasingGroupAddress>
-\t\t<nameOtherAgent></nameOtherAgent>
 \t\t<insuranceCompany>${XmlUtil.escapeXml(jsonSerial.getAt("insuranceCompany"))}</insuranceCompany>
 \t</basicInfo>
 \t
@@ -655,7 +654,13 @@ class Intelledox {
             def brokerCompanyPhone = XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyPhone'));
             def brokerCompanyLicense = XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyLicense'));
 
-
+            def environment = ""
+            if (Environment.current == Environment.DEVELOPMENT) {
+                environment = "dev";
+            }
+            else if (Environment.current == Environment.PRODUCTION) {
+                environment = "prod";
+            }
 
             def soapXML = """<x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:int="http://services.dpm.com.au/intelledox/">
     <x:Header/>
@@ -670,6 +675,7 @@ class Intelledox {
                     <int:Data><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <application>
 \t<basicInfo>
+\t\t<environment>${environment}</environment>
 \t\t<logo>c:\\IntelledoxLogo\\${XmlUtil.escapeXml(jsonSerial.getAt('logoFile'))}</logo>
 \t\t<nameOfInsured>${XmlUtil.escapeXml(jsonSerial.getAt('namedInsured'))}</nameOfInsured>
 \t\t<brokerCompanyName>${XmlUtil.escapeXml(jsonSerial.getAt('brokerCompanyName'))}</brokerCompanyName>"""
@@ -718,22 +724,11 @@ class Intelledox {
 \t\t<addressOfInsured>${XmlUtil.escapeXml(jsonSerial.getAt('streetNameMailing'))}</addressOfInsured>
 \t\t<addressCityOfInsured>${XmlUtil.escapeXml(jsonSerial.getAt('cityMailing'))}</addressCityOfInsured>
 \t\t<addressZipOfInsured>${XmlUtil.escapeXml(jsonSerial.getAt('zipCodeMailing'))}</addressZipOfInsured>
-\t\t<riskDescription>${XmlUtil.escapeXml(jsonSerial.getAt("riskCategoryChosen"))}, ${
-                XmlUtil.escapeXml(jsonSerial.getAt("riskTypeChosen"))
+\t\t<riskDescription>${XmlUtil.escapeXml(jsonSerial.getAt("riskCategory"))}, ${
+                XmlUtil.escapeXml(jsonSerial.getAt("riskChosen"))
             }</riskDescription>
 \t\t<locationOfRiskAddress>${XmlUtil.escapeXml(jsonSerial.getAt("filmingLocation"))}</locationOfRiskAddress>
 \t\t<insuranceCoverage>${coverages}</insuranceCoverage>
-\t\t<cbGDY>cb</cbGDY>
-\t\t<cbGDN>cb</cbGDN>
-\t\t<cbCAARPY>cb</cbCAARPY>
-\t\t<cbCAARPN>cb</cbCAARPN>
-\t\t<cbCAARPIneligibleY>cb</cbCAARPIneligibleY>
-\t\t<cbCAARPIneligibleN>cb</cbCAARPIneligibleN>
-\t\t<cbHealthY>cb</cbHealthY>
-\t\t<cbHealthN>cb</cbHealthN>
-\t\t<RiskPurchasingGroupName></RiskPurchasingGroupName>
-\t\t<RiskPurchasingGroupAddress></RiskPurchasingGroupAddress>
-\t\t<nameOtherAgent></nameOtherAgent>
 \t\t<insuranceCompany>${XmlUtil.escapeXml(jsonSerial.getAt("insuranceCompany"))}</insuranceCompany>
 \t</basicInfo>
 \t
@@ -1110,8 +1105,8 @@ class Intelledox {
 \t<certificate>
 \t\t
 \t\t<date>${params.date}</date>
-\t\t<brokerCompanyName>${params.producer}</brokerCompanyName>
-\t\t<brokerCompanyAddress>${params.producerAddress}</brokerCompanyAddress>
+\t\t<brokerCompanyName>${params.brokerCompanyName}</brokerCompanyName>
+\t\t<brokerCompanyAddress>${params.brokerCompanyAddress + "\n" + params.brokerCompanyCity + "," + params.brokerCompanyState + " " + params.brokerCompanyZip}</brokerCompanyAddress>
 \t\t<insured>${params.insured}</insured>
 \t\t<insuredAddress>${params.insuredAddress}</insuredAddress>
 \t\t<agentName>${params.contactName}</agentName>
@@ -1322,6 +1317,105 @@ class Intelledox {
         return folderPath + "/" + fileName;
     }
 
+    def createSL2FormPDF(jsonSerial, uwQuestionsMap, uwQuestionsOrder, dataSource_aim) {
+        log.info "INTELLEDOX"
+        log.info "JSON ==== " + jsonSerial
+        try {
+            def indicationDateFormat = 'MM/dd/yyyy'
+            def now = new Date()
+            def timeZone = TimeZone.getTimeZone('PST')
+            def timestamp = now.format(indicationDateFormat, timeZone)
+
+            def coverages = "";
+            FileTransferHelper fileHelper = new FileTransferHelper();
+
+            def soapXML = """<x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:int="http://services.dpm.com.au/intelledox/">
+    <x:Header/>
+    <x:Body>
+        <int:GenerateWithData>
+            <int:userName>admin</int:userName>
+            <int:password>admin</int:password>
+            <int:projectGroupGuid>28a2009a-e7ec-49f3-af5f-0d8e1a36fd89</int:projectGroupGuid>
+            <int:providedData>
+                <int:ProvidedData>
+                    <int:DataServiceGuid>a35fe254-6068-45cb-babe-af24d5f8e5c9</int:DataServiceGuid>
+                    <int:Data><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<application>
+\t<basicInfo>
+\t\t<nameOfInsured>${XmlUtil.escapeXml(jsonSerial.getAt("nameOfProductionCompany"))}</nameOfInsured>
+\t\t<addressOfInsured>${XmlUtil.escapeXml(jsonSerial.getAt('streetNameMailing'))}</addressOfInsured>
+\t\t<addressCityOfInsured>${XmlUtil.escapeXml(jsonSerial.getAt('cityMailing'))}</addressCityOfInsured>
+\t\t<addressZipOfInsured>${XmlUtil.escapeXml(jsonSerial.getAt('zipCodeMailing'))}</addressZipOfInsured>
+\t\t<riskDescription>${XmlUtil.escapeXml(jsonSerial.getAt("riskCategory"))}, ${
+                XmlUtil.escapeXml(jsonSerial.getAt("riskChosen"))
+            }</riskDescription>
+\t\t<locationOfRiskAddress>${XmlUtil.escapeXml(jsonSerial.getAt("filmingLocation"))}</locationOfRiskAddress>
+\t\t<insuranceCoverage>${coverages}</insuranceCoverage>
+\t\t<RiskPurchasingGroupName></RiskPurchasingGroupName>
+\t\t<RiskPurchasingGroupAddress></RiskPurchasingGroupAddress>
+\t\t<nameOtherAgent></nameOtherAgent>
+\t\t<date>${timestamp}</date>
+\t\t<dateStart>${XmlUtil.escapeXml(jsonSerial.getAt('proposedEffectiveDate'))}</dateStart>
+\t</basicInfo>
+</application>]]></int:Data>
+                </int:ProvidedData>
+            </int:providedData>
+            <int:options>
+                <int:ReturnDocuments>true</int:ReturnDocuments>
+                <int:RunProviders>1</int:RunProviders>
+                <int:LogGeneration>true</int:LogGeneration>
+            </int:options>
+        </int:GenerateWithData>
+    </x:Body>
+</x:Envelope>"""
+
+            log.info soapXML
+
+            def client = new SOAPClient('http://138.91.159.55/Produce/Service/GenerateDoc.asmx?WSDL')
+            client.authorization = new HTTPBasicAuthorization("admin", "admin")
+            def response = client.send(SOAPAction: 'http://services.dpm.com.au/intelledox/GenerateWithData', soapXML)
+
+            if (response.text.length() > 1500) {
+                log.info response.text.substring(0, 1500);
+            } else {
+                log.info response.text
+            }
+
+            def fileName = "SL2.pdf"
+
+            def a = new XmlSlurper().parseText(response.text)
+            def nodeToSerialize = a."**".find { it.name() == 'BinaryFile' }
+            def pdfBinaryFile = nodeToSerialize.text();
+
+//            throw new IOException()
+            log.info("NEW FOLDER QUOTE = " + jsonSerial.getAt("allQuoteIDs"))
+//        def quoteID = jsonSerial.getAt("allQuoteIDs").split(",")[0].split(";")[0]
+
+            jsonSerial.getAt("allQuoteIDs").split(",").each {
+                def quoteID = it.split(";")[0]
+                def folderPath = org.codehaus.groovy.grails.web.context.ServletContextHolder.getServletContext().getRealPath("/attachments/${quoteID}/")
+                log.info folderPath
+
+                fileHelper.saveBinaryFileToLocalPath(pdfBinaryFile, folderPath, fileName);
+
+                fileHelper.ftpFileToAIM(fileName, folderPath, quoteID, dataSource_aim);
+            }
+
+            return "good"
+        }
+        catch (Exception e) {
+            StringWriter writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(writer);
+            e.printStackTrace(printWriter);
+            printWriter.flush();
+            String stackTrace = writer.toString();
+            log.info("Error Details - " + stackTrace)
+
+            return "SL2 Error"
+        }
+
+
+    }
 
     def createBindingPDF(jsonSerial, uwQuestionsMap, uwQuestionsOrder, dataSource_aim) {
         log.info "INTELLEDOX"
@@ -1640,11 +1734,6 @@ Should you have any questions, please do not hesitate to call.
 \t\t</coverage>
 
 \t\t<coverage coveragePackage="Office Contents ">
-\t\t\t<coverageLimit> \$50,000  </coverageLimit>
-\t\t\t<coverageDeductible> \$1,000 </coverageDeductible>
-\t\t</coverage>
-
-\t\t<coverage coveragePackage="Money &amp; Securities ">
 \t\t\t<coverageLimit> \$50,000  </coverageLimit>
 \t\t\t<coverageDeductible> \$1,000 </coverageDeductible>
 \t\t</coverage>

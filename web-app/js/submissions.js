@@ -5,37 +5,24 @@
 var reviewRiskChosen = "";
 var ratesMapToSave;
 var downloadFrameCount = 0;
+var userRole
+var neeisUWList
 
 $(document).ready(function () {
-    var userRole, neeisUWList;
-    try{
-        userRole = $('#userRole').html().trim();
-    }
-    catch(e){
-        console.log("Could not verify user, continuing as a Broker")
-        userRole = "Broker"
-    }
+    init();
+});
 
-    try{
-        neeisUWList = $('#neeisUWListHidden').html().trim().slice(1, -1).split(",");
-    }
-    catch(e){
-        neeisUWList = []
-    }
+function init(){
+    setUserRole()
+    setNeeisUnderwriterList()
+    initializeSmartWizardReview()
 
+    initializeListeners()
 
+    initializeDatePickers()
+}
 
-    //$('#loadingModal').modal('show');
-    $('#smartwizard').smartWizard({
-        theme: 'arrows',
-        transitionEffect: 'fade', // Effect on navigation, none/slide/fade
-        transitionSpeed: '400',
-        autoAdjustHeight:false,
-        selected: 0
-    });
-
-
-    //alert(userRole);
+function initializeListeners(){
     $("#submissionSearch").on('input', function() {
 
         //$.ajax({
@@ -92,7 +79,7 @@ $(document).ready(function () {
         //        $('#submissionRows').html(htmlString);
         //    });
     });
-    ////////////////////////////////////////
+
     $(document).on('click', '#searchButton', function () {
         window.location.href = "./../main/submissions.gsp?search=true&s=" + encodeURIComponent($("#submissionSearch").val().trim());
     });
@@ -181,224 +168,13 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '.submissionRow', function () {
-        $('.submissionQuickOptions').remove();
-        if($(this).next().hasClass("submissionQuickOptions")){
-            $(this).next().remove();
-        }
-        else{
-            var htmlString ="";
-            var statusCode = $(this).find('.statusCode').html().trim();
-            var aimQuoteID = $(this).find('.aimQuoteIDTD').html().trim();
-            var underwriter = $(this).find('.underwriterTD').html().trim();
-            var broker = $(this).find('.submittedByTD').html().trim();
-            var brokerEmail = $(this).find('.brokerEmail').html().trim();
+        submissionRowClickAction(this)
+    });
 
-            //alert(statusCode);
-            if(userRole === "Broker" ){
+    $(document).on('click', '.createVersionButton', function () {
+        //createNewVersionAction(this);
 
-                htmlString = htmlString + "<tr class='submissionQuickOptions' style='background-color: rgba(90, 153, 183, 0.26)'>" +
-                        "<td class='QOaimQuoteID' style='display:none'>" + aimQuoteID +  "</td>" +
-                        "<td class='QOstatusCode' style='display:none'>" + statusCode +  "</td>" +
-                    "<td class='QOUWAssigned' style='display:none'>" + underwriter +  "</td>" +
-                    "<td colspan='9'>" +
-                    "<div class='col-xs-12' style='text-align:center'>" +
-                    "<button type='button' class='btn btn-sm btn-default submissionOptionButton messageButton'> " +
-                        "<i class='fa fa-envelope-o' aria-hidden='true'></i>" +
-                    "<span>Message Underwriter </span>" +
-                    "<span class='underWriterToMessage' style='display: none;'>" + underwriter
-                    "</span>" +
-                    "</button>";
-
-                if(statusCode === "QO"){
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WRA' " +
-                        "data-nextButtonText='Approval Requested'> " +
-                        "<i class='fa fa-flag' aria-hidden='true'></i>" +
-                        "<span>Request Approval </span>" +
-                        "</button>";
-                }
-                else if(statusCode === "WRA"){
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' disabled> " +
-                        "<i class='fa fa-flag' aria-hidden='true'></i>" +
-                        "<span>Approval Requested </span>" +
-                        "</button>";
-                }
-                else if(statusCode === "WB3"){
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='BRQ'" +
-                        "data-nextButtonText='Bind Request Sent'> " +
-                        "<i class='fa fa-flag' aria-hidden='true'></i>" +
-                        "<span>Request Bind </span>" +
-                        "</button>";
-                }
-                else if(statusCode === "BRQ"){
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' disabled> " +
-                        "<i class='fa fa-flag' aria-hidden='true'></i>" +
-                        "<span>Bind Request Sent </span>" +
-                        "</button>";
-                }
-                else if(statusCode === "BND"){
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton'  disabled> " +
-                        "<i class='fa fa-flag' aria-hidden='true'></i>" +
-                        "<span>Bound</span>" +
-                        "</button>";
-
-                }
-                else if(statusCode === "WB5"){
-
-                }
-                else if(statusCode === "NBR"){
-
-                }
-                if(statusCode === "BND" || statusCode == "BIF"){
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton generateCert' > Certificates </button>";
-                }
-
-                htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton reviewButton' > " +
-                    "<i class='fa fa-pencil-square-o' aria-hidden='true'></i>" +
-                    "Review " +
-                    "</button>";
-
-                htmlString = htmlString + "</div>" +
-                    "</td>" +
-                    "</tr>";
-            }
-            else if(userRole ==="Underwriter"){
-                htmlString = htmlString + "<tr class='submissionQuickOptions' style='background-color: rgba(90, 153, 183, 0.26)'>" +
-                    "<td class='QOaimQuoteID' style='display:none'>" + aimQuoteID +  "</td>" +
-                    "<td class='QOstatusCode' style='display:none'>" + statusCode +  "</td>" +
-                    "<td class='QOUWAssigned' style='display:none'>" + underwriter +  "</td>" +
-                    "<td class='QOSubmittedBy' style='display:none'>" + broker +  "</td>" +
-                    "<td class='QOBrokerEmail' style='display:none'>" + brokerEmail +  "</td>" +
-
-                    "<td colspan='9'>" +
-                    "<div class='col-xs-12' style='text-align:center'>" +
-                    "<button type='button' class='btn btn-sm btn-default submissionOptionButton messageButton'> " +
-                    "<i class='fa fa-envelope-o' aria-hidden='true'></i>" +
-                    "<span>Message Broker </span>" +
-                    "<span class='underWriterToMessage' style='display: none;'>" + underwriter + "</span>" +
-                    "<span class='brokerToMessage' style='display:none'>" + brokerEmail +  "</span>" +
-                    "<span class='brokerName' style='display:none'>" + broker +  "</span>" +
-                "</button>";
-
-                if(statusCode === "QO"){
-                    //htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' > Request Approval </button>";
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WB3' " +
-                        "data-nextButtonText='Approved'> " +
-                        "<i class='fa fa-flag' aria-hidden='true'></i>" +
-                        "<span>Approve </span>" +
-                        "</button>";
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WB5' " +
-                        "data-nextButtonText='Declined'> " +
-                        "<i class='fa fa-ban' aria-hidden='true'></i>" +
-
-                        "Decline" +
-                        " </button>";
-                }
-                else if(statusCode === "WRA"){
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WB3' " +
-                        "data-nextButtonText='Approved'> " +
-                        "<i class='fa fa-flag' aria-hidden='true'></i>" +
-                        "<span>Approve </span>" +
-                        "</button>";
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WB5' " +
-                        "data-nextButtonText='Declined'> " +
-                        "<i class='fa fa-ban' aria-hidden='true'></i>" +
-                        "Decline " +
-                        "</button>";
-                }
-                else if(statusCode === "WB3"){
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='BND' " +
-                        "data-nextButtonText='Bound'> " +
-                        "<i class='fa fa-flag' aria-hidden='true'></i>" +
-                        "<span>Bind </span>" +
-                        "</button>";
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WB5' " +
-                        "data-nextButtonText='Declined'> " +
-                        "<i class='fa fa-ban' aria-hidden='true'></i>" +
-                        "Decline " +
-                        "</button>";
-                }
-                else if(statusCode === "BRQ"){
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='BND'" +
-                        "data-nextButtonText=Bound'> " +
-                        "<i class='fa fa-flag' aria-hidden='true'></i>" +
-                        "<span>Bind </span>" +
-                        "</button>";
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WB5' " +
-                        "data-nextButtonText='Declined'> " +
-                        "<i class='fa fa-ban' aria-hidden='true'></i>" +
-                        "Decline " +
-                        "</button>";
-                }
-                else if(statusCode === "BND"){
-                    // htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton'  disabled> " +
-                    //     "<i class='fa fa-flag' aria-hidden='true'></i>" +
-                    //     "<span>Bound</span>" +
-                    //     "</button>";
-
-                    htmlString = htmlString + "<button class='btn btn-sm btn-primary bibindOptionsndOptionsButton' id='' type='button' style=''>" +
-                        "<i class='fa fa-handshake-o' aria-hidden='true'></i>" +
-                        "<span class='' id='bindOptionsButtonSpan' style='' > Assign Policy Number</span>" +
-                        "</button>";
-
-                }
-                else if(statusCode === "WB5"){
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton'  disabled> " +
-                        "<i class='fa fa-flag' aria-hidden='true'></i>" +
-                        "<span>Declined</span>" +
-                        "</button>";
-
-                }
-                else if(statusCode === "NBR"){
-
-                }
-                if(statusCode === "BND" || statusCode=="BIF"){
-                    htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton generateCert' > Certificates </button>";
-                }
-                htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton reviewButton' > " +
-                    "<i class='fa fa-pencil-square-o' aria-hidden='true'></i>" +
-                    "<span>Review </span>" +
-                    "</button>";
-                htmlString = htmlString +
-                    "<div class='btn-group uwSwitchButtonGroup'>" +
-                        "<button type='button' class='btn btn-sm btn-default dropdown-toggle submissionOptionButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
-                        "<i class='fa fa-user-circle-o' aria-hidden='true'></i>" +
-                    "<span class=''>Switch UW</span>" +
-                    " <span class='caret'></span>" +
-                        "</button>" +
-                        "<ul class='dropdown-menu'>";
-
-                for(var i=0; i<neeisUWList.length;i++){
-                    htmlString = htmlString + "<li><a href='#' class='switchUWOption'>" +
-                        neeisUWList[i] +
-                        "</a></li>";
-                }
-                htmlString = htmlString +
-                        "</ul>" +
-                    "</div>";
-                    
-                    
-                htmlString = htmlString + "</div>" +
-                    "</td>" +
-                    "</tr>";
-            }
-            else{
-                htmlString = htmlString + "<tr class='submissionQuickOptions' style='background-color: rgba(90, 153, 183, 0.26)'>" +
-                    "<td colspan='9'>" +
-                    "<div class='col-xs-12' style='text-align:center'>" +
-                    "<button type='button' class='btn btn-sm btn-default'> Contact Insured </button>" +
-                    "<button type='button' class='btn btn-sm btn-default'> Change Status To </button>" +
-                    "<button type='button' class='btn btn-sm btn-default'>Bind</button>" +
-                    "<button type='button' class='btn btn-sm btn-default'> Request More Info </button>" +
-                    "<button type='button' class='btn btn-sm btn-default'> Approve </button>" +
-                    "</div>" +
-                    "</td>" +
-                    "</tr>";
-            }
-
-            $(this).after(htmlString);
-        }
-
-
+        alert("This Feature is currently under development")
     });
 
 
@@ -579,7 +355,7 @@ $(document).ready(function () {
                     if(policyNumbersJSON[0].length==0){
                         htmlString = htmlString + "<div class='row'>" +
                             "<div class='col-xs-12 '>" +
-                                "<h4 class='' style='color: rgb(185, 0, 0); text-align: center;'>No Policy Numbers Available</h4>" +
+                            "<h4 class='' style='color: rgb(185, 0, 0); text-align: center;'>No Policy Numbers Available</h4>" +
                             "</div>" +
                             "</div>";
                     }
@@ -674,37 +450,37 @@ $(document).ready(function () {
 
 
         /*
-        var dataMap = [];
-        $('#premiumBreakdownOverview .premiumDistRow').each(function(){
+         var dataMap = [];
+         $('#premiumBreakdownOverview .premiumDistRow').each(function(){
 
-            var premiumDistObject = {
-                Description : $(this).find('.coverageNameSpan'),
-                Amount : $(this).find('.premiumAmountSpan'),
-                LineTypeID : "P",
-                TransCd : "NBS"
-            }
-            dataMap.push(premiumDistObject)
-        });
+         var premiumDistObject = {
+         Description : $(this).find('.coverageNameSpan'),
+         Amount : $(this).find('.premiumAmountSpan'),
+         LineTypeID : "P",
+         TransCd : "NBS"
+         }
+         dataMap.push(premiumDistObject)
+         });
 
-        $('#premiumBreakdownOverview .feeDistRow').each(function(){
+         $('#premiumBreakdownOverview .feeDistRow').each(function(){
 
-            var premiumDistObject = {
-                Description : $(this).find('.feeNameSpan'),
-                Amount : $(this).find('.feeAmountSpan'),
-                LineTypeID : "F",
-                TransCd : "FEE"
-            }
-            feeDistString = feeDistString + feeName + "&,&" + feeAmount + "&;&"
-        });
+         var premiumDistObject = {
+         Description : $(this).find('.feeNameSpan'),
+         Amount : $(this).find('.feeAmountSpan'),
+         LineTypeID : "F",
+         TransCd : "FEE"
+         }
+         feeDistString = feeDistString + feeName + "&,&" + feeAmount + "&;&"
+         });
 
-        var taxDistString = "";
-        $('#premiumBreakdownOverview .feeDistRow').each(function(){
-            var taxName = $(this).find('.feeNameSpan');
-            var taxAmount = $(this).find('.feeAmountSpan');
+         var taxDistString = "";
+         $('#premiumBreakdownOverview .feeDistRow').each(function(){
+         var taxName = $(this).find('.feeNameSpan');
+         var taxAmount = $(this).find('.feeAmountSpan');
 
-            taxDistString = taxDistString + taxName + "&,&" + taxAmount + "&;&"
-        });
-        */
+         taxDistString = taxDistString + taxName + "&,&" + taxAmount + "&;&"
+         });
+         */
 
         $.ajax({
             method: "POST",
@@ -1055,7 +831,7 @@ $(document).ready(function () {
 
                         if(limitName){
                             limitDeductString = limitDeductString +
-                                    //"<div class='row'>" +
+                                //"<div class='row'>" +
                                 "<div class='col-xs-3'>" +
                                 "<span>" + limitAmount + "</span>" +
                                 "</div>" +
@@ -1064,7 +840,7 @@ $(document).ready(function () {
                                 "</div>" +
                                 "<div class='col-xs-3'>" +
                                 "<span>" + deductAmount + "</span>" +
-                                    //"</div>" +
+                                //"</div>" +
                                 "</div>";
                         }
 
@@ -1206,7 +982,7 @@ $(document).ready(function () {
 
     $(document).on('click', '#runRatesButton', function () {
 
-       ratePremiums("runRatesButton");
+        ratePremiums("runRatesButton");
     });
 
 
@@ -1225,53 +1001,49 @@ $(document).ready(function () {
     $(document).on('click', '#createCertButton', function () {
         //var currentStatus = $(this).closest('.submissionQuickOptions').find('.QOstatusCode').html().trim();
 
-            var certQuoteID = $('#certificateQuoteID').html();
-            var certRemarks = encodeURI($('#operationTextArea').val());
-            var encodedCertRemarks = $('<div/>').text(certRemarks).html();
+        var certQuoteID = $('#certificateQuoteID').html();
+        var certRemarks = encodeURI($('#operationTextArea').val());
+        var encodedCertRemarks = $('<div/>').text(certRemarks).html();
 
-            var certHolder = encodeURI($('#AITextArea').val());
-            var encodedCertHolder = encodeURI($('<div/>').text(certHolder).html());
+        var certHolder = encodeURI($('#AITextArea').val());
+        var encodedCertHolder = encodeURI($('<div/>').text(certHolder).html());
 
-            var useAcordform = "false"
-            if($('#useAcordForm').is(':checked')){
-                useAcordform = "true";
-            }
-            else{
-                useAcordform = "false";
-            }
+        var useAcordform = "false"
+        if($('#useAcordForm').is(':checked')){
+            useAcordform = "true";
+        }
+        else{
+            useAcordform = "false";
+        }
 
-            console.log(certHolder);
-            $('.progress-bar').attr('aria-valuenow', "0")
-            $('#progressBarHeader_cert').html("Downloading");
-            $('#progressBarModal_cert').modal('show');
-
-
-            // downloadURL('/async/downloadCert?quoteID='+certQuoteID +"&r=" + certRemarks + "&h=" + certHolder + "&ai=" + useAcordform ,
-            //     function() {
-            //         console.log("Cert Download")
-            //     });
+        console.log(certHolder);
+        $('.progress-bar').attr('aria-valuenow', "0")
+        $('#progressBarHeader_cert').html("Downloading");
+        $('#progressBarModal_cert').modal('show');
 
 
-            window.location='/async/downloadCert?quoteID='+certQuoteID +"&r=" + certRemarks + "&h=" + certHolder + "&ai=" + useAcordform ;
+        // downloadURL('/async/downloadCert?quoteID='+certQuoteID +"&r=" + certRemarks + "&h=" + certHolder + "&ai=" + useAcordform ,
+        //     function() {
+        //         console.log("Cert Download")
+        //     });
 
-            $('.progress-bar').attr('aria-valuenow', "75").animate({
-                width: "100%"
-            }, 4000, function() {
-                $('#progressBarModal_cert').modal('hide');
-                $('#progressBarModal_cert').on('hidden.bs.modal', function (e) {
-                    if($('#certsModal').is(':visible')){
-                        console.log('finished animating');
-                        $("body").addClass("modal-open");
-                    }
-                });
+
+        window.location='/async/downloadCert?quoteID='+certQuoteID +"&r=" + certRemarks + "&h=" + certHolder + "&ai=" + useAcordform ;
+
+        $('.progress-bar').attr('aria-valuenow', "75").animate({
+            width: "100%"
+        }, 4000, function() {
+            $('#progressBarModal_cert').modal('hide');
+            $('#progressBarModal_cert').on('hidden.bs.modal', function (e) {
+                if($('#certsModal').is(':visible')){
+                    console.log('finished animating');
+                    $("body").addClass("modal-open");
+                }
             });
+        });
 
 
     });
-
-    function saveByteArray(reportName, byte) {
-
-    };
 
     $(document).on('change', '#userDefined', function () {
         if ($(this).is(":checked")) {
@@ -1334,21 +1106,6 @@ $(document).ready(function () {
                 });
         }
     });
-
-
-
-////////////////////// START REVIEW MODAL FUNCTIONS/////////////////////
-    //DATE PICKER SETUP
-    var date_input=$('.datepicker'); //our date input has the name "date"
-    var container=$('#page-content-wrapper');
-    var options={
-        format: 'mm/dd/yyyy',
-        container: container,
-        todayHighlight: true,
-        orientation: "auto top",
-        autoclose: true,
-    };
-    date_input.datepicker(options);
 
     $('#proposedEffectiveDate, #proposedExpirationDate').change(function(e){
         //alert($('#proposedEffectiveDate').val() + " " + $('#proposedExpirationDate').val());
@@ -1554,115 +1311,451 @@ $(document).ready(function () {
         }
     });
 
-////////////////////// START REVIEW MODAL FUNCTIONS/////////////////////
-});
+    $(document).on('click', '.attachmentsLink', function () {
+        $("#loadingAttachmentsModalSpinner").css("display", "")
+        $("#attachmentRowsContainer").css("display", "none")
 
+        $("#attachmentRowsContainer").html("");
+        $('#attachmentsViewModal').modal('show');
 
-$(document).on('click', '.attachmentsLink', function () {
-    $('#attachmentsViewModal').modal('show');
+        var quoteID = $(this).closest(".submissionRow").find(".aimQuoteIDTD").html().trim();
 
-    var quoteID = $(this).closest(".submissionRow").find(".aimQuoteIDTD").html().trim();
+        $.ajax({
+            method: "POST",
+            url: "/Async/getAttachmentsList",
+            data: {
+                quoteID: quoteID
+            }
+        })
+            .done(function (msg) {
+                //alert(msg);
+                var htmlString = "<span id='quoteIDDownloadSpan' style='display:none'>" + quoteID + "</span>";
 
-    $.ajax({
-        method: "POST",
-        url: "/Async/getAttachmentsList",
-        data: {
-            quoteID: quoteID
-        }
-    })
-        .done(function (msg) {
-            //alert(msg);
-            var htmlString = "<span id='quoteIDDownloadSpan' style='display:none'>" + quoteID + "</span>'";
+                var attachmentArray = msg.split("&;&");
+                attachmentArray.forEach(function(it) {
 
-            var attachmentArray = msg.split("&;&");
-            attachmentArray.forEach(function(it) {
+                    var fileName = it.split("&,&")[0];
+                    var fileSize = it.split("&,&")[1];
+                    if(fileName.trim().startsWith("SL2")){
 
-                var fileName = it.split("&,&")[0];
-                var fileSize = it.split("&,&")[1];
-                if(fileName.trim().length > 0){
-                    var ext = fileName.split('.').pop().toLowerCase();
-
-                    var iconFilePath ="";
-
-                    //alert('Only .zip, .doc, .docx, .xlsx, .xls, .pdf are permitted');
-                    var iconFilePath = "";
-                    if (ext == "zip") {
-                        iconFilePath = "zipIcon.png"
                     }
-                    else if (ext == "doc") {
-                        iconFilePath = "docIcon.png"
-                    }
-                    else if (ext == "docx") {
-                        iconFilePath = "docxIcon.png"
-                    }
-                    else if (ext == "xls") {
-                        iconFilePath = "xlsIcon.png"
-                    }
-                    else if (ext == "xlsx") {
-                        iconFilePath = "xlsxIcon.png"
-                    }
-                    else if (ext == "pdf") {
-                        iconFilePath = "pdfIcon.png"
-                    }
-                    else if (ext == "txt") {
-                        iconFilePath = "txtIcon.png"
-                    }
-                    else {
-                        iconFilePath = "fileIcon.png"
-                    }
+                    else if(fileName.trim().length > 0){
+                        var ext = fileName.split('.').pop().toLowerCase();
 
-                    //$("#" + $(this).attr('id') + 'Span').closest(".fileNameContainer").css("display", "");
-                    //$("#" + $(this).attr('id') + 'Span').html("<img src='/images/" + iconFilePath + "' height='16' width='16' style='margin-right:5px'/>" + name);
+                        var iconFilePath ="";
+
+                        //alert('Only .zip, .doc, .docx, .xlsx, .xls, .pdf are permitted');
+                        var iconFilePath = "";
+                        if (ext == "zip") {
+                            iconFilePath = "zipIcon.png"
+                        }
+                        else if (ext == "doc") {
+                            iconFilePath = "docIcon.png"
+                        }
+                        else if (ext == "docx") {
+                            iconFilePath = "docxIcon.png"
+                        }
+                        else if (ext == "xls") {
+                            iconFilePath = "xlsIcon.png"
+                        }
+                        else if (ext == "xlsx") {
+                            iconFilePath = "xlsxIcon.png"
+                        }
+                        else if (ext == "pdf") {
+                            iconFilePath = "pdfIcon.png"
+                        }
+                        else if (ext == "txt") {
+                            iconFilePath = "txtIcon.png"
+                        }
+                        else {
+                            iconFilePath = "fileIcon.png"
+                        }
+
+                        //$("#" + $(this).attr('id') + 'Span').closest(".fileNameContainer").css("display", "");
+                        //$("#" + $(this).attr('id') + 'Span').html("<img src='/images/" + iconFilePath + "' height='16' width='16' style='margin-right:5px'/>" + name);
 
 
 
-                    htmlString = htmlString +
-                        "<div class='row fileRow' style='margin-top:10px; margin-bottom: 10px;'>" +
-                        "<div class='col-xs-12'>" +
-                        //"<button class='downloadFileButton btn btn-primary col-xs-2' style='margin-right:20px; margin-left:15px;'>" +
-                        "<a href='/async/ajaxDownloadAttachment?q=" + quoteID + "&f=" + fileName+ "'>" +
+                        htmlString = htmlString +
+                            "<div class='row fileRow' style='margin-top:10px; margin-bottom: 10px;'>" +
+                            "<div class='col-xs-12'>" +
+                            //"<button class='downloadFileButton btn btn-primary col-xs-2' style='margin-right:20px; margin-left:15px;'>" +
+                            "<a href='/async/ajaxDownloadAttachment?q=" + quoteID + "&f=" + fileName+ "'>" +
                             "<button class='btn btn-primary col-xs-2' style='margin-right:20px; margin-left:15px;'>Download</button>" +
-                        "</a>" +
-                        "<div class='col-xs-9'>" +
-                        "<img src='/images/" + iconFilePath + "' height='24' width='24' style='margin-right:9px'/>" +
-                        "<span class='fileDescriptionSpan ' style='line-height: 30px;'>" + fileName +"</span>" +
-                        "</div>" +
-                        "</div>" +
-                        "</div>";
-                }
+                            "</a>" +
+                            "<div class='col-xs-9'>" +
+                            "<img src='/images/" + iconFilePath + "' height='24' width='24' style='margin-right:9px'/>" +
+                            "<span class='fileDescriptionSpan ' style='line-height: 30px;'>" + fileName +"</span>" +
+                            "</div>" +
+                            "</div>" +
+                            "</div>";
+                    }
+
+                });
+
+                $("#attachmentRowsContainer").html(htmlString);
+                $("#loadingAttachmentsModalSpinner").css("display", "none")
+                $("#attachmentRowsContainer").css("display", "")
 
             });
 
-            $("#attachmentRowsContainer").html(htmlString);
+
+
+
+
+    });
+
+    $(document).on('click', '.downloadFileButton', function () {
+        //alert("UNDER CONSTRUCTION");
+
+        var quoteID = $("#quoteIDDownloadSpan").html().trim();
+
+        //$.ajax({
+        //    method: "POST",
+        //    url: "/Async/ajaxDownloadAttachment",
+        //    data: {
+        //        quoteID: quoteID
+        //    }
+        //})
+        //    .done(function (msg) {
+        //        console.log(msg)
+        //    });
+
+    });
+}
+
+
+//INIT FUNCTIONS
+function initializeSmartWizardReview(){
+    $('#smartwizard').smartWizard({
+        theme: 'arrows',
+        transitionEffect: 'fade', // Effect on navigation, none/slide/fade
+        transitionSpeed: '400',
+        autoAdjustHeight:false,
+        selected: 0
+    });
+}
+
+function initializeDatePickers(){
+    var date_input = $('.datepicker'); //our date input has the name "date"
+    var container = $('#page-content-wrapper');
+    var options = {
+        assumeNearbyYear: true,
+        autoclose: true,
+        format: 'mm/dd/yyyy',
+        container: container,
+        todayHighlight: true,
+        orientation: "auto bottom",
+        enableOnReadonly: false
+    };
+    date_input.datepicker(options);
+}
+
+function setUserRole(){
+    try{
+        userRole = $('#userRole').html().trim();
+    }
+    catch(e){
+        console.log("Could not verify user, continuing as a Broker")
+        userRole = "Broker"
+    }
+}
+
+function setNeeisUnderwriterList(){
+
+
+    try{
+        neeisUWList = $('#neeisUWListHidden').html().trim().slice(1, -1).split(",");
+    }
+    catch(e){
+        neeisUWList = []
+    }
+}
+
+
+
+//LISTENER ACTION FUNCTIONS
+function submissionRowClickAction(element){
+
+
+    console.log($(element).next())
+
+    if($(element).next().hasClass("submissionQuickOptions")){
+        $(element).next().remove();
+    }
+    else{
+        $('.submissionQuickOptions').remove();
+        var htmlString ="";
+        var statusCode = $(element).find('.statusCode').html().trim();
+        var aimQuoteID = $(element).find('.aimQuoteIDTD').html().trim();
+        var aimVersion = $(element).find('.aimVersionTD').html().trim();
+        var underwriter = $(element).find('.underwriterTD').html().trim();
+        var broker = $(element).find('.submittedByTD').html().trim();
+        var brokerEmail = $(element).find('.brokerEmail').html().trim();
+
+
+        //Check for other Versions
+        //getVersionsOfQuote(aimQuoteID)
+
+        //alert(statusCode);
+        if(userRole === "Broker" ){
+
+            htmlString = htmlString + "<tr class='submissionQuickOptions' style='background-color: rgba(90, 153, 183, 0.26)'>" +
+                "<td class='QOaimQuoteID' style='display:none'>" + aimQuoteID +  "</td>" +
+                "<td class='QOaimVersion' style='display:none'>" + aimVersion +  "</td>" +
+                "<td class='QOstatusCode' style='display:none'>" + statusCode +  "</td>" +
+                "<td class='QOUWAssigned' style='display:none'>" + underwriter +  "</td>" +
+                "<td colspan='9'>" +
+                "<div class='col-xs-12' style='text-align:center'>" +
+
+                //MESSAGING BUTTON
+                // "<button type='button' class='btn btn-sm btn-default submissionOptionButton messageButton' disabled='disabled'> " +
+                //     "<i class='fa fa-envelope-o' aria-hidden='true'></i>" +
+                // "<span>Message Underwriter </span>" +
+                // "<span class='underWriterToMessage' style='display: none;'>" + underwriter
+                // "</span>" +
+                // "</button>" +
+                "";
+
+            //APPROVE/REVIEW/BIND BUTTONS
+            if(statusCode === "QO"){
+                htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WRA' " +
+                    "data-nextButtonText='Approval Requested'> " +
+                    "<i class='fa fa-flag' aria-hidden='true'></i>" +
+                    "<span>Request Approval </span>" +
+                    "</button>";
+            }
+            else if(statusCode === "WRA"){
+                htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' disabled> " +
+                    "<i class='fa fa-flag' aria-hidden='true'></i>" +
+                    "<span>Approval Requested </span>" +
+                    "</button>";
+            }
+            else if(statusCode === "WB3"){
+                htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='BRQ'" +
+                    "data-nextButtonText='Bind Request Sent'> " +
+                    "<i class='fa fa-flag' aria-hidden='true'></i>" +
+                    "<span>Request Bind </span>" +
+                    "</button>";
+            }
+            else if(statusCode === "BRQ"){
+                htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' disabled> " +
+                    "<i class='fa fa-flag' aria-hidden='true'></i>" +
+                    "<span>Bind Request Sent </span>" +
+                    "</button>";
+            }
+            else if(statusCode === "BND"){
+                htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton'  disabled> " +
+                    "<i class='fa fa-flag' aria-hidden='true'></i>" +
+                    "<span>Bound</span>" +
+                    "</button>";
+
+            }
+            else if(statusCode === "WB5"){
+
+            }
+            else if(statusCode === "NBR"){
+
+            }
+
+            //CERTIFICATE BUTTON
+            if(statusCode === "BND" || statusCode == "BIF"){
+                htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton generateCert' > Certificates </button>";
+            }
+
+            //REVIEW PANEL BUTTON
+            htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton reviewButton' > " +
+                "<i class='fa fa-pencil-square-o' aria-hidden='true'></i>" +
+                "Review " +
+                "</button>";
+
+            //CREATE NEW VERSION BUTTON
+            htmlString = htmlString +
+                "<button type='button' class='btn btn-sm btn-default submissionOptionButton createVersionButton' > " +
+                "<i class='fa fa-files-o' aria-hidden='true'></i>" +
+                "<span>Create New Version </span>" +
+                "</button>";
+
+            htmlString = htmlString + "</div>" +
+                "</td>" +
+                "</tr>";
+        }
+        else if(userRole ==="Underwriter"){
+            htmlString = htmlString + "<tr class='submissionQuickOptions' style='background-color: rgba(90, 153, 183, 0.26)'>" +
+                "<td class='QOaimQuoteID' style='display:none'>" + aimQuoteID +  "</td>" +
+                "<td class='QOaimVersion' style='display:none'>" + aimVersion +  "</td>" +
+                "<td class='QOstatusCode' style='display:none'>" + statusCode +  "</td>" +
+                "<td class='QOUWAssigned' style='display:none'>" + underwriter +  "</td>" +
+                "<td class='QOSubmittedBy' style='display:none'>" + broker +  "</td>" +
+                "<td class='QOBrokerEmail' style='display:none'>" + brokerEmail +  "</td>" +
+
+                "<td colspan='9'>" +
+                "<div class='col-xs-12' style='text-align:center'>";
+
+
+            //MESSAGING BUTTON
+            //htmlString = htmlString +
+            // "<button type='button' class='btn btn-sm btn-default submissionOptionButton messageButton' disabled='disabled'> " +
+            // "<i class='fa fa-envelope-o' aria-hidden='true'></i>" +
+            // "<span>Message Broker </span>" +
+            // "<span class='underWriterToMessage' style='display: none;'>" + underwriter + "</span>" +
+            // "<span class='brokerToMessage' style='display:none'>" + brokerEmail +  "</span>" +
+            // "<span class='brokerName' style='display:none'>" + broker +  "</span>" +
+            // "</button>" +
+
+
+            //APPROVE, DECLINE, BIND BUTTONS
+            if(statusCode === "QO"){
+                //htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' > Request Approval </button>";
+                htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WB3' " +
+                    "data-nextButtonText='Approved'> " +
+                    "<i class='fa fa-flag' aria-hidden='true'></i>" +
+                    "<span>Approve </span>" +
+                    "</button>";
+                htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WB5' " +
+                    "data-nextButtonText='Declined'> " +
+                    "<i class='fa fa-ban' aria-hidden='true'></i>" +
+
+                    "Decline" +
+                    " </button>";
+            }
+            else if(statusCode === "WRA"){
+                htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WB3' " +
+                    "data-nextButtonText='Approved'> " +
+                    "<i class='fa fa-flag' aria-hidden='true'></i>" +
+                    "<span>Approve </span>" +
+                    "</button>";
+                htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WB5' " +
+                    "data-nextButtonText='Declined'> " +
+                    "<i class='fa fa-ban' aria-hidden='true'></i>" +
+                    "Decline " +
+                    "</button>";
+            }
+            else if(statusCode === "WB3"){
+                htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='BND' " +
+                    "data-nextButtonText='Bound'> " +
+                    "<i class='fa fa-flag' aria-hidden='true'></i>" +
+                    "<span>Bind </span>" +
+                    "</button>";
+                htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WB5' " +
+                    "data-nextButtonText='Declined'> " +
+                    "<i class='fa fa-ban' aria-hidden='true'></i>" +
+                    "Decline " +
+                    "</button>";
+            }
+            else if(statusCode === "BRQ"){
+                htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='BND'" +
+                    "data-nextButtonText=Bound'> " +
+                    "<i class='fa fa-flag' aria-hidden='true'></i>" +
+                    "<span>Bind </span>" +
+                    "</button>";
+                htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton' data-nextStatus='WB5' " +
+                    "data-nextButtonText='Declined'> " +
+                    "<i class='fa fa-ban' aria-hidden='true'></i>" +
+                    "Decline " +
+                    "</button>";
+            }
+            else if(statusCode === "BND"){
+                // htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton'  disabled> " +
+                //     "<i class='fa fa-flag' aria-hidden='true'></i>" +
+                //     "<span>Bound</span>" +
+                //     "</button>";
+
+                htmlString = htmlString + "<button class='btn btn-sm btn-primary bibindOptionsndOptionsButton' id='' type='button' style=''>" +
+                    "<i class='fa fa-handshake-o' aria-hidden='true'></i>" +
+                    "<span class='' id='bindOptionsButtonSpan' style='' > Assign Policy Number</span>" +
+                    "</button>";
+
+            }
+            else if(statusCode === "WB5"){
+                htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton statusChangeButton'  disabled> " +
+                    "<i class='fa fa-flag' aria-hidden='true'></i>" +
+                    "<span>Declined</span>" +
+                    "</button>";
+
+            }
+            else if(statusCode === "NBR"){
+
+            }
+
+            //CERTIFICATE BUTTON
+            if(statusCode === "BND" || statusCode=="BIF"){
+                htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton generateCert' > Certificates </button>";
+            }
+
+            //REVIEW BUTTON
+            htmlString = htmlString + "<button type='button' class='btn btn-sm btn-default submissionOptionButton reviewButton' > " +
+                "<i class='fa fa-pencil-square-o' aria-hidden='true'></i>" +
+                "<span>Review </span>" +
+                "</button>";
+
+
+            //SWITCH UNDERWRITER BUTTON GROUP
+            htmlString = htmlString +
+                "<div class='btn-group uwSwitchButtonGroup'>" +
+                "<button type='button' class='btn btn-sm btn-default dropdown-toggle submissionOptionButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
+                "<i class='fa fa-user-circle-o' aria-hidden='true'></i>" +
+                "<span class=''>Switch UW</span>" +
+                "<span class='caret'></span>" +
+                "</button>" +
+                "<ul class='dropdown-menu'>";
+
+            for(var i=0; i<neeisUWList.length;i++){
+                htmlString = htmlString +
+                    "<li><a href='#' class='switchUWOption'>" +
+                    neeisUWList[i] +
+                    "</a></li>";
+            }
+            htmlString = htmlString +
+                "</ul>" +
+                "</div>";
+
+
+            //CREATE NEW VERSION BUTTON
+            htmlString = htmlString +
+                "<button type='button' class='btn btn-sm btn-default submissionOptionButton createVersionButton' > " +
+                "<i class='fa fa-files-o' aria-hidden='true'></i>" +
+                "<span>Create New Version </span>" +
+                "</button>";
+
+
+
+            htmlString = htmlString +
+                "</div>" +
+                "</td>" +
+                "</tr>";
+        }
+        else{
+            htmlString = htmlString + "<tr class='submissionQuickOptions' style='background-color: rgba(90, 153, 183, 0.26)'>" +
+                "<td colspan='9'>" +
+                "<div class='col-xs-12' style='text-align:center'>" +
+                "<button type='button' class='btn btn-sm btn-default'> Contact Insured </button>" +
+                "<button type='button' class='btn btn-sm btn-default'> Change Status To </button>" +
+                "<button type='button' class='btn btn-sm btn-default'>Bind</button>" +
+                "<button type='button' class='btn btn-sm btn-default'> Request More Info </button>" +
+                "<button type='button' class='btn btn-sm btn-default'> Approve </button>" +
+                "</div>" +
+                "</td>" +
+                "</tr>";
+        }
+
+        $(element).after(htmlString);
+    }
+}
+
+function getVersionsOfQuote(qID){
+    $.ajax({
+        method: "POST",
+        url: "/Async/getVersionsForQuote",
+        data: {
+            quoteID: qID
+        }
+    })
+        .done(function (msg) {
+            alert(msg)
 
         });
-
-
-
-
-
-});
-
-$(document).on('click', '.downloadFileButton', function () {
-    //alert("UNDER CONSTRUCTION");
-
-    var quoteID = $("#quoteIDDownloadSpan").html().trim();
-
-    //$.ajax({
-    //    method: "POST",
-    //    url: "/Async/ajaxDownloadAttachment",
-    //    data: {
-    //        quoteID: quoteID
-    //    }
-    //})
-    //    .done(function (msg) {
-    //        console.log(msg)
-    //    });
-
-});
-
-
-
+}
 
 function changeSubmissionStatus(submissionID, statusCode){
     $.ajax({
@@ -1687,6 +1780,7 @@ function base64ToArrayBuffer(base64) {
     }
     return bytes;
 }
+
 function clearProductChoices(){
 
     $('.EPKGDiv').css("display", "");
@@ -1704,99 +1798,6 @@ function clearProductChoices(){
     $('#SPECIFICOptions').css("display", "none");
 }
 
-// function loadSaveFunction(loadMap){
-//     var value;
-//
-//     $('a').each(function (){
-//         if( $(this).html() ===  loadMap['riskChosen']){
-//
-//             //alert("click " + $(this).html())
-//             var domObject = $(this);
-//             //console.log($(domObject).html())
-//             $(domObject).trigger('click');
-//         }
-//     });
-//
-//     if(loadMap['proposedEffectiveDate'].length > 0){
-//         $('#proposedEffectiveDate').val(loadMap['proposedEffectiveDate']);
-//         $("#proposedEffectiveDate").trigger("change");
-//     }
-//     if(loadMap['proposedExpirationDate'].length > 0){
-//         $('#proposedExpirationDate').val(loadMap['proposedExpirationDate']);
-//         $("#proposedExpirationDate").trigger("change");
-//     }
-//     if(loadMap['proposedTermLength'].length > 0){
-//         $('#proposedTermLength').val(loadMap['proposedTermLength']);
-//         //$("#proposedTermLength").trigger("change");
-//     }
-//     if(loadMap['totalBudgetConfirm'].length > 0){
-//         $('#totalBudgetConfirm').val(loadMap['totalBudgetConfirm']);
-//         $("#totalBudgetConfirm").trigger("change");
-//
-//     }
-//
-//     getProductsForRisk();
-//     setTimeout(function() {
-//
-//         //console.log("wait")
-//         Object.keys(loadMap).forEach(function(key) {
-//
-//             value = loadMap[key];
-//             //console.log("COOKIE VALUE = " + key + "-" + value);
-//             var domObject = $('#' + key);
-//             if ($(domObject).css("display") != "none") {
-//                 $(domObject).css('display', '');
-//             }
-//
-//             if ($(domObject).is("select")) {
-//                 $(domObject).val(value);
-//                 //console.log("SELECT TYPE = " + domObject);
-//                 $(domObject).trigger("change");
-//             }
-//             else if ($(domObject).is(':checkbox')) {
-//                 //console.log("CHECKBOX TYPE = " + domObject);
-//                 if(value === true) {
-//                     $(domObject).prop("checked", true);
-//
-//                 }
-//                 else {
-//                     $(domObject).prop("checked", false);
-//                 }
-//                 $(domObject).trigger("change");
-//
-//             }
-//             else if ($(domObject).is(':radio')) {
-//                 //console.log("RADIO TYPE = " + domObject);
-//                 if(value === true) {
-//                     $(domObject).prop("checked", true);
-//                 }
-//                 else {
-//                     //$(domObject).prop("checked", false);
-//                 }
-//                 $(domObject).trigger("change");
-//
-//             }
-//             else{
-//                 //console.log("ELSE TYPE = " + domObject);
-//                 $(domObject).val(value);
-//                 $(domObject).trigger("change");
-//
-//             }
-//
-//         });
-//
-//         if(loadMap['proposedEffectiveDate'].length == 0){
-//             $('#proposedEffectiveDate').val("");
-//             //$("#proposedEffectiveDate").trigger("change");
-//         }
-//         if(loadMap['proposedExpirationDate'].length == 0){
-//             $('#proposedExpirationDate').val("");
-//             //$("#proposedExpirationDate").trigger("change");
-//         }
-//
-//     },2000);
-//
-// }
 
 function getProductsForRisk(){
     riskChosen = reviewRiskChosen
@@ -2108,3 +2109,17 @@ function getTaxInfo(){
 
         });
 }
+
+function createNewVersionAction(elem){
+    //Should redirect to the new submission page to create a new version.
+    //Needs all info to be prefilled on the page
+    var thisQuoteID = $(elem).closest('.submissionQuickOptions').find('.QOaimQuoteID').html().trim();
+    var thisVersionLetter = $(elem).closest('.submissionQuickOptions').find('.QOaimVersion').html().trim();
+
+    //REDIRECT TO SAVE SUCCESSFUL PAGE
+    window.location.href = "./../main/newSubmission.gsp?quoteID=" + thisQuoteID + "&version=NV" + "&editingVersion=" + thisVersionLetter;
+}
+
+function saveByteArray(reportName, byte) {
+
+};

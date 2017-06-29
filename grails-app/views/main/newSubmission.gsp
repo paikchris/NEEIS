@@ -5,6 +5,12 @@
     <meta name="layout" content="main">
     <link rel="stylesheet" href="${resource(dir: 'css', file: 'newSubmission.css')}" type="text/css">
 
+    <script>
+        versionMode = false;
+        <g:if test="${versionMode == true}">
+            versionMode= true;
+        </g:if>
+    </script>
     <script src="${resource(dir: 'js', file: "/newSubmissionUtils/progressSaveLoad.js?ts=" + new Date().getTime())}" async></script>
     <script src="${resource(dir: 'js', file: "/newSubmissionUtils/formValidation.js?ts=" + new Date().getTime())}" async></script>
     <script src="${resource(dir: 'js', file: "/newSubmissionUtils/dateHelper.js?ts=" + new Date().getTime())}" async></script>
@@ -13,8 +19,9 @@
     <script src="${resource(dir: 'js', file: "/newSubmissionUtils/AIMHelper.js?ts=" + new Date().getTime())}" async></script>
     <script src="${resource(dir: 'js', file: "/utils/stringUtils.js?ts=" + new Date().getTime())}" async></script>
     <script src="${resource(dir: 'js', file: "/utils/fileHelper.js?ts=" + new Date().getTime())}" async></script>
-    <script src="${resource(dir: 'js', file: "newSubmission.js?ts=" + new Date().getTime())}" async></script>
     <script src="${resource(dir: 'js', file: 'jquery.maskMoney.min.js')}" async></script>
+    <script src="${resource(dir: 'js', file: "newSubmission.js?ts=" + new Date().getTime())}" async></script>
+
 
     <g:if test="${user.admin == "true"}">
         <script src="${resource(dir: 'js/utils/', file: 'randomGenerator.js')}" ></script>
@@ -28,8 +35,10 @@
 
 
 
+
+
 </head>
-<body>
+<body onLoad="loadJS()">
 <div id="riskMap" style="display: none;">
     <g:each status="i" var="r" in="${riskTypes}">
         ${r.riskTypeName}:${r.riskTypeCategory};&;
@@ -76,7 +85,12 @@
             </g:if>
         </div>
         <div class="col-xs-10">
-            <h1>New Policy</h1>
+            <g:if test="${versionMode == false}">
+                <h1>New Policy</h1>
+            </g:if>
+            <g:elseif test="${versionMode == true}">
+                <h1>New Version</h1>
+            </g:elseif>
             <h4 style="text-align: center; margin-bottom:4px;" id="riskCategoryHeader"></h4>
             <h5 style="text-align: center; margin-top: 0px; margin-bottom:0px;" id="riskTypeHeader"></h5>
         </div>
@@ -194,10 +208,10 @@
                             <div class="col-xs-4">
                                 <ul class="nav nav-pills nav-stacked">
                                     <li role="presentation" class="inactive">
-                                        <a href="" class="riskOptionLink riskOptionDropDown">
+                                        <a href="" class="riskOptionLink riskOptionDropDown" id="specialEventSpecialEvent">
                                             <div class="row" style="margin:0px">Special Event</div>
                                             <div class="row" style="margin:0px">
-                                                <select class='riskTypeDropdown ' style="display:none; color:#337ab7; padding-left:20px;width: 100%;margin-top: 10px;
+                                                <select class='riskTypeDropdown' id="specialEventDropdown" style="display:none; color:#337ab7; padding-left:20px;width: 100%;margin-top: 10px;
                                                 margin-bottom: 10px;font-size: 25px;">
                                                     <option value="invalid" selected>Select One</option>
                                                     <option value="Amateur Rodeo and Roping Events">Amateur Rodeo and Roping Events</option>
@@ -981,14 +995,14 @@
                                             <label class="control-label">Proposed Effective Date</label>
                                             <input class="form-control" type="text" placeholder = "Hidden Text Field To Adjust Focus off Date" name="hiddenField" style="display: none;"/>
                                             <input class="form-control datepicker" id="proposedEffectiveDate" name="proposedEffectiveDate" placeholder="MM/DD/YYY" type="text"
-                                                   data-object="submission" data-key="proposedEffectiveDate" required/>
+                                                   data-object="submission" data-key="proposedEffectiveDate"  required/>
                                         </div>
                                     </div>
                                     <div class="col-xs-3">
                                         <div class="form-group"> <!-- Date input -->
                                             <label class="control-label">Proposed Expiration Date</label>
                                             <input class="form-control datepicker" id="proposedExpirationDate" name="proposedExpirationDate" placeholder="MM/DD/YYY" type="text"
-                                                   data-object="submission" data-key="proposedExpirationDate" required/>
+                                                   data-object="submission" data-key="proposedExpirationDate"  required/>
                                         </div>
                                     </div>
                                     <div class="col-xs-3">
@@ -2019,5 +2033,6 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div>
+
 </body>
 </html>

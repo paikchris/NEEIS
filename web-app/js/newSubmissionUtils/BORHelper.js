@@ -51,26 +51,25 @@ function initializeBORFunctions(){
 
       });
 
-    //RENEWAL BUTTONS
-    $("#yesRenewalButton").on("click", function() {
+      //RENEWAL BUTTONS
+      $("#yesRenewalButton").on("click", function() {
         $('#renewalModal').modal('hide');
         markNamedInsuredInputAsRenewal();
         markSubmissionAsRenewalRequested()
 
         namedInsuredConflict = false;
     });
-    $("#noRenewalButton").on("click", function() {
+      $("#noRenewalButton").on("click", function() {
         $('#renewalModal').modal('hide');
         $("#checkNamedInsuredModal").modal('show');
     });
 
-    //BOR BUTTONS
-    $("#requestBORButton").on("click", function() {
+      //BOR BUTTONS
+      $("#requestBORButton").on("click", function() {
         $('#checkNamedInsuredModal').modal('hide');
         markSubmissionAsBORRequested();
         namedInsuredConflict = false;
     });
-
 }
 
 function checkNamedInsured(){
@@ -269,6 +268,7 @@ function markNamedInsuredInputReset(){
 
     $("#namedInsured").siblings(".glyphicon").css("display", "none");
     $("#namedInsured").siblings(".namedInsuredIcon").css("display", "none");
+    $('#checkNameSpinner').css("display", "none");
 
 }
 

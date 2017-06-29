@@ -180,6 +180,7 @@
                                     <td class="statusCode" style="display:none">
                                         ${s.statusCode}
                                     </td>
+                                    <td class="aimVersionTD" style="display:none">${s.aimVersion}</td>
                                 </tr>
                             </div>
                         </g:each>
@@ -199,14 +200,12 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title">Attachments</h4>
             </div>
-            <div class="modal-body" id="attachmentRowsContainer">
-                <div class="row fileRow" style="margin-top:10px; margin-bottom: 10px;">
-                    <div class="col-xs-12">
-                        <button class="downloadFileButton btn btn-primary " style="margin-right:20px; margin-left:15px;">Download</button>
-                        <img src='/images/pdfIcon.png' height='16' width='16' style='margin-right:5px'/>
-                        <span class="fileDescriptionSpan " style="line-height: 30px;">Indication.pdf</span>
-                    </div>
-                </div>
+            <div class="modal-body" id="attachmentRowsContainer" style="display: none; min-height:100px;">
+
+            </div>
+            <div class="modal-body" id="loadingAttachmentsModalSpinner" style="display: ; min-height: 100px; text-align:center;">
+                <i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color: rgba(71, 130, 194, 0.85); margin-top:10px;"></i>
+                <span class="sr-only">Loading...</span>
             </div>
             <div class="modal-footer">
                 %{--<g:link controller="Async" action="ajaxDownloadAttachment" >--}%

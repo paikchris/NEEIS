@@ -626,8 +626,8 @@ class AIMSQL {
         aimsql.commit();
 
 
-        dataMap['dateAdded'] = map.DateAdded;
-        dataMap['quoteID'] = quotemap.QuoteID;
+        dataMap['dateAdded'] = insuredMap.DateAdded;
+        dataMap['quoteID'] = quoteMap.QuoteID;
         dataMap['insuranceCompany'] = companyMap.companyName;
         dataMap['insuranceCompanyPhone'] = companyMap.companyPhone;
         dataMap['brokerEmail'] = user.email
@@ -1348,8 +1348,8 @@ class AIMSQL {
         testjson['allQuoteIDs'] = allQuoteIDs;
         log.info("BEFORE SENDING TO INTELLEDOX = "+  testjson['allQuoteIDs'])
         def indicationStatus = intelledoxController.createIndicationPDF(testjson, uwQuestionsMap, uwQuestionsOrder, dataSource_aim)
-
-        return allQuoteIDs + "&;&" + indicationStatus
+        def SL2FormStatus = intelledoxController.createSL2FormPDF(testjson, uwQuestionsMap, uwQuestionsOrder, dataSource_aim)
+        return allQuoteIDs + "&;&" + indicationStatus + SL2FormStatus
     }
 
     def updateSubmissionActivity(quoteID, description, statusCode, typeID, quoteVersion, dataSource_aim){
@@ -3816,7 +3816,7 @@ class AIMSQL {
         aimsql.eachRow("SELECT     * \n" +
                 "FROM         $table \n" +
                 "WHERE     $where") {
-
+            rowMap = [:]
             meta = it.getMetaData();
             def colDataType;
             it.toRowResult().eachWithIndex { rowItem, index ->
@@ -3838,11 +3838,11 @@ class AIMSQL {
                 }
                 else if(colDataType.equalsIgnoreCase("datetime")){
                     def d = "$rowItem.value"
-                    log.info colDataType
+//                    log.info colDataType
                     "$rowItem.value"
 
                     def string
-                    log.info d.split(" ").size()
+//                    log.info d.split(" ").size()
                     if(rowItem.value == null){
                         string = ""
                     }
@@ -3857,23 +3857,16 @@ class AIMSQL {
                 }
 
                 else{
-                    log.info colDataType
+//                    log.info colDataType
                     rowMap[rowItem.key] = rowItem.value;
                 }
 
             }
-            rows.add(rowMap)
+            log.info "PUSHING: " + rowMap
+            rows << rowMap
+            log.info "AFTER PUSH: " + rows
         }
 
-        //PRINT IN JSON FORMAT
-        //log.info JsonOutput.prettyPrint((JsonOutput.toJson(rows)));
-
-        //PRINT EACH ROW IN NEW LINE
-        /*
-        rows.each{
-            log.info it
-        }
-         */
 
         return rows
     }

@@ -19,6 +19,10 @@ class MainController {
         def test = ac.check()
     }
 
+    def TestApp(){
+        [user: session.user]
+    }
+
     def SpecRunner(){
         [user: session.user]
     }
@@ -213,12 +217,37 @@ class MainController {
             riskCompanyList = riskCompanyList + it.CompanyID + "," + it.Name + "," + it.DefaultRiskCompanyID + ";"
         }
 
+        def versionMode = false;
+        def versionLetter = "A"
+        def editingVersion;
+        def allVersions = [];
+        def questionAnswerMap;
+        if(params.version == "NV"){
+            versionMode=true;
+
+            allVersions = Submissions.findAllWhere(aimQuoteID: "" + params.quoteID);
+            log.info "ALL VERSIONS: " + allVersions
+            if(allVersions.size() > 0){
+                allVersions = allVersions.sort{it.aimVersion}
+
+                allVersions.last().aimVersion
+                String value = allVersions.last().aimVersion
+                int charValue = value.charAt(0);
+                versionLetter = String.valueOf( (char) (charValue + 1));
+                log.info versionLetter
+            }
+//            quotingVersionMap = [
+//
+//            ]
+        }
+
 
 
 
         [user: session.user, riskCategories:riskCategories, riskTypes:riskTypes, coverages:coverages, marketCompanyList: marketCompanyList
          , riskCompanyList:riskCompanyList, ancillaryRiskTypes: ancillaryRiskTypes, venueRiskTypes:venueRiskTypes, filmRiskTypes:filmRiskTypes, entertainerRiskTypes:entertainerRiskTypes,
-        officeRiskTypes:officeRiskTypes, specialeventRiskTypes:specialeventRiskTypes, shellcorpRiskTypes:shellcorpRiskTypes]
+        officeRiskTypes:officeRiskTypes, specialeventRiskTypes:specialeventRiskTypes, shellcorpRiskTypes:shellcorpRiskTypes, versionMode:versionMode,
+         versionLetter:versionLetter, questionAnswerMap:questionAnswerMap]
     }
 
 

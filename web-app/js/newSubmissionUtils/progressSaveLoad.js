@@ -2,48 +2,71 @@ var lastSaveTime
 
 
 //CHECK IF SAVED SUBMISSIONS AVAILABLE, AND SHOW LOAD BUTTON IF EXISTS
-function showLoadButtonIfSavedSubmissionsExist(){
-    var savedSubmissions = Object.keys(Cookies.get()).filter(function(name) {
-        return name.indexOf("saveData_") > -1;
-    });
-    // console.log(savedSubmissions.length + " Saved Submissions");
-    if (savedSubmissions.length > 0) {
-        $('#loadProgress').css('display', '');
-    }
-    else {
-        $('#loadProgress').css('display', 'none');
-    }
+//In Testing mode use parameter to set message manually
+function checkForSavedSubmissions(testOptionMsg){
+    // var savedSubmissions = Object.keys(Cookies.get()).filter(function(name) {
+    //     return name.indexOf("saveData_") > -1;
+    // });
+    // // console.log(savedSubmissions.length + " Saved Submissions");
+    // if (savedSubmissions.length > 0) {
+    //     $('#loadProgress').css('display', '');
+    // }
+    // else {
+    //     $('#loadProgress').css('display', 'none');
+    // }
 
-    $.ajax({
-        method: "POST",
-        url: "/Async/getSavedSubmissions",
-        data: {
+    if(testOptionMsg !== undefined){
+        checkSavedSubmissionAJAXResponse(testOptionMsg)
+    }
+    else{
+        $.ajax({
+            method: "POST",
+            url: "/Async/getSavedSubmissions",
+            data: {
+            }
+        })
+            .done(function(msg) {
+                checkSavedSubmissionAJAXResponse(msg)
+            });
+    }
+}
+
+function checkSavedSubmissionAJAXResponse(msg){
+    // console.log("checking message")
+    // console.log(msg)
+    try{
+        var savedSubmissionsObjectArray = JSON.parse(msg)
+
+        //CHECK THE LIST COMING BACK FROM DATABASE WITH ITEMS IN LOCAL STORAGE AND COOKIES
+        //If it exists in the database list, delete from local and cookies
+        checkAndClearLocalStorage(savedSubmissionsObjectArray)
+        // console.log(savedSubmissionsObjectArray.length)
+        if(savedSubmissionsObjectArray.length == 0 ){
+            $('#previousSubmissionExistsAlert').css('display', 'none');
+            $('#loadProgress').css('display', 'none');
         }
-    })
-        .done(function(msg) {
-            console.log(JSON.parse(msg))
-            var savedSubmissionsObjectArray = JSON.parse(msg)
-
-            //CHECK THE LIST COMING BACK FROM DATABASE WITH ITEMS IN LOCAL STORAGE AND COOKIES
-            //If it exists in the database list, delete from local and cookies
-            checkAndClearLocalStorage(savedSubmissionsObjectArray)
-
+        else{
             for(var i=0; i< savedSubmissionsObjectArray.length; i++){
-                console.log(savedSubmissionsObjectArray[i])
-                console.log(savedSubmissionsObjectArray[i].autosaveFlag)
+                // console.log(savedSubmissionsObjectArray[i])
+                // console.log(savedSubmissionsObjectArray[i].autosaveFlag)
                 if(savedSubmissionsObjectArray[i].autosaveFlag === "Y"){
                     //SHOW CONTINUE PREVIOUS SUBMISSION?
-                    console.log("ASK to continue")
 
                     $('#previousSubmissionExistsAlert').css('display', '');
                     $('#loadProgress').css('display', '');
                 }
             }
-        });
+        }
+
+    }
+    catch(e){
+        console.log(e)
+        console.log(msg)
+    }
 }
 
 function checkAndClearLocalStorage(dbObjectArray){
-    console.log("CLEARING LOCAL")
+    // console.log("CLEARING LOCAL")
     try{
         for(var i=0; i<dbObjectArray.length; i++){
             //CHECK IF DB SAVED ITEM EXISTS IN LOCAL ITEMS
@@ -58,7 +81,7 @@ function checkAndClearLocalStorage(dbObjectArray){
         //UPLOAD REMAINING
         for(var i=0; i<localStorage.length; i++){
             var lsKey = localStorage.key(i)
-            console.log(localStorage.getItem(lsKey))
+            // console.log(localStorage.getItem(lsKey))
             var savedMap = JSON.parse(localStorage.getItem(lsKey))
             var isAutoSave = savedMap["isAutoSave"]
             var savedName = savedMap["saveName"]
@@ -79,7 +102,7 @@ function checkAndClearLocalStorage(dbObjectArray){
                 });
         }
 
-        console.log("CLEARING COOKIES")
+        // console.log("CLEARING COOKIES")
         for(var i=0; i<dbObjectArray.length; i++){
             //CHECK IF DB SAVED ITEM EXISTS IN LOCAL ITEMS
             if (Cookies.get(dbObjectArray[i].saveName) === undefined) { //IF IT DOESN'T EXIST, KEEP TO UPLOAD AT END
@@ -95,9 +118,9 @@ function checkAndClearLocalStorage(dbObjectArray){
             return name.indexOf("saveData_") > -1;
         });
         cookieSaves.forEach(function(name, i) {
-            console.log(i);
+            // console.log(i);
             var cookieKey = name
-            console.log(Cookies.get(cookieKey))
+            // console.log(Cookies.get(cookieKey))
             var savedMap = JSON.parse(Cookies.get(cookieKey))
             var isAutoSave = savedMap["isAutoSave"]
             var savedName = savedMap["saveName"]
@@ -141,15 +164,26 @@ function setIntervalToAutoSave(seconds){
 
 //SET SUBMISSION TO AUTOSAVE ON QUIT IF TRUE
 function setSubmissionToAutoSaveOnQuit(saveOnQuit){
+
     if(saveOnQuit){
-        $(window).on('beforeunload', function() {
-            if ($("li.active").children("a.riskOptionLink").html().trim().length > 0 &&
-                ($('#proposedEffectiveDate').val().length > 0 || $('#proposedExpirationDate').val().length > 0 || $('#totalBudgetConfirm').val().length > 1)) {
-                autoSaveFunction();
-            }
-        });
+        window.onbeforeunload = function () {
+            $(window).scrollTop(0);
+            saveOnQuit();
+
+        }
     }
 
+}
+
+function saveOnQuit(){
+    var saveDisabled = checkIfRecentlySaved();
+
+    //ONLY SAVE IF ALL NECESSARY FIRST FIELDS ARE FILLED OUT
+    if ($("li.active").length > 0 &&
+        ($('#proposedEffectiveDate').val().length > 0 || $('#proposedExpirationDate').val().length > 0 || $('#totalBudgetConfirm').val().length > 1) &&
+        saveDisabled == false) {
+        saveProgress("autosave")
+    }
 }
 
 function initializeSubmissionSaveAndLoadButtons(){
@@ -206,7 +240,7 @@ function fillLoadModal(){
         }
     })
         .done(function(msg) {
-            console.log(JSON.parse(msg))
+            // console.log(JSON.parse(msg))
             var savedSubmissionsObjectArray = JSON.parse(msg)
 
             for(var i=0; i < savedSubmissionsObjectArray.length; i++){
@@ -223,7 +257,7 @@ function fillLoadModal(){
                     var nameOfInsured = savedSubmissionsObjectArray[i].saveName.split("saveData_")[2]
                     var timeOfSave = savedSubmissionsObjectArray[i].saveName.split("saveData_")[3]
                     var autoSaveText = ""
-                    console.log(savedSubmissionsObjectArray[i].isAutoSave)
+                    // console.log(savedSubmissionsObjectArray[i].isAutoSave)
                     if(savedSubmissionsObjectArray[i].autosaveFlag === "Y"){
                         autoSaveText = " (Autosaved)"
                     }
@@ -251,10 +285,10 @@ function fillLoadModal(){
             var savedSubmissions = Object.keys(Cookies.get()).filter(function(name) {
                 return name.indexOf("saveData_") > -1;
             });
-            console.log(savedSubmissions)
+            // console.log(savedSubmissions)
 
             savedSubmissions.forEach(function(name, i) {
-                console.log(i);
+                // console.log(i);
                 if (true) {
                     // savedSubmissionHtmlString = savedSubmissionHtmlString +
                     //     " <a href='#' class='list-group-item' style='font-weight: 500'>" +
@@ -340,6 +374,27 @@ function fillLoadModal(){
 
 }
 
+//CHECK IF RECENTLY SAVED, IF TOO RECENT RETURNS SAVE DISABLED
+function checkIfRecentlySaved(){
+    var saveDisabled = false;
+
+    //check last save time. If last save time was 0 minutes ago don't Save again.
+    if (lastSaveTime != undefined) {
+        var diff = Math.abs(lastSaveTime - new Date());
+        var minutes = Math.floor((diff / 1000) / 60);
+        if (minutes == 0) {
+            saveDisabled = true
+        }
+        else {
+            saveDisabled = false
+        }
+    }
+    else {
+        saveDisabled = false
+    }
+
+    return saveDisabled
+}
 
 function loadSaveFunction(loadMap) {
     loadingSaveInProgress = true;
@@ -426,12 +481,12 @@ function loadSaveFunction(loadMap) {
 
 
     setTimeout(function() {
-        console.log("spec films loaded: " + specFilmsScriptLoaded)
+        // console.log("spec films loaded: " + specFilmsScriptLoaded)
         Object.keys(loadMap).forEach(function(key) {
 
             value = loadMap[key];
             var domObject = $('#' + key);
-            console.log($(domObject).attr('id') + " == " + $(domObject).val())
+            // console.log($(domObject).attr('id') + " == " + $(domObject).val())
             if ($(domObject).css("display") != "none") {
                 $(domObject).css('display', '');
             }

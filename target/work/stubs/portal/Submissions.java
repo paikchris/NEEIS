@@ -20,6 +20,8 @@ public  java.lang.String getAimQuoteID() { return (java.lang.String)null;}
 public  void setAimQuoteID(java.lang.String value) { }
 public  java.lang.String getSubmittedBy() { return (java.lang.String)null;}
 public  void setSubmittedBy(java.lang.String value) { }
+public  java.lang.String getAimVersion() { return (java.lang.String)null;}
+public  void setAimVersion(java.lang.String value) { }
 public  java.lang.String getNamedInsured() { return (java.lang.String)null;}
 public  void setNamedInsured(java.lang.String value) { }
 public  java.lang.String getSubmitDate() { return (java.lang.String)null;}

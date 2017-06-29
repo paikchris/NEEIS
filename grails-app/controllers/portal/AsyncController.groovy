@@ -154,82 +154,6 @@ class AsyncController {
                                     renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
                                 }
                             }
-
-
-
-                            /*
-                            if (params.totalGrossBudget.toFloat() <= 500000) {
-                                aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                        "FROM lkpProduct with (NOLOCK) " +
-                                        "WHERE (ProductID = 'PIP CHOI') AND (ActiveFlag = 'Y')") {
-                                    renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
-                                }
-                                aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                        "FROM lkpProduct with (NOLOCK) " +
-                                        "WHERE (ProductID = 'PIP 2') AND (ActiveFlag = 'Y')") {
-                                    renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
-                                }
-                                if (params.totalGrossBudget.toFloat() <= 100000) {
-                                    aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                            "FROM lkpProduct with (NOLOCK) " +
-                                            "WHERE (ProductID = 'PIP 1') AND (ActiveFlag = 'Y')") {
-                                        renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
-                                    }
-                                }
-                                if ((params.totalGrossBudget.toFloat() >= 1 && params.totalGrossBudget.toFloat() < 300000)) {
-                                    aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                            "FROM lkpProduct with (NOLOCK) " +
-                                            "WHERE (ProductID = 'PIP 3') AND (ActiveFlag = 'Y')") {
-                                        renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
-                                    }
-                                }
-                                if ((params.totalGrossBudget.toFloat() >= 300000 && params.totalGrossBudget.toFloat() <= 400000)) {
-                                    aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                            "FROM lkpProduct with (NOLOCK) " +
-                                            "WHERE (ProductID = 'PIP 3') AND (ActiveFlag = 'Y')") {
-                                        renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
-                                    }
-                                    aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                            "FROM lkpProduct with (NOLOCK) " +
-                                            "WHERE (ProductID = 'PIP 4') AND (ActiveFlag = 'Y')") {
-                                        renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
-                                    }
-                                    aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                            "FROM lkpProduct with (NOLOCK) " +
-                                            "WHERE (ProductID = 'PIP 5') AND (ActiveFlag = 'Y')") {
-                                        renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
-                                    }
-                                }
-                                if ((params.totalGrossBudget.toFloat() > 400000 && params.totalGrossBudget.toFloat() <= 500000)) {
-                                    aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                            "FROM lkpProduct with (NOLOCK) " +
-                                            "WHERE (ProductID = 'PIP 5') AND (ActiveFlag = 'Y')") {
-                                        renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
-                                    }
-                                }
-                            }
-                            else if (params.totalGrossBudget.toFloat() > 500000) {
-                                aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                        "FROM lkpProduct with (NOLOCK) " +
-                                        "WHERE (ProductID = 'PIP 5') AND (ActiveFlag = 'Y')") {
-                                    log.info("${it.CoverageID} : ${it.ProductID}")
-                                    renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
-                                }
-
-                                aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                        "FROM lkpProduct with (NOLOCK) " +
-                                        "WHERE (ProductID = 'PIP CHOI') AND (ActiveFlag = 'Y')") {
-                                    renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
-                                }
-                                aimsql.eachRow("SELECT ProductID, CompanyID, Description, CoverageID, ActiveFlag, BillToCompanyID, BillCompanyID " +
-                                        "FROM lkpProduct with (NOLOCK) " +
-                                        "WHERE (ProductID = 'PIP 2') AND (ActiveFlag = 'Y')") {
-                                    renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
-                                }
-
-
-                            }
-                            */
                         }
 
 
@@ -490,9 +414,6 @@ class AsyncController {
 //            }
 
 
-
-
-
 //        WHERE     (QuoteID IN ('0622031', '0622032', '0622033', '0622034')) AND (CoverageID IN ('CPK', 'CGL')) AND (StatusID IN ('BND', 'BND', 'PIF'))
             aimsql.eachRow( "SELECT TOP (1) *  " +
                     "FROM dbo.Quote with (NOLOCK) " +
@@ -525,6 +446,8 @@ class AsyncController {
 
                 record['SubmitGrpID'] = it.SubmitGrpID
             }
+
+
 
             def insuredMap = [:]
             aimsql.eachRow( "SELECT *  FROM dbo.Insured with (NOLOCK) WHERE InsuredID='" + record['InsuredID'] +
@@ -606,30 +529,24 @@ class AsyncController {
             }
 
 
-            def companyMap = [:]
-            aimsql.eachRow("SELECT     Name, ProducerID, StatusID, Prospect, AwardLvl, Address1, Address2, City, State, Zip, Prefix, Phone, Fax, Account_RepID, Tax_ID, Commission, CommissionLvl, \n" +
-                    "                      Max_Comm, Calc_Type, TypeID, Pmt_Type, TermsID, Tax1099, ParentID, ParentFlag, License, EO_Carrier, EO_PolicyID, EO_Limits, PrincipalID, CountyID, \n" +
-                    "                      MktTerritory, BranchID, ApplicationDate, TerminatedDate, Sub, Last_Visit, TargetVolume, CollectTax, MapToID, AcctingID, AutoKeyID, AwardDate, BestRating, \n" +
-                    "                      ConditionCd, EMail, Established, EO_Expiration, LegalName, MailAddress1, MailAddress2, MailCity, MailState, MailZip, MktgGroupID, PaymentTermsID, \n" +
-                    "                      PrimaryContactID, StructureID, WebSite, LicenseExpiration, ReferenceID, LastContactDate, ActiveFlag, AcuityKey, SpecialCodes, AllowRenewals, AllowAccounting, \n" +
-                    "                      AllowNewBusiness, AllowPolicyServicing, StatusNote, Comment, BillToParent, AcctgAddress1, AcctgAddress2, AcctgCity, AcctgState, AcctgZip, AcctgPhone, AcctgFax, \n" +
-                    "                      DateProducerAgreement, DateProducerProfile, ServiceUWID, ClassCode, SourceOfLead, FlagAllowSubProducerPay, FlagPaidByStatement, Taxable, DateAdded, \n" +
-                    "                      DateModified, CreatedByID, ModifiedByID, MonthlySvcFee, PaymentMethod, PaidThrough, PaymentStart, Status, PriorAgency, PriorAgencyID, SuspenseReason, \n" +
-                    "                      SortName, TermDays, TermFrom, FlagOverRideComp, InvTranCode, NonPremium, FlagChargeServiceFee, IsCP, AvailableMarkets, Territory, CaptiveAgent, \n" +
-                    "                      ProfessionalAffiliation, MktRepID, CsrID, ProcessBatchKey_FK, AuthorizedTeams, LOBAccess, CountyName, RollbookDate, CommMethodID, FlagDisplayPopupNote, \n" +
-                    "                      AcctgEMail, AcctgContactKey_FK, ContactKey_FK, DateIRFileCreated, FinanceMapCode, FlagExportToFinance, CountryID, MailCountryID, AcctgCountryID, \n" +
-                    "                      MembershipKey_FK, MembershipExp, Membership2Key_FK, Membership2Exp, Membership3Key_FK, Membership3Exp, NPR, DandB\n" +
-                    "FROM         Producer with (NOLOCK) \n" +
-                    "WHERE     (ProducerID = 'AGT007')") {
 
-                companyMap['Name']=it.Name
+            log.info("PRODUCER ID === " + record['ProducerID'])
+            aimsql.eachRow("SELECT     *\n" +
+                    "FROM         Producer with (NOLOCK)\n" +
+                    "WHERE     ProducerID='${record['ProducerID']}'" ) {
+                log.info("PRODUCER DETAILS ==== " + it.Name)
+                params['brokerCompanyName'] = it.Name
+                params['brokerCompanyAddress'] = it.Address1
+                params['brokerCompanyCity'] = it.City
+                params['brokerCompanyState'] = it.State
+                params['brokerCompanyZip'] = it.Zip
+                params['brokerCompanyPhone'] = it.Phone
+                params['brokerCompanyLicense'] = it.License
             }
 
 //            params['producer']= session.user.firstName + " " + session.user.lastName;
-            params['producer']= "Truman Van Dyke Company"
-            params['producerAddress']= "6767 Forest Lawn Drive, #301\n" +
-                    "Los Angeles, CA 90068";
-
+            params['producer']= params['brokerCompanyName']
+            params['producerAddress']= params['brokerCompanyAddress']
 
             params['insured']= record['NamedInsured']
             params['insuredAddress']= "${record['MailAddress1']}\n" +
@@ -1323,7 +1240,7 @@ class AsyncController {
                     attachedFile = params.getAt(key);
                     fileHelper.saveAttachedFileToLocalPath(attachedFile, temporaryFilesFolderPath, tempFilename)
 
-                    String server = "74.100.162.203";
+                    String server = "47.180.31.157";
                     int port = 21;
                     String user = "web_ftp";
                     String pass = "Get@4Files";
@@ -1540,7 +1457,7 @@ class AsyncController {
             }
 
 
-            String server = "74.100.162.203";
+            String server = "47.180.31.157";
             int port = 21;
             String user = "web_ftp";
             String pass = "Get@4Files";
@@ -2399,7 +2316,6 @@ class AsyncController {
                         agentPct = "";
                     }
 
-                    log.info "NFL"
                     try{
                         grossPct = lobString.split('\r')[0].split('\t')[2].trim();
                     }
@@ -2409,17 +2325,6 @@ class AsyncController {
 
                     if (coverageID == "EPKG") {
                         if (productID == "PIP CHOI") {
-
-
-                            /*
-                            def pipChoice_miscRentedEquipRateMinPrem = [0.5, 100];
-                            def pipChoice_propsSetWardrobeRateMinPrem = [0.5, 100];
-                            def pipChoice_thirdPartyPropDamageRateMinPrem = [0.05, 100];
-                            def pipChoice_extraExpenseRateMinPrem = [0.1, 100];
-                            def tempLimit = 0;
-                            def pipChoice_rate = pipChoice_miscRentedEquipRateMinPrem[0];
-                            def pipChoice_minPremium = pipChoice_miscRentedEquipRateMinPrem[1];
-                             */
                             def premium = 0.0
                             def deductAmount = 0;
                             def miscRentedEquipRateMinPrem = pipChoice_miscRentedEquipRateMinPrem;
@@ -2581,29 +2486,6 @@ class AsyncController {
                             }
 
 
-//                          IF FILM WITH CAST AND NO WC, ROUND LIMITS TO NEAREST 1000'S
-                            tempLimit = params.totalBudget.toDouble()
-//                            if(params.riskType == "Film Projects With Cast (No Work Comp)"){
-//                                tempLimit = Math.ceil(tempLimit / 1000) * 1000;
-////                                limitsMap["Negative Film & Videotape"] = "\$" + String.format("%.0f", tempLimit.trunc())
-////                                limitsMap["Faulty Stock & Camera Processing"] = "\$" + String.format("%.0f", tempLimit.trunc())
-//
-//                                if (params.additionalProducts.contains("EPKGCASTAdditionalCoverage")) {
-//                                    def castPremium = (params.totalBudget.toDouble() *  1.1) / 100
-//                                    premiumsMap["Cast Insurance (Up to 10)"] = ["flat", castPremium];
-//                                    tempDeductiblesMap["Cast Insurance (Up to 10)"] = "Nil";
-//                                    limitsMap["Cast Insurance (Up to 10)"] = "\$" + String.format("%.0f", tempLimit.trunc());
-//                                    productTotalPremium = productTotalPremium + castPremium;
-//                                }
-//                                if (params.additionalProducts.contains("EPKGCASTEssentialAdditionalCoverage")) {
-//                                    def castPremium = (params.totalBudget.toDouble() *  1.1) / 100
-//                                    premiumsMap["Cast Essential"] = ["flat", "incl"];
-//                                    tempDeductiblesMap["Cast Essential"] = "Nil";
-//                                    limitsMap["Cast Essential"] = "Incl. Under Cast" ;
-//                                    productTotalPremium = productTotalPremium + castPremium;
-//                                }
-//                            }
-
                             if (params.productsSelected.contains("NOHA")) {
                                 def NOHARateMinPrem = pipChoice_NOHARateMinPrem;
 
@@ -2612,7 +2494,8 @@ class AsyncController {
                                 limitsMap["Hired Auto Physical Damage"] = "\$1,000,000"
                                 rateInfo = rateInfo + "EPKG\t${rate}\t${moneyFormat.format(premium)}\tHired Auto Physical Damage\t${moneyFormat.format(minPremium)}\n";
 
-                            } else {
+                            }
+                            else {
                                 limitsMap.remove("Hired Auto Physical Damage")
                                 deductsMap.remove("Hired & Non-Owned Auto Physical Damage")
                             }
@@ -3133,10 +3016,6 @@ class AsyncController {
 //                                tempDeductsMap["INC:Non-Owned Auto Physical Damage"] = "";
                                 tempDeductsMap["INC:Non-Owned Auto Physical Damage"] = "10% of Loss (\$1,500 Min / \$10,000)";
 
-                                tempPremiumsMap["Money & Securities"] = ["flat", "incl"];
-                                tempDeductsMap["Money & Securities"] = "\$1,000";
-                                tempLimitsMap["Money & Securities"] = "\$50,000";
-
                                 //IF FILM WITH CAST AND NO WC, ROUND LIMITS TO NEAREST 1000'S
                                 tempLimitsMap["Negative Film & Videotape"] = "\$" + String.format("%.0f", tempLimit.trunc())
                                 tempLimitsMap["Faulty Stock & Camera Processing"] = "\$" + String.format("%.0f", tempLimit.trunc())
@@ -3151,7 +3030,6 @@ class AsyncController {
                                 rateInfo = rateInfo + "EPKG\t\tincl\tExtra Expense\t\n";
                                 rateInfo = rateInfo + "EPKG\t\tincl\tOffice Contents\t\n";
                                 rateInfo = rateInfo + "EPKG\t\tincl\tNon-Owned Auto Physical Damage\t\n";
-                                rateInfo = rateInfo + "EPKG\t\tincl\tMoney & Securities\t\n";
 
                                 indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Rate\t${rate}\n";
                                 indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Min Premium\t${moneyFormat.format(minPremium)}\n";
@@ -3325,7 +3203,7 @@ class AsyncController {
                             if (params.additionalProducts.contains("AGGAdditionalCoverage")) {
                                 tempLimitsMap["General Aggregate Limit"] = "\$2000000"
                                 rate = 0.324
-                                minPremium = 1750
+                                minPremium = 1500
                             }
                             else{
                                 tempLimitsMap["General Aggregate Limit"] = "\$1000000"
@@ -3918,6 +3796,7 @@ class AsyncController {
 
 
             Submissions s;
+            log.info uwQuestionsMap
 
             quoteIDCoverages.split(",").each{
                 quoteID = quoteID + it.split(";")[0] + ","
@@ -4786,6 +4665,47 @@ class AsyncController {
 //        def dataMap = new JsonSlurper().parseText(params.dataMap)
 
         render  JsonOutput.toJson(aimDAO.bind(params, dataSource_aim));
+    }
+
+    def getVersionsForQuote(){
+        log.info "GET VERSIONS FOR QUOTE"
+        log.info params
+
+        String renderString = ""
+        def results =[];
+        def rowMap = [:]
+
+//        def where = "(QuoteID='$params.quoteID')";
+        def where = "(QuoteID='0613973')";
+        results = aimDAO.selectAllFromTableWhereWithFormatting("dvVersionView", where, dataSource_aim)
+        log.info "BEFORE SORT"
+        results.each{
+            log.info it.Version
+        }
+        results.sort { a, b -> a.Version <=> b.Version }
+
+        log.info "AFTER SORT"
+
+        results.each{
+            log.info it.Version
+        }
+
+//        aimsql.eachRow("SELECT     QuoteID, Version, VersionCompanyID, ProductID, Premium, Non_Premium, Misc_Premium, NonTax_Premium, QuoteExpires, Financed, Taxed, MEP, Rate, \n" +
+//                "                      GrossComm, AgentComm, Coinsure, SubmitDate, SubmitPOC, MarketID, VerOriginal, StatusID, CoverageName, CompanyName, CompanyFax, CompanyPhone, \n" +
+//                "                      MarketName, MarketFax, MarketPhone, ProposedEffective, ProposedExpiration, TotalTax, TotalFees, Total, VersionID, TerrorActPremium, TerrorActStatus, \n" +
+//                "                      MarketContactKey_FK, NAIC\n" +
+//                "FROM         dvVersionView\n" +
+//                "WHERE     (QuoteID = '" + params.quoteID + "') ") {
+//            log.info it.getClass()
+//            rowMap.QuoteID =
+//            results.add(it)
+//        }
+
+        renderString = new JsonBuilder(results).toPrettyString()
+
+        log.info renderString
+        render new JsonBuilder(results).toPrettyString()
+
     }
 
 }

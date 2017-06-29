@@ -89,11 +89,11 @@
 
 
     <!-- include source files here... -->
-    %{--<script src="${resource(dir: 'test/jasmine/', file: 'utils/testHelper.js'+"?ts=" + new Date().getTime())}"></script>--}%
+    <script src="${resource(dir: 'test/jasmine/', file: 'utils/testHelper.js'+"?ts=" + new Date().getTime())}"></script>
 
 
     <!-- include spec files here... -->
-    <script src="${resource(dir: 'test/jasmine/', file: 'spec/TestAppSpec.js'+"?ts=" + new Date().getTime())}"></script>
+    <script src="${resource(dir: 'test/jasmine/', file: 'spec/TestAppSpecSP.js'+"?ts=" + new Date().getTime())}"></script>
 
 
 </head>

@@ -77,7 +77,7 @@ class FileTransferHelper {
         def responseString = "";
         boolean done = false;
 
-        String server = "74.100.162.203";
+        String server = "47.180.31.157";
         int port = 21;
         String user = "web_ftp";
         String pass = "Get@4Files";
@@ -226,7 +226,7 @@ class FileTransferHelper {
 
 
 //        log.info(webrootDir)
-        String server = "74.100.162.203";
+        String server = "47.180.31.157";
         int port = 21;
         String user = "web_ftp";
         String pass = "Get@4Files";
@@ -357,7 +357,7 @@ class FileTransferHelper {
 
         boolean done = false;
 
-        String server = "74.100.162.203";
+        String server = "47.180.31.157";
         int port = 21;
         String user = "web_ftp";
         String pass = "Get@4Files";
@@ -420,7 +420,7 @@ class FileTransferHelper {
         boolean done = false;
 //        Sql aimsql = new Sql(dataSource_aim)
 
-        String server = "74.100.162.203";
+        String server = "47.180.31.157";
         int port = 21;
         String user = "web_ftp";
         String pass = "Get@4Files";

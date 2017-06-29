@@ -782,7 +782,7 @@
                         <div class="col-xs-3">
                             %{--<div class="form-group"> <!-- Date input -->--}%
                             <h5 class="endDateHeader" style="font-size: 16px;">End Date</h5>
-                            <input class="form-control datepicker filmLocationEnd" name="date" placeholder="MM/DD/YYY"
+                            <input class="form-control datepicker filmLocationEnd" name="date" placeholder="MM/DD/YYY" 
                                    type="text" id="filmLocationEndDate"/>
 
                             %{--</div>--}%
