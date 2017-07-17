@@ -24,6 +24,10 @@ public  java.lang.Object getBeforeInterceptor() { return null;}
 public  void setBeforeInterceptor(java.lang.Object value) { }
 public  java.lang.Object getGrailsLinkGenerator() { return null;}
 public  void setGrailsLinkGenerator(java.lang.Object value) { }
+public  java.lang.Object getJsonSlurper() { return null;}
+public  void setJsonSlurper(java.lang.Object value) { }
+public  java.lang.Object getJsonOutput() { return null;}
+public  void setJsonOutput(java.lang.Object value) { }
 public  java.lang.Object getDataSource_aim() { return null;}
 public  void setDataSource_aim(java.lang.Object value) { }
 public  portal.DAO.AIMSQL getAimDAO() { return (portal.DAO.AIMSQL)null;}
@@ -32,6 +36,8 @@ public  portal.DAO.Intelledox getIntelledoxHelper() { return (portal.DAO.Intelle
 public  void setIntelledoxHelper(portal.DAO.Intelledox value) { }
 public  portal.Utils.TestDataHelper getTestDataHelper() { return (portal.Utils.TestDataHelper)null;}
 public  void setTestDataHelper(portal.Utils.TestDataHelper value) { }
+public  portal.Utils.GORMHelper getGormHelper() { return (portal.Utils.GORMHelper)null;}
+public  void setGormHelper(portal.Utils.GORMHelper value) { }
 public  portal.Utils.ProductHelper getProductHelper() { return (portal.Utils.ProductHelper)null;}
 public  void setProductHelper(portal.Utils.ProductHelper value) { }
 public  java.lang.Object getTimeZone() { return null;}
@@ -48,6 +54,7 @@ public  java.lang.Object checkUser() { return null;}
 public  java.lang.Object getProductsForCoverageV2() { return null;}
 public  java.lang.Object getProductsForCoverage() { return null;}
 public  java.lang.Object getProductsForCoverageV3() { return null;}
+public  java.lang.Object getProductsForRiskType() { return null;}
 public  java.lang.Object getLimitsDeductibles() { return null;}
 public  java.lang.Object getAvailableCoveragesForRiskType() { return null;}
 public  java.lang.Object getAllRiskTypesForCategory() { return null;}

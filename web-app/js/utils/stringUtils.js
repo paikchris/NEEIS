@@ -86,3 +86,11 @@ function formatTaxAndFee(value) {
         }
     }
 }
+
+function getIntValueOfMoney(moneyStringWithSignsAndCommas){
+    return parseInt(moneyStringWithSignsAndCommas.replace(/\$|,/g, ''))
+}
+
+function getDoubleValueOfMoney(moneyStringWithSignsAndCommas){
+    return parseFloat(moneyStringWithSignsAndCommas.replace(/\$|,/g, ''))
+}

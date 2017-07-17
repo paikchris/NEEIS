@@ -22,14 +22,14 @@ $(document).ready(function () {
 
     $( document ).ajaxSend(function( event, xhr, settings ) {
         outstandingCalls[settings.callID] = settings.url;
-        console.log(outstandingCalls)
-        console.log(Object.keys(outstandingCalls).length)
+
         // console.log(Object.keys(outstandingCalls).length)
     });
 
     $( document ).ajaxComplete(function( event, xhr, settings ) {
         // console.log(settings.callID)
-
+        console.log(outstandingCalls)
+        console.log(Object.keys(outstandingCalls).length)
         delete outstandingCalls[settings.callID]
 
 

@@ -403,6 +403,67 @@ class Intelledox {
 \t\t\t\t<notesAnswer>${XmlUtil.escapeXml(uwQuestionsMap["${it}"])}</notesAnswer>
 \t\t\t</notes>"""
             }
+
+/*
+            //POLICY FORM INFO
+            //OPTED TO LIST EACH ONE SEPARATELY AND NOT LOOP TO ENSURE ORDER OF INFORMATION
+            soapXML = soapXML + """
+\t\t\t<notes notesQuestion=" ">
+\t\t\t\t<notesAnswer> </notesAnswer>
+\t\t\t</notes>
+\t\t\t<notes notesQuestion=" ">
+\t\t\t\t<notesAnswer> </notesAnswer>
+\t\t\t</notes>
+\t\t\t<notes notesQuestion="POLICY INFORMATION">
+\t\t\t\t<notesAnswer></notesAnswer>
+\t\t\t</notes>
+\t\t\t<notes notesQuestion="Named Insured">
+\t\t\t\t<notesAnswer>${XmlUtil.escapeXml(jsonSerial.getAt('namedInsured'))}</notesAnswer>
+\t\t\t</notes>
+\t\t\t<notes notesQuestion="Address">
+\t\t\t\t<notesAnswer>${XmlUtil.escapeXml(jsonSerial.getAt('streetNameMailing'))}</notesAnswer>
+\t\t\t</notes>
+\t\t\t<notes notesQuestion="City/State/Zip">
+\t\t\t\t<notesAnswer>${XmlUtil.escapeXml(jsonSerial.getAt('cityMailing'))}, ${XmlUtil.escapeXml(jsonSerial.getAt('stateMailing'))} ${XmlUtil.escapeXml(jsonSerial.getAt('zipCodeMailing'))}</notesAnswer>
+\t\t\t</notes>
+\t\t\t<notes notesQuestion="Business Structure">
+\t\t\t\t<notesAnswer>${XmlUtil.escapeXml(jsonSerial.getAt('businessStructure'))}</notesAnswer>
+\t\t\t</notes>
+\t\t\t<notes notesQuestion="Domiciled State">
+\t\t\t\t<notesAnswer>?? Not sure yet</notesAnswer>
+\t\t\t</notes>
+\t\t\t<notes notesQuestion="Effective Date">
+\t\t\t\t<notesAnswer>${XmlUtil.escapeXml(jsonSerial.getAt('proposedEffectiveDate'))}</notesAnswer>
+\t\t\t</notes>
+\t\t\t<notes notesQuestion="Expiration Date">
+\t\t\t\t<notesAnswer>${XmlUtil.escapeXml(jsonSerial.getAt('proposedExpirationDate'))}</notesAnswer>
+\t\t\t</notes>
+\t\t\t<notes notesQuestion="Policy Term Length">
+\t\t\t\t<notesAnswer>${XmlUtil.escapeXml(jsonSerial.getAt('proposedTermLength'))}</notesAnswer>
+\t\t\t</notes>
+\t\t\t<notes notesQuestion="Operations/Description">
+\t\t\t\t<notesAnswer>${XmlUtil.escapeXml(jsonSerial.getAt('story'))}</notesAnswer>
+\t\t\t</notes>
+\t\t\t<notes notesQuestion="Total Budget">
+\t\t\t\t<notesAnswer>${XmlUtil.escapeXml(jsonSerial.getAt('totalBudgetConfirm'))}</notesAnswer>
+\t\t\t</notes>
+\t\t\t<notes notesQuestion="Rate">
+\t\t\t\t<notesAnswer>See Rating Section</notesAnswer>
+\t\t\t</notes>
+\t\t\t<notes notesQuestion="Premium">
+\t\t\t\t<notesAnswer>See Premium Summary Section</notesAnswer>
+\t\t\t</notes>
+\t\t\t<notes notesQuestion="Terrorism">
+\t\t\t\t<notesAnswer>??? Attn: Andee, Can't find a place we ask if terrorism is included or rejected</notesAnswer>
+\t\t\t</notes>
+\t\t\t<notes notesQuestion="Taxes">
+\t\t\t\t<notesAnswer>??? Need more time to complete</notesAnswer>
+\t\t\t</notes>
+
+"""
+*/
+
+
             soapXML = soapXML + """
 \t\t</notesRow>
 \t</notesTable>"""

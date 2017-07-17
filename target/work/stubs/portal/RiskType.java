@@ -34,6 +34,8 @@ public  java.lang.String getProducts() { return (java.lang.String)null;}
 public  void setProducts(java.lang.String value) { }
 public  java.lang.String getProductsAvailable() { return (java.lang.String)null;}
 public  void setProductsAvailable(java.lang.String value) { }
+public  java.lang.String getProductConditions() { return (java.lang.String)null;}
+public  void setProductConditions(java.lang.String value) { }
 public static  java.lang.Object getConstraints() { return null;}
 public static  void setConstraints(java.lang.Object value) { }
 }

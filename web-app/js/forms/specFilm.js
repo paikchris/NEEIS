@@ -908,6 +908,7 @@ function initializeListeners(){
         var premium = 0;
         var maxLimit = 0;
         var termLength = parseInt($("#proposedTermLength").val().split(" ")[0]);
+        var pipChoiceTotalMinPrem = 250
 
         var extraRate = .0010
         var extraMP = 100
@@ -994,6 +995,10 @@ function initializeListeners(){
         $('div#coverageOptionsReview div#limitsDeductPremiumInsert span.PIPCHOIPremiumLine').each(function() {
             totalPremium = totalPremium + parseInt($(this).html().replace(/\$|,/g, ''));
         });
+
+        if(totalPremium < pipChoiceTotalMinPrem){
+            totalPremium = 250
+        }
         // console.log("PIPCHOI: " + totalPremium);
         $("#PIPCHOIPremiumTotal").html(formatMoney(totalPremium));
         $("#EPKGPremiumLOBTotal").html(formatMoney(totalPremium));

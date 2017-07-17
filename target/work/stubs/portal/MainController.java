@@ -27,6 +27,8 @@ public  java.lang.Object getTimeZone() { return null;}
 public  void setTimeZone(java.lang.Object value) { }
 public  java.lang.Object getDateFormat() { return null;}
 public  void setDateFormat(java.lang.Object value) { }
+public  java.lang.Object getJsonSlurper() { return null;}
+public  void setJsonSlurper(java.lang.Object value) { }
 public  java.lang.Object getDownloadPDF() { return null;}
 public  void setDownloadPDF(java.lang.Object value) { }
 public  java.lang.Object checkUser() { return null;}

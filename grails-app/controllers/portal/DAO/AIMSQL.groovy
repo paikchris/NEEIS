@@ -3862,9 +3862,7 @@ class AIMSQL {
                 }
 
             }
-            log.info "PUSHING: " + rowMap
             rows << rowMap
-            log.info "AFTER PUSH: " + rows
         }
 
 

@@ -377,12 +377,22 @@ function calculateTaxesFromTaxString(msg){
     });
 
     var policyFeeTotal = 0;
-    if ($('#EPKGcoverage').is(':checked')) {
-        policyFeeTotal = policyFeeTotal + 15;
+    var policyDuration = parseInt($("#proposedTermLength").val().split(" ")[0])
+
+    if(policyDuration <= 60){
+        if ( $('#EPKGcoverage').is(':checked') || $('#CPKCGLcoverage').is(':checked')) {
+            policyFeeTotal = 100;
+        }
     }
-    if ($('#CPKCGLcoverage').is(':checked')) {
-        policyFeeTotal = policyFeeTotal + 15;
+    else{
+        if ($('#EPKGcoverage').is(':checked')) {
+            policyFeeTotal = policyFeeTotal + 15;
+        }
+        if ($('#CPKCGLcoverage').is(':checked')) {
+            policyFeeTotal = policyFeeTotal + 15;
+        }
     }
+
 
     htmlString = htmlString + "<div class='row " + "PolicyFee" + "TaxRow' style= 'padding-left:10px;'" + ">" +
         "<div class='col-xs-4'>" +
@@ -502,6 +512,42 @@ function getSubmissionMapSGP() {
 
 
     return submissionMap;
+}
+
+function buildPolicyInfo(){
+    var policyMap = {
+        titleOfProduction: $("#titleOfProduction").val(),
+        namedInsured: $('#namedInsured').val(),
+        streetNameMailing: $('#googleAutoAddress').val(),
+        cityMailing: $('#cityMailing').val(),
+        stateMailing: $('#stateMailing').val(),
+        zipCodeMailing: $('#zipCodeMailing').val(),
+        story: $('#story').val(),
+        businessStructure: $('#businessStructureSelect').val(),
+        proposedTermLength: parseInt($("#proposedTermLength").val().split(" ")[0]),
+        proposedTermLengthString: $("#proposedTermLength").val(),
+        proposedEffectiveDate: $("#proposedEffectiveDate").val(),
+        proposedExpirationDate: $("#proposedExpirationDate").val(),
+        principalPhotographyDateStart: $("#principalPhotographyDateStart").val(),
+        principalPhotographyDateEnd: $("#principalPhotographyDateEnd").val(),
+        premiumAllLOBTotal: $('#premiumAllLOBTotal').html(),
+        filmingLocation: $('.filmLocationLocation').val(),
+        castName: $('.castMemberName').val,
+        castAge: $('.castMemberAge').val,
+        castRole: $('.castMemberRole').val,
+    }
+
+    var countFilmLocations = 0;
+
+    if($('#showFilmLocationsCheckbox').is(':checked')){
+        $('#filmingLocationInfo').find('.locationFilm').each(function() {
+            countFilmLocations++;
+            policyMap[$(this).find('.filmLocationLocation').attr('id')] = $(this).find('.filmLocationLocation').val();
+            policyMap[$(this).find('.filmLocationStart').attr('id')] = $(this).find('.filmLocationStart').val();
+            policyMap[$(this).find('.filmLocationEnd').attr('id')] = $(this).find('.filmLocationEnd').val();
+        });
+        submissionMap["numberOfFilmLocations"] = countFilmLocations;
+    }
 }
 
 function getSubmissionMap() {

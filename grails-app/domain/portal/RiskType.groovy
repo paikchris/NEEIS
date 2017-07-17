@@ -11,11 +11,12 @@ class RiskType {
     String parentSubCategory
     String products
     String productsAvailable
+    String productConditions
 
     static constraints = {
         riskTypeCode(unique:true)
         riskTypeCategory(nullable: true)
-        riskTypeCode(nullable: true)
+        productConditions(nullable: true)
         bindingAuthority(nullable: true)// temporary, until we get coverage codes
         coverages(nullable:true)
         subCategoryFlag(nullable:true)

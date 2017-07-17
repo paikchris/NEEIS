@@ -21,6 +21,9 @@
 	<!-- Font Awesome -->
 	<link rel="stylesheet" href="${resource(dir: 'font-awesome-4.7.0', file: '/css/font-awesome.min.css')}" type="text/css">
 
+	<!-- ANIMATE.CSS -->
+	<link rel="stylesheet" href="${resource(dir: 'css', file: 'animate.min.css')}" type="text/css">
+
 	%{--Neeis Custom Style Sheet--}%
 	<link rel="stylesheet" href="${resource(dir: 'css', file: "neeisTheme.css?ts=" + new Date().getTime())}" type="text/css">
 
@@ -155,6 +158,14 @@
 	<script src="${resource(dir: 'js/vendor/', file: 'bootstrap-datepicker.js')}" ></script>
 	<link rel="stylesheet" href="${resource(dir: 'css', file: 'bootstrap-datepicker3.css')}" type="text/css">
 
+	<!-- TWITTER'S TYPEAHEAD PLUGIN-->
+	<script src="${resource(dir: 'js/vendor/typeahead', file: 'bloodhound.min.js')}" ></script>
+	<script src="${resource(dir: 'js/vendor/typeahead', file: 'typeahead.bundle.min.js')}" ></script>
+	<script src="${resource(dir: 'js/vendor/typeahead', file: 'typeahead.jquery.min.js')}" ></script>
+	<link rel="stylesheet" href="${resource(dir: 'css', file: 'typeaheadjs.css')}" type="text/css">
+
+
+
 
 
 	<!-- Masking Inputs plugin -->
@@ -162,6 +173,9 @@
 
 	<!-- Masking Currency plugin -->
 	<script src="${resource(dir: 'js', file: 'jquery.maskMoney.min.js')}"></script>
+
+	<!-- Velocity Animations plugin-->
+	<script src="${resource(dir: 'js/vendor', file: 'velocity.min.js')}" ></script>
 
 
 	<script >

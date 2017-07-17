@@ -402,7 +402,6 @@ function openDatePickerAndClickDate(dateInputElem, mmddYYYY){
     $(dateInputElem).datepicker('hide');
     expect($('.datepicker-dropdown').length).toEqual(0)
 
-
     //CLICK ON DATE
     var d = new Date();
     var month = mmddYYYY.split('/')[0];

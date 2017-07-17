@@ -171,10 +171,14 @@ function initializeListeners(){
         submissionRowClickAction(this)
     });
 
-    $(document).on('click', '.createVersionButton', function () {
-        createNewVersionAction(this);
+    $(document).on('click', '.versionRow', function () {
+        quickOptionsShowAction(this)
+    });
 
-        // alert("This Feature is currently under development")
+    $(document).on('click', '.createVersionButton', function () {
+        // createNewVersionAction(this);
+
+        alert("This Feature is currently under development")
     });
 
 
@@ -1476,26 +1480,77 @@ function setNeeisUnderwriterList(){
 
 //LISTENER ACTION FUNCTIONS
 function submissionRowClickAction(element){
+    //ON CLICK OF SUBMISSION ROW
+    //1.IF VERSION PANELS ARE OPEN, HIDE THE VERSION ROWS
+    //2.IF QUICK OPTIONS ARE OPEN, CLOSE
+
+    //3. IF NO VERSION PANELS OR QUICK OPTIONS WERE OPEN:
+    //  A.CHECK FOR HIDDEN VERSION PANEL, SHOW THEM IF HIDDEN
+    //  B.IF NO HIDDEN VERSION ROWS, CALL ASYNC AND CHECK FOR VERSIONS IN DATABASE
+    //ELSE IF VERSION PANELS ARE ALREADY VISIBLE, CLOSE VERSION PANEL
+
+    var htmlString ="";
+    var statusCode = $(element).find('.statusCode').html().trim();
+    var aimQuoteID = $(element).find('.aimQuoteIDTD').html().trim();
+    var aimVersion = $(element).find('.aimVersionTD').html().trim();
+    var underwriter = $(element).find('.underwriterTD').html().trim();
+    var broker = $(element).find('.submittedByTD').html().trim();
+    var brokerEmail = $(element).find('.brokerEmail').html().trim();
+    var namedInsured = $(element).find('.namedInsuredTD').html().trim();
+    var coverages = $(element).find('.coveragesTD').html().trim();
+
+    var quoteDetails = {
+        quoteID : aimQuoteID,
+        namedInsured : namedInsured,
+        coverages: coverages,
+        broker: broker,
+        brokerEmail: brokerEmail,
+        underwriter: underwriter
+    }
+
+    //FIRST CHECK FOR VISIBLE VERSION ROWS
+    if( $('.versionRow:visible').length > 0 && $(element).siblings('.versionRow:visible').length === 0){
+        closeAllSubRowsWithAnimation(element)
+        console.log("closed")
+        showVersionRowsLoadingSpinner(element)
+        console.log("spinner finished")
+
+        getVersionsOfQuote(quoteDetails, element)
+    }
+    else if( $('.versionRow:visible').length > 0 ){
+        closeAllSubRowsWithAnimation(element)
+    }
+    else if($('.versionRowSpinner:visible').length > 0){
+
+    }
+    else{
+        showVersionRowsLoadingSpinner(element)
+        //Check for other Versions
+
+        getVersionsOfQuote(quoteDetails, element)
+    }
 
 
-    console.log($(element).next())
+
+
+}
+
+function quickOptionsShowAction(element){
+    var htmlString ="";
+    var statusCode = $(element).find('.statusCode').html().trim();
+    var aimQuoteID = $(element).find('.aimQuoteIDTD').html().trim();
+    var aimVersion = $(element).find('.aimVersionTD').html().trim();
+    var underwriter = $(element).find('.underwriterTD').html().trim();
+    var broker = $(element).find('.submittedByTD').html().trim();
+    var brokerEmail = $(element).find('.brokerEmail').html().trim();
+    var namedInsured = $(element).find('.namedInsuredTD').html().trim();
+    var coverages = $(element).find('.coveragesTD').html().trim();
 
     if($(element).next().hasClass("submissionQuickOptions")){
         $(element).next().remove();
     }
     else{
         $('.submissionQuickOptions').remove();
-        var htmlString ="";
-        var statusCode = $(element).find('.statusCode').html().trim();
-        var aimQuoteID = $(element).find('.aimQuoteIDTD').html().trim();
-        var aimVersion = $(element).find('.aimVersionTD').html().trim();
-        var underwriter = $(element).find('.underwriterTD').html().trim();
-        var broker = $(element).find('.submittedByTD').html().trim();
-        var brokerEmail = $(element).find('.brokerEmail').html().trim();
-
-
-        //Check for other Versions
-        getVersionsOfQuote(aimQuoteID)
 
         //alert(statusCode);
         if(userRole === "Broker" ){
@@ -1743,16 +1798,38 @@ function submissionRowClickAction(element){
     }
 }
 
-function getVersionsOfQuote(qID){
+function getVersionsOfQuote(quoteDetails, elementClicked){
     $.ajax({
         method: "POST",
         url: "/Async/getVersionsForQuote",
         data: {
-            quoteID: qID
+            quoteID: quoteDetails.quoteID
         }
     })
         .done(function (msg) {
-            alert(msg)
+            var response = JSON.parse(msg)
+            var dvVersionViewDate = response.dvVersionViewData
+            var versionData = response.versionData
+
+            var versionRowsHtml = "";
+
+
+            //LOOP THROUGH VERSIONS AND CREATE ROWS
+            Object.keys(dvVersionViewDate).forEach(function(key) {
+                console.log(key, dvVersionViewDate[key]);
+                console.log(key, versionData[key]);
+                versionRowsHtml = versionRowsHtml + createVersionRowHTMLString(dvVersionViewDate[key],versionData[key], quoteDetails, elementClicked)
+            });
+
+
+            console.log("BEFORE CALLBACK")
+
+            hideVersionRowsLoadingSpinner(elementClicked, function(){
+                console.log("CALLBACK")
+                $(elementClicked).after(versionRowsHtml)
+            });
+
+            //ON RESPONSE CREATE VERSION ROWS IN VERSION PANEL
 
         });
 }
@@ -2123,3 +2200,152 @@ function createNewVersionAction(elem){
 function saveByteArray(reportName, byte) {
 
 };
+
+
+
+//FUNCTIONS FOR CREATING VERSION ROWS IN SUBMISSION PAGE
+function createVersionRowHTMLString(dvVersionData, versionData, quoteDetails, submissionRowParent){
+
+    var htmlString = "" +
+        "<tr class='versionRow' style='cursor:pointer'> " +
+            "<td><i class='fa fa-level-up fa-rotate-90' aria-hidden='true'></i>" +
+            "<span class='aimVersionTD' style='color: rgba(100, 152, 163, 1); font-weight: 700; font-size: 11px;'> " + trimQuoteMarks(versionData.Version) + "</span></td> " +
+            "<th scope='row'><a href='#' class='aimQuoteIDTD'>" + trimQuoteMarks(dvVersionData.QuoteID) + "</a></th> " +
+            "<td class='namedInsuredTD'>" + trimQuoteMarks(quoteDetails.namedInsured) + "</td> " +
+            "<td class='coveragesTD'>" + trimQuoteMarks(quoteDetails.coverages) + "</td> " +
+            "<td class='submittedByTD'>" + trimQuoteMarks(quoteDetails.broker) + "</td> " +
+            "<td class='brokerEmail' style='display:none'>" + trimQuoteMarks(quoteDetails.brokerEmail) + "</td> " +
+            "<td class='submitDateTD'>" + trimQuoteMarks(versionData.Quoted) + "</td> " +
+            "<td class='submissionStatusTD'>" + trimQuoteMarks(dvVersionData.StatusID) + "</td> " +
+            "<td class='underwriterTD'>" + trimQuoteMarks(quoteDetails.underwriter) + "</td> " +
+            "<td class=''> </td> " +
+            "<td class='statusCode' style='display:none'>" + trimQuoteMarks(dvVersionData.StatusID) + " </td> " +
+        "</tr>";
+
+    return htmlString
+}
+
+function trimQuoteMarks(str){
+    var returnString = str;
+
+    if(returnString.charAt(0) === "'" || returnString.charAt(0) === '"' ){
+        returnString = returnString.substring(1)
+    }
+
+    if(returnString.charAt( returnString.length - 1 ) === "'"  || returnString.charAt( returnString.length - 1 ) === '"'  ){
+        returnString = returnString.substring(0, returnString.length - 1);
+    }
+
+    return returnString
+
+
+}
+
+function showVersionRowsLoadingSpinner(submissionRow){
+    var rowContainer = $(submissionRow).closest('.submissionRowContainer')
+    var htmlString = "" +
+        "<tr class='versionRowSpinner' style='cursor:pointer; text-align: center; padding: 10px; color: rgba(0, 0, 0, 0.57);' > " +
+            "<td colspan='9'><i class='fa fa-spinner fa-spin fa-3x fa-fw'></i></td>" +
+        "</tr>";
+    $(rowContainer).append(htmlString)
+
+
+    //ANIMATE SPINNER FADE IN AND SLIDE DOWN ROW
+    var startingHeight = $(rowContainer).find('.versionRowSpinner').outerHeight()
+    // console.log(startingHeight)
+    // $(rowContainer).find('.versionRowSpinner td').css({opacity:0})
+
+    //MAKE SPINNER ICON INVISIBLE FIRST. CAN'T RESIZE FONT AWESOME ICONS. WILL FORCE ROW NOT TO CHANGE SIZE
+    $(rowContainer).find('.versionRowSpinner td').css('display', 'none')
+
+    //MAKE SPINNER ROW HEIGHT ZERO
+    $(rowContainer).find('.versionRowSpinner').css('height', '0px')
+
+    //ANIMATE THE ROW SLIDING FIRST
+    $(rowContainer).find('.versionRowSpinner').velocity({
+        height: startingHeight
+    },{
+        duration:100,
+        easing: "easeInSine",
+        complete: function() {
+            $(rowContainer).find('.versionRowSpinner td').css('display', '') ;
+            $(rowContainer).find('.versionRowSpinner td').velocity({ opacity: 1 });
+            $(rowContainer).find('.versionRowSpinner').css('height', startingHeight + 'px')
+        }
+    })
+
+    //THEN ANIMATE THE SPINNER FADING IN
+    // $(rowContainer).find('.versionRowSpinner td').css('display', '')
+    // $(rowContainer).find('.versionRowSpinner td').velocity({ opacity: 1 });
+}
+
+function hideVersionRowsLoadingSpinner(submissionRow, insertVersionRowsFunction){
+    var rowContainer = $(submissionRow).closest('.submissionRowContainer')
+    console.log("BEFORE hiding spinner animation")
+    console.log("SUBMISSION ROW: ")
+    console.log(submissionRow)
+
+    if($(rowContainer).find('.versionRowSpinner td').length > 0){
+        $(rowContainer).find('.versionRowSpinner td').velocity({
+            opacity: 0
+        },{
+            duration:100,
+            easing: "easeInSine",
+            complete: function(){
+                $(rowContainer).find('.versionRowSpinner td').css('display', 'none') ;
+                $(rowContainer).find('.versionRowSpinner').velocity({
+                    height: 0
+                },{
+                    duration:100,
+                    easing: "easeInSine",
+                    complete: function() {
+                        console.log("after hiding spinner animation")
+                        $(rowContainer).find('.versionRowSpinner').remove();
+                        insertVersionRowsFunction();
+                    }
+                })
+            }
+        })
+    }
+    else{
+        insertVersionRowsFunction();
+    }
+
+}
+
+function animateInsertTableRows(elementClicked, htmlString){
+    $(elementClicked).after(versionRowsHtml)
+}
+
+function closeAllSubRowsWithAnimation(elementClicked){
+    var rowContainer = $('.versionRow').closest('.submissionRowContainer')
+    var submissionRow = $('.versionRow').siblings('.submissionRow')
+    var openHeight = $(rowContainer).outerHeight()
+    var closedHeight = $(submissionRow).outerHeight()
+    console.log(openHeight)
+
+    // $(rowContainer).css('height', startingHeight + 'px')
+
+    $(rowContainer).find('.versionRow, .submissionQuickOptions').velocity({
+        opacity: 0
+    },{
+        duration:100,
+        easing: "easeInSine",
+        complete: function() {
+            $('.versionRow, .submissionQuickOptions').remove()
+            $(submissionRow).css('height', openHeight + 'px')
+            $(submissionRow).velocity({
+                height: closedHeight
+            },{
+                duration:100,
+                easing: "easeInSine",
+                complete: function() {
+                }
+            })
+        }
+    })
+
+
+
+
+}

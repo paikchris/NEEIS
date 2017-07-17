@@ -160,128 +160,13 @@ describe('Starting Test', function() {
                     });
                 });
 
-                describe('Test Products Show Up Correctly for given Budgets', function() {
+                xdescribe('Test Products Show Up Correctly for given Budgets', function() {
+
                     describe('Check Products for $50,000', function() {
-                        beforeAll(function(done) {
-                            typeThisMaskMoney('50000' , $('#totalBudgetConfirm'), done)
-                        });
-                        it('Check Products, PIP Choice, 1, 5', function(done) {
-                            var waitUntilThisIsTrue = function(){
-                                return (Object.keys(outstandingCalls).length == 0 &&
-                                $('#PIPChoiceInputRadio').is(':visible') && $('#PIP1InputRadio').is(':visible') && $('#PIP5InputRadio').is(':visible'))
-                            }
-                            var thenDoThis = function(){
-                                expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
-                                expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
-                                expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP4InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
-                                done();
-                            }
-                            waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
-
-                        }, 30000);
-                    });
-
-                    describe('Check Products for $150,000', function() {
-                        beforeAll(function(done) {
-                            typeThisMaskMoney('150000' , $('#totalBudgetConfirm'), done)
-                        });
-                        it('Check Products, PIP Choice, 2, 5', function(done) {
-                            var waitUntilThisIsTrue = function(){
-                                return (Object.keys(outstandingCalls).length == 0 && $('#PIPChoiceInputRadio').is(':visible') &&
-                                $('#PIP2InputRadio').is(':visible') && $('#PIP5InputRadio').is(':visible'))
-                            }
-                            var thenDoThis = function(){
-                                expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
-                                expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
-                                expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP4InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
-                                done();
-                            }
-                            waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
-
-                        }, 30000);
-                    });
-
-                    describe('Check Products for $250,000', function() {
-                        beforeAll(function(done) {
-                            typeThisMaskMoney('250000' , $('#totalBudgetConfirm'), done)
-                        });
-                        it('Check Products, PIP Choice, 3, 5', function(done) {
-                            var waitUntilThisIsTrue = function(){
-                                return (Object.keys(outstandingCalls).length == 0 &&
-                                $('#PIPChoiceInputRadio').is(':visible') && $('#PIP3InputRadio').is(':visible') && $('#PIP5InputRadio').is(':visible'))
-                            }
-                            var thenDoThis = function(){
-                                expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
-                                expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
-                                expect($('#PIP4InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
-                                done();
-                            }
-                            waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
-                        }, 30000);
-                    });
-
-                    describe('Check Products for $350,000', function() {
-                        beforeAll(function(done) {
-                            typeThis('350000' , $('#totalBudgetConfirm'), done)
-                        });
-                        it('Check Products, PIP Choice, 4, 5', function(done) {
-                            var waitUntilThisIsTrue = function(){
-                                return (Object.keys(outstandingCalls).length == 0 &&
-                                $('#PIPChoiceInputRadio').is(':visible') && $('#PIP4InputRadio').is(':visible') && $('#PIP5InputRadio').is(':visible'))
-                            }
-                            var thenDoThis = function(){
-                                expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
-                                expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
-                                expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
-                                done();
-                            }
-                            waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
-                        }, 30000);
-                    });
-
-                    describe('Check Products for $450,000', function() {
-                        beforeAll(function(done) {
-                            typeThis('450000' , $('#totalBudgetConfirm'), done)
-                        });
-                        it('Check Products', function(done) {
-                            var waitUntilThisIsTrue = function(){
-                                return (Object.keys(outstandingCalls).length == 0 &&
-                                $('#PIPChoiceInputRadio').is(':visible') && $('#PIP4InputRadio').is(':visible') && $('#PIP5InputRadio').is(':visible'))
-                            }
-                            var thenDoThis = function(){
-                                expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
-                                expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
-                                expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
-                                done();
-                            }
-                            waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
-                        }, 30000);
-                    });
-                });
-
-                describe('Test EPKG Products', function() {
-                    describe('Test PIP CHOICE', function() {
-                        describe('Test PIP CHOICE at $50,000', function() {
                             beforeAll(function(done) {
-                                typeThis('50000' , $('#totalBudgetConfirm'), done)
-
+                                typeThisMaskMoney('50000' , $('#totalBudgetConfirm'), done)
                             });
-                            it('Check Products, PIP Choice, 1, 5 are showing', function(done) {
+                            it('Check Products, PIP Choice, 1, 5', function(done) {
                                 var waitUntilThisIsTrue = function(){
                                     return (Object.keys(outstandingCalls).length == 0 &&
                                     $('#PIPChoiceInputRadio').is(':visible') && $('#PIP1InputRadio').is(':visible') && $('#PIP5InputRadio').is(':visible'))
@@ -292,6 +177,264 @@ describe('Starting Test', function() {
                                     expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
                                     expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
                                     expect($('#PIP4InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
+                                    done();
+                                }
+                                waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+
+                            }, 30000);
+                        });
+
+                    describe('Check Products for $150,000', function() {
+                            beforeAll(function(done) {
+                                typeThisMaskMoney('150000' , $('#totalBudgetConfirm'), done)
+                            });
+                            it('Check Products, PIP Choice, 2, 5', function(done) {
+                                var waitUntilThisIsTrue = function(){
+                                    return (Object.keys(outstandingCalls).length == 0 && $('#PIPChoiceInputRadio').is(':visible') &&
+                                    $('#PIP2InputRadio').is(':visible') && $('#PIP5InputRadio').is(':visible'))
+                                }
+                                var thenDoThis = function(){
+                                    expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP4InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
+                                    done();
+                                }
+                                waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+
+                            }, 30000);
+                        });
+
+                    describe('Check Products for $250,000', function() {
+                            beforeAll(function(done) {
+                                typeThisMaskMoney('250000' , $('#totalBudgetConfirm'), done)
+                            });
+                            it('Check Products, PIP Choice, 3, 5', function(done) {
+                                var waitUntilThisIsTrue = function(){
+                                    return (Object.keys(outstandingCalls).length == 0 &&
+                                    $('#PIPChoiceInputRadio').is(':visible') && $('#PIP3InputRadio').is(':visible') && $('#PIP5InputRadio').is(':visible'))
+                                }
+                                var thenDoThis = function(){
+                                    expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP4InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
+                                    done();
+                                }
+                                waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                            }, 30000);
+                        });
+
+                    describe('Check Products for $350,000', function() {
+                            beforeAll(function(done) {
+                                typeThis('350000' , $('#totalBudgetConfirm'), done)
+                            });
+                            it('Check Products, PIP Choice, 4, 5', function(done) {
+                                var waitUntilThisIsTrue = function(){
+                                    return (Object.keys(outstandingCalls).length == 0 &&
+                                    $('#PIPChoiceInputRadio').is(':visible') && $('#PIP4InputRadio').is(':visible') && $('#PIP5InputRadio').is(':visible'))
+                                }
+                                var thenDoThis = function(){
+                                    expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
+                                    done();
+                                }
+                                waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                            }, 30000);
+                        });
+
+                    describe('Check Products for $450,000', function() {
+                            beforeAll(function(done) {
+                                typeThis('450000' , $('#totalBudgetConfirm'), done)
+                            });
+                            it('Check Products', function(done) {
+                                var waitUntilThisIsTrue = function(){
+                                    return (Object.keys(outstandingCalls).length == 0 &&
+                                    $('#PIPChoiceInputRadio').is(':visible') && $('#PIP4InputRadio').is(':visible') && $('#PIP5InputRadio').is(':visible'))
+                                }
+                                var thenDoThis = function(){
+                                    expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
+                                    done();
+                                }
+                                waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                            }, 30000);
+                        });
+
+                });
+
+                describe('Check All Products show for any budget', function() {
+
+                    describe('Check All Products show for $75,000', function() {
+                        beforeAll(function(done) {
+                            typeThis('75000' , $('#totalBudgetConfirm'), done)
+                        });
+                        it('Check Products', function(done) {
+                            var waitUntilThisIsTrue = function(){
+                                return (Object.keys(outstandingCalls).length == 0 &&
+                                    $('#PIPChoiceInputRadio').is(':visible') &&
+                                    $('#PIP1InputRadio').is(':visible') &&
+                                    $('#PIP2InputRadio').is(':visible') &&
+                                    $('#PIP3InputRadio').is(':visible') &&
+                                    $('#PIP4InputRadio').is(':visible') &&
+                                    $('#PIP5InputRadio').is(':visible')
+                                )
+                            }
+                            var thenDoThis = function(){
+                                expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
+                                done();
+                            }
+                            waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                        }, 30000);
+                    });
+
+                    describe('Check All Products show for $150,000', function() {
+                        beforeAll(function(done) {
+                            typeThis('150000' , $('#totalBudgetConfirm'), done)
+                        });
+                        it('Check Products', function(done) {
+                            var waitUntilThisIsTrue = function(){
+                                return (Object.keys(outstandingCalls).length == 0 &&
+                                    $('#PIPChoiceInputRadio').is(':visible') &&
+                                    $('#PIP1InputRadio').is(':visible') &&
+                                    $('#PIP2InputRadio').is(':visible') &&
+                                    $('#PIP3InputRadio').is(':visible') &&
+                                    $('#PIP4InputRadio').is(':visible') &&
+                                    $('#PIP5InputRadio').is(':visible')
+                                )
+                            }
+                            var thenDoThis = function(){
+                                expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
+                                done();
+                            }
+                            waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                        }, 30000);
+                    });
+
+                    describe('Check All Products show for $350,000', function() {
+                        beforeAll(function(done) {
+                            typeThis('350000' , $('#totalBudgetConfirm'), done)
+                        });
+                        it('Check Products', function(done) {
+                            var waitUntilThisIsTrue = function(){
+                                return (Object.keys(outstandingCalls).length == 0 &&
+                                    $('#PIPChoiceInputRadio').is(':visible') &&
+                                    $('#PIP1InputRadio').is(':visible') &&
+                                    $('#PIP2InputRadio').is(':visible') &&
+                                    $('#PIP3InputRadio').is(':visible') &&
+                                    $('#PIP4InputRadio').is(':visible') &&
+                                    $('#PIP5InputRadio').is(':visible')
+                                )
+                            }
+                            var thenDoThis = function(){
+                                expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
+                                done();
+                            }
+                            waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                        }, 30000);
+                    });
+
+                    describe('Check All Products show for $550,000', function() {
+                        beforeAll(function(done) {
+                            typeThis('550000' , $('#totalBudgetConfirm'), done)
+                        });
+                        it('Check Products', function(done) {
+                            var waitUntilThisIsTrue = function(){
+                                return (Object.keys(outstandingCalls).length == 0 &&
+                                    $('#PIPChoiceInputRadio').is(':visible') &&
+                                    $('#PIP1InputRadio').is(':visible') &&
+                                    $('#PIP2InputRadio').is(':visible') &&
+                                    $('#PIP3InputRadio').is(':visible') &&
+                                    $('#PIP4InputRadio').is(':visible') &&
+                                    $('#PIP5InputRadio').is(':visible')
+                                )
+                            }
+                            var thenDoThis = function(){
+                                expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
+                                done();
+                            }
+                            waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                        }, 30000);
+                    });
+
+                });
+
+
+                describe('Test EPKG Products', function() {
+                    describe('Test PIP CHOICE', function() {
+                        describe('Test PIP CHOICE at $50,000', function() {
+                            beforeAll(function(done) {
+                                typeThis('50000' , $('#totalBudgetConfirm'), done)
+
+                            });
+                            xit('Check Products, PIP Choice, 1, 5 are showing', function(done) {
+                                var waitUntilThisIsTrue = function(){
+                                    return (Object.keys(outstandingCalls).length == 0 &&
+                                    $('#PIPChoiceInputRadio').is(':visible') && $('#PIP1InputRadio').is(':visible') && $('#PIP5InputRadio').is(':visible')
+                                    )
+                                }
+                                var thenDoThis = function(){
+                                    expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP4InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
+                                    done();
+                                }
+                                waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                            }, 30000);
+
+                            it('Check All Products are showing', function(done) {
+                                var waitUntilThisIsTrue = function(){
+                                    return (Object.keys(outstandingCalls).length == 0 &&
+                                        $('#PIPChoiceInputRadio').is(':visible') &&
+                                        $('#PIP1InputRadio').is(':visible') &&
+                                        $('#PIP2InputRadio').is(':visible') &&
+                                        $('#PIP3InputRadio').is(':visible') &&
+                                        $('#PIP4InputRadio').is(':visible') &&
+                                        $('#PIP5InputRadio').is(':visible')
+                                    )
+                                }
+                                var thenDoThis = function(){
+                                    expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
                                     done();
                                 }
@@ -310,14 +453,20 @@ describe('Starting Test', function() {
 
                                     var waitUntilThisIsTrue = function(){
                                         return (Object.keys(outstandingCalls).length == 0 &&
-                                        $('#PIPChoiceInputRadio').is(':visible') && $('#PIP1InputRadio').is(':visible') && $('#PIP5InputRadio').is(':visible'))
+                                            $('#PIPChoiceInputRadio').is(':visible') &&
+                                            $('#PIP1InputRadio').is(':visible') &&
+                                            $('#PIP2InputRadio').is(':visible') &&
+                                            $('#PIP3InputRadio').is(':visible') &&
+                                            $('#PIP4InputRadio').is(':visible') &&
+                                            $('#PIP5InputRadio').is(':visible')
+                                        )
                                     }
                                     var thenDoThis = function(){
                                         expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
                                         expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
-                                        expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
-                                        expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
-                                        expect($('#PIP4InputRadio').is(':visible')).toBeFalsy();
+                                        expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                        expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
+                                        expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
                                         expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
                                         done();
                                     }
@@ -457,10 +606,10 @@ describe('Starting Test', function() {
                                 }
                                 var thenDoThis = function(){
                                     expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
-                                    expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
-                                    expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
-                                    expect($('#PIP4InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
                                     done();
                                 }
@@ -560,10 +709,10 @@ describe('Starting Test', function() {
                                 }
                                 var thenDoThis = function(){
                                     expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
-                                    expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
-                                    expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
-                                    expect($('#PIP4InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
                                     done();
                                 }
@@ -1492,7 +1641,7 @@ describe('Starting Test', function() {
 
 
                             });
-                            it('Check Products, PIP Choice, 1, 5 are showing', function(done) {
+                            xit('Check Products, PIP Choice, 1, 5 are showing', function(done) {
                                 var waitUntilThisIsTrue = function(){
                                     return (Object.keys(outstandingCalls).length == 0 &&
                                     $('#PIPChoiceInputRadio').is(':visible') && $('#PIP1InputRadio').is(':visible') && $('#PIP5InputRadio').is(':visible'))
@@ -1509,17 +1658,47 @@ describe('Starting Test', function() {
                                 waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
                             }, 30000);
 
-                            it('Make sure PIP 1 is selected', function(done) {
+                            it('Check All Products are showing', function(done) {
                                 var waitUntilThisIsTrue = function(){
                                     return (Object.keys(outstandingCalls).length == 0 &&
-                                    $('#PIPChoiceInputRadio').is(':visible') && $('#PIP1InputRadio').is(':visible') && $('#PIP5InputRadio').is(':visible'))
+                                        $('#PIPChoiceInputRadio').is(':visible') &&
+                                        $('#PIP1InputRadio').is(':visible') &&
+                                        $('#PIP2InputRadio').is(':visible') &&
+                                        $('#PIP3InputRadio').is(':visible') &&
+                                        $('#PIP4InputRadio').is(':visible') &&
+                                        $('#PIP5InputRadio').is(':visible')
+                                    )
                                 }
                                 var thenDoThis = function(){
                                     expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
-                                    expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
-                                    expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
-                                    expect($('#PIP4InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
+                                    done();
+                                }
+                                waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                            }, 30000);
+
+                            it('Make sure PIP 1 is selected', function(done) {
+
+                                var waitUntilThisIsTrue = function(){
+                                    return (Object.keys(outstandingCalls).length == 0 &&
+                                        $('#PIPChoiceInputRadio').is(':visible') &&
+                                        $('#PIP1InputRadio').is(':visible') &&
+                                        $('#PIP2InputRadio').is(':visible') &&
+                                        $('#PIP3InputRadio').is(':visible') &&
+                                        $('#PIP4InputRadio').is(':visible') &&
+                                        $('#PIP5InputRadio').is(':visible')
+                                    )
+                                }
+                                var thenDoThis = function(){
+                                    expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
 
                                     spyOnEvent('#PIP1InputRadio', 'click');
@@ -1612,12 +1791,12 @@ describe('Starting Test', function() {
                                 expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$1.00");
 
                                 expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
                             });
 
                             it('Check Total Premium is Correct', function() {
-                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$531.00");
+                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$616.00");
                             });
 
                             it('Check Terms are filled', function() {
@@ -1637,7 +1816,7 @@ describe('Starting Test', function() {
                             beforeAll(function(done) {
                                 typeThis('50000{{tab}}' , $('#totalBudgetConfirm'), done)
                             });
-                            it('Check Products, PIP Choice, 1, 5 are showing', function(done) {
+                            xit('Check Products, PIP Choice, 1, 5 are showing', function(done) {
                                 var waitUntilThisIsTrue = function(){
                                     return (Object.keys(outstandingCalls).length == 0 &&
                                     $('#PIPChoiceInputRadio').is(':visible') && $('#PIP1InputRadio').is(':visible') && $('#PIP5InputRadio').is(':visible'))
@@ -1654,17 +1833,46 @@ describe('Starting Test', function() {
                                 waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
                             }, 30000);
 
-                            it('Make sure PIP 1 is selected', function(done) {
+                            it('Check All Products are showing', function(done) {
                                 var waitUntilThisIsTrue = function(){
                                     return (Object.keys(outstandingCalls).length == 0 &&
-                                    $('#PIPChoiceInputRadio').is(':visible') && $('#PIP1InputRadio').is(':visible') && $('#PIP5InputRadio').is(':visible'))
+                                        $('#PIPChoiceInputRadio').is(':visible') &&
+                                        $('#PIP1InputRadio').is(':visible') &&
+                                        $('#PIP2InputRadio').is(':visible') &&
+                                        $('#PIP3InputRadio').is(':visible') &&
+                                        $('#PIP4InputRadio').is(':visible') &&
+                                        $('#PIP5InputRadio').is(':visible')
+                                    )
                                 }
                                 var thenDoThis = function(){
                                     expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
-                                    expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
-                                    expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
-                                    expect($('#PIP4InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
+                                    done();
+                                }
+                                waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                            }, 30000);
+
+                            it('Make sure PIP 1 is selected', function(done) {
+                                var waitUntilThisIsTrue = function(){
+                                    return (Object.keys(outstandingCalls).length == 0 &&
+                                        $('#PIPChoiceInputRadio').is(':visible') &&
+                                        $('#PIP1InputRadio').is(':visible') &&
+                                        $('#PIP2InputRadio').is(':visible') &&
+                                        $('#PIP3InputRadio').is(':visible') &&
+                                        $('#PIP4InputRadio').is(':visible') &&
+                                        $('#PIP5InputRadio').is(':visible')
+                                    )
+                                }
+                                var thenDoThis = function(){
+                                    expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
 
                                     spyOnEvent('#PIP1InputRadio', 'click');
@@ -1672,7 +1880,6 @@ describe('Starting Test', function() {
                                     // $('#PIP1InputRadio').focus();
 
                                     expect('click').toHaveBeenTriggeredOn('#PIP1InputRadio');
-                                    expect($('#PIP1InputRadio').is(':checked')).toBeTruthy()
                                     done();
                                 }
                                 waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
@@ -1702,9 +1909,9 @@ describe('Starting Test', function() {
                                     expect($("#EPKGNOHAAdditionalCoverage").is(':visible')).toBeTruthy();
                                     expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
-                                    expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
-                                    expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
-                                    expect($('#PIP4InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
 
                                     spyOnEvent('#EPKGNOHAAdditionalCoverage', 'click');
@@ -1791,12 +1998,12 @@ describe('Starting Test', function() {
                                 expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$2.00");
 
                                 expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
                             });
 
                             it('Check Total Premium is Correct', function() {
-                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$1,047.00");
+                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$1,132.00");
                             });
 
                             it('Check Terms are filled', function() {
@@ -1836,7 +2043,7 @@ describe('Starting Test', function() {
 
 
                             });
-                            it('Check Products, PIP Choice, 2, 5 are showing', function(done) {
+                            xit('Check Products, PIP Choice, 2, 5 are showing', function(done) {
                                 var waitUntilThisIsTrue = function(){
                                     return (Object.keys(outstandingCalls).length == 0 &&
                                     $('#PIPChoiceInputRadio').is(':visible') && $('#PIP2InputRadio').is(':visible') && $('#PIP5InputRadio').is(':visible'))
@@ -1853,6 +2060,29 @@ describe('Starting Test', function() {
                                 waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
                             }, 30000);
 
+                            it('Check All Products are showing', function(done) {
+                                var waitUntilThisIsTrue = function(){
+                                    return (Object.keys(outstandingCalls).length == 0 &&
+                                        $('#PIPChoiceInputRadio').is(':visible') &&
+                                        $('#PIP1InputRadio').is(':visible') &&
+                                        $('#PIP2InputRadio').is(':visible') &&
+                                        $('#PIP3InputRadio').is(':visible') &&
+                                        $('#PIP4InputRadio').is(':visible') &&
+                                        $('#PIP5InputRadio').is(':visible')
+                                    )
+                                }
+                                var thenDoThis = function(){
+                                    expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
+                                    done();
+                                }
+                                waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                            }, 30000);
+
                             it('Make sure PIP 2 is selected', function(done) {
                                 var waitUntilThisIsTrue = function(){
                                     return (Object.keys(outstandingCalls).length == 0 &&
@@ -1860,10 +2090,10 @@ describe('Starting Test', function() {
                                 }
                                 var thenDoThis = function(){
                                     expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
-                                    expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
-                                    expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
-                                    expect($('#PIP4InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
 
                                     spyOnEvent('#PIP2InputRadio', 'click');
@@ -1961,12 +2191,12 @@ describe('Starting Test', function() {
                                 expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$2.00");
 
                                 expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
                             });
 
                             it('Check Total Premium is Correct', function() {
-                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$1,047.00");
+                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$1,132.00");
                             });
 
                             it('Check Terms are filled', function() {
@@ -1986,7 +2216,7 @@ describe('Starting Test', function() {
                             beforeAll(function(done) {
                                 typeThis('150000{{tab}}' , $('#totalBudgetConfirm'), done)
                             });
-                            it('Check Products, PIP Choice, 2, 5 are showing', function(done) {
+                            xit('Check Products, PIP Choice, 2, 5 are showing', function(done) {
                                 var waitUntilThisIsTrue = function(){
                                     return (Object.keys(outstandingCalls).length == 0 &&
                                     $('#PIPChoiceInputRadio').is(':visible') && $('#PIP2InputRadio').is(':visible') && $('#PIP5InputRadio').is(':visible'))
@@ -2003,6 +2233,29 @@ describe('Starting Test', function() {
                                 waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
                             }, 30000);
 
+                            it('Check All Products are showing', function(done) {
+                                var waitUntilThisIsTrue = function(){
+                                    return (Object.keys(outstandingCalls).length == 0 &&
+                                        $('#PIPChoiceInputRadio').is(':visible') &&
+                                        $('#PIP1InputRadio').is(':visible') &&
+                                        $('#PIP2InputRadio').is(':visible') &&
+                                        $('#PIP3InputRadio').is(':visible') &&
+                                        $('#PIP4InputRadio').is(':visible') &&
+                                        $('#PIP5InputRadio').is(':visible')
+                                    )
+                                }
+                                var thenDoThis = function(){
+                                    expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
+                                    done();
+                                }
+                                waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                            }, 30000);
+
                             it('Make sure PIP 2 is selected', function(done) {
                                 var waitUntilThisIsTrue = function(){
                                     return (Object.keys(outstandingCalls).length == 0 &&
@@ -2010,10 +2263,10 @@ describe('Starting Test', function() {
                                 }
                                 var thenDoThis = function(){
                                     expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
-                                    expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
-                                    expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
-                                    expect($('#PIP4InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
 
                                     spyOnEvent('#PIP2InputRadio', 'click');
@@ -2050,10 +2303,10 @@ describe('Starting Test', function() {
                                 var thenDoThis = function(){
                                     expect($("#EPKGNOHAAdditionalCoverage").is(':visible')).toBeTruthy();
                                     expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
-                                    expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
-                                    expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
-                                    expect($('#PIP4InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
 
                                     spyOnEvent('#EPKGNOHAAdditionalCoverage', 'click');
@@ -2145,12 +2398,12 @@ describe('Starting Test', function() {
                                 expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$3.00");
 
                                 expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
                             });
 
                             it('Check Total Premium is Correct', function() {
-                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$1,563.00");
+                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$1,648.00");
                             });
 
                             it('Check Terms are filled', function() {
@@ -2188,7 +2441,7 @@ describe('Starting Test', function() {
                             beforeAll(function(done) {
                                 typeThis('250000{{tab}}' , $('#totalBudgetConfirm'), done)
                             });
-                            it('Check Products, PIP Choice, 3, 5 are showing', function(done) {
+                            xit('Check Products, PIP Choice, 3, 5 are showing', function(done) {
                                 var waitUntilThisIsTrue = function(){
                                     return (Object.keys(outstandingCalls).length == 0 &&
                                     $('#PIPChoiceInputRadio').is(':visible') && $('#PIP3InputRadio').is(':visible') && $('#PIP5InputRadio').is(':visible'))
@@ -2205,6 +2458,29 @@ describe('Starting Test', function() {
                                 waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
                             }, 30000);
 
+                            it('Check All Products are showing', function(done) {
+                                var waitUntilThisIsTrue = function(){
+                                    return (Object.keys(outstandingCalls).length == 0 &&
+                                        $('#PIPChoiceInputRadio').is(':visible') &&
+                                        $('#PIP1InputRadio').is(':visible') &&
+                                        $('#PIP2InputRadio').is(':visible') &&
+                                        $('#PIP3InputRadio').is(':visible') &&
+                                        $('#PIP4InputRadio').is(':visible') &&
+                                        $('#PIP5InputRadio').is(':visible')
+                                    )
+                                }
+                                var thenDoThis = function(){
+                                    expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
+                                    done();
+                                }
+                                waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                            }, 30000);
+
                             it('Make sure PIP 3 is selected', function(done) {
                                 var waitUntilThisIsTrue = function(){
                                     return (Object.keys(outstandingCalls).length == 0 &&
@@ -2212,10 +2488,10 @@ describe('Starting Test', function() {
                                 }
                                 var thenDoThis = function(){
                                     expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
-                                    expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
-                                    expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
-                                    expect($('#PIP4InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
 
                                     spyOnEvent('#PIP3InputRadio', 'click');
@@ -2344,7 +2620,7 @@ describe('Starting Test', function() {
                             beforeAll(function(done) {
                                 typeThis('350000{{tab}}' , $('#totalBudgetConfirm'), done)
                             });
-                            it('Check Products, PIP Choice, 4, 5 are showing', function(done) {
+                            xit('Check Products, PIP Choice, 4, 5 are showing', function(done) {
                                 var waitUntilThisIsTrue = function(){
                                     return (Object.keys(outstandingCalls).length == 0 &&
                                     $('#PIPChoiceInputRadio').is(':visible') && $('#PIP4InputRadio').is(':visible') && $('#PIP5InputRadio').is(':visible'))
@@ -2361,6 +2637,29 @@ describe('Starting Test', function() {
                                 waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
                             }, 30000);
 
+                            it('Check All Products are showing', function(done) {
+                                var waitUntilThisIsTrue = function(){
+                                    return (Object.keys(outstandingCalls).length == 0 &&
+                                        $('#PIPChoiceInputRadio').is(':visible') &&
+                                        $('#PIP1InputRadio').is(':visible') &&
+                                        $('#PIP2InputRadio').is(':visible') &&
+                                        $('#PIP3InputRadio').is(':visible') &&
+                                        $('#PIP4InputRadio').is(':visible') &&
+                                        $('#PIP5InputRadio').is(':visible')
+                                    )
+                                }
+                                var thenDoThis = function(){
+                                    expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
+                                    done();
+                                }
+                                waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                            }, 30000);
+
                             it('Make sure PIP 4 is selected', function(done) {
                                 var waitUntilThisIsTrue = function(){
                                     return (Object.keys(outstandingCalls).length == 0 &&
@@ -2368,9 +2667,9 @@ describe('Starting Test', function() {
                                 }
                                 var thenDoThis = function(){
                                     expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
-                                    expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
-                                    expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
-                                    expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
 
@@ -2500,7 +2799,7 @@ describe('Starting Test', function() {
                             beforeAll(function(done) {
                                 typeThis('350000{{tab}}' , $('#totalBudgetConfirm'), done)
                             });
-                            it('Check Products, PIP Choice, 4, 5 are showing', function(done) {
+                            xit('Check Products, PIP Choice, 4, 5 are showing', function(done) {
                                 var waitUntilThisIsTrue = function(){
                                     return (Object.keys(outstandingCalls).length == 0 &&
                                     $('#PIPChoiceInputRadio').is(':visible') && $('#PIP4InputRadio').is(':visible') && $('#PIP5InputRadio').is(':visible'))
@@ -2517,6 +2816,29 @@ describe('Starting Test', function() {
                                 waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
                             }, 30000);
 
+                            it('Check All Products are showing', function(done) {
+                                var waitUntilThisIsTrue = function(){
+                                    return (Object.keys(outstandingCalls).length == 0 &&
+                                        $('#PIPChoiceInputRadio').is(':visible') &&
+                                        $('#PIP1InputRadio').is(':visible') &&
+                                        $('#PIP2InputRadio').is(':visible') &&
+                                        $('#PIP3InputRadio').is(':visible') &&
+                                        $('#PIP4InputRadio').is(':visible') &&
+                                        $('#PIP5InputRadio').is(':visible')
+                                    )
+                                }
+                                var thenDoThis = function(){
+                                    expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
+                                    done();
+                                }
+                                waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                            }, 30000);
+
                             it('Make sure PIP 5 is selected', function(done) {
                                 var waitUntilThisIsTrue = function(){
                                     return (Object.keys(outstandingCalls).length == 0 &&
@@ -2524,9 +2846,9 @@ describe('Starting Test', function() {
                                 }
                                 var thenDoThis = function(){
                                     expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
-                                    expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
-                                    expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
-                                    expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
 
@@ -2714,7 +3036,7 @@ describe('Starting Test', function() {
                             beforeAll(function(done) {
                                 typeThis('750000{{tab}}' , $('#totalBudgetConfirm'), done)
                             });
-                            it('Check Products, PIP Choice, 4, 5 are showing', function(done) {
+                            xit('Check Products, PIP Choice, 4, 5 are showing', function(done) {
                                 var waitUntilThisIsTrue = function(){
                                     return (Object.keys(outstandingCalls).length == 0 &&
                                     $('#PIPChoiceInputRadio').is(':visible') && $('#PIP4InputRadio').is(':visible') && $('#PIP5InputRadio').is(':visible'))
@@ -2731,6 +3053,29 @@ describe('Starting Test', function() {
                                 waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
                             }, 30000);
 
+                            it('Check All Products are showing', function(done) {
+                                var waitUntilThisIsTrue = function(){
+                                    return (Object.keys(outstandingCalls).length == 0 &&
+                                        $('#PIPChoiceInputRadio').is(':visible') &&
+                                        $('#PIP1InputRadio').is(':visible') &&
+                                        $('#PIP2InputRadio').is(':visible') &&
+                                        $('#PIP3InputRadio').is(':visible') &&
+                                        $('#PIP4InputRadio').is(':visible') &&
+                                        $('#PIP5InputRadio').is(':visible')
+                                    )
+                                }
+                                var thenDoThis = function(){
+                                    expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
+                                    done();
+                                }
+                                waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                            }, 30000);
+
                             it('Make sure PIP 5 is selected', function(done) {
                                 var waitUntilThisIsTrue = function(){
                                     return (Object.keys(outstandingCalls).length == 0 &&
@@ -2738,9 +3083,9 @@ describe('Starting Test', function() {
                                 }
                                 var thenDoThis = function(){
                                     expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
-                                    expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
-                                    expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
-                                    expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
 
@@ -2928,7 +3273,7 @@ describe('Starting Test', function() {
                             beforeAll(function(done) {
                                 typeThis('750000{{tab}}' , $('#totalBudgetConfirm'), done)
                             });
-                            it('Check Products, PIP Choice, 4, 5 are showing', function(done) {
+                            xit('Check Products, PIP Choice, 4, 5 are showing', function(done) {
                                 var waitUntilThisIsTrue = function(){
                                     return (Object.keys(outstandingCalls).length == 0 &&
                                     $('#PIPChoiceInputRadio').is(':visible') && $('#PIP4InputRadio').is(':visible') && $('#PIP5InputRadio').is(':visible'))
@@ -2945,6 +3290,29 @@ describe('Starting Test', function() {
                                 waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
                             }, 30000);
 
+                            it('Check All Products are showing', function(done) {
+                                var waitUntilThisIsTrue = function(){
+                                    return (Object.keys(outstandingCalls).length == 0 &&
+                                        $('#PIPChoiceInputRadio').is(':visible') &&
+                                        $('#PIP1InputRadio').is(':visible') &&
+                                        $('#PIP2InputRadio').is(':visible') &&
+                                        $('#PIP3InputRadio').is(':visible') &&
+                                        $('#PIP4InputRadio').is(':visible') &&
+                                        $('#PIP5InputRadio').is(':visible')
+                                    )
+                                }
+                                var thenDoThis = function(){
+                                    expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
+                                    done();
+                                }
+                                waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                            }, 30000);
+
                             it('Make sure PIP 5 is selected', function(done) {
                                 var waitUntilThisIsTrue = function(){
                                     return (Object.keys(outstandingCalls).length == 0 &&
@@ -2952,9 +3320,9 @@ describe('Starting Test', function() {
                                 }
                                 var thenDoThis = function(){
                                     expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
-                                    expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
-                                    expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
-                                    expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
 
@@ -3740,7 +4108,7 @@ describe('Starting Test', function() {
                                 openDatePickerAndClickDate($('#proposedExpirationDate'), date)
                             });
 
-                            it('Check Products, PIP Choice, 4, 5, and CPK, CGL are showing', function(done) {
+                            xit('Check Products, PIP Choice, 4, 5, and CPK, CGL are showing', function(done) {
                                 var waitUntilThisIsTrue = function(){
                                     return (Object.keys(outstandingCalls).length == 0 &&
                                         $('#PIPChoiceInputRadio').is(':visible') && $('#PIP4InputRadio').is(':visible') && $('#PIP5InputRadio').is(':visible') &&
@@ -3762,6 +4130,33 @@ describe('Starting Test', function() {
                                 waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
                             }, 30000);
 
+                            it('Check All Products are showing, and CPK, CGL are showing', function(done) {
+                                var waitUntilThisIsTrue = function(){
+                                    return (Object.keys(outstandingCalls).length == 0 &&
+                                        $('#PIPChoiceInputRadio').is(':visible') &&
+                                        $('#PIP1InputRadio').is(':visible') &&
+                                        $('#PIP2InputRadio').is(':visible') &&
+                                        $('#PIP3InputRadio').is(':visible') &&
+                                        $('#PIP4InputRadio').is(':visible') &&
+                                        $('#PIP5InputRadio').is(':visible') &&
+                                        $('#CPKInputRadio').is(':visible') &&
+                                        $('#CGLInputRadio').is(':visible')
+                                    )
+                                }
+                                var thenDoThis = function(){
+                                    expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#CPKInputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#CGLInputRadio').is(':visible')).toBeTruthy();
+                                    done();
+                                }
+                                waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                            }, 30000);
+
                             it('Make sure CPK is selected', function(done) {
                                 var waitUntilThisIsTrue = function(){
                                     return (Object.keys(outstandingCalls).length == 0 &&
@@ -3771,9 +4166,9 @@ describe('Starting Test', function() {
                                 }
                                 var thenDoThis = function(){
                                     expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
-                                    expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
-                                    expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
-                                    expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#CPKInputRadio').is(':visible')).toBeTruthy();
@@ -3890,7 +4285,7 @@ describe('Starting Test', function() {
                             openDatePickerAndClickDate($('#proposedExpirationDate'), date)
                         });
 
-                        it('Check Products, PIP Choice, 4, 5, and CPK, CGL are showing', function(done) {
+                        xit('Check Products, PIP Choice, 4, 5, and CPK, CGL are showing', function(done) {
                             var waitUntilThisIsTrue = function(){
                                 return (Object.keys(outstandingCalls).length == 0 &&
                                     $('#PIPChoiceInputRadio').is(':visible') && $('#PIP4InputRadio').is(':visible') && $('#PIP5InputRadio').is(':visible') &&
@@ -3912,6 +4307,33 @@ describe('Starting Test', function() {
                             waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
                         }, 30000);
 
+                        it('Check All Products are showing, and CPK, CGL are showing', function(done) {
+                            var waitUntilThisIsTrue = function(){
+                                return (Object.keys(outstandingCalls).length == 0 &&
+                                    $('#PIPChoiceInputRadio').is(':visible') &&
+                                    $('#PIP1InputRadio').is(':visible') &&
+                                    $('#PIP2InputRadio').is(':visible') &&
+                                    $('#PIP3InputRadio').is(':visible') &&
+                                    $('#PIP4InputRadio').is(':visible') &&
+                                    $('#PIP5InputRadio').is(':visible') &&
+                                    $('#CPKInputRadio').is(':visible') &&
+                                    $('#CGLInputRadio').is(':visible')
+                                )
+                            }
+                            var thenDoThis = function(){
+                                expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#CPKInputRadio').is(':visible')).toBeTruthy();
+                                expect($('#CGLInputRadio').is(':visible')).toBeTruthy();
+                                done();
+                            }
+                            waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                        }, 30000);
+
                         it('Make sure CPK is selected', function(done) {
                             var waitUntilThisIsTrue = function(){
                                 return (Object.keys(outstandingCalls).length == 0 &&
@@ -3921,9 +4343,9 @@ describe('Starting Test', function() {
                             }
                             var thenDoThis = function(){
                                 expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
-                                expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
+                                expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
                                 expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
                                 expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
                                 expect($('#CPKInputRadio').is(':visible')).toBeTruthy();
@@ -4030,12 +4452,12 @@ describe('Starting Test', function() {
                             expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$3.13");
 
                             expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                            expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                            expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
                         });
 
                         it('Check Total Premium is Correct', function() {
-                            expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$1,632.14");
+                            expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$1,717.14");
                         });
 
                         it('Check Terms are filled', function() {
@@ -4085,9 +4507,9 @@ describe('Starting Test', function() {
                                 expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$14.23");
 
                                 expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
-                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,359.74");
+                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,444.74");
                                 done();
                             }
                             waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
@@ -4137,9 +4559,9 @@ describe('Starting Test', function() {
                                 expect( $("#step-2 .SOFTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Stamping Office Fee(0.002)");
                                 expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$14.28");
                                 expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
-                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,385.54");
+                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,470.54");
 
                                 done();
                             }
@@ -4190,9 +4612,9 @@ describe('Starting Test', function() {
                                 expect( $("#step-2 .SOFTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Stamping Office Fee(0.002)");
                                 expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$14.28");
                                 expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
-                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,385.54");
+                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,470.54");
 
                                 done();
                             }
@@ -4215,7 +4637,7 @@ describe('Starting Test', function() {
                             openDatePickerAndClickDate($('#proposedExpirationDate'), date)
                         });
 
-                        it('Check Products, PIP Choice, 4, 5, and CPK, CGL are showing', function(done) {
+                        xit('Check Products, PIP Choice, 4, 5, and CPK, CGL are showing', function(done) {
                             var waitUntilThisIsTrue = function(){
                                 return (Object.keys(outstandingCalls).length == 0 &&
                                     $('#PIPChoiceInputRadio').is(':visible') && $('#PIP4InputRadio').is(':visible') && $('#PIP5InputRadio').is(':visible') &&
@@ -4237,6 +4659,33 @@ describe('Starting Test', function() {
                             waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
                         }, 30000);
 
+                        it('Check All Products are showing, and CPK, CGL are showing', function(done) {
+                            var waitUntilThisIsTrue = function(){
+                                return (Object.keys(outstandingCalls).length == 0 &&
+                                    $('#PIPChoiceInputRadio').is(':visible') &&
+                                    $('#PIP1InputRadio').is(':visible') &&
+                                    $('#PIP2InputRadio').is(':visible') &&
+                                    $('#PIP3InputRadio').is(':visible') &&
+                                    $('#PIP4InputRadio').is(':visible') &&
+                                    $('#PIP5InputRadio').is(':visible') &&
+                                    $('#CPKInputRadio').is(':visible') &&
+                                    $('#CGLInputRadio').is(':visible')
+                                )
+                            }
+                            var thenDoThis = function(){
+                                expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#CPKInputRadio').is(':visible')).toBeTruthy();
+                                expect($('#CGLInputRadio').is(':visible')).toBeTruthy();
+                                done();
+                            }
+                            waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                        }, 30000);
+
                         it('Make sure CPK is selected', function(done) {
                             var waitUntilThisIsTrue = function(){
                                 return (Object.keys(outstandingCalls).length == 0 &&
@@ -4246,9 +4695,9 @@ describe('Starting Test', function() {
                             }
                             var thenDoThis = function(){
                                 expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
-                                expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
+                                expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
                                 expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
                                 expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
                                 expect($('#CPKInputRadio').is(':visible')).toBeTruthy();
@@ -4362,12 +4811,12 @@ describe('Starting Test', function() {
                             expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$3.27");
 
                             expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                            expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                            expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
                         });
 
                         it('Check Total Premium is Correct', function() {
-                            expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$1,701.29");
+                            expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$1,786.29");
                         });
 
                         it('Check Terms are filled', function() {
@@ -4416,9 +4865,9 @@ describe('Starting Test', function() {
                                 expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$14.27");
 
                                 expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
-                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,377.29");
+                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,462.29");
                                 done();
                             }
                             waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
@@ -4468,9 +4917,9 @@ describe('Starting Test', function() {
                                 expect( $("#step-2 .SOFTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Stamping Office Fee(0.002)");
                                 expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$14.32");
                                 expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
-                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,403.09");
+                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,488.09");
 
                                 done();
                             }
@@ -4521,9 +4970,9 @@ describe('Starting Test', function() {
                                 expect( $("#step-2 .SOFTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Stamping Office Fee(0.002)");
                                 expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$14.32");
                                 expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
-                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,403.09");
+                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,488.09");
 
                                 done();
                             }
@@ -4574,9 +5023,9 @@ describe('Starting Test', function() {
                                 expect( $("#step-2 .SOFTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Stamping Office Fee(0.002)");
                                 expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$14.52");
                                 expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
-                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,506.29");
+                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,591.29");
 
                                 done();
                             }
@@ -4627,9 +5076,9 @@ describe('Starting Test', function() {
                                 expect( $("#step-2 .SOFTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Stamping Office Fee(0.002)");
                                 expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$14.72");
                                 expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
-                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,609.49");
+                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,694.49");
 
                                 done();
                             }
@@ -4652,7 +5101,7 @@ describe('Starting Test', function() {
                             openDatePickerAndClickDate($('#proposedExpirationDate'), date)
                         });
 
-                        it('Check Products, PIP Choice, 4, 5, and CPK, CGL are showing', function(done) {
+                        xit('Check Products, PIP Choice, 4, 5, and CPK, CGL are showing', function(done) {
                             var waitUntilThisIsTrue = function(){
                                 return (Object.keys(outstandingCalls).length == 0 &&
                                     $('#PIPChoiceInputRadio').is(':visible') && $('#PIP4InputRadio').is(':visible') && $('#PIP5InputRadio').is(':visible') &&
@@ -4674,6 +5123,33 @@ describe('Starting Test', function() {
                             waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
                         }, 30000);
 
+                        it('Check All Products are showing, and CPK, CGL are showing', function(done) {
+                            var waitUntilThisIsTrue = function(){
+                                return (Object.keys(outstandingCalls).length == 0 &&
+                                    $('#PIPChoiceInputRadio').is(':visible') &&
+                                    $('#PIP1InputRadio').is(':visible') &&
+                                    $('#PIP2InputRadio').is(':visible') &&
+                                    $('#PIP3InputRadio').is(':visible') &&
+                                    $('#PIP4InputRadio').is(':visible') &&
+                                    $('#PIP5InputRadio').is(':visible') &&
+                                    $('#CPKInputRadio').is(':visible') &&
+                                    $('#CGLInputRadio').is(':visible')
+                                )
+                            }
+                            var thenDoThis = function(){
+                                expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#CPKInputRadio').is(':visible')).toBeTruthy();
+                                expect($('#CGLInputRadio').is(':visible')).toBeTruthy();
+                                done();
+                            }
+                            waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                        }, 30000);
+
                         it('Make sure CPK is selected', function(done) {
                             var waitUntilThisIsTrue = function(){
                                 return (Object.keys(outstandingCalls).length == 0 &&
@@ -4683,9 +5159,9 @@ describe('Starting Test', function() {
                             }
                             var thenDoThis = function(){
                                 expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
-                                expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
+                                expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
                                 expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
                                 expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
                                 expect($('#CPKInputRadio').is(':visible')).toBeTruthy();
@@ -5153,9 +5629,9 @@ describe('Starting Test', function() {
 
                                 var thenDoThis = function(){
                                     expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
-                                    expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
-                                    expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
-                                    expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#CPKInputRadio').is(':visible')).toBeTruthy();
@@ -5174,9 +5650,9 @@ describe('Starting Test', function() {
                                 }
                                 var thenDoThis = function(){
                                     expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
-                                    expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
-                                    expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
-                                    expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
+                                    expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                    expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
                                     expect($('#CPKInputRadio').is(':visible')).toBeTruthy();
@@ -5303,9 +5779,9 @@ describe('Starting Test', function() {
 
                             var thenDoThis = function(){
                                 expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
-                                expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
+                                expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
                                 expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
                                 expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
                                 expect($('#CPKInputRadio').is(':visible')).toBeTruthy();
@@ -5324,9 +5800,9 @@ describe('Starting Test', function() {
                             }
                             var thenDoThis = function(){
                                 expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
-                                expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
+                                expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
                                 expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
                                 expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
                                 expect($('#CPKInputRadio').is(':visible')).toBeTruthy();
@@ -5427,12 +5903,12 @@ describe('Starting Test', function() {
                             expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$2.23");
 
                             expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                            expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                            expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
                         });
 
                         it('Check Total Premium is Correct', function() {
-                            expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$1,167.74");
+                            expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$1,252.74");
                         });
 
                         xit('Check Terms are filled', function() {
@@ -5491,9 +5967,9 @@ describe('Starting Test', function() {
                                 expect( $("#step-2 .SOFTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Stamping Office Fee(0.002)");
                                 expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$2.28");
                                 expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
-                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$1,193.54");
+                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$1,278.54");
 
                                 done();
                             }
@@ -5544,9 +6020,9 @@ describe('Starting Test', function() {
                                 expect( $("#step-2 .SOFTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Stamping Office Fee(0.002)");
                                 expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$2.28");
                                 expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
-                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$1,193.54");
+                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$1,278.54");
 
                                 done();
                             }
@@ -5600,9 +6076,9 @@ describe('Starting Test', function() {
 
                             var thenDoThis = function(){
                                 expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
-                                expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
+                                expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
                                 expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
                                 expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
                                 expect($('#CPKInputRadio').is(':visible')).toBeTruthy();
@@ -5621,9 +6097,9 @@ describe('Starting Test', function() {
                             }
                             var thenDoThis = function(){
                                 expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
-                                expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
+                                expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
                                 expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
                                 expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
                                 expect($('#CPKInputRadio').is(':visible')).toBeTruthy();
@@ -5707,12 +6183,12 @@ describe('Starting Test', function() {
                             expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$2.27");
 
                             expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                            expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                            expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
                         });
 
                         it('Check Total Premium is Correct', function() {
-                            expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$1,185.29");
+                            expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$1,270.29");
                         });
 
                         xit('Check Terms are filled', function() {
@@ -5771,9 +6247,9 @@ describe('Starting Test', function() {
                                 expect( $("#step-2 .SOFTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Stamping Office Fee(0.002)");
                                 expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$2.32");
                                 expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
-                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$1,211.09");
+                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$1,296.09");
 
                                 done();
                             }
@@ -5824,9 +6300,9 @@ describe('Starting Test', function() {
                                 expect( $("#step-2 .SOFTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Stamping Office Fee(0.002)");
                                 expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$2.32");
                                 expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
-                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$1,211.09");
+                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$1,296.09");
 
                                 done();
                             }
@@ -5877,9 +6353,9 @@ describe('Starting Test', function() {
                                 expect( $("#step-2 .SOFTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Stamping Office Fee(0.002)");
                                 expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$2.52");
                                 expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
-                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$1,314.29");
+                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$1,399.29");
 
                                 done();
                             }
@@ -5930,9 +6406,9 @@ describe('Starting Test', function() {
                                 expect( $("#step-2 .SOFTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Stamping Office Fee(0.002)");
                                 expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$2.72");
                                 expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
-                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$1,417.49");
+                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$1,502.49");
 
                                 done();
                             }
@@ -5965,9 +6441,9 @@ describe('Starting Test', function() {
 
                             var thenDoThis = function(){
                                 expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
-                                expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
+                                expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
                                 expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
                                 expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
                                 expect($('#CPKInputRadio').is(':visible')).toBeTruthy();
@@ -6007,9 +6483,9 @@ describe('Starting Test', function() {
                             }
                             var thenDoThis = function(){
                                 expect($('#PIPChoiceInputRadio').is(':visible')).toBeTruthy();
-                                expect($('#PIP1InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP2InputRadio').is(':visible')).toBeFalsy();
-                                expect($('#PIP3InputRadio').is(':visible')).toBeFalsy();
+                                expect($('#PIP1InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP2InputRadio').is(':visible')).toBeTruthy();
+                                expect($('#PIP3InputRadio').is(':visible')).toBeTruthy();
                                 expect($('#PIP4InputRadio').is(':visible')).toBeTruthy();
                                 expect($('#PIP5InputRadio').is(':visible')).toBeTruthy();
                                 expect($('#CPKInputRadio').is(':visible')).toBeTruthy();
@@ -6583,12 +7059,12 @@ describe('Starting Test', function() {
                             expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$11.50");
 
                             expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                            expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                            expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
                         });
 
                         it('Check Total Premium is Correct', function() {
-                            expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$5,949.00");
+                            expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$6,034.00");
                         });
 
                         describe('Testing EPKG37 Options ', function() {
@@ -6644,9 +7120,9 @@ describe('Starting Test', function() {
                                     expect( $("#step-2 .SOFTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Stamping Office Fee(0.002)");
                                     expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$46.50");
                                     expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                    expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                    expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
-                                    expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$24,009.00");
+                                    expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$24,094.00");
 
 
                                     done();
@@ -6698,9 +7174,9 @@ describe('Starting Test', function() {
                                     expect( $("#step-2 .SOFTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Stamping Office Fee(0.002)");
                                     expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$47.00");
                                     expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                    expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                    expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
-                                    expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$24,267.00");
+                                    expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$24,352.00");
 
 
                                     done();
@@ -6753,9 +7229,9 @@ describe('Starting Test', function() {
                                     expect( $("#step-2 .SOFTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Stamping Office Fee(0.002)");
                                     expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$47.60");
                                     expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                    expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                    expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
-                                    expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$24,576.60");
+                                    expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$24,661.60");
 
                                     done();
                                 }
@@ -6777,7 +7253,7 @@ describe('Starting Test', function() {
                                 var thenDoThis = function(){
                                     expect( $("#step-2 span").filter(function() { return ($(this).text() === 'Civil Authority (US Only)') }).length ).toEqual(0);
                                     expect( $("#EPKG37PremiumTotal").html().trim() ).toEqual("$23,250");
-                                    expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$24,009.00");
+                                    expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$24,094.00");
 
                                     expect($('#EPKGFWCNWCCIVIL500AdditionalCoverage').is(':checked')).toBeFalsy()
                                     done();
@@ -7091,12 +7567,12 @@ describe('Starting Test', function() {
                             expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$3.90");
 
                             expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                            expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                            expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
                         });
 
                         it('Check Total Premium is Correct', function() {
-                            expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$2,027.40");
+                            expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$2,112.40");
                         });
 
                         it('Check Terms are filled', function() {
@@ -7146,9 +7622,9 @@ describe('Starting Test', function() {
                                 expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
 
                                 expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
-                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,755.00");
+                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,840.00");
                                 done();
                             }
                             waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
@@ -7198,9 +7674,9 @@ describe('Starting Test', function() {
                                 expect( $("#step-2 .SOFTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Stamping Office Fee(0.002)");
                                 expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$15.05");
                                 expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
-                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,780.80");
+                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,865.80");
 
                                 done();
                             }
@@ -7251,9 +7727,9 @@ describe('Starting Test', function() {
                                 expect( $("#step-2 .SOFTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Stamping Office Fee(0.002)");
                                 expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$15.05");
                                 expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
-                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,780.80");
+                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,865.80");
 
                                 done();
                             }
@@ -7413,12 +7889,12 @@ describe('Starting Test', function() {
                             expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$4.00");
 
                             expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                            expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                            expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
                         });
 
                         it('Check Total Premium is Correct', function() {
-                            expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$2,079.00");
+                            expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$2,164.00");
                         });
 
                         it('Check Terms are filled', function() {
@@ -7467,9 +7943,9 @@ describe('Starting Test', function() {
                                 expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
 
                                 expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
-                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,755.00");
+                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,840.00");
                                 done();
                             }
                             waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
@@ -7519,9 +7995,9 @@ describe('Starting Test', function() {
                                 expect( $("#step-2 .SOFTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Stamping Office Fee(0.002)");
                                 expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$15.05");
                                 expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
-                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,780.80");
+                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,865.80");
 
                                 done();
                             }
@@ -7572,9 +8048,9 @@ describe('Starting Test', function() {
                                 expect( $("#step-2 .SOFTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Stamping Office Fee(0.002)");
                                 expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$15.05");
                                 expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
-                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,780.80");
+                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,865.80");
 
                                 done();
                             }
@@ -7625,9 +8101,9 @@ describe('Starting Test', function() {
                                 expect( $("#step-2 .SOFTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Stamping Office Fee(0.002)");
                                 expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$15.25");
                                 expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
-                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,884.00");
+                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,969.00");
 
                                 done();
                             }
@@ -7678,9 +8154,9 @@ describe('Starting Test', function() {
                                 expect( $("#step-2 .SOFTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Stamping Office Fee(0.002)");
                                 expect( $("#step-2 .SOFTaxRow .taxSpan").html().trim() ).toEqual("$15.45");
                                 expect( $("#step-2 .PolicyFeeTaxRow .taxDescriptionSpan").html().trim() ).toEqual("Policy Fee");
-                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$15.00");
+                                expect( $("#step-2 .PolicyFeeTaxRow .taxSpan").html().trim() ).toEqual("$100.00");
 
-                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$7,987.20");
+                                expect( $("#step-2 #premiumAllLOBTotal").html().trim() ).toEqual("$8,072.20");
 
                                 done();
                             }

@@ -1,4 +1,5 @@
 %{--<%@ page import="portal.Coverage" %>--}%
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,9 +7,10 @@
     <link rel="stylesheet" href="${resource(dir: 'css', file: 'newSubmission.css')}" type="text/css">
 
     <script>
-        versionMode = false;
+        var versionMode = false;
         <g:if test="${versionMode == true}">
             versionMode= true;
+            var origVersionQuestionAnswerMap = ${raw(questionAnswerMapString)}
         </g:if>
     </script>
     <script src="${resource(dir: 'js', file: "/newSubmissionUtils/progressSaveLoad.js?ts=" + new Date().getTime())}" async></script>
@@ -23,6 +25,7 @@
     <script src="${resource(dir: 'js', file: "newSubmission.js?ts=" + new Date().getTime())}" async></script>
 
 
+
     <g:if test="${user.admin == "true"}">
         <script src="${resource(dir: 'js/utils/', file: 'randomGenerator.js')}" ></script>
         <script src="${resource(dir: 'js', file: 'jquery.autotype.js')}" ></script>
@@ -30,8 +33,9 @@
         %{--<script src="${resource(dir: 'test/jasmine/', file: 'lib/jasmine-2.5.2/jasmine-html.js')}"></script>--}%
         %{--<script src="${resource(dir: 'test/jasmine/', file: 'lib/jasmine-2.5.2/boot.js')}"></script>--}%
         %{--<script src="${resource(dir: 'test/jasmine/', file: 'lib/jasmine-2.5.2/jasmine-jquery.js')}"></script>--}%
-        <script src="${resource(dir: 'test/jasmine/', file: 'utils/testHelper.js'+"?ts=" + new Date().getTime())}"></script>
     </g:if>
+
+    <script src="${resource(dir: 'test/jasmine/', file: 'utils/testHelper.js'+"?ts=" + new Date().getTime())}"></script>
 
 
 
@@ -57,22 +61,24 @@
 <form id="intelledox" role="form">
 </form>
 <div class="container">
-    <div class="row">
-        <div class="alert alert-success alert-dismissible" id="previousSubmissionExistsAlert" role="alert" style="display:none;">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            <span>Looks like you were working on a submission previously. Would you like to continue your previous submission?</span>
-            <button class="btn btn-xs btn-danger pull-right" id="continuePreviousSubmissionNo" data-dismiss="alert"
-                    type="button" style="margin-left: 10px; margin-right: 10px; width:70px;">
-                <span class="" style="">No</span>
-            </button>
-            <button class="btn btn-xs btn-success pull-right loadProgress" id="continuePreviousSubmissionYes" type="button" style="margin-left: 10px; margin-right: 10px; width:70px;">
-                <span class="" style="">Yes</span>
-            </button>
+    <g:if test="${versionMode == false}">
+        <div class="row">
+            <div class="alert alert-success alert-dismissible" id="previousSubmissionExistsAlert" role="alert" style="display:none;">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <span>Looks like you were working on a submission previously. Would you like to continue your previous submission?</span>
+                <button class="btn btn-xs btn-danger pull-right" id="continuePreviousSubmissionNo" data-dismiss="alert"
+                        type="button" style="margin-left: 10px; margin-right: 10px; width:70px;">
+                    <span class="" style="">No</span>
+                </button>
+                <button class="btn btn-xs btn-success pull-right loadProgress" id="continuePreviousSubmissionYes" type="button" style="margin-left: 10px; margin-right: 10px; width:70px;">
+                    <span class="" style="">Yes</span>
+                </button>
+            </div>
         </div>
+    </g:if>
 
-    </div>
     <div class="row">
         <div class="col-xs-1" style="margin-top:80px">
             <g:if test="${user.admin == "true"}">
@@ -87,23 +93,35 @@
         <div class="col-xs-10">
             <g:if test="${versionMode == false}">
                 <h1>New Policy</h1>
+                <h4 style="text-align: center; margin-bottom:4px;" id="riskCategoryHeader"></h4>
+                <h5 style="text-align: center; margin-top: 0px; margin-bottom:0px;" id="riskTypeHeader"></h5>
+
             </g:if>
             <g:elseif test="${versionMode == true}">
-                <h1>New Version</h1>
+                <h1 style="margin-bottom:0px;">${questionAnswerMap.namedInsured} </h1>
+                <h4 style="text-align:center; margin:0px; color: rgb(94, 94, 94);">${quoteResults.CoverageID.replaceAll("\"", "").replace("'", "")}</h4>
+                <h5 style="text-align: center; margin:0px; color: rgba(70, 147, 194, 0.95);" id="riskCategoryHeader"></h5>
+                <h6 style="text-align: center; margin:0px; color: rgba(70, 147, 194, 0.95);" id="riskTypeHeader"></h6>
+                <h6 style="text-align:center; color: rgb(94, 94, 94);">Creating <u>Version ${versionLetter}</u> based on Version ${originalVersion}</h6>
             </g:elseif>
-            <h4 style="text-align: center; margin-bottom:4px;" id="riskCategoryHeader"></h4>
-            <h5 style="text-align: center; margin-top: 0px; margin-bottom:0px;" id="riskTypeHeader"></h5>
+
         </div>
-        <div class="col-xs-1" style="margin-top:80px">
-            <button class="btn btn-xs btn-success pull-right" id="saveProgress" type="button"
-                    style="display:none;background-color: #194b8a;border-color: #194b8a;margin: 2px;">
-                <i class="fa fa-floppy-o" aria-hidden="true"></i>
-                <span class="" style="font-size: 14px; font-weight: 500" > Save Progress</span>
-            </button>
-            <button class="btn btn-xs btn-success pull-right loadProgress" id="loadProgress" type="button" style="display:none ;background-color: #15a175;border-color: #15a175;margin: 2px; ">
-                <i class="fa fa-folder-open-o" aria-hidden="true"></i>
-                <span class="" style="font-size: 14px; font-weight: 500" > Load Previous</span>
-            </button>
+        <div class="col-xs-1" id="saveLoadButtonContainer" style="margin-top:80px">
+            %{--IF VERSION MODE HIDE SAVE LOAD BUTTONS FOR NOW, UNTIL SAVING VERSION PROGRESS IS SET UP--}%
+            <g:if test="${versionMode == false}">
+                <button class="btn btn-xs btn-success pull-right" id="saveProgress" type="button"
+                        style="display:none;background-color: #194b8a;border-color: #194b8a;margin: 2px;">
+                    <i class="fa fa-floppy-o" aria-hidden="true"></i>
+                    <span class="" style="font-size: 14px; font-weight: 500" > Save Progress</span>
+                </button>
+                <button class="btn btn-xs btn-success pull-right loadProgress" id="loadProgress" type="button" style="display:none ;background-color: #15a175;border-color: #15a175;margin: 2px; ">
+                    <i class="fa fa-folder-open-o" aria-hidden="true"></i>
+                    <span class="" style="font-size: 14px; font-weight: 500" > Load Previous</span>
+                </button>
+            </g:if>
+            <g:elseif test="${versionMode == true}">
+            </g:elseif>
+
         </div>
     </div>
 

@@ -546,9 +546,150 @@ function loadSaveFunction(loadMap) {
         $('#progressBarModal').modal('hide');
         loadingSaveInProgress = false;
     }, 3000);
+}
 
-    //
+function loadVersionFunction(loadMap) {
+    loadingSaveInProgress = true;
+    loadedSubmissionMap = loadMap;
+    var loadingStep = 1;
+    currentStep = 1;
 
+
+    $('#progressBarHeader').html("Loading Version")
+    $('.progress-bar').attr('aria-valuenow', "0").css("width", "0%");
+    $('#progressBarModal').modal('show');
+    $('.progress-bar').attr('aria-valuenow', "75").animate({
+        width: "75%"
+    }, 5000);
+    var value;
+    riskChosen = loadMap['riskChosen'];
+
+    $('a').each(function() {
+        if ($(this).html() === loadMap['riskChosen']) {
+
+            // alert("click " + $(this).html())
+            var domObject = $(this);
+            // console.log($(domObject).html())
+            $(domObject).trigger('click');
+        }
+    });
+
+
+    if (loadMap['proposedEffectiveDate'].length > 0) {
+        var dateTemp = loadMap['proposedEffectiveDate']
+        var monthsTemp = parseInt(dateTemp.split("/")[0])
+        var daysTemp = parseInt(dateTemp.split("/")[1])
+        var yearsTemp = parseInt(dateTemp.split("/")[2])
+        if(monthsTemp < 10){
+            monthsTemp = '0' + monthsTemp;
+
+        }
+        if(daysTemp < 10 ){
+            daysTemp = '0' + daysTemp;
+        }
+        var finalDateString = monthsTemp + "/" + daysTemp + "/" + yearsTemp
+        $('#proposedEffectiveDate').val(finalDateString);
+        $("#proposedEffectiveDate").trigger("change");
+
+    }
+    if (loadMap['proposedExpirationDate'].length > 0) {
+        var dateTemp = loadMap['proposedExpirationDate']
+        var monthsTemp = parseInt(dateTemp.split("/")[0])
+        var daysTemp = parseInt(dateTemp.split("/")[1])
+        var yearsTemp = parseInt(dateTemp.split("/")[2])
+        if(monthsTemp < 10){
+            monthsTemp = '0' + monthsTemp;
+        }
+        if(daysTemp < 10 ){
+            daysTemp = '0' + daysTemp;
+        }
+        var finalDateString = monthsTemp + "/" + daysTemp + "/" + yearsTemp
+
+        $('#proposedExpirationDate').val(finalDateString);
+        $("#proposedExpirationDate").trigger("change");
+
+    }
+    if (loadMap['proposedTermLength'].length > 0) {
+        $('#proposedTermLength').val(loadMap['proposedTermLength']);
+        //$("#proposedTermLength").trigger("change");
+    }
+    if (loadMap['totalBudgetConfirm'].length > 0) {
+
+        $('#totalBudgetConfirm').val(loadMap['totalBudgetConfirm']);
+        $("#totalBudgetConfirm").trigger("change");
+
+    }
+
+    enableCoverageOptionsContainer()
+
+
+    setTimeout(function() {
+        // console.log("spec films loaded: " + specFilmsScriptLoaded)
+        Object.keys(loadMap).forEach(function(key) {
+
+            value = loadMap[key];
+            var domObject = $('#' + key);
+            // console.log($(domObject).attr('id') + " == " + $(domObject).val())
+            if ($(domObject).css("display") != "none") {
+                $(domObject).css('display', '');
+            }
+
+            if ($(domObject).is("select")) {
+                $(domObject).val(value);
+                //console.log("SELECT TYPE = " + domObject);
+                // $(domObject).trigger("change");
+            }
+            else if ($(domObject).is(':checkbox')) {
+                //console.log("CHECKBOX TYPE = " + domObject);
+                if (value === true) {
+                    $(domObject).prop("checked", true);
+
+                }
+                else {
+                    $(domObject).prop("checked", false);
+                }
+                // $(domObject).trigger("change");
+
+            }
+            else if ($(domObject).is(':radio')) {
+                //console.log("RADIO TYPE = " + domObject);
+                if (value === true) {
+                    $(domObject).prop("checked", true);
+                }
+                else {
+                    //$(domObject).prop("checked", false);
+                }
+                // $(domObject).trigger("change");
+
+            }
+            else if ($(domObject).is(':file')) {
+                //console.log("RADIO TYPE = " + domObject);
+                // $(domObject).get(0).files.push(value);
+
+            }
+            else {
+                //console.log("ELSE TYPE = " + domObject);
+                $(domObject).val(value);
+                // $(domObject).trigger("change");
+
+            }
+
+        });
+
+        if (loadMap['proposedEffectiveDate'].length == 0) {
+            $('#proposedEffectiveDate').val("");
+            //$("#proposedEffectiveDate").trigger("change");
+
+        }
+        if (loadMap['proposedExpirationDate'].length == 0) {
+            $('#proposedExpirationDate').val("");
+            //$("#proposedExpirationDate").trigger("change");
+        }
+        $('.progress-bar').attr('aria-valuenow', "100").css("width", "100%");
+        $('#progressBarModal').modal('hide');
+        loadingSaveInProgress = false;
+        // ratePremiums()
+    }, 3000);
 }
 
 function eventFire(el, etype){

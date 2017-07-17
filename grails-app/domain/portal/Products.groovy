@@ -19,6 +19,7 @@ class Products {
     String forms
     BigDecimal agentPct
     BigDecimal grossPct
+    String rateInfo
 
     static constraints = {
         productID(unique:true)
@@ -48,5 +49,25 @@ class Products {
         minPremium nullable:true
         flatPremium (scale: 2, maxSize:32)
 
+        rateInfo nullable:true
+    }
+
+    def getDisplayName(column){
+        def names = [
+                "productName": "Product Name",
+                "productID": "Product ID",
+                "aimProductID": "AIM Product ID",
+                "coverage": "Coverage"
+        ]
+
+        return names[column]
+    }
+    def getDisplayOrder(){
+        def order = [
+            "productName",
+            "productID",
+            "aimProductID",
+                "coverage"
+        ]
     }
 }

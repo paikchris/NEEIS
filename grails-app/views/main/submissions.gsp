@@ -9,7 +9,15 @@
             margin-left: 10px;
             margin-right: 10px;
         }
-
+        table.table{
+            font-size:13px;
+        }
+        table.table>tbody>tr.submissionRow:hover{
+            background-color:rgba(123, 172, 190, 0.21);
+        }
+        table.table>tbody>tr.versionRow:hover{
+            background-color:rgba(50, 174, 3, 0.26);
+        }
         .statusChangeButton:disabled{
             cursor:default;
         }
@@ -19,6 +27,20 @@
         }
         .submissionQuickOptions{
         }
+
+        .table>tbody>tr.versionRow>td, .table>tbody>tr.versionRow>th{
+            padding-top: 4px;
+            padding-bottom: 4px;
+            padding-left: 15px;
+            font-size: 11px;
+        }
+        .table>tbody>tr.versionRow>td>span, .table>tbody>tr.versionRow>th>span{
+            font-size: 11px;
+        }
+        .table>tbody>tr.versionRow{
+            background-color: rgba(157, 198, 164, 0.26);
+        }
+
     </style>
 </head>
 
@@ -95,7 +117,7 @@
 
                 <tbody id="submissionRows" style="font-size: 13px;">
                         <g:each in="${submissions}" var="s" status="i">
-                            <div>
+                            <tbody class="submissionRowContainer">
                                 <g:if test="${s.seenByUW == "Y"}">
                                     <tr class="submissionRow" style="cursor:pointer">
                                 </g:if>
@@ -112,7 +134,8 @@
                                 </g:if>
                                 <g:elseif test="${user.userRole == "Underwriter"}">
                                     <g:if test="${s.web == "true"}">
-                                        <td><span class="glyphicon glyphicon-cloud" aria-hidden="true" style="color: rgba(146, 221, 237, 1);font-size: 14px;"></span></td>
+                                        <td><span class="glyphicon glyphicon-cloud" aria-hidden="true"
+                                                  style="color: rgba(146, 221, 237, 1);font-size: 14px; min-width: 70px"></span></td>
                                     </g:if>
                                     <g:else>
                                         <td><span class="" aria-hidden="" style="color: rgba(146, 221, 237, 1);font-size: 14px;"></span></td>
@@ -182,7 +205,7 @@
                                     </td>
                                     <td class="aimVersionTD" style="display:none">${s.aimVersion}</td>
                                 </tr>
-                            </div>
+                            </tbody>
                         </g:each>
                 </tbody>
             </table>

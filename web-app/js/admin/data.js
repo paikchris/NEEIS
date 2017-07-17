@@ -3,8 +3,35 @@
  */
 
 
+var currentRiskTypeObject = {}
+var currentProductSettingsObject = {}
+var currentProductObject = {}
+var currentProductDetailsObject = {}
+var currentProductLOBDetailsObject = {}
+var currentProductFormDetailsObject = []
+
+var typeAheadFormNames = []
+var typeAheadFormIDs = []
+
 $(document).ready(function () {
-    $('.currency').maskMoney({prefix:'$', precision:"0"});
+
+    dataInit()
+    initDatepickers()
+    maskMoneyInputs()
+    initializeUnsavedChangeListener()
+    initializeTypeAheadFunctions()
+});
+
+//INIT FUNCTIONS
+function dataInit(){
+    intializeListeners()
+    initMultiRange()
+
+    maskMoneyInputs()
+
+
+}
+function intializeListeners(){
 
     $('a.someclass').click(function(e)
     {
@@ -14,80 +41,65 @@ $(document).ready(function () {
         e.preventDefault();
     });
 
-
     /////////////////////////////////////////////////////////////////
     //RISK TYPE AND RISK CATEGORY LISTENERS
     /////////////////////////////////////////////////////////////////
     $(document).on('click', '.riskCategory_ListItem', function (e){
-        if($(this).hasClass('active')){
-            $(this).removeClass('active')
-            $('.subCategory_ListItem').css('display','none');
-            $('.subCategory_ListItem').removeClass('active')
-            $('.riskType_ListItem').css('display','none');
-            $('.riskType_ListItem').removeClass('active')
-
-        }
-        else{
-            $('.riskCategory_ListItem').removeClass('active');
-            $(this).addClass('active');
-            $('.subCategory_ListItem').css('display','none');
-            $('.subCategory_ListItem').removeClass('active')
-            $('.riskType_ListItem').css('display','none');
-            $('.riskType_ListItem').removeClass('active')
-
-            var categoryCode = $(this).attr('data-riskcategorycode').trim();
-            $(this).siblings('.subCategory_ListItem').each(function() {
-                if(categoryCode == $(this).attr('data-risktypecategory').trim()){
-                    $(this).css('display','')
-                }
-            });
-
-            $('#riskTypeFields').css('display', 'none')
-            $('#riskCategoryFields').css('display', '')
-            fillRiskCategoryFields(this)
-        }
-        e.preventDefault();
-
+        clickOnRiskCategoryAction(this, e)
     });
-
     $(document).on('click', '.subCategory_ListItem', function (e){
-        if($(this).hasClass('active')){
-            $(this).removeClass('active')
-            $('.subCategory_ListItem').removeClass('active')
-            $('.riskType_ListItem').css('display','none');
-            $('.riskType_ListItem').removeClass('active')
-        }
-        else{
-            $('.subCategory_ListItem').removeClass('active');
-            $(this).addClass('active');
-            var subCategoryName = $(this).attr('data-risktypename').trim();
-            $('.riskType_ListItem').css('display','none');
-            $(this).siblings('.riskType_ListItem').each(function() {
-                if(subCategoryName == $(this).attr('data-parentsubcategory').trim()){
-                    $(this).css('display','');
-                }
-            });
-
-            $('#riskTypeFields').css('display', '')
-            $('#riskCategoryFields').css('display', 'none')
-            fillRiskTypeFields(this)
-        }
-        e.preventDefault();
+        clickOnRiskTypeAction(this,e)
     });
     $(document).on('click', '.riskType_ListItem', function (e){
-        if($(this).hasClass('active')){
-            $(this).removeClass('active');
-        }
-        else{
-            $('.riskType_ListItem').removeClass('active');
-            $(this).addClass('active');
-
-            $('#riskTypeFields').css('display', '')
-            $('#riskCategoryFields').css('display', 'none')
-            fillRiskTypeFields(this)
-        }
-        e.preventDefault();
+        clickOnRiskTypeAction(this, e)
     });
+
+    $(document).on('click', '.productCategory_ListItem', function (e){
+        clickOnProductCategoryAction(this, e)
+    });
+    $(document).on('click', '.product_ListItem', function (e){
+        clickOnProductAction(this, e)
+    });
+
+    $(document).on('click', '#updateProductSettingsButton', function (e){
+        updateProductSettingsAction(this)
+    });
+    $(document).on('click', '#cancelProductSettingsButton', function (e){
+        cancelProductSettingsAction(this)
+    });
+
+    $(document).on('click', '#saveRiskType', function (e){
+        saveRiskTypeChanges(this)
+    });
+
+    $(document).on('click', '#saveProductButton', function (e){
+        saveProductChanges(this)
+    });
+
+    $(document).on('change', '.productCheckbox', function (e){
+        productCheckboxChangeAction(this);
+    });
+
+    $(document).on('click', '.productSettingsIcon', function (e){
+        productSettingsClickAction(this)
+    });
+
+    //LISTENER ON PANEL LEFT AND PANEL MIDDLE, TO CLOSE EDIT SETTINGS PANEL
+    $('.panel-left, .panel-center').on('click', '*', function() {
+        clearProductSettingsFields()
+        hideAllSettingsPanels()
+        disableProductSettingsSaveButton()
+    });
+
+
+    $(document).on('change', '.productConditionRadio', function (e){
+        productConditionRadioChangeAction(this)
+    });
+
+    $(document).on('change', '.basisOptionRadio', function (e){
+        basisOptionRadioChangeAction(this)
+    });
+
 
     /////////////////////////////////////////////////////////////////
     //ADD COVERAGE TO RISK TYPE OPERATIONS
@@ -206,9 +218,9 @@ $(document).ready(function () {
     $(document).on('click', '.addCondition', function (e){
         var htmlString = "";
         var deleteButtonHTML = "<button class='btn btn-xs btn-danger deleteCondition' id='' type='button' style='margin-left:20px;'>" +
-        "<i class='fa fa-minus' aria-hidden='true'></i>" +
+            "<i class='fa fa-minus' aria-hidden='true'></i>" +
             "<span class='' style='font-size: 14px; font-weight: 500' > </span>" +
-        "</button>";
+            "</button>";
 
         // htmlString = $(this).closest('.conditionContainer').children().first().wrap('<p/>').parent().html();
         htmlString = $("<div />").append($(this).closest('.conditionContainer').children().first().clone()).html();
@@ -227,141 +239,1370 @@ $(document).ready(function () {
     });
 
 
+    $(document).on('change', '.GPCTermLengthRadio', function (e) {
+        if($('#GPCTermLengthRadio_Yes').is(':checked')){
+            $('#GPCTermLengthRangeContainer').css('display', '')
+        }
+        else if( $('#GPCTermLengthRadio_No').is(':checked') ){
+            $('#GPCTermLengthRangeContainer').css('display', 'none')
 
-});
+        }
+    });
 
-function fillRiskTypeFields(clickedRisk){
-    $('#riskTypeName_Input').val($(clickedRisk).attr('data-risktypename'));
+    $(document).on('change', '#primaryRateBasisSelect', function (e) {
+        showRatingContainerForValue($(this).val())
+    });
 
-    var productsJSON = JSON.parse($(clickedRisk).attr('data-products'))
+    $(document).on('click', '.dropdown-menu-auto > li > a', function (e) {
+        $(this).closest('.input-group-btn').find('.dropdown-toggle').find('.dropDownButtonText').html( $(this).html() )
+    });
+
+    $(document).on('click', '.removeLobRowButton', function (e) {
+        removeLobRow(this)
+    });
+
+    $(document).on('click', '.addLobRowButton', function (e) {
+        addLobRow(this)
+    });
+
 
 }
-function saveRiskTypeChanges(){
+function maskMoneyInputs(){
+    $('.currency, .moneyInput').maskMoney({prefix:'$', precision:"0"});
+}
+function initDatepickers(){
+//DATE PICKER SETUP
+    var date_input = $('.datepicker'); //our date input has the name "date"
+    var container =  $('#page-content-wrapper');
+    var options = {
+        assumeNearbyYear: true,
+        autoclose: true,
+        format: 'mm/dd/yyyy',
+        container: container,
+        todayHighlight: true,
+        orientation: "auto bottom",
+        enableOnReadonly: false
+    };
+    // console.log(date_input)
+    date_input.datepicker(options);
+}
+function initializeUnsavedChangeListener() {
+    $(document).on('change', '.detectRiskTypeChanges', function (e) {
+        if( checkForRiskTypeChanges() ){
+            enableRiskTypeSaveButton()
 
-    $.ajax({
-        method: "POST",
-        url: "/Admin/saveRiskTypeChanges",
-        data: {
-            riskTypeName: $('#riskTypeName_Input').val()
+        }
+        else{
+            disableRiskTypeSaveButton()
+
+        }
+    });
+
+    $(document).on('change', '.detectProductSettingsChanges', function (e) {
+        //PRODUCT SETTINGS WILL BE EMPTY WHEN OPENING NEW PRODUCT SETTINGS
+        if( Object.keys(currentProductSettingsObject).length === 0 && currentProductSettingsObject.constructor === Object){
+            //DISABLE AT FIRST
+            disableProductSettingsSaveButton()
+        }
+        else if( checkForProductSettingsChanges() ){
+            enableProductSettingsSaveButton()
+        }
+        else{
+            disableProductSettingsSaveButton()
+        }
+    });
+
+    $(document).on('change', '.detectProductChanges', function (e) {
+
+        if( checkForProductChanges() ){
+            enableProductSaveButton()
+
+        }
+        else{
+            disableProductSaveButton()
+
+        }
+    });
+
+}
+function initializeTypeAheadFunctions(){
+    var substringMatcher = function(strs) {
+        return function findMatches(q, cb) {
+            var matches, substringRegex;
+
+            // an array that will be populated with substring matches
+            matches = [];
+
+            // regex used to determine if a string contains the substring `q`
+            substrRegex = new RegExp(q, 'i');
+
+            // iterate through the pool of strings and for any string that
+            // contains the substring `q`, add it to the `matches` array
+            $.each(strs, function(i, str) {
+                if (substrRegex.test(str)) {
+                    matches.push(str);
+                }
+            });
+
+            cb(matches);
+        };
+    };
+
+    var states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
+        'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii',
+        'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
+        'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',
+        'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire',
+        'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota',
+        'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island',
+        'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
+        'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
+    ];
+
+    $('.formNameTypeAhead').typeahead({
+            hint: true,
+            highlight: true,
+            minLength: 1
+        },
+        {
+            name: 'formNames',
+            source: substringMatcher(typeAheadFormNames)
+        });
+
+    $('.formIDTypeAhead').typeahead({
+            hint: true,
+            highlight: true,
+            minLength: 1
+        },
+        {
+            name: 'formNames',
+            source: substringMatcher(typeAheadFormIDs)
+        });
+
+
+}
+
+//SAVE AND CHECK FOR UNSAVED CHANGES FUNCTIONS
+
+
+//CLICK/CHANGE ACTIONS
+function clickOnRiskTypeAction(element, e){
+    //RESET PRODUCT SETTING PANEL
+    clearProductSettingsFields()
+    hideAllSettingsPanels()
+    disableProductSettingsSaveButton()
+
+    disableRiskTypeSaveButton()
+
+    if($(element).hasClass('active')){
+        $(element).removeClass('active')
+        $('.subCategory_ListItem').removeClass('active')
+        $('.riskType_ListItem').css('display','none');
+        $('.riskType_ListItem').removeClass('active')
+        hideRiskTypePanel()
+    }
+    else{
+        $('.subCategory_ListItem').removeClass('active');
+        $(element).addClass('active');
+        var subCategoryName = $(element).attr('data-risktypename').trim();
+        $('.riskType_ListItem').css('display','none');
+        $(element).siblings('.riskType_ListItem').each(function() {
+            if(subCategoryName == $(element).attr('data-parentsubcategory').trim()){
+                $(element).css('display','');
+            }
+        });
+
+        var riskTypeID = $(element).attr('data-id')
+
+        showRiskTypePanel(element)
+        getRiskTypeDetails(riskTypeID, function(){
+            fillRiskTypeFields(element)
+        })
+    }
+    e.preventDefault();
+}
+function clickOnRiskCategoryAction(element, e){
+//RESET PRODUCT SETTING PANEL
+    clearProductSettingsFields()
+    hideAllSettingsPanels()
+    disableProductSettingsSaveButton()
+
+    //RESET RISKTYPE INPUT FIELDS PANEL
+    disableRiskTypeSaveButton()
+
+    if($(element).hasClass('active')){
+        $(element).removeClass('active')
+        $('.subCategory_ListItem').css('display','none');
+        $('.subCategory_ListItem').removeClass('active')
+        $('.riskType_ListItem').css('display','none');
+        $('.riskType_ListItem').removeClass('active')
+
+    }
+    else{
+        $('.riskCategory_ListItem').removeClass('active');
+        $(element).addClass('active');
+        $('.subCategory_ListItem').css('display','none');
+        $('.subCategory_ListItem').removeClass('active')
+        $('.riskType_ListItem').css('display','none');
+        $('.riskType_ListItem').removeClass('active')
+
+        var categoryCode = $(element).attr('data-riskcategorycode').trim();
+        $(element).siblings('.subCategory_ListItem').each(function() {
+            if(categoryCode == $(this).attr('data-risktypecategory').trim()){
+                $(this).css('display','')
+            }
+        });
+
+        $('#riskTypeFields').css('display', 'none')
+        $('#riskCategoryFields').css('display', '')
+        fillRiskCategoryFields(element)
+    }
+    e.preventDefault();
+}
+
+function clickOnProductCategoryAction(element, e){
+    //RESET PRODUCT SETTING PANEL
+    // clearProductSettingsFields()
+    // hideAllSettingsPanels()
+    // disableProductSettingsSaveButton()
+
+    //RESET RISKTYPE INPUT FIELDS PANEL
+    // disableRiskTypeSaveButton()
+
+    if($(element).hasClass('active')){
+        $(element).removeClass('active')
+        $('.product_ListItem').css('display','none');
+        $('.product_ListItem').removeClass('active')
+
+        var coverageID = $(element).attr('data-coverage')
+        $(".product_ListItem[data-coverage='" + coverageID + "']").css('display', 'none')
+    }
+    else{
+        $('.productCategory_ListItem').removeClass('active');
+        $(element).addClass('active');
+        $('.product_ListItem').css('display','none');
+        $('.product_ListItem').removeClass('active')
+
+        var coverageID = $(element).attr('data-coverage')
+        $(".product_ListItem[data-coverage='" + coverageID + "']").css('display', '')
+        //
+        // $('#riskTypeFields').css('display', 'none')
+        // $('#riskCategoryFields').css('display', '')
+        // fillRiskCategoryFields(element)
+    }
+    e.preventDefault();
+
+}
+function clickOnProductAction(element, e){
+    //RESET PRODUCT DETAIL PANEL
+    // clearProductSettingsFields()
+    // hideAllSettingsPanels()
+    // disableProductSettingsSaveButton()
+
+    // disableRiskTypeSaveButton()
+
+    if($(element).hasClass('active')){
+        $(element).removeClass('active')
+        $('.product_ListItem').removeClass('active')
+        // hideRiskTypePanel()
+    }
+    else{
+        $('.product_ListItem').removeClass('active')
+        $(element).addClass('active');
+
+        var productID = $(element).attr('data-id')
+
+        // showRiskTypePanel(element)
+        getProductDetails(productID, function(){
+            fillProductFields(element)
+        })
+    }
+    e.preventDefault();
+}
+function productSettingsClickAction(element){
+    hideAllSettingsPanels()
+
+    var prodCode = $(element).siblings('.productCheckbox').val()
+    fillProductSettingsFields(prodCode)
+
+    showProductSettingsContainer()
+
+    setProductSettingsVariable()
+}
+function productCheckboxChangeAction(element){
+    if($(element).is(":checked")){
+        //CHECK IF PRODUCT IS NEWLY SELECTED, MEANING NO PRODUCT CONDITIONS IN DATA ATTR
+        //DEFAULT IT TO ALWAYS AVAILABLE
+        if($(element).attr('data-productconditions').trim().length == 0){
+            $(element).attr('data-productconditions', '{"always":{}}' )
+
+            $(element).closest('.productRow').find('.prodConditionDescription').html("Available Always.")
+        }
+        else{
+            //IF RECHECKING RESHOW CONDITION
+            var conditionJSON = JSON.parse($(element).attr('data-productconditions'))
+            var NLDescription = buildNLDescriptionOfProductConditions(conditionJSON)
+
+            $(element).closest('.productRow').find('.prodConditionDescription').html(NLDescription)
+        }
+
+        $(element).siblings('.productSettingsIcon').css('display', '')
+    }
+    else{
+        //IF UNCHECKING HIDE CONDITIONS
+        $(element).siblings('.productSettingsIcon').css('display', 'none')
+
+        $(element).closest('.productRow').find('.prodConditionDescription').html("")
+
+
+    }
+}
+function productConditionRadioChangeAction(element) {
+    $('.productConditionRadio').each(function () {
+        if ($(this).is(":checked")) {
+            $(this).closest('.conditionContainer').find('.conditionOptionsContainer').css('display', '')
+
+        }
+        else {
+            $(this).closest('.conditionContainer').find('.conditionOptionsContainer').css('display', 'none')
+
+
         }
     })
-        .done(function(msg) {
-            // alert(msg);
-        });
+
+}
+function basisOptionRadioChangeAction(element){
+    // CLEAR VALUES NEXT TO UNCHECKED RADIOS AND CHECKBOXES
+    $(element).closest('.conditionOptionsContainer').find('input:radio').each(function(){
+        if ($(this).is(":checked")) {
+
+        }
+        else{
+            $(this).siblings('.conditionValue').val("")
+        }
+    })
 }
 
+//SHOW HIDE FUNCTIONS
+function showRiskTypePanel(element){
+    $('.riskType_ListItem').removeClass('active');
+    $(element).addClass('active');
 
+    $('#riskTypeFields').css('display', '')
+    $('#riskCategoryFields').css('display', 'none')
+}
+function showProductSettingsContainer(){
+    $('#productSettingsContainer').css('display', '')
 
+}
+function hideRiskTypePanel(element){
+    $(element).removeClass('active');
 
-//FUNCTIONS FOR ADDING PRODUCTS AND COVERAGES
-var addingIntoColumn =1;
-var coverageNameToAddProduct ="";
-function addProductModalShow(coverageName){
-    coverageNameToAddProduct = coverageName;
-    $('#addProductModal').modal('show');
+}
+function hideAllSettingsPanels(){
+    $('.settingsContainer').css('display', 'none')
 }
 
-function addProductUnderCoverage(productText){
-    if($('#productModalProductSelect').val()!= "invalid") {
+//PRODUCT RATINGS FUNCTIONS
+function hideAllRatingContainers(){
+    $('.basisOptionContainer').css('display','none')
+}
+function showRatingContainerForValue(selectVal){
+    $('.basisOptionContainer').css('display','none')
+    $('#' + selectVal + "_RatingOptionsContainer").css('display', '')
+}
 
-        var productHtmlString = "<div class='btn-group productChip' style='margin-bottom:10px; width:100%;'>" +
-            "<button type='button' class='btn btn-sm btn-default productButton'" +
-            "data-productcode='" + $('#productModalProductSelect').val() + "' " +
-            "style='max-width: 80%; min-width:40%; border-radius: 25px; border-top-right-radius: 0; border-bottom-right-radius: 0;'>" +
-            "<span class='buttontext productName'>" + productText + "</span>" +
-            "</button>" +
-            "<button type='button' class='btn btn-sm btn-default dropdown-toggle' data-toggle='dropdown' " +
-            "aria-haspopup='true' aria-expanded='false' " +
-            "style='border-radius: 25px; border-top-left-radius: 0; border-bottom-left-radius: 0;'>" +
-            " <span class='caret'></span>" +
-            "<span class='sr-only'>Toggle Dropdown</span>" +
-            "</button>" +
-            "<ul class='dropdown-menu'>" +
-            "   <li><a href='#'>Change</a></li>" +
-            "   <li><a href='#'>Edit</a></li>" +
-            "  <li role='separator' class='divider'></li>" +
-            "   <li><a href='#' class='removeProductButton'>Remove</a></li>" +
-            "   </ul>" +
-            "   </div>"
+//PRODUCT LOB FUNCTIONS
+function getProductLobHeaderRow(){
+    var lobHeaderRow =
+        "   <div class='row' style='font-size:11px; font-weight:300;'> " +
+        "      <div class='col-xs-4'> " +
+        "           <span>Description</span>" +
+        "      </div>" +
+        "      <div class='col-xs-3'> " +
+        "           <span>Limit</span>" +
+        "      </div>" +
+        "      <div class='col-xs-3'> " +
+        "           <span>Deductible</span>" +
+        "      </div>" +
+        "   </div>"
 
-        // $('.productColumn[data-containernumber="' + addingIntoColumn + '"]').find('.productsContainer').css('display', '')
-        $('.coverageContainer[data-coverageName="' + coverageNameToAddProduct + '"]').find('.coverageProductsContainer').append(productHtmlString);
-        $('#addProductModal').modal('hide');
+    return lobHeaderRow
+}
+function getEmptyProductLobRow(){
+    var htmlString =
+        "   <div class='row productLobRow'> " +
+        "      <div class='col-xs-4' style='padding-right:4px;'> " +
+        "         <div class='input-group'>" +
+        "           <span class='input-group-addon' style='font-size: 11px; height: 26px;padding: 6px 8px;'><i class='fa fa-font'></i></span>" +
+        "           <input class='form-control' type='text' style='font-size: 11px; padding: 4px; height: 26px;'" +
+        "               value=''>" +
+        "         </div>" +
+        "      </div>" +
+        "      <div class='col-xs-3' style='padding-left:4px; padding-right:4px;'> " +
+        "         <div class='input-group'>" +
+        "           <span class='input-group-addon' style='font-size: 11px; height: 26px;padding: 6px 8px;'><i class='fa fa-usd'></i></span>" +
+        "           <input class='form-control' type='text' style='font-size: 11px; padding: 4px; height: 26px;' " +
+        "               value=''>" +
+        "         </div>" +
+        "      </div>" +
+        "      <div class='col-xs-3' style='padding-left:4px; padding-right:4px;'> " +
+        "         <div class='input-group'>" +
+        "           <span class='input-group-addon' style='font-size: 11px; height: 26px;padding: 6px 8px;'><i class='fa fa-usd'></i></span>" +
+        "           <input class='form-control' type='text' style='font-size: 11px; padding: 4px; height: 26px;'" +
+        "               value=''>" +
+        "         </div>" +
+        "      </div>" +
+        "       <div class='col-xs-2' style='padding-left:4px;'>" +
+        "           <button class='btn btn-xs btn-danger removeLobRowButton' type='button' style='padding: 0px 5px;'> " +
+        "                   <i class='fa fa-times' aria-hidden='true' style='font-size: 10px;'></i>" +
+        "           </button>" +
+        "           <button class='btn btn-xs btn-success addLobRowButton' type='button' style='padding: 0px 5px;'> " +
+        "                   <i class='fa fa-plus' aria-hidden='true' style='font-size: 10px;'></i>" +
+        "           </button>" +
+        "       </div>" +
+        "   </div>"
+
+    return htmlString
+
+}
+function getProductLobRow(lobMap){
+    var htmlString =
+        "   <div class='row productLobRow'> " +
+        "      <div class='col-xs-4' style='padding-right:4px;'> " +
+        "         <div class='input-group'>" +
+        "           <span class='input-group-addon' style='font-size: 11px; height: 26px;padding: 6px 8px;'><i class='fa fa-font'></i></span>" +
+        "           <input class='form-control' type='text' style='font-size: 11px; padding: 4px; height: 26px;'" +
+        "               value='" + lobMap.lobName  + "'>" +
+        "         </div>" +
+        "      </div>" +
+        "      <div class='col-xs-3' style='padding-left:4px; padding-right:4px;'> " +
+        "         <div class='input-group'>" +
+        "           <span class='input-group-addon' style='font-size: 11px; height: 26px;padding: 6px 8px;'><i class='fa fa-usd'></i></span>" +
+        "           <input class='form-control' type='text' style='font-size: 11px; padding: 4px; height: 26px;' " +
+        "               value='" + lobMap.lobLimit  + "'>" +
+        "         </div>" +
+        "      </div>" +
+        "      <div class='col-xs-3' style='padding-left:4px; padding-right:4px;'> " +
+        "         <div class='input-group'>" +
+        "           <span class='input-group-addon' style='font-size: 11px; height: 26px;padding: 6px 8px;'><i class='fa fa-usd'></i></span>" +
+        "           <input class='form-control' type='text' style='font-size: 11px; padding: 4px; height: 26px;'" +
+        "               value='" + lobMap.lobDeductible  + "'>" +
+        "         </div>" +
+        "      </div>" +
+        "       <div class='col-xs-2' style='padding-right:4px;'>" +
+        "           <button class='btn btn-xs btn-danger removeLobRowButton' type='button' style='padding: 0px 5px;'> " +
+        "                   <i class='fa fa-times' aria-hidden='true' style='font-size: 10px;'></i>" +
+        "           </button>" +
+        "           <button class='btn btn-xs btn-success addLobRowButton' type='button' style='padding: 0px 5px;'> " +
+        "                   <i class='fa fa-plus' aria-hidden='true' style='font-size: 10px;'></i>" +
+        "           </button>" +
+        "       </div>" +
+        "   </div>"
+
+    return htmlString
+
+}
+function getProductLobButtonRow(){
+    var buttonFooterRow =
+        "   <div class='row' style=''> " +
+        "      <div class='col-xs-12'> " +
+        "           <button class='btn  btn-primary' type='button' style=''> " +
+        "               <span>Save</span>" +
+        "           </button>" +
+        "           <button class='btn  btn-default' type='button' style=''> " +
+        "               <span>Cancel</span>" +
+        "           </button>" +
+        "      </div>" +
+        "   </div>"
+
+    return buttonFooterRow
+}
+function removeLobRow(buttonClicked){
+    $(buttonClicked).closest('.productLobRow').remove()
+}
+function addLobRow(buttonClicked){
+    $(buttonClicked).closest('.productLobRow').after(getEmptyProductLobRow())
+}
+
+//PRODUCT FORM FUNCTIONS
+function getProductFormHeaderRow(){
+    var formHeaderRow =
+        "   <div class='row' style='font-size:11px; font-weight:300;'> " +
+        "      <div class='col-xs-5'> " +
+        "           <span>Form Name</span>" +
+        "      </div>" +
+        "      <div class='col-xs-3'> " +
+        "           <span>Form ID</span>" +
+        "      </div>" +
+        "   </div>"
+
+    return formHeaderRow
+}
+function getEmptyProductFormRow(){
+    var htmlString =
+        "   <div class='row formRow'> " +
+        "      <div class='col-xs-5' style='padding-right:4px;'> " +
+        "         <div class='input-group'>" +
+        // "           <span class='input-group-addon' style='font-size: 11px; height: 26px;padding: 6px 8px;'><i class='fa fa-font'></i></span>" +
+        "           <input class='form-control' type='text' style='font-size: 11px; padding: 4px; height: 26px;'" +
+        "               value=''>" +
+        "         </div>" +
+        "      </div>" +
+        "      <div class='col-xs-3' style='padding-left:4px; padding-right:4px;'> " +
+        "         <div class='input-group'>" +
+        // "           <span class='input-group-addon' style='font-size: 11px; height: 26px;padding: 6px 8px;'><i class='fa fa-usd'></i></span>" +
+        "           <input class='form-control' type='text' style='font-size: 11px; padding: 4px; height: 26px;' " +
+        "               value=''>" +
+        "         </div>" +
+        "      </div>" +
+        "       <div class='col-xs-2' style='padding-left:4px;'>" +
+        "           <button class='btn btn-xs btn-danger removeFormRow' type='button' style='padding: 0px 5px;'> " +
+        "                   <i class='fa fa-times' aria-hidden='true' style='font-size: 10px;'></i>" +
+        "           </button>" +
+        "           <button class='btn btn-xs btn-success addFormRow' type='button' style='padding: 0px 5px;'> " +
+        "                   <i class='fa fa-plus' aria-hidden='true' style='font-size: 10px;'></i>" +
+        "           </button>" +
+        "       </div>" +
+        "   </div>"
+
+    return htmlString
+
+}
+function getProductFormRow(formsMap){
+    var htmlString =
+        "   <div class='row formRow'> " +
+        "      <div class='col-xs-5' style='padding-right:4px;'> " +
+        // "         <div class='input-group'>" +
+        // "           <span class='input-group-addon' style='font-size: 11px; height: 26px;padding: 6px 8px;'><i class='fa fa-file-text-o'></i></span>" +
+        "           <i class='fa fa-file-text-o'></i>" +
+        "           <input class='form-control formNameTypeAhead' type='text' style='font-size: 11px; padding: 4px; height: 26px;'" +
+        "               value='" + formsMap.formName  + "'>" +
+        // "         </div>" +
+        "      </div>" +
+        "      <div class='col-xs-3' style='padding-left:4px; padding-right:4px;'> " +
+        // "         <div class='input-group'>" +
+        // "           <span class='input-group-addon' style='font-size: 11px; height: 26px;padding: 6px 8px;'>ID</span></span>" +
+        "           <span>ID</span>" +
+        "           <input class='form-control formIDTypeAhead' type='text' style='font-size: 11px; padding: 4px; height: 26px;' " +
+        "               value='" + formsMap.formID  + "'>" +
+        // "         </div>" +
+        "      </div>" +
+        "       <div class='col-xs-2' style='padding-left:4px;'>" +
+        "           <button class='btn btn-xs btn-danger removeFormRow' type='button' style='padding: 0px 5px;'> " +
+        "                   <i class='fa fa-times' aria-hidden='true' style='font-size: 10px;'></i>" +
+        "           </button>" +
+        "           <button class='btn btn-xs btn-success addFormRow' type='button' style='padding: 0px 5px;'> " +
+        "                   <i class='fa fa-plus' aria-hidden='true' style='font-size: 10px;'></i>" +
+        "           </button>" +
+        "           <button class='btn btn-xs btn-primary previewFormButton' type='button' style='padding: 0px 5px;'> " +
+        "                   <i class='fa fa-file-pdf-o' aria-hidden='true' style='font-size: 10px;'></i>" +
+        "                   <span> Preview</span>" +
+        "           </button>" +
+        "       </div>" +
+        "   </div>"
+
+    return htmlString
+
+}
+function getProductFormButtonRow(){
+    var buttonFooterRow =
+        "   <div class='row' style=''> " +
+        "      <div class='col-xs-12'> " +
+        "           <button class='btn  btn-primary' type='button' style=''> " +
+        "               <span>Save</span>" +
+        "           </button>" +
+        "           <button class='btn  btn-default' type='button' style=''> " +
+        "               <span>Cancel</span>" +
+        "           </button>" +
+        "      </div>" +
+        "   </div>"
+
+    return buttonFooterRow
+}
+
+//FILL INPUT FIELDS FUNCTIONS
+function fillRiskTypeFields(clickedRisk){
+    $('#loadingModal').modal('show')
+
+    //CLEAR RISK TYPE INPUT FIELDS
+    clearRiskTypeInputFields()
+
+    //FILL RISK TYPE INPUT FIELDS
+    $('#riskTypeID').html(""+currentRiskTypeObject.id);
+    $('#riskTypeName_Input').val(currentRiskTypeObject.riskTypeName);
+    $('#riskTypeCode_Input').val(currentRiskTypeObject.riskTypeCode);
+
+    //READ THE PRODUCT CONDITIONS
+    var productConditionsMap
+    if(currentRiskTypeObject.productConditions){
+        productConditionsMap = JSON.parse(currentRiskTypeObject.productConditions)
+        console.log(productConditionsMap)
     }
-}
+
+    //FILL PRODUCT DATA-ATTRIBUTES AND CHECK ACTIVE PRODUCTS
+    if(currentRiskTypeObject.products){
+        var productArray = currentRiskTypeObject.products.split(",")
+        for(var i=0; i<productArray.length; i++){
+            var productCode = productArray[i]
+            $('#' + productCode + '_Checkbox').prop('checked', true)
+            $('#' + productCode + '_Settings').css('display','')
+
+            if(productConditionsMap[productCode]){
+                $('#' + productCode + '_Checkbox').attr('data-productconditions', productConditionsMap[productCode])
 
 
+                var conditionsJSON = JSON.parse(productConditionsMap[productCode])
+                var NLDescription = buildNLDescriptionOfProductConditions(conditionsJSON)
+                $('#' + productCode + '_Checkbox').closest('.productRow').find('.prodConditionDescription').html(NLDescription)
+            }
 
-function addCoverageModalShow(column){
-    addingIntoColumn = column;
-    $('#addCoverageModal').modal('show');
-}
-function addCoverageToColumn(coverageName, coverageCode){
-    if(coverageName && coverageCode) {
-        var productHtmlString = "<div class='coverageContainer' data-coverageName='" + coverageName + "'>" +
-            "<div class='btn-group coverageChip' style='margin-bottom:10px; width:100%;'>" +
-            "<button type='button' class='btn btn-primary coverageButton' " +
-            "data-productcode='" + coverageCode + "' style='max-width: 80%; '>" +
-            "<span class='buttontext coverageName'>" + coverageName + "</span></button>" +
-            "<button type='button' class='btn btn-primary dropdown-toggle' data-toggle='dropdown' " +
-            "aria-haspopup='true' aria-expanded='false' >" +
-            "<span class='caret'></span>" +
-            "<span class='sr-only'>Toggle Dropdown</span>" +
-            "</button>" +
-            "<ul class='dropdown-menu'>" +
-            "   <li><a href='#'>Change</a></li>" +
-            "   <li><a href='#'>Edit</a></li>" +
-            "   <li><a href='#' class='coverageAddProductButton'>Add Product</a></li>" +
-            "  <li role='separator' class='divider'></li>" +
-            "   <li><a href='#' class='removeCoverageButton'>Remove</a></li>" +
-            "   </ul>" +
-            "   </div>" +
-            "<br>" +
-            "<div class='coverageProductsContainer' style='padding-left:30px'>" +
-            "</div>" +
-            "</div>"
-        // alert(productHtmlString)
-
-        $('.productColumn[data-containernumber="' + addingIntoColumn + '"]').find('.productsContainer').css('display', '')
-        $('.productColumn[data-containernumber="' + addingIntoColumn + '"]').find('.productsContainer').append(productHtmlString);
-        // $('#addCoverageModal').modal('hide');
+        }
     }
+
+    $('#loadingModal').modal('hide')
 }
-
-
-
-
-
 function fillRiskCategoryFields(clickedRisk){
     $('#riskCategoryName_Input').val($(clickedRisk).attr('data-riskcategoryname'));
     $('#riskTypeCategoryDescription_Input').val($(clickedRisk).attr('data-description'));
 }
+function fillProductSettingsFields(prodCode){
+    clearProductSettingsFields();
+    disableProductSettingsSaveButton();
 
-function updateRiskProductDetails(clickedProduct){
+
+    $('#productSettings_RiskTypeName').html($('#riskTypeName_Input').val())
+    $('#productSettings_ProductName').html(prodCode)
+    $('#hiddenProductCode').html(prodCode)
+
+    //GET EXISTING PRODUCT CONDITIONS
+    var prodConditions;
+    if( $('#' + prodCode + '_Checkbox').attr('data-productconditions').trim().length == 0 ){
+        //no existing product conditions
+        //DEFAULT TO ALWAYS
+        $('#' + prodCode + '_Checkbox').attr('data-productconditions', '{"always":{}}' )
+    }
+    else{
+        prodConditions = JSON.parse( $('#' + prodCode + '_Checkbox').attr('data-productconditions') )
+
+        //FILL OUT CONDITIONS
+        $("input.productConditionRadio").each(function(){
+            var basis = $(this).val()
+            // console.log(basis)
+            if( prodConditions[basis] ){
+                if(basis === "always"){
+                    $(this).prop('checked', true)
+                    $(this).trigger('change')
+                }
+                else{
+                    $(this).prop('checked', true)
+                    $(this).trigger('change')
+
+
+                    var options = JSON.parse(prodConditions[basis])
+
+                    $(this).closest('.conditionContainer').find("input:radio").each(function(){
+                        if( options[$(this).val()] ){
+                            $(this).prop('checked', true)
+                            $(this).trigger('change')
+
+
+                            //FILL OUT CONDITION OPTION VALUE
+                            $(this).closest('p').find('.conditionValue').val(options[$(this).val()])
+                        }
+                    })
+                }
+
+            }
+        })
+    }
+    //
+    // console.log(prodConditions)
+
+
 
 }
-
 function fillProductFields(clickedProduct){
-    clearProductFields();
-    var availableConditionArray = $(clickedProduct).attr('data-availablecondition').split(',');
+    $('#loadingModal').modal('show')
 
-    for (i = 0; i < availableConditionArray.length; i++) {
-        if(availableConditionArray[i].length > 0){
-            $('#' + availableConditionArray[i]).prop('checked', true);
+    //CLEAR RISK TYPE INPUT FIELDS
+    clearProductInputFields()
+
+    /////////////////////////
+    //FILL RISK TYPE INPUT FIELDS
+    /////////////////////////
+    $('#productInputFields input:text').each(function(){
+        var columnName = $(this).attr('data-column')
+        $(this).val(currentProductObject[columnName])
+    })
+
+
+    /////////////////////////
+    //SET PRIMARY RATING BASIS
+    /////////////////////////
+    if(currentProductObject.rateBasis != null){
+        $('#primaryRateBasisSelect').val(currentProductObject.rateBasis)
+        $('#primaryRateBasisSelect').trigger('change')
+    }
+
+
+
+    /////////////////////////
+    //FILL PRODUCT LOB FIELDS FOR LIMIT RATING
+    /////////////////////////
+    var htmlString = ""
+    for(var i=0; i<currentProductLOBDetailsObject.length; i++){
+        var lobMap = currentProductLOBDetailsObject[i]
+
+        htmlString = htmlString +
+            "   <div class=''> " +
+            "      <div class='col-xs-12'> " +
+            "           <h6 style='margin-top:12px; margin-bottom:0px; font-weight:400'>" + lobMap.lobName  + "</h6> " +
+            "       </div> " +
+            "       <div class='col-xs-12'> " +
+            "           <div class=' row multiRangeContainer money' style='margin-top:-4px; margin-bottom:12px;'>" +
+            "           </div>" +
+            "       </div>" +
+            "   </div>"
+    }
+    $('#limitRatingLOBRangeContainer').html(htmlString)
+    initMultiRange()
+
+    /////////////////////////
+    //FILL LOB DETAIL TAB
+    /////////////////////////
+    var lobHTMLString = ""
+    var lobRows = ""
+    var lobHeaderRow = getProductLobHeaderRow()
+
+    for(var i=0; i<currentProductLOBDetailsObject.length; i++){
+        var lobMap = currentProductLOBDetailsObject[i]
+
+        lobRows = lobRows + getProductLobRow(lobMap)
+    }
+
+    var buttonFooterRow = getProductLobButtonRow()
+
+    lobHTMLString = lobHeaderRow + lobRows + buttonFooterRow
+    $('#lobDetailContainer').html(lobHTMLString)
+
+    /////////////////////////
+    //FILL FORMS DETAIL TAB
+    /////////////////////////
+    var formsHTMLString = ""
+    var formRows = ""
+    var formHeaderRow = getProductFormHeaderRow()
+
+    for(var i=0; i<currentProductFormDetailsObject.length; i++){
+        var formMap = currentProductFormDetailsObject[i]
+        formRows = formRows + getProductFormRow(formMap)
+
+        typeAheadFormNames.push(formMap.formName)
+        typeAheadFormIDs.push(formMap.formID)
+    }
+
+    var formButtonFooterRow = getProductFormButtonRow()
+
+    formsHTMLString = formHeaderRow + formRows + formButtonFooterRow
+    $('#formsDetailContainer').html(formsHTMLString)
+
+
+    /////////////////////////
+    //FILL TERMS DETAIL TAB
+    /////////////////////////
+    $('#termsTextArea').val(currentProductObject.terms)
+
+
+
+
+    initializeTypeAheadFunctions()
+
+
+    $('#loadingModal').modal('hide')
+}
+
+//JS OBJECT METHODS
+function setProductSettingsVariable(){
+    //PURPOSE OF METHOD IS ONLY TO GET WHICH RADIO AND CHECKBOXES ARE CHECKED.
+
+    //GET WHICH BASIS IS CHECKED
+    $('.productConditionRadio:visible').each(function(){
+        var basisID = $(this).attr('id')
+        var isChecked = $('#' + basisID).is(':checked')
+        currentProductSettingsObject[basisID] = isChecked
+    })
+
+    $('.basisOptionRadio').each(function(){
+        var optionID = $(this).attr('id')
+        var isChecked = $('#' + optionID).is(':checked')
+        currentProductSettingsObject[optionID] = isChecked
+    })
+
+    $('.conditionValue').each(function(){
+        var optionValueID = $(this).attr('id')
+        var value = $('#' + optionValueID).val()
+        currentProductSettingsObject[optionValueID] = value
+    })
+
+
+}
+function setRiskTypeObjectVariable(msg){
+    currentRiskTypeObject = JSON.parse(msg)
+}
+function setProductObjectVariable(productMap){
+    currentProductObject = productMap
+}
+function setProductLOBObjectVariable(lobMapArray){
+    currentProductLOBDetailsObject = lobMapArray
+}
+function setProductFormsObjectVariable(formsArray){
+    currentProductFormDetailsObject = formsArray
+}
+
+//CLEAR INPUT FIELDS
+function clearProductSettingsFields(){
+    $('#productSettings_RiskTypeName').html("")
+    $('#productSettings_ProductName').html("")
+    $('#hiddenProductCode').html("")
+
+    $('#productSettingsContainer input:text').val("")
+    $('#productSettingsContainer input:radio').prop('checked', false)
+    $('#productSettingsContainer input:checkbox').prop('checked', false)
+
+    currentProductSettingsObject = {}
+}
+function clearRiskTypeInputFields(){
+    $('#riskTypeFields input:text').val("")
+    $('#riskTypeFields input:checkbox').prop("checked", false)
+    $('#riskTypeFields input:radio').prop("checked", false)
+    $('.productSettingsIcon').css('display','none')
+    $('.prodConditionDescription').html("")
+}
+function clearProductInputFields(){
+    $('#productInputFields input:text').val("")
+    $('#productInputFields input:checkbox').prop("checked", false)
+    $('#productInputFields input:radio').prop("checked", false)
+}
+
+//GET DETAILS FROM DATABASE FUNCTIONS
+function getRiskTypeDetails(riskTypeID, callback){
+    $.ajax({
+        method: "POST",
+        url: "/Admin/getRiskTypeDetails",
+        data: {
+            riskTypeID: riskTypeID
+        }
+    }).done(function (msg) {
+        // console.log(JSON.parse(msg))
+        setRiskTypeObjectVariable(msg)
+        callback()
+    });
+}
+function getProductDetails(productID, callback){
+    $.ajax({
+        method: "POST",
+        url: "/Admin/getProductDetails",
+        data: {
+            productID: productID
+        }
+    }).done(function (msg) {
+        // alert(msg)
+        console.log(JSON.parse(msg))
+        setProductObjectVariable(JSON.parse(msg).product)
+
+        setProductLOBObjectVariable(JSON.parse(msg).lobs)
+        setProductFormsObjectVariable(JSON.parse(msg).forms)
+        callback()
+    });
+}
+
+
+//SAVE CHANGE FUNCTIONS
+function saveRiskTypeChanges(){
+    if(validateRiskType()){
+        //CENTER PANEL FIELDS LOOKG FOR CLASS riskTypeField
+        $('.riskTypeField').each(function(){
+            currentRiskTypeObject[$(this).attr('data-column')] = $(this).val().trim()
+        })
+
+        //GET PRODUCTS
+        var productArray = []
+        var productConditionsMap = {}
+        $('.productCheckbox').each(function(){
+            if( $(this).is(':checked') ){
+                var productCode = $(this).val()
+                productArray.push(productCode)
+                productConditionsMap[productCode] = $(this).attr('data-productconditions')
+            }
+        })
+
+        currentRiskTypeObject.productConditions = productConditionsMap
+        currentRiskTypeObject.products = productArray.toString()
+
+
+        console.log(JSON.stringify(currentRiskTypeObject))
+        $.ajax({
+            method: "POST",
+            url: "/Admin/saveRiskTypeChanges",
+            data: {
+                riskTypeName: $('#riskTypeName_Input').val(),
+                riskTypeObject: JSON.stringify(currentRiskTypeObject)
+            }
+        })
+            .done(function(msg) {
+                if(msg === "Success"){
+                    showRiskTypeSaveSuccess()
+                }
+                else if(msg === "Error"){
+                    showRiskTypeSaveError()
+                }
+            });
+    }
+}
+function saveProductChanges(){
+    if(validateProduct()){
+        //CENTER PANEL FIELDS LOOKG FOR CLASS riskTypeField
+
+        $('#productInputFields input:text').each(function(){
+            var columnName = $(this).attr('data-column')
+            currentProductObject[columnName] = $(this).val()
+        })
+
+        $.ajax({
+            method: "POST",
+            url: "/Admin/saveProductChanges",
+            data: {
+                productObject: JSON.stringify(currentProductObject)
+            }
+        })
+            .done(function(msg) {
+                if(msg === "Success"){
+                    showProductSaveSuccess()
+                }
+                else if(msg === "Error"){
+                    showProductSaveError()
+                }
+            });
+    }
+}
+function updateProductSettingsAction(){
+    if(validateProductSettings()){
+        var prodCode = $('#hiddenProductCode').html().trim()
+        buildProductConditionMap(prodCode)
+
+        //TRIGGER CHANGE ON PRODUCT CHECKBOX TO DETECT CHANGES
+        $('#' + prodCode + '_Checkbox').trigger('change')
+
+        //DISABLE UPDATE PRODUCT SETTINGS BUTTON
+        disableProductSettingsSaveButton()
+
+        //PERFORM SAVE ACTION
+        saveRiskTypeChanges()
+
+        //DISABLE SAVE BUTTON
+        disableRiskTypeSaveButton()
+    }
+}
+function cancelProductSettingsAction(){
+    clearProductSettingsFields()
+    hideAllSettingsPanels()
+}
+function checkForRiskTypeChanges(){
+    // console.log("checking")
+    var changed = false;
+    if( $('#riskTypeName_Input').val() != currentRiskTypeObject.riskTypeName){
+        changed = true;
+    }
+    if( $('#riskTypeCode_Input').val() != currentRiskTypeObject.riskTypeCode){
+        changed = true;
+    }
+
+    //CHECK PRODUCT CHANGES
+    var savedCheckboxArray
+    if(currentRiskTypeObject.products != null){
+        savedCheckboxArray = currentRiskTypeObject.products.split(",");
+    }
+    else{
+        savedCheckboxArray = "";
+    }
+
+    console.log(currentRiskTypeObject.productConditions)
+
+    var tempConditionMap;
+
+    //prod conditions is a string when it comes from the database, and a json object when changes are made to it
+    if( typeof(currentRiskTypeObject.productConditions) === "string" ){
+        tempConditionMap = JSON.parse(currentRiskTypeObject.productConditions)
+    }
+    else{
+        tempConditionMap = currentRiskTypeObject.productConditions
+    }
+    // console.log(savedCheckboxArray)
+    $('.productCheckbox').each(function(){
+        // console.log($(this))
+        if($(this).is(':checked')){
+            if( savedCheckboxArray.indexOf( $(this).val() ) === -1){
+                changed = true
+            }
+
+            //CHECK PRODUCT CONDITION CHANGES
+            if(tempConditionMap != null){
+                if(tempConditionMap[$(this).val()]){
+                    var savedCondition = JSON.parse( tempConditionMap[$(this).val()] )
+                    var currentCondition = JSON.parse($('#' + $(this).val() + '_Checkbox').attr('data-productconditions'))
+                    // console.log(savedCondition)
+                    // console.log(currentCondition)
+                    // console.log(JSON.stringify(savedCondition) != JSON.stringify(currentCondition))
+                    if(JSON.stringify(savedCondition) != JSON.stringify(currentCondition)){
+                        changed = true
+                    }
+                }
+            }
+
+
+
+        }
+        else{
+            // console.log("ELSE")
+
+            if( savedCheckboxArray.indexOf( $(this).val() ) > -1){
+
+                changed = true
+            }
+        }
+    })
+
+
+    // console.log(changed)
+
+    return changed;
+}
+function checkForProductSettingsChanges(){
+    console.log("checking Product Settings")
+    console.log(currentProductSettingsObject)
+    var changed = false;
+
+    //CHECK BASIS CHANGES
+    $('.productConditionRadio:visible').each(function(){
+        var basisID = $(this).attr('id')
+        console.log(basisID)
+        var checkedStatus = $('#' + basisID).is(':checked')
+
+        if(currentProductSettingsObject[basisID] != undefined){
+            if(currentProductSettingsObject[basisID] != checkedStatus){
+                changed = true
+            }
+        }
+        else{
+            console.log("ELSE")
+            changed = true
+        }
+    })
+
+    //CHECK BASIS OPTION RADIO CHANGES
+    $('.basisOptionRadio').each(function(){
+        var optionID = $(this).attr('id')
+        var checkedStatus = $('#' + optionID).is(':checked')
+
+        if(currentProductSettingsObject[optionID] != undefined){
+            if(currentProductSettingsObject[optionID] != checkedStatus){
+                changed = true;
+            }
+        }
+        else{
+            changed = true
+        }
+    })
+
+    $('.conditionValue').each(function(){
+        var optionValueID = $(this).attr('id')
+        var value = $('#' + optionValueID).val()
+
+        if(currentProductSettingsObject[optionValueID] != undefined){
+            if(currentProductSettingsObject[optionValueID] != value){
+                changed = true;
+            }
+        }
+        else{
+            changed = true;
+        }
+    })
+
+
+
+
+    console.log("return: " + changed)
+    return changed;
+}
+function checkForProductChanges(){
+    // console.log("checking")
+    var changed = false;
+
+
+    //CHECK IF TEXT FIELDS HAVE CHANGED
+    $('#productInputFields input:text').each(function(){
+        var columnName = $(this).attr('data-column')
+        if( $(this).val() != currentProductObject[columnName] ){
+            changed = true;
+        }
+    })
+
+    return changed;
+}
+
+function disableRiskTypeSaveButton(){
+    $('#saveRiskType').prop('disabled', true)
+}
+function enableRiskTypeSaveButton(){
+    $('#saveRiskType').prop('disabled', false)
+}
+function disableProductSettingsSaveButton(){
+    $('#updateProductSettingsButton').prop('disabled', true)
+}
+function enableProductSettingsSaveButton(){
+    $('#updateProductSettingsButton').prop('disabled', false)
+}
+function disableProductSaveButton(){
+    $('#saveProductButton').prop('disabled', true)
+}
+function enableProductSaveButton(){
+    $('#saveProductButton').prop('disabled', false)
+}
+
+//RISK TYPE EDIT DETAILS FUNCTIONS
+
+//INPUT FIELD VALIDATION FUNCTIONS
+function validateProductSettings(){
+    var valid = true;
+
+    clearStatusMessages()
+    //CHECK AT LEAST ONE BASIS IS CHECKED, AT LEAST 'ALWAYS'
+    if( $('.productConditionRadio:checked:visible').length === 0 ){
+        valid = false
+        showProductSettingsSaveError()
+        return false;
+    }
+
+    //CHECK IF BASIS IS CHECKED, ONE BASIS OPTION IS CHECKED
+    if( $('.productConditionRadio:checked:visible').val() === "always"){
+
+    }
+    else{
+        if( $('.productConditionRadio:checked:visible').closest('.conditionContainer').find('.basisOptionRadio:checked:visible').length === 0 ){
+            valid = false
+            showProductSettingsSaveError()
+            return false;
+        }
+        //IF BASIS OPTION IS SELECTED, CHECK VALUE IS NOT NULL
+        if( $('.basisOptionRadio:checked:visible').siblings('.conditionValue').val().trim() === "" ){
+            valid = false
+            showProductSettingsSaveError()
+            return false;
         }
 
     }
+
+
+
+    showProductSettingsSaveSuccess()
+    return valid;
+}
+function validateRiskType(){
+    var valid = true;
+
+    //CHECK NAME IS NOT BLANK
+    if( $('#riskTypeName_Input').val().trim().length == 0  ){
+        valid = false;
+        showRiskTypeSaveError()
+        console.log("NAME ERROR")
+        return false
+    }
+
+    if( $('#riskTypeCode_Input').val().trim().length == 0  ){
+        valid = false;
+        showRiskTypeSaveError()
+        console.log("CODE ERROR")
+
+        return false
+    }
+
+
+
+    return valid
+}
+function validateProduct(){
+    var valid = true;
+
+
+    //CHECK IF TEXT FIELDS ARE BLANK
+    $('#productInputFields input:text').each(function(){
+        var columnName = $(this).attr('data-column')
+        if( $(this).val().trim().length == 0 ){
+            valid = false;
+            showProductSaveError()
+            return false
+        }
+    })
+
+
+
+    return valid
+}
+function showRiskTypeSaveSuccess(){
+    $('#riskTypeSaveMessage').show().delay(5000).fadeOut();
+    $('#riskTypeErrorMessage').css('display', 'none')
+}
+function showRiskTypeSaveError(){
+    $('#riskTypeSaveMessage').css('display', 'none')
+    $('#riskTypeErrorMessage').show().delay(5000).fadeOut();
+}
+function showProductSaveSuccess(){
+    $('#productSaveMessage').show().delay(5000).fadeOut();
+    $('#productErrorMessage').css('display', 'none')
+}
+function showProductSaveError(){
+    $('#productSaveMessage').css('display', 'none')
+    $('#productErrorMessage').show().delay(5000).fadeOut();
+}
+function showProductSettingsSaveSuccess(){
+    $('#productSettingSaveMessage').show().delay(5000).fadeOut();
+    $('#productSettingErrorMessage').css('display', 'none')
+}
+function showProductSettingsSaveError(){
+    $('#productSettingSaveMessage').css('display', 'none')
+    $('#productSettingErrorMessage').show().delay(5000).fadeOut();
+}
+function clearStatusMessages(){
+    $('.statusMessage').css('display', 'none')
+
 }
 
-function clearProductFields(){
-    $('.productField:text').val('');
-    $('.productField:checkbox').prop('checked', false);
+
+
+
+function buildNLDescriptionOfProductConditions(conditionJSON){
+    //INPUT: JSON OF CONDITIONS (1 PRODUCT)
+
+    var description = "Available "
+    for (var key in conditionJSON) {
+        if (conditionJSON.hasOwnProperty(key)) {
+
+            if(key === "budget"){
+                description = description + "when Budget is "
+            }
+            else if (key === "policyTerm"){
+                description = description + " when Policy Term is "
+            }
+            else if( key === "always"){
+                description = description + "Always. "
+            }
+            else{
+                description = description + "N/A. "
+            }
+
+            var val = conditionJSON[key];
+            console.log(val);
+
+            if(key === "budget"){
+                var options = JSON.parse(val)
+                for (var k in options) {
+                    var v = options[k];
+
+                    if(k === "lessThan"){
+                        description = description + "Less Than " + v
+                    }
+                    else if(k === "greaterThan"){
+                        description = description + "Greater Than " + v
+                    }
+                    else if(k === "inbetween"){
+                        description = description + "Inbetween " + v
+                    }
+                    else if(k === "lessOrGreaterThan"){
+                        description = description + "Less Than or Greater Than " + v
+                    }
+                    else if(k === "equals"){
+                        description = description + "Equals " + v
+                    }
+                    else{
+                        description = description + "N/A"
+                    }
+                }
+            }
+            else if(key === "policyTerm"){
+                var options = JSON.parse(val)
+                for (var k in options) {
+                    var v = options[k];
+
+                    if(k === "lessThan"){
+                        description = description + "Less Than " + v + " Days"
+                    }
+                    else if(k === "greaterThan"){
+                        description = description + "Greater Than " + v + " Days"
+                    }
+                    else if(k === "inbetween"){
+                        description = description + "Inbetween " + v + " Days"
+                    }
+                    else if(k === "lessOrGreaterThan"){
+                        description = description + "Less Than or Greater Than " + v + " Days"
+                    }
+                    else if(k === "equals"){
+                        description = description + "Equals " + v + " Days"
+                    }
+                    else{
+                        description = description + "N/A"
+                    }
+                }
+            }
+            else if( key === "always"){
+            }
+            else{
+                description = description + "N/A. "
+
+            }
+
+
+        }
+    }
+
+    return description
+
 }
 
-function clearModalProductFields(){
-    $('.productFieldModal:text').val('');
-    $('.productFieldModal:checkbox').prop('checked', false);
-    $('#productModalProductSelect option:eq(0)').prop('selected', true)
+function buildProductConditionMap(productCode){
+
+    var conditionMap = {}
+    var basisNaturalLanguageDescription
+
+    //CYCLE THROUGH CONDITION BASES
+    $('.productConditionRadio').each(function(){
+
+        //IF A BASIS IS SELECTED LOOK AT OPTIONS
+        if($(this).is(":checked")){
+            var conditionBasis = $(this).val()
+            conditionMap[conditionBasis] = {}
+
+            //CYCLE THROUGH OPTIONS
+            $(this).closest('.conditionContainer').find('.conditionOptionsContainer input:radio').each(function(){
+                if($(this).is(":checked")){
+                    var conditionOption = $(this).val();
+                    var value = $(this).siblings('.conditionValue').val()
+                    var tempMap = {}
+                    tempMap[conditionOption] = value;
+                    conditionMap[conditionBasis] = JSON.stringify(tempMap)
+                }
+            })
+
+        }
+    })
+    console.log(conditionMap)
+    var NLDescription = buildNLDescriptionOfProductConditions(conditionMap)
+
+    $('#' + productCode + '_Checkbox').closest('.productRow').find('.prodConditionDescription').html(NLDescription)
+    $('#' + productCode + '_Checkbox').attr('data-productconditions', JSON.stringify(conditionMap))
+}
+
+function buildProductConditionMapForRiskType(){
+
 }
 
 function emergencyIndication(){

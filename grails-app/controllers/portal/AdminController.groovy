@@ -1,5 +1,7 @@
 package portal
 
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import groovy.sql.Sql
 import portal.DAO.AIMSQL
 import portal.DAO.Intelledox
@@ -13,6 +15,10 @@ class AdminController {
     def dateFormat = 'yyyy-MM-dd HH:mm:ss.SSS'
     AIMSQL aimDAO = new AIMSQL();
     Intelledox intelledoxDAO = new Intelledox();
+    def jsonSlurper = new JsonSlurper()
+    def jsonOutput = new JsonOutput()
+
+
 
     def checkUser() {
         log.info "CHECK USER"
@@ -41,7 +47,7 @@ class AdminController {
 
         [user: session.user ]
     }
-    def data() {
+    def data(){
         log.info "DATA MANAGEMENT"
         log.info params
 
@@ -49,18 +55,193 @@ class AdminController {
         def riskCategoryColumns = riskCategories[0].domainClass.persistentProperties*.name
 
         def riskTypes = RiskType.list();
+        log.info riskTypes.id
         def subCategories = RiskType.findAllWhere(subCategoryFlag: "Y")
 
         def products = Products.list();
+        products = products.sort{ it.coverage}
+        def productCategories = Products.list().unique {it.coverage}
 
         def coverages = Coverages.list();
 
 
-        [user: session.user, riskCategories:riskCategories, subCategories:subCategories, riskTypes:riskTypes, products:products, coverages:coverages ]
+        [user: session.user, riskCategories:riskCategories, subCategories:subCategories, riskTypes:riskTypes, products:products,
+         productCategories: productCategories, coverages:coverages ]
+    }
+
+    def getRiskTypeDetails(){
+        log.info "GETTING DETAILS FOR RISK"
+        log.info params
+
+        def riskRecord = RiskType.get(params.riskTypeID)
+
+        if(riskRecord != null){
+            def result =[:]
+            result.id = riskRecord.id
+            result.riskTypeCategory = riskRecord.riskTypeCategory
+            result.riskTypeCode = riskRecord.riskTypeCode
+            result.riskTypeName = riskRecord.riskTypeName
+            result.products = riskRecord.products
+            result.productConditions = riskRecord.productConditions
+
+
+
+            log.info result
+            render jsonOutput.toJson(result)
+        }
+        else{
+            render ""
+        }
+    }
+
+    def getProductDetails(){
+        log.info "GETTING DETAILS FOR PRODUCT"
+        log.info params
+
+        def errorOccurred = false;
+        def responseMap= [:]
+
+
+        //GET PRODUCT RECORDS
+        def productRecord = Products.get(params.productID)
+        if(productRecord != null){
+            def productColumnList = productRecord.domainClass.persistentProperties*.name
+            def productMap =[:]
+            productColumnList.each{
+                productMap[it] = productRecord.getAt(it)
+            }
+
+            productMap.id = productRecord.id
+
+            responseMap.product = productMap
+        }
+        else{
+            errorOccurred = true;
+        }
+
+        //GET LOB RECORDS
+        def lobRecords = ProductLOB.findAllWhere(productID: productRecord.productID)
+        if(lobRecords != null){
+            def lobRecordsArray = []
+            //LOOP THROUGH ALL LOB RECORD RESULTS
+            lobRecords.each{
+                def lobRec = it;
+                def lobRecordMap =[:]
+                //LOOP THROUGH ALL THE COLUMNS AND MAP EACH COLUMN TO A TEMPORARY MAP
+                def lobColumnList = lobRec.domainClass.persistentProperties*.name
+                lobColumnList.each{
+                    def lobColumn = it
+                    lobRecordMap[lobColumn] = lobRec.getAt(lobColumn)
+                }
+                lobRecordMap.id = lobRec.id
+
+                //ADD TEMPORARY LOB MAP TO FINAL LOB ARRAY
+                lobRecordsArray << lobRecordMap
+            }
+            responseMap.lobs = lobRecordsArray
+        }
+        else{
+            errorOccurred = true;
+        }
+
+        //GET FORMS RECORDS
+        def formRecords = Forms.list()
+        if(formRecords != null){
+            def formRecordsArray = []
+            //LOOP THROUGH ALL LOB RECORD RESULTS
+            formRecords.each{
+                def formRec = it;
+                def formRecordMap =[:]
+                //LOOP THROUGH ALL THE COLUMNS AND MAP EACH COLUMN TO A TEMPORARY MAP
+                def formColumnList = formRec.domainClass.persistentProperties*.name
+                formColumnList.each{
+                    def formColumn = it
+                    formRecordMap[formColumn] = formRec.getAt(formColumn)
+                }
+                formRecordMap.id = formRec.id
+
+                //ADD TEMPORARY LOB MAP TO FINAL LOB ARRAY
+                formRecordsArray << formRecordMap
+            }
+            responseMap.forms = formRecordsArray
+        }
+        else{
+            errorOccurred = true;
+        }
+
+
+
+        //RENDER RESPONSE
+        if(errorOccurred){
+            render "Error"
+        }
+        else{
+            render jsonOutput.toJson(responseMap)
+        }
+
+
     }
 
     def saveRiskTypeChanges(){
+        log.info "SAVING RISK TYPE CHANGES"
+        log.info params
 
+        def renderMessage = "Success"
+
+        try{
+            def riskTypeObject = jsonSlurper.parseText(params.riskTypeObject)
+
+            RiskType riskRecord = RiskType.get(riskTypeObject.id)
+
+            log.info jsonOutput.toJson(riskTypeObject.productConditions)
+            log.info riskTypeObject.riskTypeCategory
+
+            riskRecord.riskTypeCategory = riskTypeObject.riskTypeCategory
+            riskRecord.riskTypeCode = riskTypeObject.riskTypeCode
+            riskRecord.riskTypeName = riskTypeObject.riskTypeName
+            riskRecord.products = riskTypeObject.products
+            riskRecord.productConditions = jsonOutput.toJson(riskTypeObject.productConditions)
+
+            riskRecord.save(flush: true, failOnError: true)
+        }catch(Exception e){
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+            renderMessage = "Error"
+        }
+
+        render renderMessage
+    }
+
+    def saveProductChanges(){
+        log.info "SAVING PRODUCT CHANGES"
+        log.info params
+
+        def renderMessage = "Success"
+
+        try{
+            def productObject = jsonSlurper.parseText(params.productObject)
+            log.info productObject.id
+            log.info productObject.flatPremium
+            Products productRecord = Products.get(productObject.id)
+
+            def columnList = productRecord.domainClass.persistentProperties*.name
+
+            columnList.each{
+                productRecord[it] = productObject[it]
+            }
+
+            productRecord.save(flush: true, failOnError: true)
+        }catch(Exception e){
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+            renderMessage = "Error"
+        }
+
+        render renderMessage
     }
 
     def fixCompanyLogos(){
@@ -218,5 +399,7 @@ class AdminController {
 
         render 'good'
     }
+
+
 
 }

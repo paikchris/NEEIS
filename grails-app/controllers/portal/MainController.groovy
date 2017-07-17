@@ -1,4 +1,7 @@
 package portal
+
+import groovy.json.JsonSlurper
+import groovy.json.JsonOutput
 import groovy.sql.Sql
 import helper.Utils;
 import portal.DAO.*
@@ -11,6 +14,7 @@ class MainController {
 
     def timeZone = TimeZone.getTimeZone('PST')
     def dateFormat = 'yyyy-MM-dd HH:mm:ss.SSS'
+    def jsonSlurper = new JsonSlurper()
 
     def checkUser() {
         println "CHECK USER"
@@ -220,22 +224,58 @@ class MainController {
         def versionMode = false;
         def versionLetter = "A"
         def editingVersion;
-        def allVersions = [];
-        def questionAnswerMap;
+        def allVersionsInMysql = [];
+        def aimSqlAllVersions = [];
+        def mysqlSubmissionResult = [];
+        def questionAnswerMapJSON;
+        def questionAnswerMapString;
+        def dvResults =[];
+        def verResults =[];
+        def quoteResults = [];
         if(params.version == "NV"){
             versionMode=true;
 
-            allVersions = Submissions.findAllWhere(aimQuoteID: "" + params.quoteID);
-            log.info "ALL VERSIONS: " + allVersions
-            if(allVersions.size() > 0){
-                allVersions = allVersions.sort{it.aimVersion}
+            //GET DV VERSION TABLE DETAILS FOR THIS SPECIFIC VERSION, AIMSQL
+            def where = "(QuoteID='" + params.quoteID + "') AND (Version = '" + params.editingVersion + "')";
+            dvResults = aimDAO.selectAllFromTableWhereWithFormatting("dvVersionView", where, dataSource_aim)
 
-                allVersions.last().aimVersion
-                String value = allVersions.last().aimVersion
+            //GET VERSION TABLE DETAILS FOR THIS SPECIFIC VERSION, AIMSQL
+            where = "(QuoteID='" + params.quoteID + "') AND (Version = '" + params.editingVersion + "')";
+            verResults = aimDAO.selectAllFromTableWhereWithFormatting("Version", where, dataSource_aim)
+
+            //GET QUOTE TABLE DETAILS FOR THIS SPECIFIC VERSION, AIMSQL
+            where = "(QuoteID='" + params.quoteID + "')";
+            quoteResults = aimDAO.selectAllFromTableWhereWithFormatting("Quote", where, dataSource_aim)
+
+            //FIND ALL VERSIONS FOR THIS QUOTEID IN MYSQL
+            allVersionsInMysql = Submissions.findAllWhere(aimQuoteID: "" + params.quoteID);
+
+            //FIND ALL VERSIONS FOR THIS QUOTEID IN AIMSQL
+            where = "(QuoteID='" + params.quoteID + "')";
+            aimSqlAllVersions = aimDAO.selectAllFromTableWhereWithFormatting("dvVersionView", where, dataSource_aim)
+            aimSqlAllVersions.sort { a, b -> a.Version <=> b.Version }
+
+            //LOOP THROUGH AIMSQL RESULTS TO FIND THE LAST VERSION LETTER, SET THIS NEW VERSION TO THE NEXT LETTER
+            if(aimSqlAllVersions.size() > 0){
+                String value = aimSqlAllVersions.last().Version
+                value = value.replaceAll("\"", "").replace("'", "");
+                log.info value
                 int charValue = value.charAt(0);
                 versionLetter = String.valueOf( (char) (charValue + 1));
                 log.info versionLetter
             }
+
+            //CHECK IF MYSQL RECORD EXISTS. IF EXISTS GET THE QUESTION ANSWER MAP
+
+            mysqlSubmissionResult =  Submissions.findByAimQuoteIDAndAimVersion(params.quoteID, params.editingVersion)
+            questionAnswerMapJSON = jsonSlurper.parseText(mysqlSubmissionResult.questionAnswerMap)
+            questionAnswerMapString = JsonOutput.toJson(questionAnswerMapJSON)
+
+            log.info questionAnswerMapString
+//            log.info dvResults[0].QuoteID
+//            log.info verResults[0]
+//            log.info quoteResults[0].CoverageID
+
 //            quotingVersionMap = [
 //
 //            ]
@@ -247,7 +287,8 @@ class MainController {
         [user: session.user, riskCategories:riskCategories, riskTypes:riskTypes, coverages:coverages, marketCompanyList: marketCompanyList
          , riskCompanyList:riskCompanyList, ancillaryRiskTypes: ancillaryRiskTypes, venueRiskTypes:venueRiskTypes, filmRiskTypes:filmRiskTypes, entertainerRiskTypes:entertainerRiskTypes,
         officeRiskTypes:officeRiskTypes, specialeventRiskTypes:specialeventRiskTypes, shellcorpRiskTypes:shellcorpRiskTypes, versionMode:versionMode,
-         versionLetter:versionLetter, questionAnswerMap:questionAnswerMap]
+         versionLetter:versionLetter, originalVersion: params.editingVersion, questionAnswerMap: questionAnswerMapJSON,
+         questionAnswerMapString:questionAnswerMapString, dvResults: dvResults[0], verResults:verResults[0], quoteResults:quoteResults[0]]
     }
 
 

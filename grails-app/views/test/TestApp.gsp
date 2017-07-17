@@ -5,6 +5,13 @@
     <meta name="layout" content="SpecLayout">
     <title>Jasmine Spec Runner v2.5.2</title>
 
+    <script>
+        var versionMode = false;
+        <g:if test="${versionMode == true}">
+        versionMode= true;
+        </g:if>
+    </script>
+
     <link rel="stylesheet" href="${resource(dir: 'test/jasmine/', file: 'lib/jasmine-2.6.2/jasmine_favicon.png')}" type="image/png">
     <link rel="stylesheet" href="${resource(dir: 'test/jasmine/', file: 'lib/jasmine-2.6.2/jasmine.css')}" type="text/css">
 

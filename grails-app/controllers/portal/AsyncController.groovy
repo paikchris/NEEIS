@@ -23,6 +23,7 @@ import sun.misc.BASE64Decoder;
 import portal.Utils.FileTransferHelper;
 import portal.Utils.TestDataHelper;
 import portal.Utils.ProductHelper;
+import portal.Utils.GORMHelper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -30,15 +31,22 @@ class AsyncController {
     def beforeInterceptor = [action: this.&checkUser]
     def grailsLinkGenerator
 
+    def jsonSlurper = new JsonSlurper()
+    def jsonOutput = new JsonOutput()
+
+
     def dataSource_aim
     AIMSQL aimDAO = new AIMSQL();
     Intelledox intelledoxHelper = new Intelledox();
     TestDataHelper testDataHelper = new TestDataHelper();
+    GORMHelper gormHelper = new GORMHelper();
     ProductHelper productHelper = new ProductHelper();
 
     def timeZone = TimeZone.getTimeZone('PST')
     def dateFormat = 'yyyy-MM-dd HH:mm:ss.SSS'
     def dateSimple = 'MM/dd/yyyy'
+
+
 
     def checkUser() {
         println "CHECK USER"
@@ -147,7 +155,7 @@ class AsyncController {
                                 renderString = renderString + it.ProductID + "&,&" + it.Description + "&,&" + it.BillCompanyID + "&;;&";
                             }
                             if ((params.totalGrossBudget.toFloat() <= 100000)) {
-                                
+
                             }
                             if ((params.totalGrossBudget.toFloat() > 0 && params.totalGrossBudget.toFloat() <= 200000)) {
 
@@ -230,6 +238,45 @@ class AsyncController {
 
         render "Good"
     }
+
+    def getProductsForRiskType(){
+        log.info "GETTING PRODUCTS FOR RISK"
+        log.info params
+
+        def riskRecord = RiskType.findByRiskTypeCode(params.riskTypeCode, [max:1])
+
+        log.info riskRecord
+        if(riskRecord.products != null){
+            def productCodesArray = riskRecord.products.split(",")
+            log.info  productCodesArray
+
+            //BUILD JSON RESPONSE OF PRODUCTS AND THEIR DETAILS
+            def productArray = []
+
+            productCodesArray.each{
+                if(it.trim().size() > 0){
+                    log.info it
+                    def productRecord = Products.findByProductID(it.trim())
+                    log.info productRecord
+
+                    def rowMap = [:]
+                    productRecord.properties.each{
+                        rowMap[it.key] = it.value
+                    }
+                    productArray << rowMap
+                }
+            }
+
+            //SORT PRODUCTS BY COVERAGE
+            productArray.sort { it.coverage.toLowerCase() }
+            render jsonOutput.toJson(productArray)
+        }
+        else{
+            render ""
+        }
+    }
+
+
 
     def getLimitsDeductibles() {
         log.info("GETTING LIMITS AND DEDUCTIBLES FOR PRODUCT")
@@ -2318,6 +2365,12 @@ class AsyncController {
                     log.info("ORIGINAL LOB STRING: " + lobString)
                     try{
                         agentPct = lobString.split('\r')[0].split('\t')[3].trim();
+                        log.info(session.user.company)
+                        if(session.user.company == "TVD"){
+                            agentPct = "17.5"
+                            log.info "AGENT PCT: " + agentPct
+                            log.info "COV ID: " + coverageID
+                        }
                     }
                     catch(Exception e){
                         agentPct = "";
@@ -2334,6 +2387,7 @@ class AsyncController {
                         if (productID == "PIP CHOI") {
                             def premium = 0.0
                             def deductAmount = 0;
+                            def pipChoiceTotalMinPrem = 250
                             def miscRentedEquipRateMinPrem = pipChoice_miscRentedEquipRateMinPrem;
                             def propsSetWardrobeRateMinPrem = pipChoice_propsSetWardrobeRateMinPrem;
                             def thirdPartyPropDamageRateMinPrem = pipChoice_thirdPartyPropDamageRateMinPrem;
@@ -2490,6 +2544,11 @@ class AsyncController {
                             else{
                                 limitsMap.remove("Extra Expense")
                                 deductsMap.remove("Extra Expense")
+                            }
+
+                            //CHECK IF TOTAL PREMIUM MEETS TOTAL MIN PREMIUM
+                            if(productTotalPremium < pipChoiceTotalMinPrem){
+                                productTotalPremium = pipChoiceTotalMinPrem
                             }
 
 
@@ -3193,6 +3252,8 @@ class AsyncController {
                             indicationRateInfo = indicationRateInfo + "${twoSpaces}${twoSpaces}Rated Premium\t${moneyFormat.format(productTotalPremium)}\n";
 
                         }
+
+                        lobString = "Entertainment Package" + "\t" + Math.ceil(productTotalPremium) + "\t" + grossPct + "\t" + agentPct+"\r"
                     }
                     else if (coverageID == "CGL" || coverageID == "CPK") {
                         def rate = 0.0;
@@ -3808,7 +3869,7 @@ class AsyncController {
             quoteIDCoverages.split(",").each{
                 quoteID = quoteID + it.split(";")[0] + ","
 
-                s = new portal.Submissions(submittedBy: session.user.email, aimQuoteID: it.split(";")[0], namedInsured: dataMap.getAt("namedInsured"), submitDate: timestamp,
+                s = new portal.Submissions(submittedBy: session.user.email, aimQuoteID: it.split(";")[0], aimVersion: "A", namedInsured: dataMap.getAt("namedInsured"), submitDate: timestamp,
                         coverages: it.split(";")[1], statusCode: "QO", underwriter: dataMap.getAt('accountExec')+"@neeis.com", questionAnswerMap: params.questionAnswerMap,
                         uwQuestionMap:uwQuestionsMap, uwQuestionsOrder:uwQuestionsOrder, submitGroupID: submitGroupID)
                 s.save(flush: true, failOnError: true)
@@ -3919,7 +3980,7 @@ class AsyncController {
             quoteIDCoverages.split(",").each{
                 quoteID = quoteID + it.split(";")[0] + ","
 
-                s = new portal.Submissions(submittedBy: session.user.email, aimQuoteID: it.split(";")[0], namedInsured: dataMap.getAt("namedInsured"), submitDate: timestamp,
+                s = new portal.Submissions(submittedBy: session.user.email, aimQuoteID: it.split(";")[0],  aimVersion: "A", namedInsured: dataMap.getAt("namedInsured"), submitDate: timestamp,
                         coverages: it.split(";")[1], statusCode: "QO", underwriter: dataMap.getAt('accountExec')+"@neeis.com", questionAnswerMap: params.questionAnswerMap,
                         uwQuestionMap:uwQuestionsMap, uwQuestionsOrder:uwQuestionsOrder, submitGroupID: submitGroupID)
                 s.save(flush: true, failOnError: true)
@@ -4679,39 +4740,45 @@ class AsyncController {
         log.info params
 
         String renderString = ""
-        def results =[];
-        def rowMap = [:]
+        def dvResults =[];
 
 //        def where = "(QuoteID='$params.quoteID')";
-        def where = "(QuoteID='0613973')";
-        results = aimDAO.selectAllFromTableWhereWithFormatting("dvVersionView", where, dataSource_aim)
+        def where = "(QuoteID='" + params.quoteID + "')";
+        dvResults = aimDAO.selectAllFromTableWhereWithFormatting("dvVersionView", where, dataSource_aim)
         log.info "BEFORE SORT"
-        results.each{
+        dvResults.each{
             log.info it.Version
         }
-        results.sort { a, b -> a.Version <=> b.Version }
-
+        dvResults.sort { a, b -> a.Version <=> b.Version }
         log.info "AFTER SORT"
-
-        results.each{
+        dvResults.each{
             log.info it.Version
         }
 
-//        aimsql.eachRow("SELECT     QuoteID, Version, VersionCompanyID, ProductID, Premium, Non_Premium, Misc_Premium, NonTax_Premium, QuoteExpires, Financed, Taxed, MEP, Rate, \n" +
-//                "                      GrossComm, AgentComm, Coinsure, SubmitDate, SubmitPOC, MarketID, VerOriginal, StatusID, CoverageName, CompanyName, CompanyFax, CompanyPhone, \n" +
-//                "                      MarketName, MarketFax, MarketPhone, ProposedEffective, ProposedExpiration, TotalTax, TotalFees, Total, VersionID, TerrorActPremium, TerrorActStatus, \n" +
-//                "                      MarketContactKey_FK, NAIC\n" +
-//                "FROM         dvVersionView\n" +
-//                "WHERE     (QuoteID = '" + params.quoteID + "') ") {
-//            log.info it.getClass()
-//            rowMap.QuoteID =
-//            results.add(it)
-//        }
+        def verResults =[];
+        where = "(QuoteID='" + params.quoteID + "')";
+        verResults = aimDAO.selectAllFromTableWhereWithFormatting("Version", where, dataSource_aim)
+        log.info "BEFORE SORT"
+        verResults.each{
+            log.info it.Version
+        }
+        verResults.sort { a, b -> a.Version <=> b.Version }
+        log.info "AFTER SORT"
+        verResults.each{
+            log.info it.Version
+        }
 
-        renderString = new JsonBuilder(results).toPrettyString()
+
+
+        def response = [:]
+        
+        response.dvVersionViewData = dvResults
+        response.versionData = verResults
+
+        renderString = new JsonBuilder(response).toPrettyString()
 
         log.info renderString
-        render new JsonBuilder(results).toPrettyString()
+        render new JsonBuilder(response).toPrettyString()
 
     }
 
