@@ -221,9 +221,12 @@ class AdminController {
         def renderMessage = "Success"
 
         try{
+            //SAVING PRODUCT
             def productObject = jsonSlurper.parseText(params.productObject)
             log.info productObject.id
-            log.info productObject.flatPremium
+            
+            productObject.rateInfo = jsonOutput.toJson(productObject.rateInfo)
+
             Products productRecord = Products.get(productObject.id)
 
             def columnList = productRecord.domainClass.persistentProperties*.name
@@ -231,8 +234,27 @@ class AdminController {
             columnList.each{
                 productRecord[it] = productObject[it]
             }
-
             productRecord.save(flush: true, failOnError: true)
+
+
+            //SAVING LOB
+            def lobObject = jsonSlurper.parseText(params.lobObject)
+            lobObject.each {
+                def thisLOBObject = it
+
+                thisLOBObject.otherOptionsMap = jsonOutput.toJson(thisLOBObject.otherOptionsMap)
+                ProductLOB lobRecord = ProductLOB.get(it.id)
+
+                def lobColumnList = lobRecord.domainClass.persistantProperties*.name
+
+                lobColumnList.each{
+                    lobRecord[it] = thisLOBObject[it]
+                }
+
+                lobRecord.save(flush: true, failOnError: true)
+            }
+
+
         }catch(Exception e){
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));

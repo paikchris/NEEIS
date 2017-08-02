@@ -3,19 +3,22 @@
 <head>
     <meta name="layout" content="main">
     <link rel="stylesheet" href="${resource(dir: 'css', file: 'submissions.css')}" type="text/css">
-    %{--<link rel="stylesheet" href="${resource(dir: 'plugins/fuelux/css', file: 'fuelux.min.css')}" type="text/css">--}%
-    %{--<script src="${resource(dir: 'plugins/fuelux/js', file: "fuelux.min.js")}"></script>--}%
     <script src="${resource(dir: 'js/admin/', file: "data.js?ts=" + new Date().getTime())}"></script>
+    <script src="${resource(dir: 'js/utils/', file: "ratingHelper.js?ts=" + new Date().getTime())}"></script>
     <script src="${resource(dir: 'js/utils/', file: "stringUtils.js?ts=" + new Date().getTime())}"></script>
     <script src="${resource(dir: 'js/vendor/', file: "numeral.min.js")}"></script>
+    <script src="${resource(dir: 'js/vendor/', file: "math.js")}"></script>
+
 
     <script src="${resource(dir: 'js/utils/', file: "multiRangePlugin.js?ts=" + new Date().getTime())}"></script>
+    <link rel="stylesheet" href="${resource(dir: 'css', file: 'multiRangePlugin.css?ts=' + new Date().getTime())}" type="text/css">
 
 
 
     <style>
         .riskCategory_ListItem, .productCategory_ListItem {
             font-weight: 500;
+            font-size:12px;
         }
 
         a.subCategory_ListItem{
@@ -35,9 +38,8 @@
 
         a.product_ListItem {
             font-size: smaller;
-            /*padding-left:80px;*/
             padding: 4px 20px;
-            margin-left: 40px;
+            margin-left: 18px;
         }
 
         a.list-group-item.subCategory_ListItem.active,
@@ -120,11 +122,11 @@
         <div class="tabWizardContainer">
             <!-- Nav tabs -->
             <ul class="nav nav-tabs" role="tablist">
-                <li role="presentation" class="active"><a href="#riskTypePanel" aria-controls="riskTypePanel" role="tab"
+                <li role="presentation" class="active"><a href="#riskTypePanel" id="riskTypePanelButton" aria-controls="riskTypePanel" role="tab"
                                                           data-toggle="tab">Risk Types</a></li>
-                <li role="presentation"><a href="#productsPanel" aria-controls="productsPanel" role="tab"
+                <li role="presentation"><a href="#productsPanel" id="productsPanelButton" aria-controls="productsPanel" role="tab"
                                            data-toggle="tab">Products</a></li>
-                <li role="presentation"><a href="#messages" aria-controls="messages" role="tab"
+                <li role="presentation"><a href="#messages" id="" aria-controls="messages" role="tab"
                                            data-toggle="tab">Messages</a></li>
                 <li role="presentation"><a href="#settings" aria-controls="settings" role="tab"
                                            data-toggle="tab">Settings</a></li>
@@ -441,7 +443,7 @@
                 </div>
 
                 <div role="tabpanel" class="tab-pane fade" id="productsPanel">
-                    <div class="col-xs-3 panel-left">
+                    <div class="col-xs-2 panel-left" style="padding-left:0px; padding-right:0px">
                         <div class="col-xs-12 panel-left-header">
                             <h5>Products</h5>
                         </div>
@@ -481,174 +483,352 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xs-3 panel-center" id="productPanelContentContainer">
-                        <div class="col-xs-12 panel-left-header">
-                            <h5>Product Fields</h5>
-                        </div>
-                        <div class="col-xs-12" id="productInputFields" style="">
-                            <g:each var="product" in="${products[0]}">
-                                <g:each var="column"
-                                        in="${product.getDisplayOrder()}">
-                                %{--data-${column}="${product.getAt(column)}"--}%
-
-                                %{--PRODUCT COLUMNS--}%
-                                    <div class="row "  style="margin-bottom:0px;">
-                                        <div class="col-xs-12">
-                                            <div class="form-group">
-                                                <h6>${product.getDisplayName(column)}</h6>
-                                            <input type="text" class="form-control databound detectProductChanges"
-                                                    data-table="product" data-column="${column}"
-                                                    value="">
-
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </g:each>
-                            </g:each>
-
-                            <span class="statusMessage" id="productErrorMessage" style="display:none; color:red">Error, Check Form</span><br>
-                            <span class="statusMessage" id="productSaveMessage" style="display:none; color:green">Saved</span><br>
-                            <button class="btn btn-success" id="saveProductButton" type="button" style="" disabled="disabled">
-                                <span class="" style="">Save</span>
-                            </button>
+                    <div class="col-xs-10 panel-right" style="padding-left:0px; padding-right:0px">
+                        <div class="row" style="padding: 4px 0px;">
+                            <div class="col-xs-6 panel-left-header">
+                                <h5 id="productNameHeader">...</h5>
+                            </div>
+                            <div class="col-xs-6 pull-right">
+                                <div style="float:right; width: 20%; position:relative; top: 46px; z-index: 1">
+                                    <span class="statusMessage productErrorMessage" style="display:none; color:red">Error, Check Form</span>
+                                    <span class="statusMessage productSaveMessage" style="display:none; color:green">Saved</span>
+                                    <button class="btn btn-sm btn-success saveProductButton" type="button" style="width:70%" disabled="disabled">
+                                        <span class="" style="">Save</span>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
-                    </div>
-                    <div class="col-xs-6 panel-right">
-                        <div class="col-xs-12 " id="productDetailsContainer" style="">
-                            <div class="tabWizardContainer">
-                                <!-- Nav tabs -->
-                                <ul class="nav nav-tabs" role="tablist">
-                                    <li role="presentation" class="active"><a href="#ratingTab" aria-controls="ratingTab" role="tab"
-                                                           data-toggle="tab">Rating</a></li>
-                                    <li role="presentation"><a href="#lobTab" aria-controls="lobTab" role="tab"
-                                                                              data-toggle="tab">LOBS</a></li>
-                                    <li role="presentation"><a href="#formsTab" aria-controls="formsTab" role="tab"
-                                                               data-toggle="tab">Forms</a></li>
-                                    <li role="presentation"><a href="#termsTab" aria-controls="termsTab" role="tab"
-                                                               data-toggle="tab">Terms</a></li>
-                                </ul>
+                        <div class="row">
+                            <div class="col-xs-12 " id="productDetailsContainer" style="">
+                                <div class="tabWizardContainer">
+                                    <!-- Nav tabs -->
+                                    <ul class="nav nav-tabs" role="tablist">
+                                        <li role="presentation" class="active"><a href="#detailTab" aria-controls="detailTab" role="tab"
+                                                                                  data-toggle="tab">Details</a></li>
+                                        <li role="presentation"><a href="#ratingTab" aria-controls="ratingTab" role="tab"
+                                                                   data-toggle="tab">Rating</a></li>
+                                        <li role="presentation"><a href="#lobTab" aria-controls="lobTab" role="tab"
+                                                                   data-toggle="tab">LOBS</a></li>
+                                        <li role="presentation"><a href="#formsTab" aria-controls="formsTab" role="tab"
+                                                                   data-toggle="tab">Forms</a></li>
+                                        <li role="presentation"><a href="#termsTab" aria-controls="termsTab" role="tab"
+                                                                   data-toggle="tab">Terms</a></li>
+                                        <li role="presentation"><a href="#previewProductTab" aria-controls="previewProductTab" role="tab"
+                                                                   data-toggle="tab" id="productPreviewTabButton">Preview</a></li>
+                                    </ul>
 
-                                <!-- Tab panes -->
-                                <div class="tab-content">
-                                    <div role="tabpanel" class="tab-pane fade in active" id="ratingTab">
-                                        <div class="well col-xs-12 ">
-                                            <div class="primaryRatingBasisContainer" style="margin-bottom: 24px">
+                                    <!-- Tab panes -->
+                                    <div class="tab-content">
+                                        <div role="tabpanel" class="tab-pane fade in active" id="detailTab">
+                                            <div class="well col-xs-12 ">
                                                 <div class="row">
                                                     <div class="col-xs-12">
-                                                        <h4>Primary Rating Basis</h4>
-                                                    </div>
-                                                    <div class="col-xs-6">
-                                                        <select id="primaryRateBasisSelect">
-                                                            <option value="gpc">GPC</option>
-                                                            <option value="flatRate">Flat Rate</option>
-                                                            <option value="termLength">Term Length</option>
-                                                            <option value="limits">Limits</option>
-                                                            <option value="belowTheLine">Below The Line</option>
-                                                        </select>
+                                                        <h4>Product Fields</h4>
                                                     </div>
                                                 </div>
-                                            </div>
-
-                                            <div class="basisOptionContainer" id="gpc_RatingOptionsContainer" style="">
                                                 <div class="row">
-                                                    <div class="col-xs-12">
-                                                        <h5 style='margin-top:4px; margin-bottom:2px;'>GPC Rates</h5>
-                                                    </div>
-                                                    <div class="col-xs-12">
-                                                        <div class=" row multiRangeContainer money" style="margin-bottom:40px;">
+                                                    <div id="productPanelContentContainer" >
+                                                        <div class="col-xs-12" id="productInputFields" style="">
+                                                            <g:each var="product" in="${products[0]}">
+                                                                    <g:each var="column"
+                                                                            in="${product.getDisplayOrder()}">
+                                                                    %{--data-${column}="${product.getAt(column)}"--}%
+
+                                                                    %{--PRODUCT COLUMNS--}%
+                                                                        <div class="row "  style="margin-bottom:0px;">
+                                                                            <div class="col-xs-4">
+                                                                                <div class="form-group">
+                                                                                    <h6>${product.getDisplayName(column)}</h6>
+                                                                                    <input type="text" class="form-control databound detectProductChanges"
+                                                                                           data-table="product" data-column="${column}"
+                                                                                           value="">
+
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                    </g:each>
+                                                                </g:each>
+
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="basisOptionContainer" id="belowTheLine_RatingOptionsContainer" style="display:none">
-
-                                            </div>
-                                            <div class="basisOptionContainer" id="flatRate_RatingOptionsContainer" style="display:none">
-                                                <div class="row">
-                                                    <div class="col-xs-12">
-                                                        <h5 style='margin-top:4px; margin-bottom:2px;'>Flat Rate Options</h5>
-                                                    </div>
-                                                    <div class="col-xs-6">
-                                                        <div class="input-group">
-                                                            <div class="input-group-btn">
-                                                                <button type="button" class="btn btn-default dropdown-toggle"
-                                                                        data-toggle="dropdown" aria-haspopup="true"
-                                                                        aria-expanded="false">
-                                                                    <span class="dropDownButtonText">Flat Premium</span>
-                                                                    <span class="caret"></span>
-                                                                </button>
-                                                                <ul class="dropdown-menu dropdown-menu-auto">
-                                                                    <li><a href="#">Flat Premium</a></li>
-                                                                    <li><a href="#">Flat Rate</a></li>
-                                                                </ul>
-                                                            </div><!-- /btn-group -->
-                                                            <input class="form-control moneyInput" type="text" value="0">
+                                        </div>
+                                        <div role="tabpanel" class="tab-pane fade" id="ratingTab">
+                                            <div class="well col-xs-12 ">
+                                                <div class="primaryRatingBasisContainer" style="margin-bottom: 24px">
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <h4>Primary Rating Basis</h4>
                                                         </div>
-                                                    </div>
-                                                    <div class="col-xs-6">
-                                                    </div>
-                                                    <div class="col-xs-6">
-                                                        <div class="input-group">
-                                                            <span class="input-group-addon" >
-                                                                Minimum Premium
-                                                                %{--<i class="fa fa-percent"></i>--}%
-                                                            </span>
-                                                            <input class="form-control moneyInput" type="text" value="0">
+                                                        <div class="col-xs-6">
+                                                            <select id="primaryRateBasisSelect">
+                                                                <option value="gpc">GPC</option>
+                                                                <option value="flatRate">Flat Rate</option>
+                                                                <option value="termLength">Term Length</option>
+                                                                <option value="limits">Limits</option>
+                                                                <option value="belowTheLine">Below The Line</option>
+                                                            </select>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="basisOptionContainer" id="termLength_RatingOptionsContainer" style="display:none">
-                                                <div class="row">
-                                                    <div class="col-xs-12">
-                                                        <h5 style='margin-top:4px; margin-bottom:2px;'>Term Length Rates</h5>
+
+                                                <div class="basisOptionContainer" id="gpc_RatingOptionsContainer" style="">
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <h5 style='margin-top:4px; margin-bottom:2px;'>GPC Rates</h5>
+                                                        </div>
+                                                        <div class="col-xs-12">
+                                                            <div class=" row multiRangeContainer money" id="gpc_multiRangeContainer" style="margin-bottom:40px;">
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <div class="col-xs-12">
-                                                        <div class=" row multiRangeContainer days" style="margin-bottom:40px;">
+                                                    <div class="testRatingContainer">
+                                                        <div class="row">
+                                                            <div class="col-xs-12">
+                                                                <h5 style="margin-top:4px; margin-bottom:2px;">Test Rate</h5>
+                                                            </div>
+                                                            <div class="col-xs-6">
+                                                                <div class="input-group">
+                                                                    <span class="input-group-addon">
+                                                                        <span>GPC</span>
+                                                                    </span>
+                                                                    <input class="form-control moneyInput rateTestRun detectProductChanges" id="gpc_TestInput" type="text" value="0">
+                                                                </div>
+                                                                <div class="input-group">
+                                                                    <span class="input-group-addon">
+                                                                        <span>Term Length</span>
+                                                                    </span>
+                                                                    <input class="form-control rateTestRun numberInput detectProductChanges" id="gpc_TermLengthInput" type="text" value="0">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xs-6" style="">
+                                                                <span id="gpc_PremiumPreview"
+                                                                      style="font-size: 11px;white-space: pre-wrap">-</span>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="basisOptionContainer" id="limits_RatingOptionsContainer" style="display:none">
-                                                <div class="row">
-                                                    <div class="col-xs-12">
-                                                        <h5 style='margin-top:4px; margin-bottom:2px;'>Limit Rates</h5>
+                                                <div class="basisOptionContainer" id="belowTheLine_RatingOptionsContainer" style="display:none">
+
+                                                </div>
+                                                <div class="basisOptionContainer" id="flatRate_RatingOptionsContainer" style="display:none">
+                                                    <div class="row" style="margin-bottom:40px;">
+                                                        <div class="col-xs-12">
+                                                            <h5 style='margin-top:4px; margin-bottom:2px;'>Flat Rate Options</h5>
+                                                        </div>
+                                                        <div class="col-xs-6">
+                                                            <div class="input-group">
+                                                                <div class="input-group-btn">
+                                                                    <button type="button" class="btn btn-default dropdown-toggle"
+                                                                            data-toggle="dropdown" aria-haspopup="true"
+                                                                            aria-expanded="false">
+                                                                        <span class="dropDownButtonText">Flat Premium</span>
+                                                                        <span class="caret"></span>
+                                                                    </button>
+                                                                    <ul class="dropdown-menu dropdown-menu-auto">
+                                                                        <li><a href="#" class="multiRange_RateOption dropDownOption_money">Flat Premium</a></li>
+                                                                        <li><a href="#" class="multiRange_RateOption dropDownOption_percent">Flat Rate</a></li>
+                                                                    </ul>
+                                                                </div><!-- /btn-group -->
+                                                                <input class="form-control moneyInput rateInput rateTestRun detectProductChanges" id="flatRate_FlatValue" type="text" value="0">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-6">
+                                                        </div>
+                                                        <div class="col-xs-6">
+                                                            <div class="input-group">
+                                                                <span class="input-group-addon" >
+                                                                    Minimum Premium
+                                                                    %{--<i class="fa fa-percent"></i>--}%
+                                                                </span>
+                                                                <input class="form-control moneyInput minPremiumInput rateTestRun detectProductChanges" id="flatRate_MinPremium" type="text" value="0" disabled="true">
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <div id="limitRatingLOBRangeContainer">
+                                                    <div class="testRatingContainer">
+                                                        <div class="row">
+                                                            <div class="col-xs-12">
+                                                                <h5 style="margin-top:4px; margin-bottom:2px;">Test Rate</h5>
+                                                            </div>
+                                                            <div class="col-xs-6">
+                                                                <div class="input-group">
+                                                                    <span class="input-group-addon">
+                                                                        <span>GPC</span>
+                                                                    </span>
+                                                                    <input class="form-control moneyInput rateTestRun detectProductChanges" id="flatRate_TestInput" type="text" value="0">
+                                                                </div>
+                                                                <div class="input-group">
+                                                                    <span class="input-group-addon">
+                                                                        <span>Term Length</span>
+                                                                    </span>
+                                                                    <input class="form-control rateTestRun numberInput detectProductChanges" id="flatRate_TermLengthInput" type="text" value="0">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xs-6" style="">
+                                                                <span id="flatRate_PremiumPreview"
+                                                                      style="font-size: 11px;white-space: pre-wrap">-</span>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="basisOptionContainer" id="termLength_RatingOptionsContainer" style="display:none">
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <h5 style='margin-top:4px; margin-bottom:2px;'>Term Length Rates</h5>
+                                                        </div>
+                                                        <div class="col-xs-12">
+                                                            <div class=" row multiRangeContainer days"  id="termLength_multiRangeContainer" style="margin-bottom:40px;">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="testRatingContainer">
+                                                        <div class="row">
+                                                            <div class="col-xs-12">
+                                                                <h5 style="margin-top:4px; margin-bottom:2px;">Test Rate</h5>
+                                                            </div>
+                                                            <div class="col-xs-6">
+                                                                <div class="input-group">
+                                                                    <span class="input-group-addon">
+                                                                        <span>GPC</span>
+                                                                    </span>
+                                                                    <input class="form-control moneyInput rateTestRun detectProductChanges" id="termLength_TestInput" type="text" value="0">
+                                                                </div>
+                                                                <div class="input-group">
+                                                                    <span class="input-group-addon">
+                                                                        <span>Term Length</span>
+                                                                    </span>
+                                                                    <input class="form-control rateTestRun numberInput detectProductChanges" id="termLength_TermLengthInput" type="text" value="0">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xs-6" style="">
+                                                                <span id="termLength_PremiumPreview"
+                                                                      style="font-size: 11px;white-space: pre-wrap">-</span>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="basisOptionContainer" id="limits_RatingOptionsContainer" style="display:none">
+
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <h5 style='margin-top:4px; margin-bottom:2px;'>Limit Rates</h5>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-xs-3" style="margin-left: 15px; margin-right: 15px; padding-top: 6px">
+                                                                <div class="input-group">
+                                                                    <span class="input-group-addon" >
+                                                                        Total Min Premium
+                                                                    </span>
+                                                                    <input class="form-control moneyInput rateTestRun detectProductChanges" id="limits_TotalMinPremium" type="text" value="0" >
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div id="limitRatingLOBRangeContainer">
+                                                        </div>
+                                                    </div>
+                                                    <div class="testRatingContainer">
+                                                        <div class="row">
+                                                            <div class="col-xs-12">
+                                                                <h5 style="margin-top:4px; margin-bottom:2px;">Test Rate</h5>
+                                                            </div>
+                                                            <div class="col-xs-6" >
+                                                                <div class="input-group">
+                                                                    <span class="input-group-addon">
+                                                                        <span>GPC</span>
+                                                                    </span>
+                                                                    <input class="form-control moneyInput rateTestRun detectProductChanges" id="limits_TestInput" type="text" value="0">
+                                                                </div>
+                                                                <div class="input-group">
+                                                                    <span class="input-group-addon">
+                                                                        <span>Term Length</span>
+                                                                    </span>
+                                                                    <input class="form-control rateTestRun numberInput detectProductChanges" id="limits_TermLengthInput" type="text" value="0">
+                                                                </div>
+                                                                <div id="previewInputsDiv" style="padding-top:12px">
+
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xs-6" style="">
+                                                                <span id="limits_PremiumPreview"
+                                                                      style="font-size: 11px;white-space: pre-wrap">-</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div id="testStuffContainer">
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <textarea id="testStuffTextArea" cols="100" rows="25" style="display:none">
+
+                                                            </textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+
+                                            </div>
+                                        </div>
+                                        <div role="tabpanel" class="tab-pane fade" id="lobTab">
+                                            <div class="well col-xs-12">
+                                                <h4>LOB Options</h4>
+                                                <div class="" id="lobDetailContainer" style="">
+
+                                                </div>
+                                                <br>
+                                                <h5>Additional Options</h5>
+                                                <div class="" id="lobAdditionalCoveragesContainer" style="">
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div role="tabpanel" class="tab-pane fade" id="formsTab">
+                                            <div class="well col-xs-12">
+                                                <h4>Forms</h4>
+                                                <div class="" id="formsDetailContainer" style="">
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div role="tabpanel" class="tab-pane fade" id="termsTab">
+                                            <div class="well col-xs-12">
+                                                <h4>Terms</h4>
+                                                <div class="" id="termsDetailContainer" style="">
+                                                    <div class="form-group">
+                                                        <textarea class="form-control" rows="15" id="termsTextArea"></textarea>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div role="tabpanel" class="tab-pane fade" id="lobTab">
-                                        <div class="well col-xs-12">
-                                            <h4>LOB Options</h4>
-                                            <div class="" id="lobDetailContainer" style="">
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div role="tabpanel" class="tab-pane fade" id="formsTab">
-                                        <div class="well col-xs-12">
-                                            <h4>Forms</h4>
-                                            <div class="" id="formsDetailContainer" style="">
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div role="tabpanel" class="tab-pane fade" id="termsTab">
-                                        <div class="well col-xs-12">
-                                            <h4>Terms</h4>
-                                            <div class="" id="termsDetailContainer" style="">
-                                                <div class="form-group">
-                                                    <textarea class="form-control" rows="15" id="termsTextArea"></textarea>
+                                        <div role="tabpanel" class="tab-pane fade" id="previewProductTab">
+                                            <div class="well col-xs-12">
+                                                <h4>Preview</h4>
+                                                <div class="" id="previewProductContainer" style="">
+                                                    <h6>Primary Rating Basis: </h6>
+                                                    <span>Rate Info:</span>
+                                                    <span>Rate Test:</span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
 
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div style="width: 28%; margin: auto;">
+                                    <span class="statusMessage productErrorMessage" style="display:none; color:red">Error, Check Form</span>
+                                    <span class="statusMessage productSaveMessage" style="display:none; color:green">Saved</span>
+                                    <button class="btn btn-sm btn-success saveProductButton" type="button" style="width:70%" disabled="disabled">
+                                        <span class="" style="">Save</span>
+                                    </button>
                                 </div>
                             </div>
                         </div>

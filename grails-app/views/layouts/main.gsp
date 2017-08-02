@@ -165,9 +165,6 @@
 	<link rel="stylesheet" href="${resource(dir: 'css', file: 'typeaheadjs.css')}" type="text/css">
 
 
-
-
-
 	<!-- Masking Inputs plugin -->
 	<script src="${resource(dir: 'js', file: 'jquery.maskedinput.js')}" ></script>
 
@@ -177,6 +174,9 @@
 	<!-- Velocity Animations plugin-->
 	<script src="${resource(dir: 'js/vendor', file: 'velocity.min.js')}" ></script>
 
+
+	<script src="${resource(dir: 'test/jasmine/utils', file: 'testHelper.js?ts=' + new Date().getTime())}" ></script>
+	
 
 	<script >
 		$("#sidebar-wrapper").hover(function(e) {
@@ -305,6 +305,11 @@
 			<li>
 				<a href="./../main/messages.gsp"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Messages</a>
 			</li>
+			<g:if test="${user.admin == "true"}">
+				<li>
+					<a href="./../main/newSubmissionV2.gsp"><span class="fa fa-wrench" aria-hidden="true"></span> New Policy V2</a>
+				</li>
+			</g:if>
 			%{--<li>--}%
 			%{--<a href="#"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Events</a>--}%
 			%{--</li>--}%

@@ -1,4 +1,4 @@
-function getProductsForRisk() {
+function getProductsForRisk_backup() {
     console.log("getting products")
     var riskChosen = getRiskTypeChosen();
     if (riskChosen.indexOf("Film Projects") > -1 && $("#proposedTermLength").val().length > 0) {
@@ -193,57 +193,201 @@ function getProductsForRisk() {
 
 }
 
-function getProductsForRiskV2(){
-    var dataMap = {};
-    dataMap.duration = parseInt($("#proposedTermLength").val().split(" ")[0]);
-    dataMap.risk = getRiskTypeChosen();
-    dataMap.budget = parseInt($("#totalBudgetConfirm").val().replace(/\$|,/g, ''));
+function getProductsForRisk() {
+    console.log("getting products")
+    var riskChosen = getRiskTypeChosen();
+    var riskID = getSelectedRiskTypeID();
+
+    if (riskID.indexOf("Film Projects") > -1 && $("#proposedTermLength").val().length > 0) {
+        $.ajax({
+            method: "POST",
+            url: "/Async/getProductsForCoverage",
+            data: {
+                riskTypeID: riskID,
+                totalGrossBudget: $("#totalBudgetConfirm").val().replace(/\$|,/g, ''),
+                proposedTermLength: $("#proposedTermLength").val()
+            }
+        })
+            .done(function(msg) {
+                var longFunctionID = generateAjaxID()
+                outstandingCalls[longFunctionID] = "ratePremiumsFunction"
+
+                clearProductChoices();
+                var coverageAndProductsArray = msg.split("&nextCoverage&");
+                //alert(coverageAndProductsArray);
+                var htmlString = "";
+                for (var i = 0; i < coverageAndProductsArray.length; i++) {
+                    //alert(coverageAndProductsArray[i]);
+                    if (coverageAndProductsArray[i].length > 0) {
+                        var coverageDetails = coverageAndProductsArray[i].split("&;&")[0];
+                        var coverageID = coverageDetails.split("&,&")[0];
+                        var coverageName = coverageDetails.split("&,&")[1];
+                        //console.log(coverageID + "-" + coverageName + "-" + coverageDetails);
+
+                        var productsArray = coverageAndProductsArray[i].split("&;&")[1];
+                        //console.log("PROD ARRAY: " + productsArray);
+
+                        if (coverageID === "EPKG" &&
+                            (riskChosen === "Film Projects Without Cast (No Work Comp)" ||
+                                riskChosen === "Film Projects With Cast (No Work Comp)" ||
+                                riskChosen === "Specific Film Projects Test")) {
+
+                            ///////////////////////////// Film Projects With Cast (No Work Comp)
+                            if (riskChosen === "Film Projects With Cast (No Work Comp)") {
+                                $('#EPKGProductsDiv').css("display", "none");
+                                $('#EPKGoptions').css("margin-top", "-20px");
+                            }
+                            else {
+                                $('#EPKGProductsDiv').css("display", "");
+                                $('#EPKGoptions').css("margin-top", "0px");
+                            }
+                            /////////////////////////////
+
+                            if (productsArray.indexOf("PIP CHOI") > -1) {
+                                $('#PIPChoiceInput').css("display", "");
+
+                                if ($('#EPKGcoverage').is(':checked')) {
+                                    $('#PIPChoiceInputRadio').prop("checked", true);
+                                    $('#pipChoiceSelections').css("display", "");
+                                    $('.PIPCHOIOption').prop("checked", true);
+                                }
+                            }
+                            else {
+                                $('#PIPChoiceInputRadio').prop("checked", false);
 
 
-    $.ajax({
-        method: "POST",
-        url: "/Async/getProductsForCoverageV2",
-        data: {
-            riskType: getRiskTypeChosen(),
-            totalGrossBudget: $("#totalBudgetConfirm").val().replace(/\$|,/g, ''),
-            proposedTermLength: $("#proposedTermLength").val(),
-            dataMap: JSON.stringify(dataMap)
-        }
-    })
-    .done(function(msg) {
-        // $('#productChoicesDiv').html("");
-        $('#loadingModal').modal('hide');
-        var coverageAndProductsJSON = JSON.parse(msg);
-        var htmlString = "";
+                            }
+
+                            if (productsArray.indexOf("PIP 1") > -1) {
+                                $('#PIP1Input').css("display", "");
+                            }
+                            else {
+                                $('#PIP1InputRadio').prop("checked", false);
+                            }
+
+                            if (productsArray.indexOf("PIP 2") > -1) {
+                                $('#PIP2Input').css("display", "");
+                            }
+                            else {
+                                $('#PIP2InputRadio').prop("checked", false);
+                            }
+
+                            if (productsArray.indexOf("PIP 3") > -1) {
+                                $('#PIP3Input').css("display", "");
+                            }
+                            else {
+                                $('#PIP3InputRadio').prop("checked", false);
+                            }
+
+                            if (productsArray.indexOf("PIP 4") > -1) {
+                                $('#PIP4Input').css("display", "");
+                            }
+                            else {
+                                $('#PIP4InputRadio').prop("checked", false);
+                            }
+
+                            if (productsArray.indexOf("PIP 5") > -1) {
+                                //alert("PIP5 HERE")
+                                $('#PIP5Input').css("display", "");
 
 
-        for (var i = 0; i < coverageAndProductsJSON.length; i++) {
-            var coverageID = coverageAndProductsJSON[i].id
-            htmlString = htmlString +
-            "<div class='form-group col-xs-12 " + coverageID + "Div'>" +
-                "<p><input type='checkbox' class='coverageInput' name='coverage' id='" + coverageID + "coverage'> Entertainment Package</p>" +
-            "</div>";
-        }
+                                //TEMPORARILY DISABLING AUTOMATICALLY PICKING PIP 5
+                                // if ($('#EPKGcoverage').is(':checked')) {
+                                //     $('#PIP5InputRadio').prop("checked", true);
+                                //     $('#PIP5InputRadio').trigger('change');
+                                //     $(".PIP5Options").css('display', "");
+                                //     $('.PIPCHOIOption').prop("checked", false);
+                                // }
+                            }
+                            else {
+                                $('#PIP5InputRadio').prop("checked", false);
+                                $('#EPKGCIVIL100AdditionalCoverage').prop("checked", false);
+                                $('#EPKGCIVIL500AdditionalCoverage').prop("checked", false);
+                                $('.additionalCoverageCheckboxPIP5').prop("checked", false);
+                            }
 
-    });
-}
+                            //SELECT AUTO EPKG
+                            if ($('#EPKGcoverage').is(':checked')) {
+                                $('.coverageRadioButton.EPKG:visible').first().prop("checked", true);
 
-function getProductsForRiskV3(){
-    var dataMap = {};
-    dataMap.duration = parseInt($("#proposedTermLength").val().split(" ")[0]);
-    dataMap.risk = getRiskTypeChosen();
-    dataMap.budget = parseInt($("#totalBudgetConfirm").val().replace(/\$|,/g, ''));
+                            }
 
-    $.ajax({
-        method: "POST",
-        url: "/Async/getProductsForCoverage",
-        data: {
-            dataMap: JSON.stringify(dataMap)
-        }
-    })
-        .done(function(msg) {
-            // alert(msg);
-        });
+                            if ($("input[name='EPKGRadio']:checked").length > 0) {
+                                if ($('#EPKGNOHAAdditionalCoverage').is(':checked')) {
+                                    $('#EPKGNOHAAdditionalCoverage').prop("checked", true);
+                                }
+                            }
+                            else {
+                                $('#EPKGNOHAAdditionalCoverage').prop("checked", false);
+                            }
+
+                            if ($('#EPKGcoverage').is(':checked')) {
+                                $('#EPKGoptions').css("display", "");
+
+                                if (riskChosen === "Film Projects With Cast (No Work Comp)") {
+                                    $("#EPKGNOHAOption").css("display", "none");
+                                }
+                                else {
+                                    if($('#PIP3InputRadio').is(':checked') || $('#PIP4InputRadio').is(':checked') || $('#PIP5InputRadio').is(':checked')){
+                                        // console.log("PIP 5 HIDE NOHA")
+                                        // $("#EPKGoptions").css("display", "none");
+                                        $("#EPKGNOHAOption").css("display", "none");
+                                        if($('#PIP5InputRadio').is(':checked')){
+                                            $("#EPKGoptions").css("display", "");
+                                        }
+                                        else{
+                                            $("#EPKGoptions").css("display", "none");
+                                        }
+                                    }
+                                    else{
+                                        $("#EPKGoptions").css("display", "");
+                                        $("#EPKGNOHAOption").css("display", "");
+                                    }
+                                }
+                            }
+                            //
+                        }
+                        else if (coverageID === "CPK" || coverageID === "CGL"){
+                            if ( riskChosen === "Film Projects Without Cast (No Work Comp)" ){
+                                $('#CPKCGLcoverage').trigger('change');
+                            }
+                        }
+                        else if (coverageID === "DICE" &&
+                            (riskChosen === "Film Projects Without Cast (No Work Comp)" ||
+                                riskChosen === "Film Projects With Cast (No Work Comp)" ||
+                                riskChosen === "Specific Film Projects Test")) {
+                            $('.EPKGDiv').css("display", "none");
+                            $('.CPKDiv').css("display", "none");
+                            $('#DICEOptions').css("display", "");
+                            $("#EPKGoptions").css("display", "none");
+                        }
+                        else if (coverageID === "SPECIFICFILMPROD" &&
+                            (riskChosen === "Film Projects Without Cast (No Work Comp)" ||
+                                riskChosen === "Film Projects With Cast (No Work Comp)" ||
+                                riskChosen === "Specific Film Projects Test")) {
+                            $('#SPECIFICOptions').css("display", "");
+                        }
+
+                    }
+                }
+
+                //console.log("CALL FROM GETPRODUCTS FOR RISK")
+                ratePremiums($('#totalBudgetConfirm'));
+
+
+                delete outstandingCalls[longFunctionID]
+            });
+        $('#limitsDeductPremiumInsert').html("");
+        $('#premDistributionInsert').html("");
+        $("#termsInsert").html("");
+        $("#endorseInsert").html("");
+        $('#loadingModal').hide();
+        $('#coverageOptionsReview').css("display", "");
+    }
+    else {
+        $('#loadingModal').hide();
+    }
+
 }
 
 function getTaxInfo() {

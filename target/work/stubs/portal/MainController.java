@@ -39,6 +39,7 @@ public  java.lang.Object resetp() { return null;}
 public  java.lang.Object index() { return null;}
 public  java.lang.Object newSubmissionNew() { return null;}
 public  java.lang.Object newSubmission() { return null;}
+public  java.lang.Object newSubmissionV2() { return null;}
 public  java.lang.Object messages() { return null;}
 public  java.lang.Object submitSubmission() { return null;}
 public  java.lang.Object checkNamedInsured() { return null;}

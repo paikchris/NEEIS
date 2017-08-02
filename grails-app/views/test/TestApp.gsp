@@ -31,9 +31,7 @@
     <script src="${resource(dir: 'test/jasmine/', file: 'lib/jasmine-2.6.2/jasmine-jquery.js')}"></script>
     <script src="${resource(dir: 'test/jasmine/', file: 'lib/jasmine-2.6.2/mock-ajax.js')}"></script>
 
-
-    <link rel="stylesheet" href="${resource(dir: 'css', file: 'newSubmission.css')}" type="text/css">
-
+    %{--CORE PLUGIN JS--}%
     <script src="${resource(dir: 'js', file: 'jquery.maskMoney.min.js')}" async></script>
     <script src="${resource(dir: 'js', file: 'jquery.maskedinput.js')}" ></script>
     <script src="${resource(dir: 'js', file: 'moment.js')}" ></script>
@@ -43,23 +41,42 @@
     <script src="${resource(dir: 'js', file: 'jquery.autotype.js')}" ></script>
     <script src="${resource(dir: 'js/vendor/', file: 'bootstrap-datepicker.js')}" ></script>
     <link rel="stylesheet" href="${resource(dir: 'css', file: 'bootstrap-datepicker3.css')}" type="text/css">
+    <!-- TWITTER'S TYPEAHEAD PLUGIN-->
+    <script src="${resource(dir: 'js/vendor/typeahead', file: 'bloodhound.min.js')}" ></script>
+    <script src="${resource(dir: 'js/vendor/typeahead', file: 'typeahead.bundle.min.js')}" ></script>
+    <script src="${resource(dir: 'js/vendor/typeahead', file: 'typeahead.jquery.min.js')}" ></script>
+    <link rel="stylesheet" href="${resource(dir: 'css', file: 'typeaheadjs.css')}" type="text/css">
 
-    <script src="${resource(dir: 'js/newSubmissionUtils/', file: 'AIMHelper.js')}" ></script>
-    <script src="${resource(dir: 'js/newSubmissionUtils/', file: 'BORHelper.js')}" ></script>
-    <script src="${resource(dir: 'js/newSubmissionUtils/', file: 'dateHelper.js')}" ></script>
-    <script src="${resource(dir: 'js/newSubmissionUtils/', file: 'formValidation.js')}" ></script>
-    <script src="${resource(dir: 'js/newSubmissionUtils/', file: 'googleAddressHelper.js')}" ></script>
-    <script src="${resource(dir: 'js/newSubmissionUtils/', file: 'progressSaveLoad.js')}" ></script>
-    <script src="${resource(dir: 'js/utils/', file: 'stringUtils.js')}" ></script>
+
+
+    %{--NEW SUBMISSION FILES--}%
+    <link rel="stylesheet" href="${resource(dir: 'css', file: 'newSubmission.css')}" type="text/css">
+
+    <script src="${resource(dir: 'js', file: "/newSubmissionUtils/progressSaveLoad.js?ts=" + new Date().getTime())}" async></script>
+    <script src="${resource(dir: 'js', file: "/newSubmissionUtils/formValidation.js?ts=" + new Date().getTime())}" async></script>
+    <script src="${resource(dir: 'js', file: "/newSubmissionUtils/dateHelper.js?ts=" + new Date().getTime())}" async></script>
+    <script src="${resource(dir: 'js', file: "/newSubmissionUtils/BORHelper.js?ts=" + new Date().getTime())}" async></script>
+    <script src="${resource(dir: 'js', file: "/newSubmissionUtils/googleAddressHelper.js?ts=" + new Date().getTime())}" async></script>
+    <script src="${resource(dir: 'js', file: "/newSubmissionUtils/AIMHelper.js?ts=" + new Date().getTime())}" async></script>
+    <script src="${resource(dir: 'js', file: "/utils/stringUtils.js?ts=" + new Date().getTime())}" async></script>
+    <script src="${resource(dir: 'js', file: "/utils/fileHelper.js?ts=" + new Date().getTime())}" async></script>
+    <script src="${resource(dir: 'js', file: 'jquery.maskMoney.min.js')}" async></script>
+
     <script src="${resource(dir: 'js/utils/', file: 'randomGenerator.js')}" ></script>
-    <script src="${resource(dir: 'js/utils/', file: 'fileHelper.js')}" ></script>
+    <script src="${resource(dir: 'js', file: 'jquery.autotype.js')}" ></script>
 
-    <script src="${resource(dir: 'test/jasmine/', file: 'utils/testHelper.js'+"?ts=" + new Date().getTime())}"></script>
-
-
-    %{--<link rel="stylesheet" href="${resource(dir: 'css', file: 'newSubmission.css')}" type="text/css">--}%
+    %{--<script src="${resource(dir: 'js', file: "newSubmission.js?ts=" + new Date().getTime())}" async></script>--}%
 
 
+    %{--DATA MANAGEMENT FILES--}%
+    <link rel="stylesheet" href="${resource(dir: 'css', file: 'submissions.css')}" type="text/css">
+    <script src="${resource(dir: 'js/admin/', file: "data.js?ts=" + new Date().getTime())}"></script>
+    <script src="${resource(dir: 'js/utils/', file: "ratingHelper.js?ts=" + new Date().getTime())}"></script>
+    <script src="${resource(dir: 'js/utils/', file: "stringUtils.js?ts=" + new Date().getTime())}"></script>
+    <script src="${resource(dir: 'js/vendor/', file: "numeral.min.js")}"></script>
+
+    <script src="${resource(dir: 'js/utils/', file: "multiRangePlugin.js?ts=" + new Date().getTime())}"></script>
+    <link rel="stylesheet" href="${resource(dir: 'css', file: 'multiRangePlugin.css?ts=' + new Date().getTime())}" type="text/css">
     %{--<script src="${resource(dir: 'js/admin/', file: 'data.js')}" ></script>--}%
 
     %{--<script src="${resource(dir: 'js/forms/', file: 'specFilm.js')}" ></script>--}%
@@ -80,7 +97,6 @@
 
     %{--<script src="${resource(dir: 'js/', file: 'dashboard.js')}" ></script>--}%
     %{--<script src="${resource(dir: 'js/', file: 'messages.js')}" ></script>--}%
-    %{--<script src="${resource(dir: 'js/', file: 'newSubmission.js')}" ></script>--}%
     %{--<script src="${resource(dir: 'js/', file: 'newSubmissionConfirm.js')}" ></script>--}%
     %{--<script src="${resource(dir: 'js/', file: 'npm.js')}" ></script>--}%
     %{--<script src="${resource(dir: 'js/', file: 'register.js')}" ></script>--}%
@@ -96,7 +112,6 @@
 
 
     <!-- include source files here... -->
-    %{--<script src="${resource(dir: 'test/jasmine/', file: 'utils/testHelper.js'+"?ts=" + new Date().getTime())}"></script>--}%
 
 
     <!-- include spec files here... -->

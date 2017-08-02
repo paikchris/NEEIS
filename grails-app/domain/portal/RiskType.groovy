@@ -22,7 +22,7 @@ class RiskType {
         subCategoryFlag(nullable:true)
         parentSubCategory(nullable:true)
         products(nullable:true)
-        products(maxSize: 9000)
+        products(maxSize: 300)
         productsAvailable(nullable: true)
     }
 }

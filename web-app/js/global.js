@@ -8,14 +8,22 @@ $(document).ready(function () {
         // alert();
     });
 
+
+    //ALLOW TAB TO SWITCH FOCUSES OF INPUTS
     $(document.body).on('keydown', ':input', function(e) {
         // console.log(e.which)
         if( e.which == 9 ) {
             // alert();
-            var nextIndex = ($(':input:visible').index(e.target) + 1)
-            $(":input:visible").eq(nextIndex).focus();
+            var inputsFocusableArray = $(':input:visible').not(':disabled')
+            var currentIndex = inputsFocusableArray.index(e.target)
 
-            // console.log($(":input").eq(nextIndex))
+            var nextIndex = (currentIndex + 1)
+            if(currentIndex === inputsFocusableArray.length-1){
+                nextIndex = 0
+            }
+
+            inputsFocusableArray.eq(nextIndex).focus();
+
             e.preventDefault()
             e.stopPropagation();
         }

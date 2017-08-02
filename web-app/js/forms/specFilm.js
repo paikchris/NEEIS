@@ -950,6 +950,7 @@ function initializeListeners(){
 
         if (limitAmount > maxLimit) {
             //alert("Maximum Limit for this Product is  " + maxLimit);
+            //FORMAT CURRENCY
             $(this).val("$" + maxLimit.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"));
 
             //return;

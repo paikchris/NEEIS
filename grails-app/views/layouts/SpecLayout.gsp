@@ -84,6 +84,9 @@
     <!-- Masking Currency plugin -->
     <script src="${resource(dir: 'js', file: 'jquery.maskMoney.min.js')}"></script>
 
+    <script src="${resource(dir: 'test/jasmine/utils', file: 'testHelper.js?ts=' + new Date().getTime())}" ></script>
+
+
 
     <script >
         $("#sidebar-wrapper").hover(function(e) {

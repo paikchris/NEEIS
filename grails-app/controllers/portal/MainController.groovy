@@ -290,7 +290,118 @@ class MainController {
          versionLetter:versionLetter, originalVersion: params.editingVersion, questionAnswerMap: questionAnswerMapJSON,
          questionAnswerMapString:questionAnswerMapString, dvResults: dvResults[0], verResults:verResults[0], quoteResults:quoteResults[0]]
     }
+    
+    def newSubmissionV2() {
+        String[] operationTypes = ["sldfj", "slifjsdlkjf"];
 
+        def riskCategories = portal.RiskType.list().unique { it.riskTypeCategory }.riskTypeCategory; //Retrieves list of Risk Categories from Database
+        riskCategories.removeAll([null])
+        log.info("CATEGORIES========================")
+        log.info(riskCategories.toString())
+
+        def riskTypes = portal.RiskType.list();
+        riskTypes.removeAll([null])
+        log.info("TYPE========================")
+        log.info(riskTypes.get(1).riskTypeName)
+
+        def ancillaryRiskTypes = RiskType.findAllWhere(riskTypeCategory: "Ancillary Entertainment Risk");
+
+        log.info ancillaryRiskTypes
+        def venueRiskTypes = RiskType.findAllWhere(riskTypeCategory: "Venue");
+        def filmRiskTypes = RiskType.findAllWhere(riskTypeCategory: "FP");
+        def entertainerRiskTypes = RiskType.findAllWhere(riskTypeCategory: "Entertainer");
+        def officeRiskTypes = RiskType.findAllWhere(riskTypeCategory: "Office");
+        def specialeventRiskTypes = RiskType.findAllWhere(riskTypeCategory: "Special Event");
+        def shellcorpRiskTypes = RiskType.findAllWhere(riskTypeCategory: "Shell Corporation");
+
+        def coverages = "";
+        Sql sql = new Sql(dataSource_aim)
+        sql.eachRow( 'select CoverageID, Description from Coverage with (NOLOCK)' ) {
+//            log.info "$it.Zip -- ${it.City} --"
+            coverages = coverages + it.CoverageID + ":" + it.Description + ";"
+        }
+
+        def marketCompanyList = "";
+        sql.eachRow( "select CompanyID, Name, DefaultRiskCompanyID from Company with (NOLOCK) where FlagMarket ='Y' order by Name") {
+//            log.info "$it.Zip -- ${it.City} --"
+            marketCompanyList = marketCompanyList + it.CompanyID + ";&#;" + it.Name + ";&#;" + it.DefaultRiskCompanyID + ";&;"
+        }
+
+        def riskCompanyList = "";
+        sql.eachRow( "select CompanyID, Name, DefaultRiskCompanyID from Company with (NOLOCK) where FlagRisk ='Y' order by Name") {
+//            log.info "$it.Zip -- ${it.City} --"
+            riskCompanyList = riskCompanyList + it.CompanyID + "," + it.Name + "," + it.DefaultRiskCompanyID + ";"
+        }
+
+        def versionMode = false;
+        def versionLetter = "A"
+        def editingVersion;
+        def allVersionsInMysql = [];
+        def aimSqlAllVersions = [];
+        def mysqlSubmissionResult = [];
+        def questionAnswerMapJSON;
+        def questionAnswerMapString;
+        def dvResults =[];
+        def verResults =[];
+        def quoteResults = [];
+        if(params.version == "NV"){
+            versionMode=true;
+
+            //GET DV VERSION TABLE DETAILS FOR THIS SPECIFIC VERSION, AIMSQL
+            def where = "(QuoteID='" + params.quoteID + "') AND (Version = '" + params.editingVersion + "')";
+            dvResults = aimDAO.selectAllFromTableWhereWithFormatting("dvVersionView", where, dataSource_aim)
+
+            //GET VERSION TABLE DETAILS FOR THIS SPECIFIC VERSION, AIMSQL
+            where = "(QuoteID='" + params.quoteID + "') AND (Version = '" + params.editingVersion + "')";
+            verResults = aimDAO.selectAllFromTableWhereWithFormatting("Version", where, dataSource_aim)
+
+            //GET QUOTE TABLE DETAILS FOR THIS SPECIFIC VERSION, AIMSQL
+            where = "(QuoteID='" + params.quoteID + "')";
+            quoteResults = aimDAO.selectAllFromTableWhereWithFormatting("Quote", where, dataSource_aim)
+
+            //FIND ALL VERSIONS FOR THIS QUOTEID IN MYSQL
+            allVersionsInMysql = Submissions.findAllWhere(aimQuoteID: "" + params.quoteID);
+
+            //FIND ALL VERSIONS FOR THIS QUOTEID IN AIMSQL
+            where = "(QuoteID='" + params.quoteID + "')";
+            aimSqlAllVersions = aimDAO.selectAllFromTableWhereWithFormatting("dvVersionView", where, dataSource_aim)
+            aimSqlAllVersions.sort { a, b -> a.Version <=> b.Version }
+
+            //LOOP THROUGH AIMSQL RESULTS TO FIND THE LAST VERSION LETTER, SET THIS NEW VERSION TO THE NEXT LETTER
+            if(aimSqlAllVersions.size() > 0){
+                String value = aimSqlAllVersions.last().Version
+                value = value.replaceAll("\"", "").replace("'", "");
+                log.info value
+                int charValue = value.charAt(0);
+                versionLetter = String.valueOf( (char) (charValue + 1));
+                log.info versionLetter
+            }
+
+            //CHECK IF MYSQL RECORD EXISTS. IF EXISTS GET THE QUESTION ANSWER MAP
+
+            mysqlSubmissionResult =  Submissions.findByAimQuoteIDAndAimVersion(params.quoteID, params.editingVersion)
+            questionAnswerMapJSON = jsonSlurper.parseText(mysqlSubmissionResult.questionAnswerMap)
+            questionAnswerMapString = JsonOutput.toJson(questionAnswerMapJSON)
+
+            log.info questionAnswerMapString
+//            log.info dvResults[0].QuoteID
+//            log.info verResults[0]
+//            log.info quoteResults[0].CoverageID
+
+//            quotingVersionMap = [
+//
+//            ]
+        }
+
+
+
+
+        [user: session.user, riskCategories:riskCategories, riskTypes:riskTypes, coverages:coverages, marketCompanyList: marketCompanyList
+         , riskCompanyList:riskCompanyList, ancillaryRiskTypes: ancillaryRiskTypes, venueRiskTypes:venueRiskTypes, filmRiskTypes:filmRiskTypes, entertainerRiskTypes:entertainerRiskTypes,
+         officeRiskTypes:officeRiskTypes, specialeventRiskTypes:specialeventRiskTypes, shellcorpRiskTypes:shellcorpRiskTypes, versionMode:versionMode,
+         versionLetter:versionLetter, originalVersion: params.editingVersion, questionAnswerMap: questionAnswerMapJSON,
+         questionAnswerMapString:questionAnswerMapString, dvResults: dvResults[0], verResults:verResults[0], quoteResults:quoteResults[0]]
+    }
 
     def messages(){
         log.info ("MY Messages")

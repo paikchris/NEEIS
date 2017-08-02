@@ -44,10 +44,7 @@ function newSubmissionInit() {
 
     clickChangeListenerInit()
     stepWizardInit()
-
-
 }
-
 
 $(document).ready(function () {
     newSubmissionInit();
@@ -56,8 +53,6 @@ $(document).ready(function () {
         versionModeFillOutQuestions();
     }
 });
-
-
 
 function clickChangeListenerInit(){
     //WHEN THE STATE CHANGES IN STEP 3, UPDATE PREMIUMS FOR TAX
@@ -368,7 +363,7 @@ function stepWizardInit(){
                     if (riskChosen === "Film Projects Without Cast (With Work Comp)" || riskChosen === "Film Projects With Cast (With Work Comp)") {
                         //TEMPORARY REDIRECT TO LEGACY NEEIS
                         if(true){
-                            window.location.href = "http://www.neeis.comd/users/sign_in"
+                            window.location.href = "http://www.neeis.com/submissions/new"
                         }
                         else{
                             $('#totalBudgetConfirmGroup').css('display', '');
@@ -1289,6 +1284,20 @@ function getRiskTypeChosen() {
     return riskString
 }
 
+function getSelectedRiskTypeID(){
+    var riskID
+    if ($("li.active").length > 0) {
+        if ($("li.active").children("a.riskOptionLink").hasClass('riskOptionDropDown')) {
+            //console.log($("li.active").children("a.riskOptionLink").find('.riskTypeDropdown').val());
+            riskID = $("li.active").children("a.riskOptionLink").find('.riskTypeDropdown').attr('data-riskTypeID')
+        }
+        else {
+            riskID = $("li.active").children("a.riskOptionLink").attr('data-riskTypeID')
+        }
+    }
+    return riskID
+}
+
 function getRiskCategoryChosen() {
     var category = "";
     if ($("li.active").length > 0) {
@@ -1415,7 +1424,6 @@ function ratePremiums(thisObj) {
                 if ($(this).val().length == 0) {
                     pipchoiceLimits = pipchoiceLimits + decoded + "&;&" + 0 + "&;;&";
                     $(this).val("0");
-                    //$(this).val($('#totalBudgetConfirm').val());
                 }
                 else {
                     pipchoiceLimits = pipchoiceLimits + decoded + "&;&" + $(this).val() + "&;;&";

@@ -6,22 +6,55 @@ var monthNames = [
     "November", "December"
 ];
 jasmine.DEFAULT_TIMEOUT_INTERVAL= 30000;
+var urlToLoad = ""
+var jsFiles = []
 
-describe('Starting Test', function() {
+//CUSTOM REPORTER
+var myReporter = {
+    jasmineDone: function() {
+        console.log("formatting results")
+
+        $('.jasmine-suite').each(function(){
+            if( $(this).find('.jasmine-passed').length === 0 ){
+                $(this).css('display', 'none')
+            }
+        })
+
+        //add show hidden button
+        var buttonString = "" +
+            "<button class='btn' id='jasmineShowDisabledButton' style='float:right;'>Show Disabled Specs</button>" +
+            "<button class='btn' id='jasmineHideDisabledButton' style='float:right;'>Hide Disabled Specs</button>"
+        $('.jasmine-alert').append(buttonString)
+        $(document).on('click', '#jasmineShowDisabledButton', function (e){
+            console.log("click")
+            $('.jasmine-suite').css('display', '')
+        });
+        $(document).on('click', '#jasmineHideDisabledButton', function (e){
+            $('.jasmine-suite').each(function(){
+                if( $(this).find('.jasmine-passed').length === 0 ){
+                    $(this).css('display', 'none')
+                }
+            })
+        });
+
+        $("body").css("pointer-events", "auto");
+    }
+}
+
+jasmine.getEnv().addReporter(myReporter);
+
+
+xdescribe('New Submissions Test', function() {
+
+
     beforeAll(function (done) {
-        // alert("TESTING MODE: Pressing any keys, clicking the mouse, minimizing, or hiding this window will interfere with the test")
-        $('body').prepend("<div style='width: 100%; position: absolute; top: 80px; z-index: 9999; padding-left:50px; color: red;'>" +
-            "TESTING MODE: Pressing any keys, clicking the mouse, minimizing, or hiding this window will interfere with the test" +
-            "</div>")
-
-        //JS FILES TO LOAD FOR TEST
-        var jsFiles = [
+        urlToLoad = './../main/newSubmission'
+        jsFiles = jsFiles = [
             '/js/newSubmission.js'
-        ];
-        $("body").css("pointer-events", "none");
-        loadURLForTest('./../main/newSubmission', '#page-content-wrapper', jsFiles, done);
-        
+        ]
+        beforeAllFunction(urlToLoad, jsFiles, done)
     }, 20000);
+
     describe('New Submissions', function() {
         describe('Testing Step 1', function() {
 
@@ -8172,22 +8205,666 @@ describe('Starting Test', function() {
 
 
         });
-
-
-
     });
-
-
-
-
-
 
     afterAll(function(){
         $("body").css("pointer-events", "auto");
     });
 });
 
+describe('Data Test', function() {
+    beforeAll(function (done) {
+        urlToLoad = './../admin/data'
+        jsFiles = [
+            '/js/admin/data.js'
+        ]
+        beforeAllFunction(urlToLoad, jsFiles, done)
+    }, 20000);
 
+    describe('Load Page', function() {
+        it('Loaded correctly', function(done) {
+            var waitUntilThisIsTrue = function(){
+                return (Object.keys(outstandingCalls).length == 0 &&
+                    $('#pageTitle').html().trim() === "Data Management"
+                )
+            }
+            var thenDoThis = function(){
+                expect($('#pageTitle').html().trim() === "Data Management").toBeTruthy()
+                done();
+            }
+            waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+        }, 30000);
+    });
+
+    describe('Test Multi Rate Inputs', function() {
+        it('Reset Page', function(done) {
+            var waitUntilThisIsTrue = function(){
+                return (Object.keys(outstandingCalls).length == 0 &&
+                    $('#riskTypePanel').is(':visible') === true
+                )
+            }
+            var thenDoThis = function(){
+                expect($('#riskTypePanel').is(':visible') === true).toBeTruthy()
+                done();
+            }
+            waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+        }, 30000);
+        it('Click on Products Tab', function(done) {
+            $('#productsPanelButton').click()
+            $('#productsPanelButton').trigger('click')
+
+            var waitUntilThisIsTrue = function(){
+                return (Object.keys(outstandingCalls).length == 0 &&
+                    $('#productsPanel').is(':visible') === true
+                )
+            }
+            var thenDoThis = function(){
+                expect($('#productsPanel').is(':visible') === true).toBeTruthy()
+                done();
+            }
+            waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+        }, 30000);
+        it('Multi Rate Container is visible', function(done) {
+            var waitUntilThisIsTrue = function(){
+                return (Object.keys(outstandingCalls).length == 0 &&
+                    $('#productsPanel').is(':visible') === true
+                )
+            }
+            var thenDoThis = function(){
+                expect($('#productsPanel').is(':visible') === true).toBeTruthy()
+                done();
+            }
+            waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+        }, 30000);
+
+        describe('Test Primary Rating Dropdown', function() {
+            it('Selecting GPC shows GPC Rating', function (done) {
+                $('#primaryRateBasisSelect').val('gpc')
+                $('#primaryRateBasisSelect').trigger('change')
+                var waitUntilThisIsTrue = function () {
+                    return (Object.keys(outstandingCalls).length == 0 &&
+                        $('#primaryRateBasisSelect').val() === "gpc"
+                    )
+                }
+                var thenDoThis = function () {
+                    expect($('#gpc_RatingOptionsContainer').is(':visible') === true).toBeTruthy()
+                    done();
+                }
+                waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+            }, 30000);
+
+            it('Selecting Flat Rate shows Flat Rate Rating', function (done) {
+                $('#primaryRateBasisSelect').val('flatRate')
+                $('#primaryRateBasisSelect').trigger('change')
+                var waitUntilThisIsTrue = function () {
+                    return (Object.keys(outstandingCalls).length == 0 &&
+                        $('#primaryRateBasisSelect').val() === "flatRate"
+                    )
+                }
+                var thenDoThis = function () {
+                    expect($('#flatRate_RatingOptionsContainer').is(':visible') === true).toBeTruthy()
+                    done();
+                }
+                waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+            }, 30000);
+
+            it('Selecting Term Length shows Term Length Rating', function (done) {
+                $('#primaryRateBasisSelect').val('termLength')
+                $('#primaryRateBasisSelect').trigger('change')
+                var waitUntilThisIsTrue = function () {
+                    return (Object.keys(outstandingCalls).length == 0 &&
+                        $('#primaryRateBasisSelect').val() === "termLength"
+                    )
+                }
+                var thenDoThis = function () {
+                    expect($('#termLength_RatingOptionsContainer').is(':visible') === true).toBeTruthy()
+                    done();
+                }
+                waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+            }, 30000);
+
+            it('Selecting Limits shows Limits Rating', function (done) {
+                $('#primaryRateBasisSelect').val('limits')
+                $('#primaryRateBasisSelect').trigger('change')
+                var waitUntilThisIsTrue = function () {
+                    return (Object.keys(outstandingCalls).length == 0 &&
+                        $('#primaryRateBasisSelect').val() === "limits"
+                    )
+                }
+                var thenDoThis = function () {
+                    expect($('#limits_RatingOptionsContainer').is(':visible') === true).toBeTruthy()
+                    done();
+                }
+                waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+            }, 30000);
+
+            it('Selecting BTL shows BTL Rating', function (done) {
+                $('#primaryRateBasisSelect').val('belowTheLine')
+                $('#primaryRateBasisSelect').trigger('change')
+                var waitUntilThisIsTrue = function () {
+                    return (Object.keys(outstandingCalls).length == 0 &&
+                        $('#primaryRateBasisSelect').val() === "belowTheLine"
+                    )
+                }
+                var thenDoThis = function () {
+                    expect($('#belowTheLine_RatingOptionsContainer').is(':visible') === true).toBeTruthy()
+                    done();
+                }
+                waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+            }, 30000);
+        });
+
+        describe('Test GPC Rating', function() {
+
+            it('Selecting GPC shows GPC Rating', function (done) {
+                $('#primaryRateBasisSelect').val('gpc')
+                $('#primaryRateBasisSelect').trigger('change')
+                var waitUntilThisIsTrue = function () {
+                    return (Object.keys(outstandingCalls).length == 0 &&
+                        $('#primaryRateBasisSelect').val() === "gpc"
+                    )
+                }
+                var thenDoThis = function () {
+                    expect($('#gpc_RatingOptionsContainer').is(':visible') === true).toBeTruthy()
+                    done();
+                }
+                waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+            }, 30000);
+
+            describe('Test 5% rate, from 0 to Any', function() {
+                it('Set 5% as rate' , function (done) {
+                    typeThis('5' , $('.rateInput').eq(0), done)
+                }, 30000);
+
+                it('Set From as 0' , function (done) {
+                    typeThis('0' , $('.rangeStart').eq(0), done)
+                }, 30000);
+
+                it('Set To as Any' , function (done) {
+                    typeThis('Any' , $('.rangeEnd').eq(0), done)
+                }, 30000);
+
+                it('Set 100,000 as GPC' , function (done) {
+                    typeThis('100000' , $('#gpc_TestInput'), done)
+                }, 30000);
+
+                it('Set 20 as Term Length' , function (done) {
+                    typeThis('20' , $('#gpc_TermLengthInput'), done)
+                }, 30000);
+
+                it('Rate is 5% from 0 to Any', function (done) {
+                    var waitUntilThisIsTrue = function () {
+                        return (Object.keys(outstandingCalls).length == 0 &&
+                            $('.rateInput').eq(0).val() === "5.0%" &&
+                            $('.rangeStart').eq(0).val() === "0" &&
+                            $('.rangeEnd').eq(0).val() === "Any" &&
+                            $('#gpc_TestInput').eq(0).val() === "$100,000" &&
+                            $('#gpc_TermLengthInput').eq(0).val() === "20"
+
+                        )
+                    }
+                    var thenDoThis = function () {
+                        expect($('.rateInput').eq(0).val() === "5.0%").toBeTruthy()
+                        expect($('.rangeStart').eq(0).val() === "0").toBeTruthy()
+                        expect($('.rangeEnd').eq(0).val() === "Any").toBeTruthy()
+                        expect($('#gpc_TestInput').eq(0).val() === "$100,000").toBeTruthy()
+                        expect($('#gpc_TermLengthInput').eq(0).val() === "20").toBeTruthy()
+
+                        done();
+                    }
+                    waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                }, 30000);
+
+                it('Preview is correct', function (done) {
+                    var waitUntilThisIsTrue = function () {
+                        return (Object.keys(outstandingCalls).length == 0 &&
+                            $('#gpc_PremiumPreview').html().split('\n')[0] === "Primary Rating Basis: GPC" &&
+                            $('#gpc_PremiumPreview').html().split('\n')[1] === "GPC: $100,000" &&
+                            $('#gpc_PremiumPreview').html().split('\n')[2] === "=&gt; If GPC is $0 to Any, percent = 5.0%, Min Prem = None" &&
+                            $('#gpc_PremiumPreview').html().split('\n')[3] === "" &&
+                            $('#gpc_PremiumPreview').html().split('\n')[4] === "Premium: $100,000 * (5/100) = $5,000"
+                        )
+                    }
+                    var thenDoThis = function () {
+                        expect($('#gpc_PremiumPreview').html().split('\n')[0] === "Primary Rating Basis: GPC").toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[1] === "GPC: $100,000").toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[2] === "=&gt; If GPC is $0 to Any, percent = 5.0%, Min Prem = None").toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[3] === "").toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[4] === "Premium: $100,000 * (5/100) = $5,000").toBeTruthy()
+                        done();
+                    }
+                    waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                }, 30000);
+            });
+            describe('Test 5% rate, from 0 to 100, 101 to Any', function() {
+                it('Set To as 100' , function (done) {
+                    typeThis('100000' , $('.rangeEnd').eq(0), done)
+                }, 30000);
+
+                it('Test: 0%,0 to 100; 5%, 101 to Any', function (done) {
+                    var waitUntilThisIsTrue = function () {
+                        return (Object.keys(outstandingCalls).length == 0 &&
+                            $('.rateInput').eq(0).val() === "5.0%" &&
+                            $('.rangeStart').eq(0).val() === "0" &&
+                            $('.rangeEnd').eq(0).val() === "$100,000" &&
+                            $('.rateInput').eq(1).val() === "0.0%" &&
+                            $('.rangeStart').eq(1).val() === "$100,001" &&
+                            $('.rangeEnd').eq(1).val() === "Any" &&
+                            $('#gpc_TestInput').eq(0).val() === "$100,000" &&
+                            $('#gpc_TermLengthInput').eq(0).val() === "20"
+
+                        )
+                    }
+                    var thenDoThis = function () {
+                        expect($('.rateInput').eq(0).val() === "5.0%").toBeTruthy()
+                        expect($('.rangeStart').eq(0).val() === "0").toBeTruthy()
+                        expect($('.rangeEnd').eq(0).val() === "$100,000").toBeTruthy()
+                        expect($('.rateInput').eq(1).val() === "0.0%").toBeTruthy()
+                        expect($('.rangeStart').eq(1).val() === "$100,001").toBeTruthy()
+                        expect($('.rangeEnd').eq(1).val() === "Any").toBeTruthy()
+                        expect($('#gpc_TestInput').eq(0).val() === "$100,000").toBeTruthy()
+                        expect($('#gpc_TermLengthInput').eq(0).val() === "20").toBeTruthy()
+
+                        done();
+                    }
+                    waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                }, 30000);
+
+                it('Preview is correct', function (done) {
+                    var waitUntilThisIsTrue = function () {
+                        return (Object.keys(outstandingCalls).length == 0 &&
+                            $('#gpc_PremiumPreview').html().split('\n')[0] === "Primary Rating Basis: GPC" &&
+                            $('#gpc_PremiumPreview').html().split('\n')[1] === "GPC: $100,000" &&
+                            $('#gpc_PremiumPreview').html().split('\n')[2] === "=&gt; If GPC is $0 to $100,000, percent = 5.0%, Min Prem = None" &&
+                            $('#gpc_PremiumPreview').html().split('\n')[3] === "If GPC is $100,001 to Any, percent = 0.0%, Min Prem = None" &&
+                            $('#gpc_PremiumPreview').html().split('\n')[4] === "" &&
+                            $('#gpc_PremiumPreview').html().split('\n')[5] === "Premium: $100,000 * (5/100) = $5,000"
+                        )
+                    }
+                    var thenDoThis = function () {
+                        expect($('#gpc_PremiumPreview').html().split('\n')[0] === "Primary Rating Basis: GPC").toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[1] === "GPC: $100,000").toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[2] === "=&gt; If GPC is $0 to $100,000, percent = 5.0%, Min Prem = None").toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[3] === "If GPC is $100,001 to Any, percent = 0.0%, Min Prem = None").toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[4] === "").toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[5] === "Premium: $100,000 * (5/100) = $5,000").toBeTruthy()
+                        done();
+                    }
+                    waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                }, 30000);
+            });
+            describe('Test 5% rate, from 0 to 50, 51 to 100, 101 to Any', function() {
+                it('Set From as 50000' , function (done) {
+                    typeThis('50000' , $('.rangeStart').eq(0), done)
+                }, 30000);
+
+                it('Test: 0%,0 to 100; 5%, 101 to Any', function (done) {
+                    var waitUntilThisIsTrue = function () {
+                        return (Object.keys(outstandingCalls).length == 0 &&
+                            $('.rateInput').eq(0).val() === "0.0%" &&
+                            $('.rangeStart').eq(0).val() === "0" &&
+                            $('.rangeEnd').eq(0).val() === "$49,999" &&
+                            $('.rateInput').eq(1).val() === "5.0%" &&
+                            $('.rangeStart').eq(1).val() === "$50,000" &&
+                            $('.rangeEnd').eq(1).val() === "$100,000" &&
+                            $('.rateInput').eq(2).val() === "0.0%" &&
+                            $('.rangeStart').eq(2).val() === "$100,001" &&
+                            $('.rangeEnd').eq(2).val() === "Any" &&
+                            $('#gpc_TestInput').eq(0).val() === "$100,000" &&
+                            $('#gpc_TermLengthInput').eq(0).val() === "20"
+                        )
+                    }
+                    var thenDoThis = function () {
+                        expect($('.rateInput').eq(0).val() === "0.0%").toBeTruthy()
+                        expect($('.rangeStart').eq(0).val() === "0").toBeTruthy()
+                        expect($('.rangeEnd').eq(0).val() === "$49,999").toBeTruthy()
+                        expect($('.rateInput').eq(1).val() === "5.0%").toBeTruthy()
+                        expect($('.rangeStart').eq(1).val() === "$50,000").toBeTruthy()
+                        expect($('.rangeEnd').eq(1).val() === "$100,000").toBeTruthy()
+                        expect($('.rateInput').eq(2).val() === "0.0%").toBeTruthy()
+                        expect($('.rangeStart').eq(2).val() === "$100,001").toBeTruthy()
+                        expect($('.rangeEnd').eq(2).val() === "Any").toBeTruthy()
+                        expect($('#gpc_TestInput').eq(0).val() === "$100,000").toBeTruthy()
+                        expect($('#gpc_TermLengthInput').eq(0).val() === "20").toBeTruthy()
+
+                        done();
+                    }
+                    waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                }, 30000);
+
+                it('Preview is correct', function (done) {
+                    var waitUntilThisIsTrue = function () {
+                        return (Object.keys(outstandingCalls).length == 0 &&
+                            $('#gpc_PremiumPreview').html().split('\n')[0] === "Primary Rating Basis: GPC" &&
+                            $('#gpc_PremiumPreview').html().split('\n')[1] === "GPC: $100,000" &&
+                            $('#gpc_PremiumPreview').html().split('\n')[2] === "If GPC is $0 to $49,999, percent = 0.0%, Min Prem = None" &&
+                            $('#gpc_PremiumPreview').html().split('\n')[3] === "=&gt; If GPC is $50,000 to $100,000, percent = 5.0%, Min Prem = None" &&
+                            $('#gpc_PremiumPreview').html().split('\n')[4] === "If GPC is $100,001 to Any, percent = 0.0%, Min Prem = None" &&
+                            $('#gpc_PremiumPreview').html().split('\n')[5] === "" &&
+                            $('#gpc_PremiumPreview').html().split('\n')[6] === "Premium: $100,000 * (5/100) = $5,000"
+                        )
+                    }
+                    var thenDoThis = function () {
+                        expect($('#gpc_PremiumPreview').html().split('\n')[0] === "Primary Rating Basis: GPC").toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[1] === "GPC: $100,000").toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[2] === "If GPC is $0 to $49,999, percent = 0.0%, Min Prem = None").toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[3] === "=&gt; If GPC is $50,000 to $100,000, percent = 5.0%, Min Prem = None").toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[4] === "If GPC is $100,001 to Any, percent = 0.0%, Min Prem = None").toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[5] === "").toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[6] === "Premium: $100,000 * (5/100) = $5,000").toBeTruthy()
+                        done();
+                    }
+                    waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                }, 30000);
+            });
+            describe('Test 5% rate, from 0 to 50, 51 to 100 W/ Term, 101 to Any', function() {
+                it('Set Term Length for 2nd Row' , function () {
+                    $('.termLengthConditionCheckbox').eq(1).prop('checked', true)
+                    $('.termLengthConditionCheckbox').eq(1).trigger('change')
+                }, 30000);
+
+                it('Set Term Cond Rate as 10%' , function (done) {
+                    typeThis('10' , $('.rateInput.input-sm').eq(0), done)
+                }, 30000);
+
+                it('Set To as 10 Days' , function (done) {
+                    typeThis('10' , $('.rangeEnd.input-sm').eq(0), done)
+                }, 30000);
+
+                it('Set Term Cond Rate as 10%' , function (done) {
+                    typeThis('7' , $('.rateInput.input-sm').eq(1), done)
+                }, 30000);
+
+                it('Test: 0.0%,0to $49,999; -,$50,000to $100,000; TC: 10.0%,0to 10; TC: 7.0%,11to Any; 0.0%,$100,001to Any; 0.0%,0to Any; ', function (done) {
+                    var waitUntilThisIsTrue = function () {
+                        return (Object.keys(outstandingCalls).length == 0 &&
+                            $('.rateInput').eq(0).val() === '0.0%' &&
+                            $('.rangeStart').eq(0).val() === '0' &&
+                            $('.rangeEnd').eq(0).val() === '$49,999' &&
+                            $('.rateInput').eq(1).val() === '-' &&
+                            $('.rangeStart').eq(1).val() === '$50,000' &&
+                            $('.rangeEnd').eq(1).val() === '$100,000' &&
+                            $('.rateInput').eq(2).val() === '10.0%' &&
+                            $('.rangeStart').eq(2).val() === '0' &&
+                            $('.rangeEnd').eq(2).val() === '10' &&
+                            $('.rateInput').eq(3).val() === '7.0%' &&
+                            $('.rangeStart').eq(3).val() === '11' &&
+                            $('.rangeEnd').eq(3).val() === 'Any' &&
+                            $('.rateInput').eq(4).val() === '0.0%' &&
+                            $('.rangeStart').eq(4).val() === '$100,001' &&
+                            $('.rangeEnd').eq(4).val() === 'Any' &&
+                            $('.rateInput').eq(5).val() === '0.0%' &&
+                            $('.rangeStart').eq(5).val() === '0' &&
+                            $('.rangeEnd').eq(5).val() === 'Any'
+                        )
+                    }
+                    var thenDoThis = function () {
+                        expect($('.rateInput').eq(0).val() === '0.0%').toBeTruthy()
+                        expect($('.rangeStart').eq(0).val() === '0').toBeTruthy()
+                        expect($('.rangeEnd').eq(0).val() === '$49,999').toBeTruthy()
+                        expect($('.rateInput').eq(1).val() === '-').toBeTruthy()
+                        expect($('.rangeStart').eq(1).val() === '$50,000').toBeTruthy()
+                        expect($('.rangeEnd').eq(1).val() === '$100,000').toBeTruthy()
+                        expect($('.rateInput').eq(2).val() === '10.0%').toBeTruthy()
+                        expect($('.rangeStart').eq(2).val() === '0').toBeTruthy()
+                        expect($('.rangeEnd').eq(2).val() === '10').toBeTruthy()
+                        expect($('.rateInput').eq(3).val() === '7.0%').toBeTruthy()
+                        expect($('.rangeStart').eq(3).val() === '11').toBeTruthy()
+                        expect($('.rangeEnd').eq(3).val() === 'Any').toBeTruthy()
+                        expect($('.rateInput').eq(4).val() === '0.0%').toBeTruthy()
+                        expect($('.rangeStart').eq(4).val() === '$100,001').toBeTruthy()
+                        expect($('.rangeEnd').eq(4).val() === 'Any').toBeTruthy()
+                        expect($('.rateInput').eq(5).val() === '0.0%').toBeTruthy()
+                        expect($('.rangeStart').eq(5).val() === '0').toBeTruthy()
+                        expect($('.rangeEnd').eq(5).val() === 'Any').toBeTruthy()
+
+                        done();
+                    }
+                    waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                }, 30000);
+
+
+                it('Preview is correct', function (done) {
+                    var waitUntilThisIsTrue = function () {
+                        return (Object.keys(outstandingCalls).length == 0 &&
+                            $('#gpc_PremiumPreview').html().split('\n')[0] === 'Primary Rating Basis: GPC' &&
+                            $('#gpc_PremiumPreview').html().split('\n')[1] === 'GPC: $100,000' &&
+                            $('#gpc_PremiumPreview').html().split('\n')[2] === 'If GPC is $0 to $49,999, percent = 0.0%, Min Prem = None' &&
+                            $('#gpc_PremiumPreview').html().split('\n')[3] === 'If GPC is $50,000 to $100,000, percent = -, Min Prem = None' &&
+                            $('#gpc_PremiumPreview').html().split('\n')[4] === '	If Term Length is 0 to 10 Days, percent = 10.0%, Min Prem = None' &&
+                            $('#gpc_PremiumPreview').html().split('\n')[5] === '	=&gt; If Term Length is 11 to Any Days, percent = 7.0%, Min Prem = None' &&
+                            $('#gpc_PremiumPreview').html().split('\n')[6] === 'If GPC is $100,001 to Any, percent = 0.0%, Min Prem = None' &&
+                            $('#gpc_PremiumPreview').html().split('\n')[7] === '' &&
+                            $('#gpc_PremiumPreview').html().split('\n')[8] === 'Premium: $100,000 * (7/100) = $7,001' &&
+                            $('#gpc_PremiumPreview').html().split('\n')[9] === ''
+                        )
+                    }
+                    var thenDoThis = function () {
+                        expect($('#gpc_PremiumPreview').html().split('\n')[0] === 'Primary Rating Basis: GPC').toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[1] === 'GPC: $100,000').toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[2] === 'If GPC is $0 to $49,999, percent = 0.0%, Min Prem = None').toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[3] === 'If GPC is $50,000 to $100,000, percent = -, Min Prem = None').toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[4] === '	If Term Length is 0 to 10 Days, percent = 10.0%, Min Prem = None').toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[5] === '	=&gt; If Term Length is 11 to Any Days, percent = 7.0%, Min Prem = None').toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[6] === 'If GPC is $100,001 to Any, percent = 0.0%, Min Prem = None').toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[7] === '').toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[8] === 'Premium: $100,000 * (7/100) = $7,001').toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[9] === '').toBeTruthy()
+
+                        done();
+                    }
+                    waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                }, 30000);
+
+
+
+            });
+            describe('Test 5% rate, from 0 to 50, 51 to 100 W/ Term, 101 to Any', function() {
+                it('Set Term Length for 2nd Row' , function () {
+                    $('.termLengthConditionCheckbox').eq(1).prop('checked', true)
+                    $('.termLengthConditionCheckbox').eq(1).trigger('change')
+                }, 30000);
+
+                it('Set Term Cond Rate as 10%' , function (done) {
+                    typeThis('10' , $('.rateInput.input-sm').eq(0), done)
+                }, 30000);
+
+                it('Set To as 10 Days' , function (done) {
+                    typeThis('10' , $('.rangeEnd.input-sm').eq(0), done)
+                }, 30000);
+
+                it('Set Term Cond Rate as 10%' , function (done) {
+                    typeThis('7' , $('.rateInput.input-sm').eq(1), done)
+                }, 30000);
+
+                it('Test: 0.0%,0to $49,999; -,$50,000to $100,000; TC: 10.0%,0to 10; TC: 7.0%,11to Any; 0.0%,$100,001to Any; 0.0%,0to Any; ', function (done) {
+                    var waitUntilThisIsTrue = function () {
+                        return (Object.keys(outstandingCalls).length == 0 &&
+                            $('.rateInput').eq(0).val() === '0.0%' &&
+                            $('.rangeStart').eq(0).val() === '0' &&
+                            $('.rangeEnd').eq(0).val() === '$49,999' &&
+                            $('.rateInput').eq(1).val() === '-' &&
+                            $('.rangeStart').eq(1).val() === '$50,000' &&
+                            $('.rangeEnd').eq(1).val() === '$100,000' &&
+                            $('.rateInput').eq(2).val() === '10.0%' &&
+                            $('.rangeStart').eq(2).val() === '0' &&
+                            $('.rangeEnd').eq(2).val() === '10' &&
+                            $('.rateInput').eq(3).val() === '7.0%' &&
+                            $('.rangeStart').eq(3).val() === '11' &&
+                            $('.rangeEnd').eq(3).val() === 'Any' &&
+                            $('.rateInput').eq(4).val() === '0.0%' &&
+                            $('.rangeStart').eq(4).val() === '$100,001' &&
+                            $('.rangeEnd').eq(4).val() === 'Any' &&
+                            $('.rateInput').eq(5).val() === '0.0%' &&
+                            $('.rangeStart').eq(5).val() === '0' &&
+                            $('.rangeEnd').eq(5).val() === 'Any'
+                        )
+                    }
+                    var thenDoThis = function () {
+                        expect($('.rateInput').eq(0).val() === '0.0%').toBeTruthy()
+                        expect($('.rangeStart').eq(0).val() === '0').toBeTruthy()
+                        expect($('.rangeEnd').eq(0).val() === '$49,999').toBeTruthy()
+                        expect($('.rateInput').eq(1).val() === '-').toBeTruthy()
+                        expect($('.rangeStart').eq(1).val() === '$50,000').toBeTruthy()
+                        expect($('.rangeEnd').eq(1).val() === '$100,000').toBeTruthy()
+                        expect($('.rateInput').eq(2).val() === '10.0%').toBeTruthy()
+                        expect($('.rangeStart').eq(2).val() === '0').toBeTruthy()
+                        expect($('.rangeEnd').eq(2).val() === '10').toBeTruthy()
+                        expect($('.rateInput').eq(3).val() === '7.0%').toBeTruthy()
+                        expect($('.rangeStart').eq(3).val() === '11').toBeTruthy()
+                        expect($('.rangeEnd').eq(3).val() === 'Any').toBeTruthy()
+                        expect($('.rateInput').eq(4).val() === '0.0%').toBeTruthy()
+                        expect($('.rangeStart').eq(4).val() === '$100,001').toBeTruthy()
+                        expect($('.rangeEnd').eq(4).val() === 'Any').toBeTruthy()
+                        expect($('.rateInput').eq(5).val() === '0.0%').toBeTruthy()
+                        expect($('.rangeStart').eq(5).val() === '0').toBeTruthy()
+                        expect($('.rangeEnd').eq(5).val() === 'Any').toBeTruthy()
+
+                        done();
+                    }
+                    waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                }, 30000);
+
+
+                it('Preview is correct', function (done) {
+                    var waitUntilThisIsTrue = function () {
+                        return (Object.keys(outstandingCalls).length == 0 &&
+                            $('#gpc_PremiumPreview').html().split('\n')[0] === 'Primary Rating Basis: GPC' &&
+                            $('#gpc_PremiumPreview').html().split('\n')[1] === 'GPC: $100,000' &&
+                            $('#gpc_PremiumPreview').html().split('\n')[2] === 'If GPC is $0 to $49,999, percent = 0.0%, Min Prem = None' &&
+                            $('#gpc_PremiumPreview').html().split('\n')[3] === 'If GPC is $50,000 to $100,000, percent = -, Min Prem = None' &&
+                            $('#gpc_PremiumPreview').html().split('\n')[4] === '	If Term Length is 0 to 10 Days, percent = 10.0%, Min Prem = None' &&
+                            $('#gpc_PremiumPreview').html().split('\n')[5] === '	=&gt; If Term Length is 11 to Any Days, percent = 7.0%, Min Prem = None' &&
+                            $('#gpc_PremiumPreview').html().split('\n')[6] === 'If GPC is $100,001 to Any, percent = 0.0%, Min Prem = None' &&
+                            $('#gpc_PremiumPreview').html().split('\n')[7] === '' &&
+                            $('#gpc_PremiumPreview').html().split('\n')[8] === 'Premium: $100,000 * (7/100) = $7,001' &&
+                            $('#gpc_PremiumPreview').html().split('\n')[9] === ''
+                        )
+                    }
+                    var thenDoThis = function () {
+                        expect($('#gpc_PremiumPreview').html().split('\n')[0] === 'Primary Rating Basis: GPC').toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[1] === 'GPC: $100,000').toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[2] === 'If GPC is $0 to $49,999, percent = 0.0%, Min Prem = None').toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[3] === 'If GPC is $50,000 to $100,000, percent = -, Min Prem = None').toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[4] === '	If Term Length is 0 to 10 Days, percent = 10.0%, Min Prem = None').toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[5] === '	=&gt; If Term Length is 11 to Any Days, percent = 7.0%, Min Prem = None').toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[6] === 'If GPC is $100,001 to Any, percent = 0.0%, Min Prem = None').toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[7] === '').toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[8] === 'Premium: $100,000 * (7/100) = $7,001').toBeTruthy()
+                        expect($('#gpc_PremiumPreview').html().split('\n')[9] === '').toBeTruthy()
+
+                        done();
+                    }
+                    waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
+                }, 30000);
+
+
+
+            });
+
+        });
+
+    });
+});
+
+
+
+function buildRangeTest(){
+    var testString = ""
+    testString = testString +
+        "it('Test: "
+    $('.rangeRateDiv').each(function(i){
+        if($(this).find('.rateInput').hasClass('input-sm')){
+            testString = testString + "TC: "
+        }
+        testString = testString +
+            $(this).find('.rateInput').val() + "," +
+            $(this).find('.rangeStart').val() + "to " + $(this).find('.rangeEnd').val() + "; "
+
+    });
+    testString = testString +
+        "', function (done) {\n" +
+        "var waitUntilThisIsTrue = function () { \n" +
+        "return (Object.keys(outstandingCalls).length == 0 && \n";
+
+    $('.rangeRateDiv').each(function(i){
+        testString = testString +
+            "$('.rateInput').eq(" + i + ").val() === '" + $(this).find('.rateInput').val() + "' &&\n" +
+            "$('.rangeStart').eq(" + i + ").val() === '" + $(this).find('.rangeStart').val() + "' &&\n" +
+            "$('.rangeEnd').eq(" + i + ").val() === '" + $(this).find('.rangeEnd').val() + "' &&\n"
+    })
+    testString = testString.substring(0, testString.length - 3)
+
+    testString = testString + "\n" +
+        ")\n" +
+        "}\n" +
+        "var thenDoThis = function () {\n"
+    $('.rangeRateDiv').each(function(i) {
+        testString = testString +
+            "expect($('.rateInput').eq(" + i + ").val() === '" + $(this).find('.rateInput').val() + "').toBeTruthy()\n" +
+            "expect($('.rangeStart').eq(" + i + ").val() === '" + $(this).find('.rangeStart').val() + "').toBeTruthy()\n" +
+            "expect($('.rangeEnd').eq(" + i + ").val() === '" + $(this).find('.rangeEnd').val() + "').toBeTruthy()\n"
+    })
+    testString = testString.substring(0, testString.length - 1)
+    testString = testString + "\n" +
+        "\n" +
+        "done();\n" +
+        "}\n" +
+        "waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);\n" +
+        "}, 30000); \n" +
+        "\n" 
+
+    testString = testString +
+        "it('Preview is correct', function (done) {\n" +
+        "var waitUntilThisIsTrue = function () {\n" +
+        "return (Object.keys(outstandingCalls).length == 0 && \n"
+
+    var ratePreviewArray = $('#gpc_PremiumPreview').html().split('\n')
+    for(var i=0; i<ratePreviewArray.length; i++){
+        testString = testString +
+            "$('#gpc_PremiumPreview').html().split('\\n')[" + i + "] === '" + ratePreviewArray[i] + "' &&\n"
+    }
+    testString = testString.substring(0, testString.length - 3)
+
+    testString = testString + "\n" +
+        ")\n" +
+        "}\n" +
+        "var thenDoThis = function () {\n"
+
+    for(var i=0; i<ratePreviewArray.length; i++){
+        testString = testString +
+            "expect($('#gpc_PremiumPreview').html().split('\\n')[" + i + "] === '" + ratePreviewArray[i] + "').toBeTruthy() \n"
+    }
+
+    testString = testString.substring(0, testString.length - 1)
+    testString = testString + "\n" +
+        "\n" +
+        "done();\n" +
+        "}\n" +
+        "waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);\n" +
+        "}, 30000); \n" +
+        "\n" +
+        "\n"
+
+    $('#testStuffTextArea').css('display', '')
+    $('#testStuffTextArea').val(testString)
+
+    return testString
+}
+
+
+
+function beforeAllFunction(urlToLoad, jsFiles, done){
+    $('body').prepend("<div style='width: 100%; position: absolute; top: 80px; z-index: 9999; padding-left:50px; color: red;'>" +
+        "TESTING MODE: Pressing any keys, clicking the mouse, minimizing, or hiding this window will interfere with the test" +
+        "</div>")
+
+    //JS FILES TO LOAD FOR TEST
+    $("body").css("pointer-events", "none");
+    loadURLForTest(urlToLoad, '#page-content-wrapper', jsFiles, done);
+
+    $('.jasmine_html-reporter').detach().insertAfter('#sidebar-wrapper')
+}
 
 function loadRisk(done){
     $.fx.off = true;

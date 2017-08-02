@@ -2409,8 +2409,8 @@ class AsyncController {
                             //CALCULATE IF MISC RENTED EQUIPMENT PREMIUM
                             if(params.pipChoiOptions.contains("PIPChoice_MiscRented")){
                                 tempDeductiblesMap["Miscellaneous Rented Equipment"] = "Up to \$1,000,000"
-                                rate = miscRentedEquipRateMinPrem[0];
-                                minPremium = miscRentedEquipRateMinPrem[1];
+                                rate = miscRentedEquipRateMinPrem[0]; //.5
+                                minPremium = miscRentedEquipRateMinPrem[1]; //100
 
                                 log.info((params.totalBudget.toDouble() * rate))
                                 if (pipChoiceLimitsMap["Miscellaneous Rented Equipment"]) {
@@ -2684,7 +2684,8 @@ class AsyncController {
                         }
                         else if (productID == "PIP 3") {
                             def premium = 0.0;
-                            def negativeFilmVideoRateMinPrem = pip3_negativeFilmVideoRateMinPrem;
+
+                            def negativeFilmVideoRateMinPrem = pip3_negativeFilmVideoRateMinPrem; //[0.6, 1500];
                             def faultyStockCameraProcessingRateMinPrem = ["flat", "incl"];
                             def miscRentedEquipRateMinPrem = ["flat", "incl"];
                             def propsSetWardrobeRateMinPrem = ["flat", "incl"];
@@ -2752,7 +2753,7 @@ class AsyncController {
                         }
                         else if (productID == "PIP 4") {
                             def premium = 0.0
-                            def negativeFilmVideoRateMinPrem = pip4_negativeFilmVideoRateMinPrem;
+                            def negativeFilmVideoRateMinPrem = pip4_negativeFilmVideoRateMinPrem; //[0.6, 2000]
                             def faultyStockCameraProcessingRateMinPrem = ["flat", "incl"];
                             def miscRentedEquipRateMinPrem = ["flat", "incl"];
                             def propsSetWardrobeRateMinPrem = ["flat", "incl"];
@@ -3268,6 +3269,7 @@ class AsyncController {
                                 tempLimitsMap["Blanket Additional Insured Endorsement"] = "";
                                 tempDeductsMap["Blanket Additional Insured Endorsement"] = "";
                             }
+
                             if (params.additionalProducts.contains("AGGAdditionalCoverage")) {
                                 tempLimitsMap["General Aggregate Limit"] = "\$2000000"
                                 rate = 0.324
@@ -3379,6 +3381,8 @@ class AsyncController {
                             premiumRunningTotal = (totalBudget * rate) / 100;
                             remainingBudget = 0;
                         }
+                        log.info("1st 500,000")
+                        log.info premiumRunningTotal
 
                         //SECOND $500,000 RATING
                         if(remainingBudget > 500000){
@@ -3389,6 +3393,8 @@ class AsyncController {
                             premiumRunningTotal =  premiumRunningTotal + (remainingBudget * 0.162) / 100;
                             remainingBudget = 0;
                         }
+                        log.info("2nd 500,000")
+                        log.info premiumRunningTotal
 
                         //NEXT $1 MILLION RATING
                         if(remainingBudget > 1000000){
@@ -3399,6 +3405,8 @@ class AsyncController {
                             premiumRunningTotal = premiumRunningTotal + (remainingBudget * 0.101) / 100;
                             remainingBudget = 0;
                         }
+                        log.info("3rd 500,000")
+                        log.info premiumRunningTotal
 
                         //NEXT $3 MILLION RATING
                         if(remainingBudget > 3000000){

@@ -213,21 +213,28 @@ function loadURLForTest(urlString, divElementToLoad, jsFiles, done){
         //LOAD NECESSARY JS FILES FOR TEST PAGE
         var allDone = new Array(jsFiles.length);
 
-        for (var i = 0; i < jsFiles.length; i++) {
-            var jsFilePath = jsFiles[i]
-            var head = document.getElementsByTagName('head')[0];
-            var script = document.createElement('script');
-            script.async = false;
-            script.type = 'text/javascript';
-            script.onload = function(){
-                allDone[i] = true;
-                if(checkIfAllJSLoaded(allDone)){
-                    done();
-                }
-            };
-            script.src = jsFilePath +"?ts=" + new Date().getTime();
-            head.appendChild(script);
+
+        if(jsFiles.length > 0){
+            for (var i = 0; i < jsFiles.length; i++) {
+                var jsFilePath = jsFiles[i]
+                var head = document.getElementsByTagName('head')[0];
+                var script = document.createElement('script');
+                script.async = false;
+                script.type = 'text/javascript';
+                script.onload = function(){
+                    allDone[i] = true;
+                    if(checkIfAllJSLoaded(allDone)){
+                        done();
+                    }
+                };
+                script.src = jsFilePath +"?ts=" + new Date().getTime();
+                head.appendChild(script);
+            }
         }
+        else{
+            done();
+        }
+
     });
 }
 

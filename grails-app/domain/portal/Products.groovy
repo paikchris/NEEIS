@@ -40,6 +40,7 @@ class Products {
 
         rateBasis nullable:true
 
+
         agentPct nullable:true
         agentPct (scale: 4, maxSize:32)
 
@@ -47,9 +48,13 @@ class Products {
         grossPct (scale: 4, maxSize:32)
 
         minPremium nullable:true
-        flatPremium (scale: 2, maxSize:32)
+        flatPremium (scale: 2, maxSize:32) 
 
         rateInfo nullable:true
+    }
+
+    static mapping = {
+        rateInfo type: 'text'
     }
 
     def getDisplayName(column){

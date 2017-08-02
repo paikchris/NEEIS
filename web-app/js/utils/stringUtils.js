@@ -88,9 +88,37 @@ function formatTaxAndFee(value) {
 }
 
 function getIntValueOfMoney(moneyStringWithSignsAndCommas){
-    return parseInt(moneyStringWithSignsAndCommas.replace(/\$|,/g, ''))
+    var returnVal
+
+    //CHECK IF STRING
+    if(typeof moneyStringWithSignsAndCommas === "string"){
+        //IF STRING IS NOT A NUMBER
+        if(isNaN( moneyStringWithSignsAndCommas.replace(/\$|,/g, '') )){
+            returnVal = "Error"
+        }
+        //IF STRING IS A NUMBER
+        else{
+            returnVal = parseInt(moneyStringWithSignsAndCommas.replace(/\$|,/g, ''))
+        }
+        returnVal = parseInt(moneyStringWithSignsAndCommas.replace(/\$|,/g, ''))
+    }
+    //CHECK IF INT
+    else if(typeof moneyStringWithSignsAndCommas === "number"){
+        if( Number.isInteger(moneyStringWithSignsAndCommas) ){
+            returnVal = moneyStringWithSignsAndCommas
+        }
+        else{
+            returnVal = parseInt(moneyStringWithSignsAndCommas)
+        }
+    }
+
+    return returnVal
 }
 
 function getDoubleValueOfMoney(moneyStringWithSignsAndCommas){
     return parseFloat(moneyStringWithSignsAndCommas.replace(/\$|,/g, ''))
+}
+
+function getDoubleValueOfPercent(percentStringWithSign){
+    return parseFloat(percentStringWithSign.replace('%', ''))
 }

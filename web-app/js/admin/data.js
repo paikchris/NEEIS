@@ -59,6 +59,7 @@ function intializeListeners(){
     });
     $(document).on('click', '.product_ListItem', function (e){
         clickOnProductAction(this, e)
+        disableProductSaveButton()
     });
 
     $(document).on('click', '#updateProductSettingsButton', function (e){
@@ -72,7 +73,7 @@ function intializeListeners(){
         saveRiskTypeChanges(this)
     });
 
-    $(document).on('click', '#saveProductButton', function (e){
+    $(document).on('click', '.saveProductButton', function (e){
         saveProductChanges(this)
     });
 
@@ -146,6 +147,11 @@ function intializeListeners(){
     });
 
     /////////////////////////////////////////////////////////////////
+    //PRODUCT DETAIL LISTENERS
+    /////////////////////////////////////////////////////////////////
+
+
+    /////////////////////////////////////////////////////////////////
     //REMOVING Product and Coverages
     /////////////////////////////////////////////////////////////////
     $(document).on('click', '.removeProductButton', function (e){
@@ -154,6 +160,8 @@ function intializeListeners(){
     $(document).on('click', '.removeCoverageButton', function (e){
         $(this).closest('.coverageContainer').remove();
     });
+
+
 
 
 
@@ -238,7 +246,6 @@ function intializeListeners(){
         $(this).parent().remove();
     });
 
-
     $(document).on('change', '.GPCTermLengthRadio', function (e) {
         if($('#GPCTermLengthRadio_Yes').is(':checked')){
             $('#GPCTermLengthRangeContainer').css('display', '')
@@ -249,12 +256,9 @@ function intializeListeners(){
         }
     });
 
-    $(document).on('change', '#primaryRateBasisSelect', function (e) {
-        showRatingContainerForValue($(this).val())
-    });
-
-    $(document).on('click', '.dropdown-menu-auto > li > a', function (e) {
-        $(this).closest('.input-group-btn').find('.dropdown-toggle').find('.dropDownButtonText').html( $(this).html() )
+    $(document).on('change', '.lobOtherOptionSelect', function (e) {
+        lobOtherOptionSelectChangeAction(this);
+        checkForProductChanges()
     });
 
     $(document).on('click', '.removeLobRowButton', function (e) {
@@ -262,8 +266,34 @@ function intializeListeners(){
     });
 
     $(document).on('click', '.addLobRowButton', function (e) {
+        // alert()
         addLobRow(this)
     });
+
+    $(document).on('click', '.removeLobOtherOptionRowButton', function (e) {
+        removeLobOtherOptionRow(this)
+        checkForProductChanges()
+    });
+
+    $(document).on('click', '.addLobOtherOptionRowButton', function (e) {
+        // alert()
+        addLobOtherOptionRow(this)
+    });
+    $(document).on('click', '.removeLobAdditionalOptionRowButton', function (e) {
+        removeLobAdditionalOptionRowButton(this)
+    });
+
+    $(document).on('click', '.addLobAdditionalOptionRowButton', function (e) {
+        // alert()
+        addLobAdditionalOptionRowButton(this)
+    });
+
+
+
+
+
+
+
 
 
 }
@@ -313,15 +343,18 @@ function initializeUnsavedChangeListener() {
     });
 
     $(document).on('change', '.detectProductChanges', function (e) {
+        //console.log("detect change")
+        // if( checkForProductChanges() ){
+        //     enableProductSaveButton()
+        //
+        // }
+        // else{
+        //     disableProductSaveButton()
+        // }
 
-        if( checkForProductChanges() ){
-            enableProductSaveButton()
+        checkForProductChanges()
 
-        }
-        else{
-            disableProductSaveButton()
-
-        }
+        // runRatePreview()
     });
 
 }
@@ -612,85 +645,108 @@ function showRatingContainerForValue(selectVal){
     $('#' + selectVal + "_RatingOptionsContainer").css('display', '')
 }
 
+
 //PRODUCT LOB FUNCTIONS
 function getProductLobHeaderRow(){
     var lobHeaderRow =
         "   <div class='row' style='font-size:11px; font-weight:300;'> " +
-        "      <div class='col-xs-4'> " +
+        "      <div class='col-xs-3 column'> " +
         "           <span>Description</span>" +
         "      </div>" +
-        "      <div class='col-xs-3'> " +
+        "      <div class='col-xs-2 column'> " +
         "           <span>Limit</span>" +
         "      </div>" +
-        "      <div class='col-xs-3'> " +
+        "      <div class='col-xs-2 column'> " +
         "           <span>Deductible</span>" +
+        "      </div>" +
+        "      <div class='col-xs-2 column'> " +
+        "           <span>Premium</span>" +
+        "      </div>" +
+        "      <div class='col-xs-2 column' style='font-size:10px;'> " +
+        "           <div class='col-xs-3' style='padding:0px'> " +
+        "               <span>Optional</span>" +
+        "           </div>" +
+        "           <div class='col-xs-9' style='padding:0px'> " +
+        "               <span>Other Options</span>" +
+        "           </div>" +
+        "      </div>" +
+        "      <div class='col-xs-1 column' style='font-size:10px;'> " +
+        "           <span></span>" +
         "      </div>" +
         "   </div>"
 
     return lobHeaderRow
 }
-function getEmptyProductLobRow(){
-    var htmlString =
-        "   <div class='row productLobRow'> " +
-        "      <div class='col-xs-4' style='padding-right:4px;'> " +
-        "         <div class='input-group'>" +
-        "           <span class='input-group-addon' style='font-size: 11px; height: 26px;padding: 6px 8px;'><i class='fa fa-font'></i></span>" +
-        "           <input class='form-control' type='text' style='font-size: 11px; padding: 4px; height: 26px;'" +
-        "               value=''>" +
-        "         </div>" +
-        "      </div>" +
-        "      <div class='col-xs-3' style='padding-left:4px; padding-right:4px;'> " +
-        "         <div class='input-group'>" +
-        "           <span class='input-group-addon' style='font-size: 11px; height: 26px;padding: 6px 8px;'><i class='fa fa-usd'></i></span>" +
-        "           <input class='form-control' type='text' style='font-size: 11px; padding: 4px; height: 26px;' " +
-        "               value=''>" +
-        "         </div>" +
-        "      </div>" +
-        "      <div class='col-xs-3' style='padding-left:4px; padding-right:4px;'> " +
-        "         <div class='input-group'>" +
-        "           <span class='input-group-addon' style='font-size: 11px; height: 26px;padding: 6px 8px;'><i class='fa fa-usd'></i></span>" +
-        "           <input class='form-control' type='text' style='font-size: 11px; padding: 4px; height: 26px;'" +
-        "               value=''>" +
-        "         </div>" +
-        "      </div>" +
-        "       <div class='col-xs-2' style='padding-left:4px;'>" +
-        "           <button class='btn btn-xs btn-danger removeLobRowButton' type='button' style='padding: 0px 5px;'> " +
-        "                   <i class='fa fa-times' aria-hidden='true' style='font-size: 10px;'></i>" +
-        "           </button>" +
-        "           <button class='btn btn-xs btn-success addLobRowButton' type='button' style='padding: 0px 5px;'> " +
-        "                   <i class='fa fa-plus' aria-hidden='true' style='font-size: 10px;'></i>" +
-        "           </button>" +
-        "       </div>" +
-        "   </div>"
-
-    return htmlString
-
-}
 function getProductLobRow(lobMap){
     var htmlString =
+        "<div class='rowContainer productLobContainer'"
+    if(lobMap){
+        htmlString = htmlString +
+            "       data-lobid='" + lobMap.id + "'"
+    }
+    htmlString = htmlString +
+        "> " +
         "   <div class='row productLobRow'> " +
-        "      <div class='col-xs-4' style='padding-right:4px;'> " +
+        "      <div class='col-xs-3 column' > " +
         "         <div class='input-group'>" +
         "           <span class='input-group-addon' style='font-size: 11px; height: 26px;padding: 6px 8px;'><i class='fa fa-font'></i></span>" +
-        "           <input class='form-control' type='text' style='font-size: 11px; padding: 4px; height: 26px;'" +
-        "               value='" + lobMap.lobName  + "'>" +
+        "           <input class='form-control lobDescriptionInput detectProductChanges' type='text' style='font-size: 11px; padding: 4px; height: 26px;'"
+    if(lobMap){
+        htmlString = htmlString +
+            "        value='" + lobMap.lobName  + "'"
+    }
+    htmlString = htmlString +
+        "           >" +
         "         </div>" +
         "      </div>" +
-        "      <div class='col-xs-3' style='padding-left:4px; padding-right:4px;'> " +
+        "      <div class='col-xs-2 column'> " +
         "         <div class='input-group'>" +
         "           <span class='input-group-addon' style='font-size: 11px; height: 26px;padding: 6px 8px;'><i class='fa fa-usd'></i></span>" +
-        "           <input class='form-control' type='text' style='font-size: 11px; padding: 4px; height: 26px;' " +
-        "               value='" + lobMap.lobLimit  + "'>" +
+        "           <input class='form-control lobLimitInput detectProductChanges' type='text' style='font-size: 11px; padding: 4px; height: 26px;' "
+    if(lobMap){
+        htmlString = htmlString +
+            "        value='" + lobMap.lobLimit  + "'"
+    }
+    htmlString = htmlString +
+        "           >" +
         "         </div>" +
         "      </div>" +
-        "      <div class='col-xs-3' style='padding-left:4px; padding-right:4px;'> " +
+        "      <div class='col-xs-2 column' > " +
         "         <div class='input-group'>" +
         "           <span class='input-group-addon' style='font-size: 11px; height: 26px;padding: 6px 8px;'><i class='fa fa-usd'></i></span>" +
-        "           <input class='form-control' type='text' style='font-size: 11px; padding: 4px; height: 26px;'" +
-        "               value='" + lobMap.lobDeductible  + "'>" +
+        "           <input class='form-control lobDeductibleInput detectProductChanges' type='text' style='font-size: 11px; padding: 4px; height: 26px;'"
+    if(lobMap){
+        htmlString = htmlString +
+            "        value='" + lobMap.lobDeductible  + "'"
+    }
+    htmlString = htmlString +
+        "           >" +
         "         </div>" +
         "      </div>" +
-        "       <div class='col-xs-2' style='padding-right:4px;'>" +
+        "      <div class='col-xs-2 column' > " +
+        "         <div class='input-group'>" +
+        "           <span class='input-group-addon' style='font-size: 11px; height: 26px;padding: 6px 8px;'><i class='fa fa-usd'></i></span>" +
+        "           <input class='form-control lobPremiumInput detectProductChanges' type='text' style='font-size: 11px; padding: 4px; height: 26px;'"
+    if(lobMap){
+        htmlString = htmlString +
+            "        value='" + lobMap.lobPremium  + "'"
+    }
+    htmlString = htmlString +
+        "           >" +
+        "         </div>" +
+        "      </div>" +
+        "       <div class='col-xs-2 column' >" +
+        "           <div class='col-xs-3' style='padding-right:0px;padding-left:0px; text-align:center'>" +
+        "               <span><input class='lobIsOptionalCheckbox detectProductChanges' type='checkbox'></span>" +
+        "           </div>" +
+        "           <div class='col-xs-9' style='padding-right:0px;padding-left:0px;'>" +
+        "           <select class='form-control lobOtherOptionSelect'>" +
+        "               <option value='none'>None</option>" +
+        "               <option value='alternativeCoverages'>Alternative Coverages</option>" +
+        "           </select>" +
+        "           </div>" +
+        "       </div>" +
+        "       <div class='col-xs-1 column' >" +
         "           <button class='btn btn-xs btn-danger removeLobRowButton' type='button' style='padding: 0px 5px;'> " +
         "                   <i class='fa fa-times' aria-hidden='true' style='font-size: 10px;'></i>" +
         "           </button>" +
@@ -698,7 +754,8 @@ function getProductLobRow(lobMap){
         "                   <i class='fa fa-plus' aria-hidden='true' style='font-size: 10px;'></i>" +
         "           </button>" +
         "       </div>" +
-        "   </div>"
+        "   </div>" +
+        "</div>"
 
     return htmlString
 
@@ -718,11 +775,229 @@ function getProductLobButtonRow(){
 
     return buttonFooterRow
 }
+function getLobOtherOptionsContainer(){
+    var htmlString =
+        "   <div class='lobOtherOptionsContainer'> " +
+        "   </div>"
+
+    return htmlString
+}
+function getProductOtherOptionsRow(lobMap){
+    var htmlString =
+        "   <div class='row lobOtherOptionRow' style='padding-bottom:2px;'> " +
+        "      <div class='col-xs-3 column' style='padding-left:12px'> " +
+        "         <div class='input-group'>" +
+        "           <span class='input-group-addon' style='font-size: 11px; height: 26px;padding: 6px 8px;'><i class='fa fa-font'></i></span>" +
+        "           <input class='form-control lobDescriptionInput detectProductChanges' type='text' style='font-size: 11px; padding: 4px; height: 26px;'"
+    if(lobMap){
+        htmlString = htmlString +
+            "        value='" + lobMap.description  + "'"
+    }
+    htmlString = htmlString +
+        "           >" +
+        "         </div>" +
+        "      </div>" +
+        "      <div class='col-xs-2 column'> " +
+        "         <div class='input-group'>" +
+        "           <span class='input-group-addon' style='font-size: 11px; height: 26px;padding: 6px 8px;'><i class='fa fa-usd'></i></span>" +
+        "           <input class='form-control lobLimitInput detectProductChanges' type='text' style='font-size: 11px; padding: 4px; height: 26px;' "
+    if(lobMap){
+        htmlString = htmlString +
+            "        value='" + lobMap.limit  + "'"
+    }
+    htmlString = htmlString +
+        "           >" +
+        "         </div>" +
+        "      </div>" +
+        "      <div class='col-xs-2 column' > " +
+        "         <div class='input-group'>" +
+        "           <span class='input-group-addon' style='font-size: 11px; height: 26px;padding: 6px 8px;'><i class='fa fa-usd'></i></span>" +
+        "           <input class='form-control lobDeductibleInput detectProductChanges' type='text' style='font-size: 11px; padding: 4px; height: 26px;'"
+    if(lobMap){
+        htmlString = htmlString +
+            "        value='" + lobMap.deductible  + "'"
+    }
+    htmlString = htmlString +
+        "           >" +
+        "         </div>" +
+        "      </div>" +
+        "      <div class='col-xs-2 column' > " +
+        "         <div class='input-group'>" +
+        "           <span class='input-group-addon' style='font-size: 11px; height: 26px;padding: 6px 8px;'><i class='fa fa-usd'></i></span>" +
+        "           <input class='form-control lobPremiumInput detectProductChanges' type='text' style='font-size: 11px; padding: 4px; height: 26px;'"
+    if(lobMap){
+        htmlString = htmlString +
+            "        value='" + lobMap.premium  + "'"
+    }
+    htmlString = htmlString +
+        "           >" +
+        "         </div>" +
+        "      </div>" +
+        "       <div class='col-xs-2 column' >" +
+        "           <div class='col-xs-3' style='padding-right:0px;padding-left:0px; text-align:center'>" +
+        "           </div>" +
+        "           <div class='col-xs-9' style='padding-right:0px;padding-left:0px;'>" +
+        "           </div>" +
+        "       </div>" +
+        "       <div class='col-xs-1 column' >" +
+        "           <button class='btn btn-xs btn-danger removeLobOtherOptionRowButton' type='button' style='padding: 0px 5px;'> " +
+        "                   <i class='fa fa-times' aria-hidden='true' style='font-size: 10px;'></i>" +
+        "           </button>" +
+        "           <button class='btn btn-xs btn-success addLobOtherOptionRowButton' type='button' style='padding: 0px 5px;'> " +
+        "                   <i class='fa fa-plus' aria-hidden='true' style='font-size: 10px;'></i>" +
+        "           </button>" +
+        "       </div>" +
+        "   </div>"
+
+    return htmlString
+}
+
+function getLobAdditionalHeaderRow(){
+    var htmlString =
+        "   <div class='row' style='font-size:11px; font-weight:300;'> " +
+        "      <div class='col-xs-3 column'> " +
+        "           <span>Description</span>" +
+        "      </div>" +
+        "      <div class='col-xs-2 column'> " +
+        "           <span>Limit</span>" +
+        "      </div>" +
+        "      <div class='col-xs-2 column'> " +
+        "           <span>Deductible</span>" +
+        "      </div>" +
+        "      <div class='col-xs-2 column'> " +
+        "           <span>Premium</span>" +
+        "      </div>" +
+        "      <div class='col-xs-2 column' style='font-size:10px;'> " +
+        "           <div class='col-xs-3' style='padding:0px'> " +
+        "               <span>Optional</span>" +
+        "           </div>" +
+        "           <div class='col-xs-9' style='padding:0px'> " +
+        "               <span>Other Options</span>" +
+        "           </div>" +
+        "      </div>" +
+        "      <div class='col-xs-1 column' style='font-size:10px;'> " +
+        "           <span></span>" +
+        "      </div>" +
+        "   </div>"
+
+    return htmlString
+}
+function getLobAdditionalOptionsRow(lobMap){
+    var htmlString =
+        "<div class='rowContainer lobAdditionalOptionContainer'"
+    if(lobMap){
+        htmlString = htmlString +
+            "       data-lobid='" + lobMap.id + "'"
+    }
+    htmlString = htmlString +
+        "> " +
+        "   <div class='row lobAdditionalOptionRow' style='padding-bottom:2px;'> " +
+        "      <div class='col-xs-3 column' style=''> " +
+        "         <div class='input-group'>" +
+        "           <span class='input-group-addon' style='font-size: 11px; height: 26px;padding: 6px 8px;'><i class='fa fa-font'></i></span>" +
+        "           <input class='form-control lobDescriptionInput detectProductChanges' type='text' style='font-size: 11px; padding: 4px; height: 26px;'"
+    if(lobMap){
+        htmlString = htmlString +
+            "        value='" + lobMap.lobName  + "'"
+    }
+    htmlString = htmlString +
+        "           >" +
+        "         </div>" +
+        "      </div>" +
+        "      <div class='col-xs-2 column'> " +
+        "         <div class='input-group'>" +
+        "           <span class='input-group-addon' style='font-size: 11px; height: 26px;padding: 6px 8px;'><i class='fa fa-usd'></i></span>" +
+        "           <input class='form-control lobLimitInput detectProductChanges' type='text' style='font-size: 11px; padding: 4px; height: 26px;' "
+    if(lobMap){
+        htmlString = htmlString +
+            "        value='" + lobMap.lobLimit  + "'"
+    }
+    htmlString = htmlString +
+        "           >" +
+        "         </div>" +
+        "      </div>" +
+        "      <div class='col-xs-2 column' > " +
+        "         <div class='input-group'>" +
+        "           <span class='input-group-addon' style='font-size: 11px; height: 26px;padding: 6px 8px;'><i class='fa fa-usd'></i></span>" +
+        "           <input class='form-control lobDeductibleInput detectProductChanges' type='text' style='font-size: 11px; padding: 4px; height: 26px;'"
+    if(lobMap){
+        htmlString = htmlString +
+            "        value='" + lobMap.lobDeductible  + "'"
+    }
+    htmlString = htmlString +
+        "           >" +
+        "         </div>" +
+        "      </div>" +
+        "      <div class='col-xs-2 column' > " +
+        "         <div class='input-group'>" +
+        "           <span class='input-group-addon' style='font-size: 11px; height: 26px;padding: 6px 8px;'><i class='fa fa-usd'></i></span>" +
+        "           <input class='form-control lobDeductibleInput detectProductChanges' type='text' style='font-size: 11px; padding: 4px; height: 26px;'"
+    if(lobMap){
+        htmlString = htmlString +
+            "        value='" + lobMap.lobDeductible  + "'"
+    }
+    htmlString = htmlString +
+        "           >" +
+        "         </div>" +
+        "      </div>" +
+        "       <div class='col-xs-2 column' >" +
+        "           <div class='col-xs-3' style='padding-right:0px;padding-left:0px; text-align:center'>" +
+        "               <span><input class='lobIsOptionalCheckbox detectProductChanges' type='checkbox'></span>" +
+        "           </div>" +
+        "           <div class='col-xs-9' style='padding-right:0px;padding-left:0px;'>" +
+        "           <select class='form-control lobOtherOptionSelect'>" +
+        "               <option value='none'>None</option>" +
+        "               <option value='alternativeCoverages'>Alternative Coverages</option>" +
+        "           </select>" +
+        "           </div>" +
+        "       </div>" +
+        "       <div class='col-xs-1 column' >" +
+        "           <button class='btn btn-xs btn-danger removeLobAdditionalOptionRowButton' type='button' style='padding: 0px 5px;'> " +
+        "                   <i class='fa fa-times' aria-hidden='true' style='font-size: 10px;'></i>" +
+        "           </button>" +
+        "           <button class='btn btn-xs btn-success addLobAdditionalOptionRowButton' type='button' style='padding: 0px 5px;'> " +
+        "                   <i class='fa fa-plus' aria-hidden='true' style='font-size: 10px;'></i>" +
+        "           </button>" +
+        "       </div>" +
+        "   </div>" +
+        "</div>"
+
+    return htmlString
+}
+
 function removeLobRow(buttonClicked){
     $(buttonClicked).closest('.productLobRow').remove()
 }
 function addLobRow(buttonClicked){
-    $(buttonClicked).closest('.productLobRow').after(getEmptyProductLobRow())
+    $(buttonClicked).closest('.productLobContainer').after(getProductLobRow())
+}
+function addSubOtherOptionsRow(selectElement){
+    var lobContainer = $(selectElement).closest('.rowContainer')
+    var otherOptionsContainer = $(getLobOtherOptionsContainer())
+    otherOptionsContainer.html(getProductOtherOptionsRow())
+    $(lobContainer).append(otherOptionsContainer)
+}
+function addLobOtherOptionRow(buttonClicked){
+    $(buttonClicked).closest('.lobOtherOptionRow').after(getProductOtherOptionsRow())
+}
+function removeLobOtherOptionRow(buttonClicked){
+    $(buttonClicked).closest('.lobOtherOptionRow').remove()
+}
+function removeAllSubOtherOptions(lobRow){
+    var productLobContainer = $(lobRow).closest('.productLobContainer')
+    //console.log($(productLobContainer))
+    $(productLobContainer).children('.lobOtherOptionsContainer').remove()
+}
+function removeLobAdditionalOptionRowButton(buttonClicked){
+    var additionalOptionRow = $(buttonClicked).closest('.lobAdditionalOptionRow')
+
+    additionalOptionRow.remove();
+}
+function addLobAdditionalOptionRowButton(buttonClicked){
+    var additionalOptionRow = $(buttonClicked).closest('.lobAdditionalOptionRow')
+
+    additionalOptionRow.after(getLobAdditionalOptionsRow())
+
 }
 
 //PRODUCT FORM FUNCTIONS
@@ -821,6 +1096,141 @@ function getProductFormButtonRow(){
     return buttonFooterRow
 }
 
+//PRODUCT PREVIEW FUNCTIONS
+function runRatePreview1(){
+    //GET PRIMARY RATING BASIS
+    var primaryRatingBasis = $('#primaryRateBasisSelect').val()
+
+    //GET RATE INFO AND FORMAT IT
+    var rateContainer = $('#' + primaryRatingBasis + "_RatingOptionsContainer")
+    var rateInfoMap = buildRateInfoMap(rateContainer, primaryRatingBasis)
+
+    //PREVIEW OF GPC RATES
+    if(primaryRatingBasis === "gpc"){
+        var gpcAmount = getIntValueOfMoney($('#gpc_TestInput').val())
+
+        //LOOP OVER ALL RANGES AND RATES
+        var tempArray = rateInfoMap.rateInfo
+        for(var i = 0; i<tempArray.length; i++){
+            var tempFrom = getIntValueOfMoney(tempArray[i].from)
+            var tempTo
+            if(tempArray[i].to.toLowerCase() === "any"){
+                tempTo = gpcAmount + 1
+            }
+            else{
+                tempTo = getIntValueOfMoney(tempArray[i].to)
+            }
+
+            var rateType = tempArray[i].rateType
+
+            var tempRateValue
+            if( rateType === "premium"){
+                tempRateValue = getIntValueOfMoney( tempArray[i].rateValue )
+            }
+            else if(rateType === "percent"){
+                tempRateValue = getDoubleValueOfPercent( tempArray[i].rateValue )
+            }
+
+            //IF THE GPC VALUE FALLS INTO THIS RANGE, IF NOT SKIP
+            if( gpcAmount >= tempFrom && gpcAmount <= tempTo){
+                //IF THIS RANGE HAS A TERM LENGTH CONDITION
+                if(tempRateValue === "-" || tempArray[i].hasOwnProperty('additionalRate')){
+                    var additionalConditionArray = tempArray[i].additionalRate
+                    for(var c=0; c<additionalConditionArray.length; c++){
+                        var additionalRateInfoArray = additionalConditionArray[c].rateInfo
+                        var additionalBasisName = additionalConditionArray[c].basisName
+                        var termLength = parseInt( $('#gpc_TermLengthInput').val() )
+
+                        for(var j=0; j<additionalRateInfoArray.length; j++){
+                            var additionalFrom = getIntValueOfMoney(additionalRateInfoArray[j].from)
+                            var additionalTo
+                            if(additionalRateInfoArray[j].to.toLowerCase() === "any"){
+                                additionalTo = termLength + 1
+                            }
+                            else{
+                                additionalTo = parseInt(additionalRateInfoArray[j].to)
+                            }
+                            var additionalRate = getDoubleValueOfPercent( additionalRateInfoArray[j].rateValue )
+
+
+                            if(termLength >= additionalFrom && termLength <= additionalTo){
+                                var premiumDisplay = gpcAmount * (additionalRate/100)
+                                $('#gpc_rateActualDisplay').html(additionalRate/100)
+                                $('#gpc_TestedPremiumDisplay').html(formatMoney(premiumDisplay))
+                            }
+                        }
+                    }
+                }
+                else{
+                    if( rateType === "premium"){
+                        var premiumDisplay = tempRateValue
+                        $('#gpc_rateActualDisplay').html("")
+                        $('#gpc_TestedPremiumDisplay').html(formatMoney(premiumDisplay))
+                    }
+                    else if(rateType === "percent"){
+                        var premiumDisplay = gpcAmount * (tempRateValue/100)
+                        $('#gpc_rateActualDisplay').html(tempRateValue/100)
+                        $('#gpc_TestedPremiumDisplay').html(formatMoney(premiumDisplay))
+                    }
+
+                }
+
+            }
+        }
+    }
+    else if(primaryRatingBasis === "flatRate"){
+        var gpcAmount = getIntValueOfMoney($('#flatRate_TestInput').val())
+        var minPremium = getIntValueOfMoney($('#flatRate_MinPremium').val())
+        var flatRateFlatValue = getIntValueOfMoney($('#flatRate_FlatValue').val())
+        var premiumOrRate = $('#flatRate_RatingOptionsContainer').find('.dropDownButtonText').html().trim()
+
+        if(premiumOrRate === "Flat Premium"){
+            var calcPremium = flatRateFlatValue
+            $('#flatRate_rateActualDisplay').html("Flat Premium")
+            $('#flatRate_TestedPremiumDisplay').html(formatMoney(calcPremium))
+        }
+        else{
+            var calcPremium = gpcAmount * (flatRateFlatValue/100)
+            if(calcPremium < minPremium){
+                calcPremium = minPremium
+            }
+            $('#flatRate_rateActualDisplay').html((flatRateFlatValue/100))
+            $('#flatRate_TestedPremiumDisplay').html(formatMoney(calcPremium))
+
+        }
+
+
+    }
+    else if(primaryRatingBasis === "termLength"){
+        var termLength = getIntValueOfMoney($('#termLength_TermLengthInput').val())
+
+        //LOOP OVER ALL RANGES AND RATES
+        var tempArray = rateInfoMap.rateInfo
+        for(var i = 0; i<tempArray.length; i++){
+            var tempFrom = getIntValueOfMoney(tempArray[i].from)
+            var tempTo
+            if(tempArray[i].to.toLowerCase() === "any"){
+                tempTo = termLength + 1
+            }
+            else{
+                tempTo = getIntValueOfMoney(tempArray[i].to)
+            }
+            var tempRateValue = getDoubleValueOfPercent( tempArray[i].rateValue )
+
+            //IF THE GPC VALUE FALLS INTO THIS RANGE, IF NOT SKIP
+            if( termLength >= tempFrom && termLength <= tempTo){
+                var premiumDisplay = termLength * (tempRateValue/100)
+                $('#termLength_rateActualDisplay').html(tempRateValue/100)
+                $('#termLength_TestedPremiumDisplay').html(formatMoney(premiumDisplay))
+
+
+            }
+        }
+    }
+}
+
+
+
 //FILL INPUT FIELDS FUNCTIONS
 function fillRiskTypeFields(clickedRisk){
     $('#loadingModal').modal('show')
@@ -837,7 +1247,7 @@ function fillRiskTypeFields(clickedRisk){
     var productConditionsMap
     if(currentRiskTypeObject.productConditions){
         productConditionsMap = JSON.parse(currentRiskTypeObject.productConditions)
-        console.log(productConditionsMap)
+        //console.log(productConditionsMap)
     }
 
     //FILL PRODUCT DATA-ATTRIBUTES AND CHECK ACTIVE PRODUCTS
@@ -928,18 +1338,15 @@ function fillProductFields(clickedProduct){
     //CLEAR RISK TYPE INPUT FIELDS
     clearProductInputFields()
 
-    /////////////////////////
-    //FILL RISK TYPE INPUT FIELDS
-    /////////////////////////
+    //FILL PRODUCT INPUT FIELDS
+    $('#productNameHeader').html(currentProductObject.aimProductID)
     $('#productInputFields input:text').each(function(){
         var columnName = $(this).attr('data-column')
         $(this).val(currentProductObject[columnName])
     })
 
 
-    /////////////////////////
     //SET PRIMARY RATING BASIS
-    /////////////////////////
     if(currentProductObject.rateBasis != null){
         $('#primaryRateBasisSelect').val(currentProductObject.rateBasis)
         $('#primaryRateBasisSelect').trigger('change')
@@ -947,20 +1354,22 @@ function fillProductFields(clickedProduct){
 
 
 
-    /////////////////////////
+
     //FILL PRODUCT LOB FIELDS FOR LIMIT RATING
-    /////////////////////////
     var htmlString = ""
     for(var i=0; i<currentProductLOBDetailsObject.length; i++){
         var lobMap = currentProductLOBDetailsObject[i]
 
         htmlString = htmlString +
-            "   <div class=''> " +
+            "   <div class='lobRateInfoContainer'> " +
             "      <div class='col-xs-12'> " +
-            "           <h6 style='margin-top:12px; margin-bottom:0px; font-weight:400'>" + lobMap.lobName  + "</h6> " +
+            "           <h6 class='lobStringDisplay' style='margin-top:12px; margin-bottom:0px; font-weight:400'>" + lobMap.lobName  + "</h6> " +
             "       </div> " +
             "       <div class='col-xs-12'> " +
-            "           <div class=' row multiRangeContainer money' style='margin-top:-4px; margin-bottom:12px;'>" +
+            "           <div class=' row multiRangeContainer limits' id='rangeContainerLOB_" + lobMap.id + "' " +
+            "               data-lobID='" + lobMap.id + "' " +
+            "               data-lobname='" + lobMap.lobName + "' " +
+            "               style='margin-top:-4px; margin-bottom:12px;'>" +
             "           </div>" +
             "       </div>" +
             "   </div>"
@@ -968,27 +1377,132 @@ function fillProductFields(clickedProduct){
     $('#limitRatingLOBRangeContainer').html(htmlString)
     initMultiRange()
 
-    /////////////////////////
-    //FILL LOB DETAIL TAB
-    /////////////////////////
-    var lobHTMLString = ""
-    var lobRows = ""
-    var lobHeaderRow = getProductLobHeaderRow()
-
+    //FILL PREVIEW LOB FIELDS FOR LIMIT RATING
+    var previewLOBLimitInputsString = ""
     for(var i=0; i<currentProductLOBDetailsObject.length; i++){
         var lobMap = currentProductLOBDetailsObject[i]
 
-        lobRows = lobRows + getProductLobRow(lobMap)
+        previewLOBLimitInputsString = previewLOBLimitInputsString +
+            "       <div class='input-group'> " +
+            "           <span class='input-group-addon'> " +
+            "               <span style='font-size:10px;'>" + lobMap.lobName + "</span> " +
+            "           </span> " +
+            "           <input class='form-control moneyInput rateTestRun lobLimitInput' id='lobLimitInput_" + lobMap.id + "' " +
+            "               data-lobName='" + lobMap.lobName + "' data-lobID='" + lobMap.id + "' type='text' value='0'> " +
+            "       </div> "
+    }
+    $('#previewInputsDiv').html(previewLOBLimitInputsString)
+
+
+
+    //RECREATE RATE INFORMATION AND RANGES FROM MAP
+    var rateInfoExists = false;
+    try{
+        JSON.parse(currentProductObject.rateInfo)
+        rateInfoExists = true;
+    }
+    catch(e){ console.log("No Rate Info") }
+
+    if(rateInfoExists){
+        var rateInfoMap = JSON.parse(currentProductObject.rateInfo)
+        if(rateInfoMap !== null){
+            //console.log(rateInfoMap)
+            recreateRateRangesFromMap(rateInfoMap)
+        }
     }
 
-    var buttonFooterRow = getProductLobButtonRow()
 
-    lobHTMLString = lobHeaderRow + lobRows + buttonFooterRow
-    $('#lobDetailContainer').html(lobHTMLString)
 
-    /////////////////////////
+
+    //FILL LOB DETAIL TAB
+    var lobHTMLString = ""
+    var lobRows = ""
+    var lobHeaderRow = getProductLobHeaderRow()
+    $('#lobDetailContainer').html(getProductLobHeaderRow())
+    $('#lobAdditionalCoveragesContainer').html(getLobAdditionalHeaderRow());
+
+    //LOOP THROUGH LOBS
+    for(var i=0; i<currentProductLOBDetailsObject.length; i++){
+        var lobMap = currentProductLOBDetailsObject[i]
+        if(lobMap.type === 'lob'){
+            var newLobContainerRow = $(getProductLobRow(lobMap))
+            var otherOptionsMap = JSON.parse(lobMap.otherOptionsMap)
+
+            $('#lobDetailContainer').append(newLobContainerRow)
+
+            var otherOptionsSelected = otherOptionsMap.optionType
+
+            //IF LOB OTHER OPTIONS IS NOT UNDEFINED
+            if(otherOptionsSelected){
+                var otherOptionsDropdown = newLobContainerRow.children('.productLobRow').find('.lobOtherOptionSelect')
+                otherOptionsDropdown.val(otherOptionsSelected)
+                lobOtherOptionSelectChangeAction(otherOptionsDropdown)
+
+                //FILL OTHER OPTION ROWS
+                var otherOptionsArray = otherOptionsMap.optionsArray
+                if(otherOptionsArray){
+                    if(otherOptionsSelected === 'alternativeCoverages'){
+                        var subOtherOptionsContainer = newLobContainerRow.children('.lobOtherOptionsContainer')
+                        subOtherOptionsContainer.empty()
+
+
+                        //LOOP THROUGH OTHER OPTIONS ROWS
+                        for(var k =0; k<otherOptionsArray.length; k++){
+
+                            var tempLobMap = otherOptionsArray[k]
+                            subOtherOptionsContainer.append( getProductOtherOptionsRow(tempLobMap) )
+
+                        }
+                    }
+                }
+            }
+        }
+        else if(lobMap.type === 'additionalOption'){
+            var newLobAdditionalOptionsRow = $(getLobAdditionalOptionsRow(lobMap))
+            var otherOptionsMap = JSON.parse(lobMap.otherOptionsMap)
+
+            $('#lobAdditionalCoveragesContainer').append(newLobAdditionalOptionsRow)
+
+            var otherOptionsSelected = otherOptionsMap.optionType
+
+            //IF LOB OTHER OPTIONS IS NOT UNDEFINED
+            if(otherOptionsSelected){
+                var otherOptionsDropdown = newLobAdditionalOptionsRow.children('.productLobRow').find('.lobOtherOptionSelect')
+                otherOptionsDropdown.val(otherOptionsSelected)
+                lobOtherOptionSelectChangeAction(otherOptionsDropdown)
+
+                //FILL OTHER OPTION ROWS
+                var otherOptionsArray = otherOptionsMap.optionsArray
+                if(otherOptionsArray){
+                    if(otherOptionsSelected === 'alternativeCoverages'){
+                        var subOtherOptionsContainer = newLobAdditionalOptionsRow.children('.lobOtherOptionsContainer')
+                        subOtherOptionsContainer.empty()
+
+
+                        //LOOP THROUGH OTHER OPTIONS ROWS
+                        for(var k =0; k<otherOptionsArray.length; k++){
+
+                            var tempLobMap = otherOptionsArray[k]
+                            subOtherOptionsContainer.append( getProductOtherOptionsRow(tempLobMap) )
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if($('#lobDetailContainer .productLobContainer').length === 0){
+        $('#lobDetailContainer').append(getProductLobRow())
+    }
+    if($('#lobAdditionalCoveragesContainer .lobAdditionalOptionRow').length === 0){
+        $('#lobAdditionalCoveragesContainer').append(getLobAdditionalOptionsRow())
+    }
+
+
+    // $('#lobAdditionalCoveragesContainer').html(getLobAdditionalHeaderRow() + getLobAdditionalOptionsRow())
+
     //FILL FORMS DETAIL TAB
-    /////////////////////////
     var formsHTMLString = ""
     var formRows = ""
     var formHeaderRow = getProductFormHeaderRow()
@@ -1003,19 +1517,19 @@ function fillProductFields(clickedProduct){
 
     var formButtonFooterRow = getProductFormButtonRow()
 
-    formsHTMLString = formHeaderRow + formRows + formButtonFooterRow
+    formsHTMLString = formHeaderRow + formRows
     $('#formsDetailContainer').html(formsHTMLString)
 
 
-    /////////////////////////
     //FILL TERMS DETAIL TAB
-    /////////////////////////
     $('#termsTextArea').val(currentProductObject.terms)
 
 
 
-
+    maskMoneyInputs()
     initializeTypeAheadFunctions()
+
+    runRatePreview()
 
 
     $('#loadingModal').modal('hide')
@@ -1107,7 +1621,7 @@ function getProductDetails(productID, callback){
         }
     }).done(function (msg) {
         // alert(msg)
-        console.log(JSON.parse(msg))
+        //console.log(JSON.parse(msg))
         setProductObjectVariable(JSON.parse(msg).product)
 
         setProductLOBObjectVariable(JSON.parse(msg).lobs)
@@ -1140,7 +1654,7 @@ function saveRiskTypeChanges(){
         currentRiskTypeObject.products = productArray.toString()
 
 
-        console.log(JSON.stringify(currentRiskTypeObject))
+        //console.log(JSON.stringify(currentRiskTypeObject))
         $.ajax({
             method: "POST",
             url: "/Admin/saveRiskTypeChanges",
@@ -1162,17 +1676,30 @@ function saveRiskTypeChanges(){
 function saveProductChanges(){
     if(validateProduct()){
         //CENTER PANEL FIELDS LOOKG FOR CLASS riskTypeField
-
         $('#productInputFields input:text').each(function(){
             var columnName = $(this).attr('data-column')
             currentProductObject[columnName] = $(this).val()
         })
 
+        //GET RATE INFO MAP
+        var rateBasis = $('#primaryRateBasisSelect').val()
+        var rateContainer = $('#' + rateBasis + "_RatingOptionsContainer")
+        currentProductObject.rateInfo = buildRateInfoMap(rateContainer, rateBasis)
+        currentProductObject.rateBasis = rateBasis
+        //console.log(currentProductObject.rateInfo)
+        //console.log( buildRateInfoMap(rateContainer, rateBasis) )
+
+
+        //BUILD LOB MAP
+        currentProductLOBDetailsObject = buildLOBMap()
+
+
         $.ajax({
             method: "POST",
             url: "/Admin/saveProductChanges",
             data: {
-                productObject: JSON.stringify(currentProductObject)
+                productObject: JSON.stringify(currentProductObject),
+                lobObject: JSON.stringify(currentProductLOBDetailsObject)
             }
         })
             .done(function(msg) {
@@ -1226,7 +1753,7 @@ function checkForRiskTypeChanges(){
         savedCheckboxArray = "";
     }
 
-    console.log(currentRiskTypeObject.productConditions)
+    //console.log(currentRiskTypeObject.productConditions)
 
     var tempConditionMap;
 
@@ -1278,14 +1805,14 @@ function checkForRiskTypeChanges(){
     return changed;
 }
 function checkForProductSettingsChanges(){
-    console.log("checking Product Settings")
-    console.log(currentProductSettingsObject)
+    //console.log("checking Product Settings")
+    //console.log(currentProductSettingsObject)
     var changed = false;
 
     //CHECK BASIS CHANGES
     $('.productConditionRadio:visible').each(function(){
         var basisID = $(this).attr('id')
-        console.log(basisID)
+        //console.log(basisID)
         var checkedStatus = $('#' + basisID).is(':checked')
 
         if(currentProductSettingsObject[basisID] != undefined){
@@ -1294,7 +1821,7 @@ function checkForProductSettingsChanges(){
             }
         }
         else{
-            console.log("ELSE")
+            //console.log("ELSE")
             changed = true
         }
     })
@@ -1331,13 +1858,13 @@ function checkForProductSettingsChanges(){
 
 
 
-    console.log("return: " + changed)
+    //console.log("return: " + changed)
     return changed;
 }
 function checkForProductChanges(){
-    // console.log("checking")
-    var changed = false;
 
+    var changed = false;
+    //console.log("CHECKING")
 
     //CHECK IF TEXT FIELDS HAVE CHANGED
     $('#productInputFields input:text').each(function(){
@@ -1346,6 +1873,33 @@ function checkForProductChanges(){
             changed = true;
         }
     })
+
+    //CHECK IF PRIMARY RATING BASIS CHANGED
+    if( $('#primaryRateBasisSelect').val() != currentProductObject.rateBasis ){
+        changed = true;
+    }
+
+    //CHECK IF RATE INFO HAS CHANGED
+    var rateBasis = $('#primaryRateBasisSelect').val()
+    var rateContainer = $('#' + rateBasis + "_RatingOptionsContainer")
+    var newRateInfoMap = buildRateInfoMap(rateContainer, rateBasis)
+    if( currentProductObject.rateInfo != newRateInfoMap ){
+        changed = true
+    }
+
+
+    //CHECK IF LOB HAS CHANGED
+    var newLOBMap = buildLOBMap()
+    if(currentProductLOBDetailsObject != newLOBMap){
+        changed = true;
+    }
+
+    if( changed ){
+        enableProductSaveButton()
+    }
+    else{
+        disableProductSaveButton()
+    }
 
     return changed;
 }
@@ -1363,10 +1917,10 @@ function enableProductSettingsSaveButton(){
     $('#updateProductSettingsButton').prop('disabled', false)
 }
 function disableProductSaveButton(){
-    $('#saveProductButton').prop('disabled', true)
+    $('.saveProductButton').prop('disabled', true)
 }
 function enableProductSaveButton(){
-    $('#saveProductButton').prop('disabled', false)
+    $('.saveProductButton').prop('disabled', false)
 }
 
 //RISK TYPE EDIT DETAILS FUNCTIONS
@@ -1414,14 +1968,14 @@ function validateRiskType(){
     if( $('#riskTypeName_Input').val().trim().length == 0  ){
         valid = false;
         showRiskTypeSaveError()
-        console.log("NAME ERROR")
+        //console.log("NAME ERROR")
         return false
     }
 
     if( $('#riskTypeCode_Input').val().trim().length == 0  ){
         valid = false;
         showRiskTypeSaveError()
-        console.log("CODE ERROR")
+        //console.log("CODE ERROR")
 
         return false
     }
@@ -1457,12 +2011,14 @@ function showRiskTypeSaveError(){
     $('#riskTypeErrorMessage').show().delay(5000).fadeOut();
 }
 function showProductSaveSuccess(){
-    $('#productSaveMessage').show().delay(5000).fadeOut();
-    $('#productErrorMessage').css('display', 'none')
+    $('.productSaveMessage').show().delay(5000).fadeOut();
+    $('.productErrorMessage').css('display', 'none')
+    disableProductSaveButton()
 }
 function showProductSaveError(){
-    $('#productSaveMessage').css('display', 'none')
-    $('#productErrorMessage').show().delay(5000).fadeOut();
+    $('.productSaveMessage').css('display', 'none')
+    $('.productErrorMessage').show().delay(5000).fadeOut();
+    enableProductSaveButton()
 }
 function showProductSettingsSaveSuccess(){
     $('#productSettingSaveMessage').show().delay(5000).fadeOut();
@@ -1478,6 +2034,94 @@ function clearStatusMessages(){
 }
 
 
+
+//LOB FUNCTIONS
+function lobOtherOptionSelectChangeAction(element){
+
+    var selectedOptionVal = $(element).val()
+
+    if( selectedOptionVal === 'None' || selectedOptionVal === 'none'){
+        removeAllSubOtherOptions(element)
+    }
+    else if( selectedOptionVal === 'Alternative Coverages' || selectedOptionVal === 'alternativeCoverages'){
+        addSubOtherOptionsRow(element)
+    }
+}
+function buildLOBMap(){
+    var lobTabElement = $('#lobTab')
+    var lobMainRowsContainer = $('#lobDetailContainer')
+    var lobMainRowsArray = $(lobMainRowsContainer).children('.productLobContainer')
+
+    var lobAdditionalContainer = $('#lobAdditionalCoveragesContainer')
+    var lobAdditionalRowsArray = $(lobAdditionalContainer).children('.lobAdditionalOptionContainer')
+
+
+    var lobRowsArray = $.merge(lobMainRowsArray, lobAdditionalRowsArray)
+
+    var newproductLOBDetailsObject = []
+    //LOOP OVER MAIN LOB ROWS
+    for(var i = 0; i<lobRowsArray.length; i++){
+        var thisClassName;
+        if(lobRowsArray.eq(i).hasClass('productLobContainer')){
+            thisClassName = '.productLobRow'
+        }
+        else if(lobRowsArray.eq(i).hasClass('lobAdditionalOptionContainer')){
+            thisClassName = '.lobAdditionalOptionRow'
+        }
+
+        var thisLOBRow = lobRowsArray.eq(i).children(thisClassName)
+
+        var tempLOBMap;
+        var lobID = parseInt(lobRowsArray.eq(i).attr('data-lobid'))
+        // alert(lobID)
+        //find existing map
+        for(var k=0; k<currentProductLOBDetailsObject.length; k++){
+            if(lobID === currentProductLOBDetailsObject[k].id ){
+                tempLOBMap = currentProductLOBDetailsObject[k]
+                // alert()
+            }
+        }
+
+        tempLOBMap.lobName = thisLOBRow.find('.lobDescriptionInput').val()
+        tempLOBMap.lobLimit = thisLOBRow.find('.lobLimitInput').val()
+        tempLOBMap.lobDeductible = thisLOBRow.find('.lobDeductibleInput').val()
+        tempLOBMap.lobPremium = thisLOBRow.find('.lobPremiumInput').val()
+        tempLOBMap.optionalFlag = thisLOBRow.find('.lobIsOptionalCheckbox').prop('checked') ? 'Y' : 'N'
+
+        var otherOptionsMap = {
+            optionType:''
+        }
+        if( thisLOBRow.find('.lobOtherOptionSelect').val() === 'None' || thisLOBRow.find('.lobOtherOptionSelect').val() === 'none' ){
+            otherOptionsMap.optionType = thisLOBRow.find('.lobOtherOptionSelect').val()
+        }
+        else if( thisLOBRow.find('.lobOtherOptionSelect').val() === 'Alternative Coverages' || thisLOBRow.find('.lobOtherOptionSelect').val() === 'alternativeCoverages' ){
+            otherOptionsMap.optionType = thisLOBRow.find('.lobOtherOptionSelect').val()
+        }
+        var otherOptionArray = []
+        var otherOptionRowsArray = thisLOBRow.siblings('.lobOtherOptionsContainer').find('.lobOtherOptionRow')
+        for(var j=0; j<otherOptionRowsArray.length; j++){
+            var tempOptionMap = {}
+            var thisOtherOptionRow = otherOptionRowsArray.eq(j)
+            tempOptionMap.description = thisOtherOptionRow.find('.lobDescriptionInput').val()
+            tempOptionMap.limit = thisOtherOptionRow.find('.lobLimitInput').val()
+            tempOptionMap.deductible = thisOtherOptionRow.find('.lobDeductibleInput').val()
+            tempOptionMap.premium = thisOtherOptionRow.find('.lobPremiumInput').val()
+
+            otherOptionArray.push(tempOptionMap)
+        }
+
+        //IF ALL OTHER OPTIONS ROWS WERE DELETED, SET TYPE TO 'NONE'
+        if(otherOptionArray.length === 0){
+            otherOptionsMap.optionType = 'none'
+        }
+        otherOptionsMap.optionsArray = otherOptionArray
+        tempLOBMap.otherOptionsMap = otherOptionsMap
+
+        newproductLOBDetailsObject.push(tempLOBMap)
+    }
+
+    return newproductLOBDetailsObject
+}
 
 
 function buildNLDescriptionOfProductConditions(conditionJSON){
@@ -1501,7 +2145,7 @@ function buildNLDescriptionOfProductConditions(conditionJSON){
             }
 
             var val = conditionJSON[key];
-            console.log(val);
+            //console.log(val);
 
             if(key === "budget"){
                 var options = JSON.parse(val)
@@ -1594,7 +2238,7 @@ function buildProductConditionMap(productCode){
 
         }
     })
-    console.log(conditionMap)
+    //console.log(conditionMap)
     var NLDescription = buildNLDescriptionOfProductConditions(conditionMap)
 
     $('#' + productCode + '_Checkbox').closest('.productRow').find('.prodConditionDescription').html(NLDescription)

@@ -1,5 +1,3 @@
-%{--<%@ page import="portal.Coverage" %>--}%
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,8 +7,8 @@
     <script>
         var versionMode = false;
         <g:if test="${versionMode == true}">
-            versionMode= true;
-            var origVersionQuestionAnswerMap = ${raw(questionAnswerMapString)}
+        versionMode= true;
+        var origVersionQuestionAnswerMap = ${raw(questionAnswerMapString)}
         </g:if>
     </script>
 
@@ -30,10 +28,10 @@
     <g:if test="${user.admin == "true"}">
         <script src="${resource(dir: 'js/utils/', file: 'randomGenerator.js')}" ></script>
         <script src="${resource(dir: 'js', file: 'jquery.autotype.js')}" ></script>
-        %{--<script src="${resource(dir: 'test/jasmine/', file: 'lib/jasmine-2.5.2/jasmine.js')}"></script>--}%
-        %{--<script src="${resource(dir: 'test/jasmine/', file: 'lib/jasmine-2.5.2/jasmine-html.js')}"></script>--}%
-        %{--<script src="${resource(dir: 'test/jasmine/', file: 'lib/jasmine-2.5.2/boot.js')}"></script>--}%
-        %{--<script src="${resource(dir: 'test/jasmine/', file: 'lib/jasmine-2.5.2/jasmine-jquery.js')}"></script>--}%
+    %{--<script src="${resource(dir: 'test/jasmine/', file: 'lib/jasmine-2.5.2/jasmine.js')}"></script>--}%
+    %{--<script src="${resource(dir: 'test/jasmine/', file: 'lib/jasmine-2.5.2/jasmine-html.js')}"></script>--}%
+    %{--<script src="${resource(dir: 'test/jasmine/', file: 'lib/jasmine-2.5.2/boot.js')}"></script>--}%
+    %{--<script src="${resource(dir: 'test/jasmine/', file: 'lib/jasmine-2.5.2/jasmine-jquery.js')}"></script>--}%
     </g:if>
 
 
@@ -107,7 +105,7 @@
 
         </div>
         <div class="col-xs-1" id="saveLoadButtonContainer" style="margin-top:80px">
-            %{--IF VERSION MODE HIDE SAVE LOAD BUTTONS FOR NOW, UNTIL SAVING VERSION PROGRESS IS SET UP--}%
+        %{--IF VERSION MODE HIDE SAVE LOAD BUTTONS FOR NOW, UNTIL SAVING VERSION PROGRESS IS SET UP--}%
             <g:if test="${versionMode == false}">
                 <button class="btn btn-xs btn-success pull-right" id="saveProgress" type="button"
                         style="display:none;background-color: #194b8a;border-color: #194b8a;margin: 2px;">
@@ -1106,62 +1104,62 @@
                                             %{--<input class="form-control" type="text" placeholder = "State" name="stateMailing" id="stateMailing"/>--}%
                                             <select class="form-control" required="required"
                                                     id="selectState" name="selectState" type="text" style="color: black; background: white;">
-                                                    <option value="invalid" selected="selected">State</option>
-                                                    <option value="AL">Alabama</option>
-                                                    <option value="AK">Alaska</option>
-                                                    <option value="AZ">Arizona</option>
-                                                    <option value="AR">Arkansas</option>
-                                                    <option value="CA">California</option>
-                                                    <option value="CO">Colorado</option>
-                                                    <option value="CT">Connecticut</option>
-                                                    <option value="DE">Delaware</option>
-                                                    <option value="DC">District Of Columbia</option>
-                                                    <option value="FL">Florida</option>
-                                                    <option value="GA">Georgia</option>
-                                                    <option value="GU">Guam</option>
-                                                    <option value="HI">Hawaii</option>
-                                                    <option value="ID">Idaho</option>
-                                                    <option value="IL">Illinois</option>
-                                                    <option value="IN">Indiana</option>
-                                                    <option value="IA">Iowa</option>
-                                                    <option value="KS">Kansas</option>
-                                                    <option value="KY">Kentucky</option>
-                                                    <option value="LA">Louisiana</option>
-                                                    <option value="ME">Maine</option>
-                                                    <option value="MD">Maryland</option>
-                                                    <option value="MA">Massachusetts</option>
-                                                    <option value="MI">Michigan</option>
-                                                    <option value="MN">Minnesota</option>
-                                                    <option value="MS">Mississippi</option>
-                                                    <option value="MO">Missouri</option>
-                                                    <option value="MT">Montana</option>
-                                                    <option value="NE">Nebraska</option>
-                                                    <option value="NV">Nevada</option>
-                                                    <option value="NH">New Hampshire</option>
-                                                    <option value="NJ">New Jersey</option>
-                                                    <option value="NM">New Mexico</option>
-                                                    <option value="NY">New York</option>
-                                                    <option value="NC">North Carolina</option>
-                                                    <option value="ND">North Dakota</option>
-                                                    <option value="OH">Ohio</option>
-                                                    <option value="OK">Oklahoma</option>
-                                                    <option value="OR">Oregon</option>
-                                                    <option value="PA">Pennsylvania</option>
-                                                    <option value="PR">Puerto Rico</option>
-                                                    <option value="RI">Rhode Island</option>
-                                                    <option value="SC">South Carolina</option>
-                                                    <option value="SD">South Dakota</option>
-                                                    <option value="TN">Tennessee</option>
-                                                    <option value="TX">Texas</option>
-                                                    <option value="UT">Utah</option>
-                                                    <option value="VT">Vermont</option>
-                                                    <option value="VI">Virgin Islands</option>
-                                                    <option value="VA">Virginia</option>
-                                                    <option value="WA">Washington</option>
-                                                    <option value="WV">West Virginia</option>
-                                                    <option value="WI">Wisconsin</option>
-                                                    <option value="WY">Wyoming</option>
-                                                </select>
+                                                <option value="invalid" selected="selected">State</option>
+                                                <option value="AL">Alabama</option>
+                                                <option value="AK">Alaska</option>
+                                                <option value="AZ">Arizona</option>
+                                                <option value="AR">Arkansas</option>
+                                                <option value="CA">California</option>
+                                                <option value="CO">Colorado</option>
+                                                <option value="CT">Connecticut</option>
+                                                <option value="DE">Delaware</option>
+                                                <option value="DC">District Of Columbia</option>
+                                                <option value="FL">Florida</option>
+                                                <option value="GA">Georgia</option>
+                                                <option value="GU">Guam</option>
+                                                <option value="HI">Hawaii</option>
+                                                <option value="ID">Idaho</option>
+                                                <option value="IL">Illinois</option>
+                                                <option value="IN">Indiana</option>
+                                                <option value="IA">Iowa</option>
+                                                <option value="KS">Kansas</option>
+                                                <option value="KY">Kentucky</option>
+                                                <option value="LA">Louisiana</option>
+                                                <option value="ME">Maine</option>
+                                                <option value="MD">Maryland</option>
+                                                <option value="MA">Massachusetts</option>
+                                                <option value="MI">Michigan</option>
+                                                <option value="MN">Minnesota</option>
+                                                <option value="MS">Mississippi</option>
+                                                <option value="MO">Missouri</option>
+                                                <option value="MT">Montana</option>
+                                                <option value="NE">Nebraska</option>
+                                                <option value="NV">Nevada</option>
+                                                <option value="NH">New Hampshire</option>
+                                                <option value="NJ">New Jersey</option>
+                                                <option value="NM">New Mexico</option>
+                                                <option value="NY">New York</option>
+                                                <option value="NC">North Carolina</option>
+                                                <option value="ND">North Dakota</option>
+                                                <option value="OH">Ohio</option>
+                                                <option value="OK">Oklahoma</option>
+                                                <option value="OR">Oregon</option>
+                                                <option value="PA">Pennsylvania</option>
+                                                <option value="PR">Puerto Rico</option>
+                                                <option value="RI">Rhode Island</option>
+                                                <option value="SC">South Carolina</option>
+                                                <option value="SD">South Dakota</option>
+                                                <option value="TN">Tennessee</option>
+                                                <option value="TX">Texas</option>
+                                                <option value="UT">Utah</option>
+                                                <option value="VT">Vermont</option>
+                                                <option value="VI">Virgin Islands</option>
+                                                <option value="VA">Virginia</option>
+                                                <option value="WA">Washington</option>
+                                                <option value="WV">West Virginia</option>
+                                                <option value="WI">Wisconsin</option>
+                                                <option value="WY">Wyoming</option>
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="col-xs-9">
@@ -1970,7 +1968,7 @@
                 </div>
             </div>
             %{--<div class="modal-footer">--}%
-                %{--<button class="btn btn-primary" id="loadSubmissionButton" type="button"  >Load</button>--}%
+            %{--<button class="btn btn-primary" id="loadSubmissionButton" type="button"  >Load</button>--}%
             %{--</div>--}%
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->

@@ -6,6 +6,7 @@ class ProductLOB {
     String lobName
     String lobLimit
     String lobDeductible
+    String lobPremium
     String flatPremium
     BigDecimal rateValue
     String minPremium
@@ -13,8 +14,10 @@ class ProductLOB {
     String optionalFlag
     Integer displayOrder
     String includedFlag
-    String optionalProduct
-    String optionalLOB 
+    String type
+    String otherOptionsMap
+    String additionalOptionsMap
+
 
     static constraints = {
         lobCode(unique:true)
@@ -27,7 +30,13 @@ class ProductLOB {
         minPremium nullable:true
         optionalFlag nullable:true
         displayOrder nullable:true
-        optionalProduct nullable:true
-        optionalLOB nullable:true
+        type nullable:true
+        lobPremium nullable:true
+        otherOptionsMap nullable:true
+        additionalOptionsMap nullable:true
+    }
+
+    static mapping = {
+        otherOptionsMap type: 'text'
     }
 }
