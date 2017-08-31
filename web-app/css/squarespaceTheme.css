@@ -1,0 +1,122 @@
+body{
+    line-height: 1.6em;
+    letter-spacing: .5px;
+    font-weight: 300;
+    font-style: normal;
+    color: #1f1f1f;
+
+    -moz-osx-font-smoothing: auto;
+    -webkit-font-smoothing: antialiased;
+}
+h1
+{
+    font-family:"futura-pt", futura, sans-serif;
+    font-size: 42px;
+    line-height: 1.2em;
+    text-transform: none;
+    letter-spacing: 0px;
+    font-weight: 300;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    text-align: center;
+}
+
+
+#squarespaceNavBar{
+    font-family:"futura-pt", futura, sans-serif;
+    letter-spacing: 3px;
+    background: rgba(10, 8, 7, 0.9);
+    color: white;
+    padding-left: 4px;
+    padding-top: 14px;
+    padding-right: 4px;
+    padding-bottom: 16px;
+    -webkit-font-smoothing: antialiased;
+    border-radius: 0px;
+}
+.navbar-right{
+    padding-top: 4px;
+
+
+}
+
+a#squarespaceBrandText{
+    font-size: 21px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-style: normal;
+    line-height: 1em;
+    color: white;
+    -webkit-font-smoothing: antialiased;
+}
+.navbar-squarespace .navbar-nav>li>a{
+    color: white;
+    font-size: 12px;
+    text-transform: uppercase;
+    text-decoration: none;
+    letter-spacing: 2px;
+    font-style: normal;
+    line-height: 1em;
+    font-weight: 400;
+    padding-left: 16px;
+    padding-right: 16px;
+
+}
+.nav>li>a:focus, .nav>li>a:hover{
+    color:  rgba(152, 198, 239, 1);
+    background-color: transparent;
+    -webkit-transition: color .1s 0s ease-in-out;
+    -moz-transition: color .1s 0s ease-in-out;
+    -ms-transition: color .1s 0s ease-in-out;
+    -o-transition: color .1s 0s ease-in-out;
+    transition: color .1s 0s ease-in-out
+
+}
+.nav .open>a, .nav .open>a:focus, .nav .open>a:hover{
+    background-color: transparent;
+    border-color: #337ab7
+}
+.dropdown-menu>li>a{
+    font-size: 13px;
+    /*text-transform: uppercase;*/
+    text-decoration: none;
+    letter-spacing: 1px;
+    font-style: normal;
+    line-height: 1em;
+    font-weight: 400;
+}
+.dropdown-menu>li{
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+.btn-sqspcLogin{
+    background-color: transparent;
+    border: 2px solid #fff;
+
+    color: white;
+    font-size: 12px;
+    text-transform: uppercase;
+    text-decoration: none;
+    letter-spacing: 2px;
+    font-style: normal;
+    line-height: 1em;
+    font-weight: 400;
+    padding: 13px;
+    padding-right: 19px;
+    padding-left: 18px;
+    padding-top: 15px;
+    border-radius: 0px;
+    margin-left: 10px;
+}
+
+.btn-sqspcLogin:hover, .btn-sqspcLogin:focus{
+    color:black;
+    background: white;
+    -webkit-transition: color .1s 0s ease-in-out;
+    -moz-transition: color .1s 0s ease-in-out;
+    -ms-transition: color .1s 0s ease-in-out;
+    -o-transition: color .1s 0s ease-in-out;
+    transition: color .1s 0s ease-in-out
+}

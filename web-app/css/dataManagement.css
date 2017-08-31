@@ -1,0 +1,93 @@
+.riskCategory_ListItem, .productCategory_ListItem {
+    font-weight: 500;
+    font-size:12px;
+}
+
+a.subCategory_ListItem{
+    font-size: smaller;
+    font-weight: 500;
+    /*height: 36px;*/
+    padding: 4px 20px;
+    margin-left: 40px;
+    background-color: rgba(186, 211, 224, 0.58);
+}
+
+a.riskType_ListItem {
+    font-size: smaller;
+    /*padding-left:80px;*/
+    padding: 4px 20px;
+    margin-left: 80px;
+    background-color: rgba(186, 211, 224, 0.58);
+}
+
+a.product_ListItem {
+    font-size: smaller;
+    padding: 4px 20px;
+    margin-left: 18px;
+    background-color: rgba(186, 211, 224, 0.58);
+}
+
+.form-control.covLimitOtherOptionSelect{
+    height: 26px;
+    font-size: 12px;
+}
+
+a.list-group-item.subCategory_ListItem.active,
+.list-group-item.subCategory_ListItem.active:focus,
+.list-group-item.subCategory_ListItem.active:hover {
+    background-color: #405b6d;
+    border-color: #405b6d;
+}
+
+a.list-group-item.riskType_ListItem.active,
+.list-group-item.riskType_ListItem.active:focus,
+.list-group-item.riskType_ListItem.active:hover {
+    background-color: rgba(38, 83, 121, 0.7);
+    border-color: rgba(38, 83, 121, 0.7);
+}
+
+a.list-group-item.product_ListItem.active,
+.list-group-item.product_ListItem.active:focus,
+.list-group-item.product_ListItem.active:hover {
+    background-color: rgba(38, 83, 121, 0.7);
+    border-color: rgba(38, 83, 121, 0.7);
+}
+
+.riskLI, .productLI {
+    margin: 6px;
+}
+
+p.checkboxContainer{
+    margin-bottom:11px;
+    padding-left:6px;
+}
+
+div.prodConditionDescription{
+    margin-bottom: 6px;
+    margin-top: -10px;
+    font-size: 11px;
+    padding-left: 35px;
+    color: rgb(37, 66, 112);
+    line-height:1.4em;
+}
+
+span.twitter-typeahead{
+    width: 90%;
+}
+
+body span.twitter-typeahead .tt-menu, span.twitter-typeahead .tt-dropdown-menu{
+    font-size:11px;
+}
+
+.addProductButton{
+    margin-left: 18px;
+    margin-bottom: 24px;
+    font-size: 12px;
+    padding: 4px 20px
+}
+
+.addCoverageClassButton{
+    margin-left:6px;
+    padding: 4px 10px;
+    font-size: 12px;
+}

@@ -1,0 +1,121 @@
+.tabWizardContainer{
+}
+
+
+/*HEADER ROW FORMATTING*/
+.tabWizardContainer div.headerRow{
+    margin-bottom:-4px;
+    font-size:11px;
+    font-weight:300;
+}
+
+.tabWizardContainer div.subHeaderRow{
+    margin-top: -8px;
+    font-size: 10px;
+    font-weight: 500;
+    padding-left: 50px;
+}
+
+
+.tabWizardContainer div.leftColumn{
+    padding-right:2px;
+    height:26px;
+}
+.tabWizardContainer div.rightColumn{
+    padding-left:8px;
+    padding-right:8px;
+    text-align:center;
+    height: 26px;
+}
+.tabWizardContainer div.rightColumn.extraConditionColumn{
+    width: 11%;
+}
+
+.tabWizardContainer div.rightColumn.removeButtonColumn{
+    margin-top:-3px;
+    width: 4%;
+}
+
+.tabWizardContainer div.rightColumn select{
+    font-size: 10px;
+    height: 100%;
+}
+
+.tabWizardContainer div.rightColumn_header{
+    padding-left: 2px;
+    padding-right:2px;
+    margin-left: 0px;
+    font-size: 10px;
+    text-align: center;
+    line-height: 1em;
+    margin-top:-3px;
+}
+
+div.tabWizardContainer div.rightColumn button.rangeRemoveButton.close{
+    float:none;
+    margin-top: -5px;
+}
+
+.tabWizardContainer div.column{
+    padding-left:2px;
+    padding-right:2px;
+    height:26px;
+}
+
+/*RANGE ROW FORMATTING*/
+.tabWizardContainer div.rangeRow{
+    font-size:12px;
+    line-height:3em;
+}
+
+div.tabWizardContainer .input-group-btn:first-child> button.dropdown-toggle{
+    font-size: 11px;
+    vertical-align: top;
+    height: 26px;
+    padding: 4px 6px;
+    background-color: #eee;
+}
+
+
+div.tabWizardContainer .input-group-btn:first-child>.btn > .caret,
+div.tabWizardContainer .input-group-btn:first-child>.btn-group> .caret{
+    border-width: 3px;
+}
+
+div.tabWizardContainer .open>.dropdown-menu{
+    top: 26px;
+}
+div.tabWizardContainer .dropdown-menu>li>a{
+    font-size: 11px;
+}
+
+div.tabWizardContainer .input-group .form-control:last-child ,
+div.tabWizardContainer .rightColumn input[type="text"],
+div.tabWizardContainer .column input[type="text"]
+{
+    font-size: 11px;
+    height: 26px;
+    padding: 6px 8px;
+}
+
+div.tabWizardContainer .input-group-addon:first-child {
+    font-size: 11px;
+    height: 26px;
+    padding:4px 6px
+}
+
+div.tabWizardContainer .productLobContainer{
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
+div.tabWizardContainer .lobOtherOptionSelect{
+    height: 26px;
+    font-size: 11px;
+}
+
+
+div.tabWizardContainer div.lobOtherOptionsContainer{
+    padding-top:4px;
+    padding-bottom:2px;
+}
+

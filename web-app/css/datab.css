@@ -1,0 +1,70 @@
+
+/*OPERATIONS PAGE*/
+.form-group{
+    margin-bottom:0px
+}
+.form-group p{
+    margin-bottom:0px
+}
+div.radioWithHiddenDiv_RadioContainer{
+    padding-left: 0px;
+    margin-left: -15px;
+}
+div.coverageQuestionsContainer.hiddenContainer{
+    padding-left:34px;
+}
+div.coverageQuestionsContainer.hiddenContainer > div.row{
+    padding-left:34px;
+}
+div.coverageQuestionsContainer div.ratingBasisRequiredQuestions, div.coverageQuestionsContainer div.underwriterQuestions {
+    margin-left:34px;
+}
+div.requiredQuestion, div.uwQuestion {
+    background: rgba(0, 143, 247, 0.08);
+    padding-bottom: 12px;
+    border-radius: 6px;
+    margin: 0px 2px;
+}
+div.requiredQuestion.basisActive{
+    background: rgb(47, 97, 155);
+    color:white;
+}
+label.questionText {
+    font-size: 10px;
+    font-weight: 400;
+    margin-bottom:0px;
+}
+
+div.ratingBasis_RequiredQuestionsContainer, div.underwritingQuestionsContainer {
+    margin-top: 12px;
+}
+div.ratingBasis_RequiredQuestionsContainer div.form-group label, div.underwritingQuestionsContainer div.form-group label {
+    font-weight: 500;
+    font-size: 11px;
+}
+
+div.formRowSubContainer{
+    background: #cee4ff;
+    border-radius: 4px;
+    margin: 1px 0px;
+}
+
+#ratingBasisPage_DefaultRequiredQuestions div.requiredQuestion{
+    cursor:pointer;
+}
+
+div#questionToRateContainer{
+    padding-top: 10px;
+}
+
+
+/*PRODUCT PAGE*/
+div.productPage_limitRow, div.productPage_deductRow{
+    padding: 1px 0px;
+}
+
+div#productPage_QuestionDetailsContainer div.requiredQuestion input,
+div#productPage_QuestionDetailsContainer div.uwQuestion input{
+    height: 24px;
+    font-size: 12px;
+}

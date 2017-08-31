@@ -1,0 +1,17 @@
+body{
+    background: url("../images/coverPhoto.jpg") fixed;
+    background-size: cover;
+}
+
+div.loginHeader>h1{
+    font-family:"futura-pt", futura, sans-serif;
+    font-size: 42px;
+    line-height: 1.2em;
+    text-transform: none;
+    letter-spacing: 2px;
+    font-weight: 300;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    text-align: center;
+    color: white;
+}
