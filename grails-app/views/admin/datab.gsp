@@ -236,7 +236,35 @@
                                                     </div>
                                                 </div>
                                             </div>
-
+                                            %{--REQUIRED QUESTIONS CONTAINER--}%
+                                            <div class="col-xs-12 well" id="${coverage.coverageCode}_RequiredQuestionsSection" style="display:none">
+                                                <div class="row">
+                                                    <div class="col-xs-12">
+                                                        <label>Required Questions for ${coverage.coverageName}</label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12">
+                                                        <div class="col-xs-4">
+                                                            <select class="form-control productConditionBasis" id="${coverage.coverageCode}_RequiredQuestionsDropdown">
+                                                                <option value="invalid">Select One</option>
+                                                                <g:each var="question" in="${questionResults}">
+                                                                    <option value="${question.questionID}">${question.questionText} (${question.questionID})</option>
+                                                                </g:each>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-xs-2">
+                                                            <button class="btn btn-sm btn-primary insertRequiredQuestionButton" data-covID="${coverage.coverageCode}">
+                                                                <span>Insert</span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row requiredQuestionsContainer" id="${coverage.coverageCode}_RequiredQuestionsContainer">
+                                                    <div class="requiredQuestions" id="${coverage.coverageCode}_RequiredQuestions">
+                                                    </div>
+                                                </div>
+                                            </div>
                                             %{--UW QUESTIONS CONTAINER--}%
                                             <div class="col-xs-12 well" id="${coverage.coverageCode}_UWQuestionsSection" style="display:none">
                                                 <div class="row">
@@ -455,9 +483,6 @@
                                         <h6>Rate ID</h6>
                                     </div>
                                     <div class="col-xs-1">
-                                        <h6>Rate</h6>
-                                    </div>
-                                    <div class="col-xs-1">
                                         <h6>Basis</h6>
                                     </div>
                                 </div>
@@ -471,12 +496,57 @@
                                         </select>
                                     </div>
                                     <div class="col-xs-1">
-                                        <span id="productPage_RateValue">Rate</span>
-                                    </div>
-                                    <div class="col-xs-1">
                                         <span id="productPage_RateBasisDisplay">Rate Basis</span>
                                     </div>
                                 </div>
+                                <div id="productPage_RatingStyleContainer">
+                                    <div id="productPage_DefaultRatingContainer">
+                                        <div class="row">
+                                            <div class="col-xs-1">
+                                                <h6>Rate</h6>
+                                            </div>
+                                            <div class="col-xs-1">
+                                                <h6>Min Premium</h6>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-1">
+                                                <span id="productPage_RateValue">Rate</span>
+                                            </div>
+                                            <div class="col-xs-1">
+                                                <span id="productPage_MinPremium">Min Premium </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="productPage_LimitRatingContainer">
+                                        <div class="row">
+                                            <div class="col-xs-4">
+                                                <h6>Limit</h6>
+                                            </div>
+                                            <div class="col-xs-1">
+                                                <h6>Rate</h6>
+                                            </div>
+                                            <div class="col-xs-1">
+                                                <h6>Min Premium</h6>
+                                            </div>
+                                        </div>
+                                        <div id="productPage_LimitRateRowsContainer">
+                                            <div class="row productlimitRateRow">
+                                                <div class="col-xs-4">
+                                                    <span class="productPage_LimitDescription">Rate Basis</span>
+                                                </div>
+                                                <div class="col-xs-1">
+                                                    <span class="productPage_LimitRateValue">Rate</span>
+                                                </div>
+                                                <div class="col-xs-1">
+                                                    <span class="productPage_LimitMinPremium">Min Premium </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -681,6 +751,7 @@
                                                 </button>
                                             </div>
                                         </div>
+                                        %{--RATING BASIS DROPDOWN--}%
                                         <div class="row">
                                             <div class="col-xs-4">
                                                 <div class="form-group">
@@ -695,29 +766,95 @@
                                             </div>
                                             <div class="col-xs-1">
                                             </div>
-                                            <div class="col-xs-3">
-                                                <div class="form-group">
-                                                    <h6>Rate</h6>
-                                                    <input class="form-control" id="ratesPage_RateValueInput" type="text">
+                                        </div>
+                                        %{--RATING STYLE CONTAINER--}%
+                                        <div class="row">
+                                            %{--DEFAULT RATING STYLE CONTAINER--}%
+                                            <div id="ratePage_RateValueContainer">
+                                                <div class="row col-xs-12">
+                                                    <div class="col-xs-3">
+                                                        <div class="form-group">
+                                                            <h6>Rate</h6>
+                                                            <input class="form-control" id="ratesPage_RateValueInput" type="text">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-3">
+                                                        <div class="form-group">
+                                                            <h6>Min Premium</h6>
+                                                            <input class="form-control" id="ratesPage_MinPremiumInput" type="text">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row col-xs-12">
+                                                    <div class="col-xs-12">
+                                                        <h6 class="ratingQuestionsTitle">Rating Preview</h6>
+                                                    </div>
+                                                </div>
+                                                <div class="row col-xs-12">
+                                                    <div class="col-xs-3" style="text-align: center">
+                                                        <span id="ratePage_rateBasisQuestionPreview"></span>
+                                                    </div>
+                                                    <div class="col-xs-1" style="text-align: center">
+                                                        <span>X</span>
+                                                    </div>
+                                                    <div class="col-xs-2" style="text-align: center">
+                                                        <span id="ratePage_rateBasisRateValuePreview"></span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-xs-12">
-                                                <h6 class="ratingQuestionsTitle">Rating Preview</h6>
+
+
+
+                                            %{--LIMIT RATING STYLE CONTAINER--}%
+                                            <div id="ratePage_LimitRateValuesContainer" style="display:none">
+                                                <div class="row col-xs-12">
+                                                    <div class="col-xs-2">
+                                                        <div class="form-group">
+                                                            <h6>Rate</h6>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-6">
+                                                        <h6>Limit Description (Must Match Exactly)</h6>
+                                                    </div>
+                                                    <div class="col-xs-2">
+                                                        <div class="form-group">
+                                                            <h6>Min Premium</h6>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row" id="ratesPage_limitRatingRowsContainer">
+                                                    <div class="col-xs-12 limitRatingRow" >
+                                                        <div class="col-xs-2">
+                                                            <div class="form-group">
+                                                                <input class="form-control ratesPage_LimitRateValueInput"  type="text">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-6">
+                                                            <div class="form-group">
+                                                                <input class="form-control ratesPage_LimitDescriptionInput" type="text">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-2">
+                                                            <div class="form-group">
+                                                                <input class="form-control ratesPage_LimitMinPremiumInput"  type="text">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-2">
+                                                            <button type="button" class="btn btn-xs btn-success ratesPage_LimitRateAddButton" style="font-size:9px; margin-top: 6px;">
+                                                                <i class="fa fa-plus" aria-hidden="true"></i>
+                                                            </button>
+                                                            <button type="button" class="btn btn-xs btn-danger ratesPage_LimitRateRemoveButton" style="font-size:9px; margin-top: 6px;">
+                                                                <i class="fa fa-minus" aria-hidden="true"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
                                             </div>
                                         </div>
-                                        <div class="row">
-                                            <div class="col-xs-4" style="text-align: center">
-                                                <span id="ratePage_rateBasisQuestionPreview"></span>
-                                            </div>
-                                            <div class="col-xs-1" style="text-align: center">
-                                                <span>X</span>
-                                            </div>
-                                            <div class="col-xs-2" style="text-align: center">
-                                                <span id="ratePage_rateBasisRateValuePreview"></span>
-                                            </div>
-                                        </div>
+
+
                                     </div>
                                 </div>
 
@@ -776,20 +913,22 @@
                                         <input class="form-control" id="ratingBasisDescriptionInput" type="text">
                                     </div>
                                 </div>
-                                <div class="col-xs-12">
-                                    <div class="form-group">
-                                        <h6>Question To Rate Against</h6>
+                                <div id="ratingBasisPage_RatingBasisQuestionContainer">
+                                    <div class="col-xs-12">
+                                        <div class="form-group">
+                                            <h6>Question To Rate Against</h6>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-xs-12">
-                                    <div class="row" id="questionPreviewContainer">
-                                        <div class="col-xs-6">
-                                            <select class="form-control" id="questionToRateDropdown">
-                                                <option value="invalid">Select One To Add</option>
-                                                <g:each var="question" in="${questionResults.findAll{it.questionID != null && it.questionID.trim().size() > 0} }">
-                                                    <option value="${question.questionID}">${question.questionText} (${question.questionID})</option>
-                                                </g:each>
-                                            </select>
+                                    <div class="col-xs-12">
+                                        <div class="row" id="questionPreviewContainer">
+                                            <div class="col-xs-6">
+                                                <select class="form-control" id="questionToRateDropdown">
+                                                    <option value="invalid">Select One To Add</option>
+                                                    <g:each var="question" in="${questionResults.findAll{it.questionID != null && it.questionID.trim().size() > 0} }">
+                                                        <option value="${question.questionID}">${question.questionText} (${question.questionID})</option>
+                                                    </g:each>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

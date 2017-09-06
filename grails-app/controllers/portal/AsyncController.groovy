@@ -41,6 +41,7 @@ class AsyncController {
 
 
 
+    PdfBox pdfHelper = new PdfBox()
     AIMSQL aimDAO = new AIMSQL();
     Email emailHelper = new Email()
     Intelledox intelledoxHelper = new Intelledox();
@@ -4807,6 +4808,20 @@ class AsyncController {
         ]
 
         emailHelper.sendMessage(mailService, testMap)
+
+        render "Success"
+    }
+    def testPdf(){
+        log.info "PDF TEST"
+        log.info params
+
+        PdfBox pdfHelper1 = new PdfBox()
+        PdfBox pdfHelper2 = new PdfBox()
+
+        pdfHelper1.pdf = 1
+        pdfHelper2.pdf = 2
+
+        pdfHelper.createDoc()
 
         render "Success"
     }

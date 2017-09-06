@@ -66,8 +66,15 @@ label.limitsLabel, label.deductsLabel{
 div#operationsCoveragesPanelBody span{
     font-size:12px;
 }
+
 /*STEP 2 COVERAGE QUESTIONS */
 
+
+/*STEP 2 PREMIUM AND RATE INFO */
+
+div#operationsCoveragesPanelBody div#premiumLinesContainer div.limitPremiumLineRow span{
+    font-size: 10px;
+}
 
 label{
     font-weight: 500;

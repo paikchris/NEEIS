@@ -28,5 +28,6 @@ class User {
         phoneNumber nullable:true
         admin nullable:true
         aimContactID nullable:true
+        autoSaveData nullable:true
     }
 }

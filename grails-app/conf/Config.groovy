@@ -230,8 +230,9 @@ log4j.main = {
             'org.hibernate',
             'net.sf.ehcache.hibernate'
 
+
     root {
-        info 'file', 'stdout', 'Sentry'
+        info 'file', 'stdout', 'Sentry', 'grails.app', 'portal'
     }
 
 }

@@ -131,6 +131,10 @@ class MainController {
         List <RatingBasis> ratingBasisResults = RatingBasis.list()
         String ratingBasis = utilService.gormResultsToJSObject(ratingBasisResults)
 
+        //RATES
+        List <Rates> rateResults = portal.Rates.list()
+        String rates = utilService.gormResultsToJSObject(rateResults)
+
 
         def filmRiskTypes = RiskType.findAllWhere(riskTypeCategory: "FP");
 
@@ -203,7 +207,9 @@ class MainController {
          products:products,
          operations: operations, operationResults: operationResults,
          coverages: coverages, coverageResults: coverageResults,
-         questionResults:questionResults, questions:questions, ratingBasisResults:ratingBasisResults, ratingBasis:ratingBasis,
+         questionResults:questionResults, questions:questions,
+         ratingBasisResults:ratingBasisResults, ratingBasis:ratingBasis,
+         rateResults:rateResults, rates:rates,
          versionMode:versionMode,
          versionLetter:versionLetter, originalVersion: params.editingVersion, questionAnswerMap: questionAnswerMapJSON,
          questionAnswerMapString:questionAnswerMapString, dvResults: dvResults[0], verResults:verResults[0], quoteResults:quoteResults[0]]

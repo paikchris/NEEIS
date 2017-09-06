@@ -20,7 +20,7 @@ var ratePremiumsLock = false;
 
 //DATA OBJECTS
 var riskTypeObject = {}
-var riskTypes, riskCategories, products, operations, coverages
+var riskTypes, riskCategories, products, operations, coverages, questions, ratingBasisArray, rates
 var riskTypeString
 var submission = new Submission1()
 
@@ -54,6 +54,7 @@ function newSubmissionInit() {
     coverages = cT
     questions = qL
     ratingBasisArray = rB
+    rates = rL
 
     mandatoryQuestionsForProductInit()
 
@@ -83,12 +84,16 @@ function clickChangeListenerInit(){
     $(document).on('change', '.coverageCheckbox', function () {
         coverageCheckboxChangeAction(this);
 
+        //CHECK IF ALL PRODUCT CONDITION QUESTIONS ARE FILLED
+
         //JUST IN CASE THEY CHANGE COVERAGE AFTER ALL QUESTIONS ARE FILLED
         checkIfReadyToRate(this)
     });
 
     //LISTEN TO REQUIRED QUESTIONS CHANGES
     $(document).on('change', 'div.requiredQuestion input', function () {
+        //THIS CHANGED INPUT MAY HAVE CHANGED PRODUCTS, UPDATE AND RECHECK ALL QUESTIONS
+        updateRequiredQuestions()
         checkIfReadyToRate(this);
     });
     
@@ -174,7 +179,8 @@ function versionModeInit(){
     versionModeFillOutQuestions();
 }
 
-//NAVIGATION BUTTON HANDLERS -> ALL WILL POINT TO validateAndNavigateToStep METHOD
+
+///////////////////NAVIGATION FUNCTIONS -> ALL WILL POINT TO validateAndNavigateToStep METHOD///////////////////
 function nextButtonClickAction(button){
     var gotoStepNum = parseInt( $(button).attr('data-step') ) + 1
 
@@ -197,8 +203,6 @@ function circleNavButtonClickAction(button){
         validateAndNavigateToStep(stepClicked)
     }
 }
-
-//NAVIGATION METHODS
 function validateAndNavigateToStep(stepNum){
 
     if(validate()){
@@ -237,10 +241,33 @@ function showStep(stepNumToShow){
     $target.find('input:eq(0)').focus();
 }
 
-//SUBMISSION OBJECT FUNCTIONS
+///////////////////SUBMISSION OBJECT FUNCTIONS///////////////////
 function getSubmissionObject(){
     return submission.getObject()
 }
+
+///////////////////DATA ACCESS FUNCTIONS///////////////////
+function getRateObjectByID(rateID){
+    for(var i=0; i<rates.length; i++){
+        if(rates[i].rateID === rateID){
+            return rates[i]
+        }
+    }
+}
+function getRatingBasisObjectByID(ratingBasisID){
+    for(var i=0; i<ratingBasisArray.length; i++){
+        if(ratingBasisID === ratingBasisArray[i].basisID){
+            return ratingBasisArray[i]
+        }
+    }
+}
+
+
+
+///////////////////STEP 1 -INSURED INFO FUNCTIONS///////////////////
+
+
+///////////////////STEP 2 -OPERATION, COVERAGE, PRODUCTS FUNCTIONS///////////////////
 
 //OPERATION TYPE
 function operationDropdownChange(input){
@@ -315,7 +342,8 @@ function getCoverageObject(covID){
     }
 }
 
-//RATING BASIS REQUIRED QUESTIONS SECTION
+
+//PRODUCT AND RATING BASIS REQUIRED QUESTIONS SECTION
 function clearRequiredQuestions(){
     $('#ratingBasisRequiredQuestionsContainer').empty()
 }
@@ -335,18 +363,18 @@ function updateRequiredQuestions(){
 
     //GET COVERAGES CHECKED
     var coveragesCheckedIdsArray = []
-    $('.coverageCheckbox').each(function(){
+    $('.coverageCheckbox:checked').each(function(){
         coveragesCheckedIdsArray.push($(this).data('covid'))
     })
 
-    //GET QUESTIONS FOR COVERAGES CHECKED
+
+    //GET PRODUCT CONDITION QUESTIONS FOR COVERAGES CHECKED
     var ratingBasisMap = jsonStringToObject(operationsObject.ratingBasisMap)
+    var operationProductConditionRequirdQuestionsMap = jsonStringToObject(getCurrentOperationTypeObject().requiredQuestionsMap)
     var requiredQuestionsForCoveragesCheckedArray = []
     for(var i=0;i<coveragesCheckedIdsArray.length; i++){
         var thisCovID = coveragesCheckedIdsArray[i]
-        var productMap = getProductIDForCoverage(thisCovID)
-        var rateBasis = productMap.rateCode
-        var thisCovRequiredQuestionsArray = jsonStringToObject(ratingBasisMap[coveragesCheckedIdsArray[i]].requiredQuestions)
+        var thisCovRequiredQuestionsArray = jsonStringToObject( operationProductConditionRequirdQuestionsMap[thisCovID].requiredQuestions )
 
         //LOOP THROUGH THIS COVERAGES REQUIRED QUESTIONS
         for(var j=0; j<thisCovRequiredQuestionsArray.length; j++){
@@ -355,7 +383,6 @@ function updateRequiredQuestions(){
                 requiredQuestionsForCoveragesCheckedArray.push(thisCovRequiredQuestionsArray[j])
             }
         }
-
     }
 
     //FILTER QUESTIONS FOR DUPLICATES
@@ -370,11 +397,12 @@ function updateRequiredQuestions(){
     var requiredQuestionsForCoveragesCheckedArray_Sorted = []
     requiredQuestionsForCoveragesCheckedArray_Sorted = requiredQuestionsForCoveragesCheckedArray_Filtered.sort(sortByWeightDescending)
 
+
     //BUILD HTML FOR REQUIRED QUESTIONS
     var finalHTML = ""
     finalHTML = finalHTML + "<div class='row'>"
     for(var i=0;i<requiredQuestionsForCoveragesCheckedArray_Sorted.length;i++){
-        finalHTML = finalHTML + getRequiredQuestionHTML_noCloseButton(requiredQuestionsForCoveragesCheckedArray_Sorted[i])
+        finalHTML = finalHTML + getNewSubmissionRequiredQuestion(requiredQuestionsForCoveragesCheckedArray_Sorted[i])
     }
 
     finalHTML = finalHTML + "</div>"
@@ -386,20 +414,62 @@ function updateRequiredQuestions(){
     //CALL GLOBAL INITIALIZER FOR NEW ELEMENTS
     initializeGlobalListeners()
 
+
     //REINSERT PREVIOUSLY FILLED OUT
     var questionAnswersKeys = Object.keys(questionAnswers)
     for(var i=0;i<questionAnswersKeys.length; i++){
         var elementID = questionAnswersKeys[i]
         $('#' + elementID).val(questionAnswers[elementID])
     }
+
+
+
+
+    //LOOP THROUGH COVERAGES CHOSEN, IF PRODUCT IS DETERMINED, ADD ANY PRODUCT SPECIFIC REQUIRED QUESTIONS
+    updateWithProductRequiredQuestions()
+
+    //REINSERT PREVIOUSLY FILLED OUT AGAIN FOR ADDITIONAL QUESTIONS ADDED
+    var questionAnswersKeys = Object.keys(questionAnswers)
+    for(var i=0;i<questionAnswersKeys.length; i++){
+        var elementID = questionAnswersKeys[i]
+        $('#' + elementID).val(questionAnswers[elementID])
+    }
+}
+function updateWithProductRequiredQuestions(){
+    var covSelectedArray = getCoveragesSelectedArray()
+    for(var i=0;i<covSelectedArray.length; i++){
+        var covID = covSelectedArray[i]
+        var productID = getProductIDForCoverage(covID)
+
+        if( getProductIDForCoverage(covID) ){
+
+            if(getProductObjectFromProductID(productID).requiredQuestions){
+                var productRequiredQuestionsArray = jsonStringToObject( getProductObjectFromProductID(productID).requiredQuestions )
+                //LOOP THROUGH PRODUCTS REQUIRED QUESTIONS ARRAY
+                for(var j=0; j<productRequiredQuestionsArray.length; j++){
+                    var questionID = productRequiredQuestionsArray[j]
+
+                    //CHECK TO MAKE SURE NOT TO INSERT A DUPLICATE QUESTION
+                    if($('#' + questionID).length === 0){
+                        var questionHTML = getNewSubmissionRequiredQuestion(questionID)
+                        $('#ratingBasisRequiredQuestionsContainer').append(questionHTML)
+                    }
+                }
+            }
+        }
+    }
+
 }
 function sortByWeightDescending(a, b){
     return (getQuestionObjectByID(b).weight) > (getQuestionObjectByID(a).weight) ? 1 : -1;
 
 }
 function checkIfReadyToRate(inputChanged){
+    console.log("CHECKING IF READY TO RATE")
+    console.log(isAllProductsDeterminedForCoveragesChosen() && isAllRequiredQuestionsComplete())
     //CHECK IF ALL REQUIRED QUESTIONS ARE FILLED OUT, IF YES, RATE PREMIUM
-    if( isAllRequiredQuestionsComplete()){
+    if( isAllProductsDeterminedForCoveragesChosen() && isAllRequiredQuestionsComplete()){
+
         //SHOW LIMIT AND PREMIUM SECTION
         fillLimitDeductContainer()
         showLimitDeductContainer()
@@ -418,12 +488,57 @@ function checkIfReadyToRate(inputChanged){
 function isAllRequiredQuestionsComplete(){
     var isComplete = true
     $('div.requiredQuestion input').each(function(){
-        if( $(this).val().trim().length === 0 ){
+        if( $(this).val().trim().length === 0 && $(this).val().trim() !== 'invalid'){
             isComplete = false
         }
     })
 
     return isComplete
+}
+function isAllProductConditionQuestionsComplete(){
+    var isComplete = true
+
+    //GET COVERAGES CHECKED
+    var coveragesCheckedIdsArray = []
+    $('.coverageCheckbox:checked').each(function(){
+        coveragesCheckedIdsArray.push($(this).data('covid'))
+    })
+
+    //GET PRODUCT CONDITION QUESTIONS FOR COVERAGES CHECKED
+    var operationProductConditionRequirdQuestionsMap = jsonStringToObject(getCurrentOperationTypeObject().requiredQuestionsMap)
+    var requiredQuestionsForCoveragesCheckedArray = []
+    for(var i=0;i<coveragesCheckedIdsArray.length; i++){
+        var thisCovID = coveragesCheckedIdsArray[i]
+        var thisCovRequiredQuestionsArray = jsonStringToObject( operationProductConditionRequirdQuestionsMap[thisCovID].requiredQuestions )
+
+        console.log(thisCovRequiredQuestionsArray)
+        //LOOP THROUGH THIS COVERAGES REQUIRED PRODUCT CONDITION QUESTIONS
+        for(var j=0; j<thisCovRequiredQuestionsArray.length; j++){
+            var questionID = thisCovRequiredQuestionsArray[i]
+            var questionElement = $('#' + questionID)
+
+            //IF A REQUIRED QUESTIONS IS NOT FILLED THEN RETURN FALSE
+            if( $(questionElement).val().trim().length === 0 && $(questionElement).val().trim() !== 'invalid'){
+                isComplete = false
+            }
+        }
+    }
+
+    console.log(isComplete)
+
+    return isComplete
+}
+function isAllProductsDeterminedForCoveragesChosen(){
+    var covSelectedArray = getCoveragesSelectedArray()
+
+    for(var i=0;i<covSelectedArray.length; i++){
+        var covID = covSelectedArray[i]
+        if( getProductIDForCoverage(covID) === undefined || getProductIDForCoverage(covID) === null){
+            return false
+        }
+    }
+
+    return true;
 }
 
 //LIMITS DEDUCTIBLES FUNCTIONS
@@ -505,8 +620,27 @@ function getLimDeductCoverageLabelRow(covID){
 }
 function buildLimDedRows(productID){
     var productMap = getProductObjectFromProductID(productID)
-    var limitArray = splitByLine(productMap.limits)
-    var deductArray = splitByLine(productMap.deduct)
+    var limitArray = []
+    var deductArray = []
+    if(productMap.limitArray != null && productMap.limitArray.trim().length > 2){
+        limitArray = jsonStringToObject( productMap.limitArray )
+    }
+    else if(productMap.limits){
+        limitArray = splitByLine(productMap.limits)
+    }
+    else{
+
+    }
+
+    if(productMap.deductArray != null && productMap.deductArray.trim().length > 2){
+        deductArray = jsonStringToObject( productMap.deductArray )
+    }
+    else if(productMap.deduct){
+        deductArray = splitByLine(productMap.deduct)
+    }
+    else{
+
+    }
 
 
     var limDeductColumns =
@@ -528,17 +662,30 @@ function buildLimDedRows(productID){
 function getLimitRowsHTML(limitArray, productID, covID){
     var limitRowsHTML = ""
     for(var i=0; i<limitArray.length; i++){
-        var limitValue = limitArray[i].split('\t')[0]
-        var limitDescription = limitArray[i].split('\t')[1]
+        var limitValue
+        var limitDescription
+
+        if(jsonStringToObject( limitArray[i] ).limitDescription){
+            limitValue = jsonStringToObject( limitArray[i] ).limitAmount
+            limitDescription = jsonStringToObject( limitArray[i] ).limitDescription
+        }
+        else{
+            limitValue = limitArray[i].split('\t')[0]
+            limitDescription = limitArray[i].split('\t')[1]
+        }
+
         limitDescription = removeCoverageIdentifierFromLimDeduct(limitDescription, covID)
+        var productIDClassString = replaceEachSpaceWith(productID.trim(), "_")
 
         limitRowsHTML = limitRowsHTML +
-            "<div class='row limitRow'>" +
+            "<div class='row limitRow " + productIDClassString + "_LimitRow' data-limitdescription='" + escapeDataAttributeValue(limitDescription) + "'>" +
             "   <div class='col-xs-4'>" +
-            "       <span class='limitValue'>" + limitValue + "</span>" +
+            "       <span class='limitValue " + productIDClassString + "_LimitRow_LimitValue' " +
+            "           data-limitdescription='" + escapeDataAttributeValue(limitDescription) + "'>" + limitValue + "</span>" +
             "   </div>" +
             "   <div class='col-xs-8'>" +
-            "       <span class='limitDescription'>" + limitDescription + "</span>" +
+            "       <span class='limitDescription " + productIDClassString + "_LimitRow_LimitDescription' " +
+            "           data-limitdescription='" + escapeDataAttributeValue(limitDescription) + "'>" + limitDescription + "</span>" +
             "   </div>" +
             "</div>"
     }
@@ -548,17 +695,29 @@ function getLimitRowsHTML(limitArray, productID, covID){
 function getDeductRowsHTML(deductArray, productID, covID){
     var deductRowsHTML = ""
     for(var i=0; i<deductArray.length; i++){
-        var deductValue = deductArray[i].split('\t')[0]
-        var deductDescription = deductArray[i].split('\t')[1]
+        var deductValue
+        var deductDescription
+        if(jsonStringToObject( deductArray[i] ).deductDescription){
+            deductValue = jsonStringToObject( deductArray[i] ).deductAmount
+            deductDescription = jsonStringToObject( deductArray[i] ).deductDescription
+        }
+        else{
+            deductValue = deductArray[i].split('\t')[0]
+            deductDescription = deductArray[i].split('\t')[1]
+        }
+
         deductDescription = removeCoverageIdentifierFromLimDeduct(deductDescription, covID)
+        var productIDClassString = replaceEachSpaceWith(productID.trim(), "_")
 
         deductRowsHTML = deductRowsHTML +
-            "<div class='row deductRow'>" +
+            "<div class='row deductRow " + productIDClassString + "_DeductRow' data-deductdescription='" + escapeDataAttributeValue(deductDescription) + "'>" +
             "   <div class='col-xs-4'>" +
-            "       <span class='deductValue'>" + deductValue + "</span>" +
+            "       <span class='deductValue " + productIDClassString + "_DeductRow_DeductValue' " +
+            "           data-deductdescription='" + escapeDataAttributeValue(deductDescription) + "'>" + deductValue + "</span>" +
             "   </div>" +
             "   <div class='col-xs-8'>" +
-            "       <span class='deductDescription'>" + deductDescription + "</span>" +
+            "       <span class='deductDescription " + productIDClassString + "_DeductRow_DeductDescription' " +
+            "           data-deductdescription='" + escapeDataAttributeValue(deductDescription) + "'>" + deductDescription + "</span>" +
             "   </div>" +
             "</div>"
     }
@@ -580,6 +739,47 @@ function buildCoverageAndProductSelectedMap(){
 
     return coveragesAndProductsSelectedMap
 }
+function getLimitValueFromLimitDescription(productID, limitDescription){
+    var thisLimitValue = ""
+    var productIDClassString = replaceEachSpaceWith(productID.trim(), "_")
+
+    $('.' + productIDClassString + "_LimitRow_LimitValue").each(function(){
+        var thisLimitDescription = $(this).data('limitdescription').trim()
+        console.log(thisLimitDescription)
+        console.log(limitDescription)
+        if(thisLimitDescription === limitDescription){
+            thisLimitValue = $(this).html().trim()
+            return thisLimitValue
+        }
+    })
+
+    console.log(thisLimitValue)
+
+    if(thisLimitValue === ""){
+        return undefined
+    }
+    else{
+        return thisLimitValue
+    }
+}
+function getDeductValueFromDeductDescription(productID, deductDescription){
+    var thisDeductValue = ""
+    $('.' + productID + "_DeductRow_DeductValue").each(function(){
+        var thisDeductDescription = $(this).data('deductDescription').trim()
+
+        if(thisDeductDescription === deductDescription){
+            thisDeductValue = $(this).html().trim()
+            return thisDeductValue
+        }
+    })
+
+    if(thisDeductValue === ""){
+        return undefined
+    }
+    else{
+        return thisDeductValue
+    }
+}
 
 //PREMIUM AND RATE INFO
 function showPremiumRateContainer(){
@@ -595,36 +795,122 @@ function fillPremiumRateContainer(){
     buildPremiumLinesForEachCoverage()
 }
 function buildPremiumLinesForEachCoverage(){
-    var temporaryContainer = $("<div></div>")
+    var premiumLinesContainer = $('#premiumLinesContainer')
+    var premiumLinesHTML = ""
     var covArray = submission.coverages()
 
     for(var i=0;i<covArray.length; i++){
-        $(temporaryContainer).append(getPremiumLineHTML(covArray[i]))
+        premiumLinesHTML = premiumLinesHTML + getPremiumLineHTML(covArray[i])
     }
+
+    $(premiumLinesContainer).html(premiumLinesHTML)
+
 }
 function getPremiumLineHTML(covID){
     var coverageMap = getCoverageObject(covID)
     var operationMap = getCurrentOperationTypeObject()
-    var premiumLineHTML =
-        "<div class='row premiumLineRow'> " +
-        "   <div class='col-xs-3'> " +
-        "       <span>" + coverageMap.coverageName + "</span> " +
-        "   </div> " +
-        "   <div class='col-xs-1'> " +
-        "       <span>" + operationMap + "</span> " +
-        "   </div> " +
-        "   <div class='col-xs-1'> " +
-        "       <span>$232,234</span> " +
-        "   </div> " +
-        "   <div class='col-xs-1'> " +
-        "       <span>.12</span> " +
-        "   </div> " +
-        "   <div class='col-xs-1'> " +
-        "       <span>$400</span> " +
-        "   </div> " +
-        "</div>"
+    var productMap = getProductObjectFromProductID(getProductIDForCoverage(covID))
+
+    var premiumLineHTML = ""
+    //IF PRODUCT HAS A VALID RATE CODE, RATE ACCORDING TO RATE
+    if(productMap.rateCode !== null && productMap.rateCode !== undefined
+        && productMap.rateCode !== 'invalid' && productMap.rateCode !== 'NONE' ){
+        var rateMap = getRateObjectByID(productMap.rateCode)
+        var ratingBasisMap = getRatingBasisObjectByID(rateMap.rateBasis)
+
+        if(rateMap.rateBasis === 'LIMIT'){
+            var limitRateArray = jsonStringToObject( rateMap.limitRateArray )
+
+            premiumLineHTML = "<div class='row premiumLineRow'> " +
+                "   <div class='col-xs-3'> " +
+                "       <span>" + coverageMap.coverageName + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-1'> " +
+                "       <span>" + "-" + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-1'> " +
+                "       <span>" + "-" + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-1'> " +
+                "       <span>" + "-" + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-1'> " +
+                "       <span>-</span> " +
+                "   </div> " +
+                "</div>"
+
+            for(var i=0; i<limitRateArray.length; i++){
+                var thisLimitRateMap = limitRateArray[i]
+                var limitDescription = "\t" + thisLimitRateMap.limitDescription
+                var userInputLimitValue = getLimitValueFromLimitDescription(productMap.productID, thisLimitRateMap.limitDescription)
+
+                premiumLineHTML = premiumLineHTML + "<div class='row premiumLineRow limitPremiumLineRow'> " +
+                    "   <div class='col-xs-3'> " +
+                    "       <span style='white-space: pre;'>" + limitDescription + "</span> " +
+                    "   </div> " +
+                    "   <div class='col-xs-1'> " +
+                    "       <span>" + rateMap.rateBasis + "</span> " +
+                    "   </div> " +
+                    "   <div class='col-xs-1'> " +
+                    "       <span>" + userInputLimitValue + "</span> " +
+                    "   </div> " +
+                    "   <div class='col-xs-1'> " +
+                    "       <span>" + thisLimitRateMap.rateValue + "</span> " +
+                    "   </div> " +
+                    "   <div class='col-xs-1'> " +
+                    "       <span>" + calculateLimitPremium(rateMap, limitDescription, userInputLimitValue) + "</span> " +
+                    "   </div> " +
+                    "</div>"
+            }
 
 
+        }
+        else{
+            var ratingBasisQuestion = $('#' + ratingBasisMap.basisQuestionID)
+            premiumLineHTML = "<div class='row premiumLineRow'> " +
+                "   <div class='col-xs-3'> " +
+                "       <span>" + coverageMap.coverageName + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-1'> " +
+                "       <span>" + rateMap.rateBasis + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-1'> " +
+                "       <span>" + $(ratingBasisQuestion).val() + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-1'> " +
+                "       <span>" + rateMap.rateValue + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-1'> " +
+                "       <span>" + calculateTotalCoveragePremium(rateMap, ratingBasisMap) + "</span> " +
+                "   </div> " +
+                "</div>"
+        }
+    }
+    else{
+        //IF PRODUCT DOES NOT HAVE A VALID RATE CODE
+        premiumLineHTML = "<div class='row premiumLineRow'> " +
+            "   <div class='col-xs-3'> " +
+            "       <span>" + coverageMap.coverageName + "</span> " +
+            "   </div> " +
+            "   <div class='col-xs-1'> " +
+            "       <span> N/A </span> " +
+            "   </div> " +
+            "   <div class='col-xs-1'> " +
+            "       <span>N/A </span> " +
+            "   </div> " +
+            "   <div class='col-xs-1'> " +
+            "       <span>N/A </span> " +
+            "   </div> " +
+            "   <div class='col-xs-1'> " +
+            "       <span>N/A </span> " +
+            "   </div> " +
+            "</div>"
+    }
+
+
+
+
+    return premiumLineHTML
 }
 
 //PRODUCT FUNCTIONS
@@ -656,37 +942,39 @@ function getProductIDForCoverage(covID){
                 var conditionOperator = thisCoverageConditionArray[i].conditionOperator
                 var conditionBasisValue = parseFloat(thisCoverageConditionArray[i].basisValue)
                 var conditionBasisInput = $('#' + getConditionBasisInputFromConditionBasisID(conditionBasisID))
-                var actualBasisValue = parseFloat($(conditionBasisInput).val().replace(/[^0-9.]/g, ""))
 
-                //WHAT IS THE OPERATOR (<,>,<=,>=, etc), AND IS CONDITION TRUE
-                if(conditionOperator === 'LESSTHAN'){
-                    if(actualBasisValue < conditionBasisValue){
-                        return thisCoverageConditionArray[i].productID
-                    }
-                }
-                else if(conditionOperator === 'LESSEQUAL'){
-                    if(actualBasisValue <= conditionBasisValue){
-                        return thisCoverageConditionArray[i].productID
-                    }
-                }
-                else if(conditionOperator === 'GREATERTHAN'){
-                    if(actualBasisValue > conditionBasisValue){
-                        return thisCoverageConditionArray[i].productID
-                    }
-                }
-                else if(conditionOperator === 'GREATEREQUAL'){
-                    if(actualBasisValue >= conditionBasisValue){
-                        return thisCoverageConditionArray[i].productID
-                    }
-                }
-                else if(conditionOperator === 'EQUAL'){
-                    if(actualBasisValue === conditionBasisValue){
-                        return thisCoverageConditionArray[i].productID
-                    }
-                }
+                //CHECK IF CONDITION BASIS QUESTION HAS BEEN ANSWERED, IF YES PROCEED WITH PRODUCT DETERMINATION
+                if($(conditionBasisInput).val() !== undefined && $(conditionBasisInput).val() !== null && $(conditionBasisInput).val().trim().length > 0 ){
+                    var actualBasisValue = parseFloat($(conditionBasisInput).val().replace(/[^0-9.]/g, ""))
 
+                    //WHAT IS THE OPERATOR (<,>,<=,>=, etc), AND IS CONDITION TRUE
+                    if(conditionOperator === 'LESSTHAN'){
+                        if(actualBasisValue < conditionBasisValue){
+                            return thisCoverageConditionArray[i].productID
+                        }
+                    }
+                    else if(conditionOperator === 'LESSEQUAL'){
+                        if(actualBasisValue <= conditionBasisValue){
+                            return thisCoverageConditionArray[i].productID
+                        }
+                    }
+                    else if(conditionOperator === 'GREATERTHAN'){
+                        if(actualBasisValue > conditionBasisValue){
+                            return thisCoverageConditionArray[i].productID
+                        }
+                    }
+                    else if(conditionOperator === 'GREATEREQUAL'){
+                        if(actualBasisValue >= conditionBasisValue){
+                            return thisCoverageConditionArray[i].productID
+                        }
+                    }
+                    else if(conditionOperator === 'EQUAL'){
+                        if(actualBasisValue === conditionBasisValue){
+                            return thisCoverageConditionArray[i].productID
+                        }
+                    }
 
-
+                }
             }
         }
 

@@ -399,3 +399,53 @@
 2017-08-31 21:17:00,434 [main] INFO   - DripStat - starting DripStat version 11.0.1
 2017-08-31 21:17:49,496 [DripStat Network Authentication Service] INFO   - DripStat - Using Data Server: https://datacollector.dripstat.com
 2017-08-31 21:17:49,663 [DripStat Network Authentication Service] INFO   - DripStat - Received Auth Response {authToken='884ae56d-e3b1-4145-88f1-779ed91cca0d', appId='58c0dc8661160e8d89fd98ed'}
+2017-09-01 16:10:40,978 [main] INFO   - DripStat - starting DripStat version 11.0.1
+2017-09-01 16:11:30,255 [DripStat Network Authentication Service] INFO   - DripStat - Using Data Server: https://datacollector.dripstat.com
+2017-09-01 16:11:30,416 [DripStat Network Authentication Service] INFO   - DripStat - Received Auth Response {authToken='b6305291-991e-4e50-98f4-e9240bbda615', appId='58c0dc8661160e8d89fd98ed'}
+2017-09-01 17:09:32,462 [DripStat Shutdown Hook] INFO   - DripStat - Shutting down
+2017-09-01 17:09:34,944 [main] INFO   - DripStat - starting DripStat version 11.0.1
+2017-09-01 17:09:45,778 [DripStat Shutdown Hook] INFO   - DripStat - Shutting down
+2017-09-01 17:24:17,853 [main] INFO   - DripStat - starting DripStat version 11.0.1
+2017-09-01 17:25:06,781 [DripStat Network Authentication Service] INFO   - DripStat - Using Data Server: https://datacollector.dripstat.com
+2017-09-01 17:25:06,933 [DripStat Network Authentication Service] INFO   - DripStat - Received Auth Response {authToken='c3768ef9-9b95-44d1-8888-abb8eb151fd3', appId='58c0dc8661160e8d89fd98ed'}
+2017-09-01 19:37:55,906 [DripStat Shutdown Hook] INFO   - DripStat - Shutting down
+2017-09-01 19:37:56,843 [main] INFO   - DripStat - starting DripStat version 11.0.1
+2017-09-01 19:38:45,710 [DripStat Network Authentication Service] INFO   - DripStat - Using Data Server: https://datacollector.dripstat.com
+2017-09-01 19:38:45,916 [DripStat Network Authentication Service] INFO   - DripStat - Received Auth Response {authToken='1dcbe563-7777-4d7a-bc6e-da5c2812f8ad', appId='58c0dc8661160e8d89fd98ed'}
+2017-09-01 20:34:30,920 [DripStat Shutdown Hook] INFO   - DripStat - Shutting down
+2017-09-01 21:15:16,739 [main] INFO   - DripStat - starting DripStat version 11.0.1
+2017-09-01 21:16:05,572 [DripStat Network Authentication Service] INFO   - DripStat - Using Data Server: https://datacollector.dripstat.com
+2017-09-01 21:16:05,715 [DripStat Network Authentication Service] INFO   - DripStat - Received Auth Response {authToken='e147aa8c-33f5-4901-8063-4154b4619e09', appId='58c0dc8661160e8d89fd98ed'}
+2017-09-02 00:01:12,148 [DripStat Shutdown Hook] INFO   - DripStat - Shutting down
+2017-09-02 00:01:13,320 [main] INFO   - DripStat - starting DripStat version 11.0.1
+2017-09-02 00:02:02,340 [DripStat Network Authentication Service] INFO   - DripStat - Using Data Server: https://datacollector.dripstat.com
+2017-09-02 00:02:02,534 [DripStat Network Authentication Service] INFO   - DripStat - Received Auth Response {authToken='039a8c3f-2501-4174-aa58-029aea4adb5d', appId='58c0dc8661160e8d89fd98ed'}
+2017-09-05 00:15:40,065 [DripStat Data Sender Service] WARN   - DripStat - sendData() https://datacollector.dripstat.com/agent/v1/v11/data - java.net.UnknownHostException: datacollector.dripstat.com
+2017-09-05 00:28:16,984 [DripStat Shutdown Hook] INFO   - DripStat - Shutting down
+2017-09-05 03:43:09,317 [main] INFO   - DripStat - starting DripStat version 11.0.1
+2017-09-05 03:43:39,930 [DripStat Shutdown Hook] INFO   - DripStat - Shutting down
+2017-09-05 03:45:30,661 [main] INFO   - DripStat - starting DripStat version 11.0.1
+2017-09-05 03:46:19,624 [DripStat Network Authentication Service] INFO   - DripStat - Using Data Server: https://datacollector.dripstat.com
+2017-09-05 03:46:19,811 [DripStat Network Authentication Service] INFO   - DripStat - Received Auth Response {authToken='7c362cc6-670b-42fc-a79d-e8747c80ce36', appId='58c0dc8661160e8d89fd98ed'}
+2017-09-05 16:39:05,296 [DripStat Shutdown Hook] INFO   - DripStat - Shutting down
+2017-09-05 16:39:07,104 [main] INFO   - DripStat - starting DripStat version 11.0.1
+2017-09-05 16:39:56,087 [DripStat Network Authentication Service] INFO   - DripStat - Using Data Server: https://datacollector.dripstat.com
+2017-09-05 16:39:56,284 [DripStat Network Authentication Service] INFO   - DripStat - Received Auth Response {authToken='455040c6-632d-4112-96e0-13ab8d9f9263', appId='58c0dc8661160e8d89fd98ed'}
+2017-09-06 16:09:04,244 [DripStat Shutdown Hook] INFO   - DripStat - Shutting down
+2017-09-06 16:09:05,649 [main] INFO   - DripStat - starting DripStat version 11.0.1
+2017-09-06 16:09:54,617 [DripStat Network Authentication Service] INFO   - DripStat - Using Data Server: https://datacollector.dripstat.com
+2017-09-06 16:09:54,784 [DripStat Network Authentication Service] INFO   - DripStat - Received Auth Response {authToken='3844b71d-5f4d-41e3-93b1-97413eceba76', appId='58c0dc8661160e8d89fd98ed'}
+2017-09-06 17:09:47,288 [DripStat Shutdown Hook] INFO   - DripStat - Shutting down
+2017-09-06 17:09:52,677 [main] INFO   - DripStat - starting DripStat version 11.0.1
+2017-09-06 17:10:41,653 [DripStat Network Authentication Service] INFO   - DripStat - Using Data Server: https://datacollector.dripstat.com
+2017-09-06 17:10:41,811 [DripStat Network Authentication Service] INFO   - DripStat - Received Auth Response {authToken='14ae84e3-4aae-4ef4-aa5a-8d1b5df91f2d', appId='58c0dc8661160e8d89fd98ed'}
+2017-09-06 18:14:25,309 [DripStat Shutdown Hook] INFO   - DripStat - Shutting down
+2017-09-06 18:14:29,429 [main] INFO   - DripStat - starting DripStat version 11.0.1
+2017-09-06 18:14:53,580 [DripStat Shutdown Hook] INFO   - DripStat - Shutting down
+2017-09-06 18:17:49,290 [main] INFO   - DripStat - starting DripStat version 11.0.1
+2017-09-06 18:18:14,013 [DripStat Shutdown Hook] INFO   - DripStat - Shutting down
+2017-09-06 18:21:00,657 [main] INFO   - DripStat - starting DripStat version 11.0.1
+2017-09-06 18:21:24,524 [DripStat Shutdown Hook] INFO   - DripStat - Shutting down
+2017-09-06 18:53:09,439 [main] INFO   - DripStat - starting DripStat version 11.0.1
+2017-09-06 18:53:58,509 [DripStat Network Authentication Service] INFO   - DripStat - Using Data Server: https://datacollector.dripstat.com
+2017-09-06 18:53:58,635 [DripStat Network Authentication Service] INFO   - DripStat - Received Auth Response {authToken='7ae45ab4-9393-4ff8-a8e6-4162b5d82d30', appId='58c0dc8661160e8d89fd98ed'}

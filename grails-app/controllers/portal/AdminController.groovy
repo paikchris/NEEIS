@@ -173,16 +173,55 @@ class AdminController {
         try{
             def coverageProductMap = jsonSlurper.parseText(params.coverageProductMap)
             def uwQuestionsMap = jsonSlurper.parseText(params.uwQuestionsMap)
+            def requiredQuestionsMap = jsonSlurper.parseText(params.requiredQuestionsMap)
             def weightOrderedRequiredQuestions = jsonSlurper.parseText(params.weightOrderedRequiredQuestions)
 
             Operations operationRecord = Operations.findByOperationID(params.operationID)
 
             operationRecord.coverageProductMap = jsonOutput.toJson(coverageProductMap)
             operationRecord.underwriterQuestionsMap = jsonOutput.toJson(uwQuestionsMap)
+            operationRecord.requiredQuestionsMap = jsonOutput.toJson(requiredQuestionsMap)
             operationRecord.weightOrderedRequiredQuestions = jsonOutput.toJson(weightOrderedRequiredQuestions)
 
 
             operationRecord.save(flush: true, failOnError: true)
+        }catch(Exception e){
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+            renderMessage = "Error"
+        }
+
+        render renderMessage
+    }
+
+    def saveRateChanges(){
+        log.info "SAVING RATE CHANGES"
+        log.info params
+
+        def renderMessage = "Success"
+
+        try{
+
+
+            Rates rateRecord = Rates.findByRateID(params.rateID)
+
+            rateRecord.rateID = params.rateID
+            rateRecord.rateCode = params.rateID
+            rateRecord.description = params.description
+            rateRecord.rateBasis = params.rateBasis
+
+            if(params.rateBasis == 'LIMIT'){
+                def limitRateArray = jsonSlurper.parseText(params.limitRateAray)
+                rateRecord.limitRateArray = jsonOutput.toJson(limitRateArray)
+            }
+            else{
+                rateRecord.rateValue = params.rateValue.toBigDecimal()
+                rateRecord.minPremium = params.minPremium
+            }
+
+            rateRecord.save(flush: true, failOnError: true)
         }catch(Exception e){
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
@@ -231,6 +270,10 @@ class AdminController {
 
         try{
             def formIDArray = jsonSlurper.parseText(params.formIDArray)
+            def limitArray = jsonSlurper.parseText(params.limitArray)
+            def deductArray = jsonSlurper.parseText(params.deductArray)
+            def requiredQuestions = jsonSlurper.parseText(params.requiredQuestions)
+
             def productMap = jsonSlurper.parseText(params.productMap)
 
             Products productRecord = Products.findByProductID(params.productID)
@@ -242,6 +285,9 @@ class AdminController {
             productRecord.coverage = productMap.coverage
             productRecord.rateCode = productMap.rateCode
             productRecord.terms = productMap.terms
+            productRecord.limitArray = jsonOutput.toJson(limitArray)
+            productRecord.deductArray = jsonOutput.toJson(deductArray)
+            productRecord.requiredQuestions = jsonOutput.toJson(requiredQuestions)
 
             productRecord.save(flush: true, failOnError: true)
         }catch(Exception e){
@@ -251,6 +297,7 @@ class AdminController {
             log.info("Error Details - " + exceptionAsString)
             renderMessage = "Error"
         }
+
 
         render renderMessage
     }

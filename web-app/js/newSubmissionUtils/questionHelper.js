@@ -114,7 +114,7 @@ function getQuestionHTML(qID, options){
     questionHTML = questionHTML +
         "   </div>"
 
-    console.log(questionHTML)
+    // console.log(questionHTML)
     return questionHTML
 }
 
@@ -164,12 +164,45 @@ function getRequiredQuestionHTML_noCloseButton(qID){
         return stringHTML
     }
 }
+function getRequiredQuestionHTML_noCloseButton_RatingBasisDataPage(qID){
+    if(getQuestionObjectByID(qID)) {
+
+        var options = {
+            gridColumns: "3",
+            containerClass: "requiredQuestion " + qID + "",
+            containerDataAttr: "data-questionid='" + qID + "' data-weight='" + getQuestionObjectByID(qID).weight + "'",
+            closeButton: false,
+            required: true
+        }
+
+        var stringHTML = getQuestionHTML(qID, options)
+        return stringHTML
+    }
+}
 function getUWQuestionHTML_noClosebutton(qID){
     if(getQuestionObjectByID(qID)) {
 
         var options = {
             gridColumns: "2",
             containerClass: "uwQuestion " + qID + "",
+            containerDataAttr: "data-questionid='" + qID + "' data-weight='" + getQuestionObjectByID(qID).weight + "'",
+            closeButton: false,
+            required: true
+        }
+
+        var stringHTML = getQuestionHTML(qID, options)
+        return stringHTML
+    }
+}
+
+
+//QUESTION BUILDERS FOR NEW SUBMISSION PAGE
+function getNewSubmissionRequiredQuestion(qID){
+    if(getQuestionObjectByID(qID)) {
+
+        var options = {
+            gridColumns: "4",
+            containerClass: "requiredQuestion " + qID + "",
             containerDataAttr: "data-questionid='" + qID + "' data-weight='" + getQuestionObjectByID(qID).weight + "'",
             closeButton: false,
             required: true

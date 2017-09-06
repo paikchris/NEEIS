@@ -3950,5 +3950,19 @@ function testEmail(){
         alert(msg)
     });
 }
+function testPdf(){
+    $.ajax({
+        method: "POST",
+        url: "/async/testPdf",
+        data: {
+
+        },
+        cache: false,
+        contentType: false,
+        processData: false
+    }).done(function (msg) {
+        alert(msg)
+    });
+}
 
 

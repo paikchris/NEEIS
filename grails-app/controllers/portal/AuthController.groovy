@@ -90,7 +90,7 @@ class AuthController {
         try{
             def userReferenceID = 0;
             def userExistsInAIM = false;
-            Sql aimsql = new Sql(dataSource_aim)
+            def aimsql = new Sql(dataSource_aim)
 
             aimsql.eachRow("SELECT     NameKeyPK, Name, IDCode, NameTypeID, TypeID, Address1, Address2, City, State, PostalCode, AddressKey, Country, MailAddress1, MailAddress2, MailCity, \n" +
                     "                      MailState, MailPostalCode, MailAddressKey, Phone, Extension, Fax, PhoneAltType, Home, PhoneAltType2, Remarks, Title, OwnerKey_FK, Email, URL, StatusID, \n" +
@@ -170,7 +170,7 @@ class AuthController {
         if(error==false){
             session.user = u
             log.info(u)
-            redirect(controller:'main', action:'index')
+            redirect(controller:'auth', action:'index')
         }
 
     }

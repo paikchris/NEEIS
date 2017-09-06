@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta name="layout" content="main">
-    <link rel="stylesheet" href="${resource(dir: 'css', file: 'newSubmission.css')}" type="text/css">
+    <link rel="stylesheet" href="${resource(dir: 'css', file: "newSubmission.css?ts=" + new Date().getTime())}" type="text/css">
 
     <script>
         var rC = ${raw(riskCategories)}
@@ -12,6 +12,7 @@
         var cT = ${raw(coverages)}
         var qL = ${raw(questions)}
         var rB = ${raw(ratingBasis)}
+        var rL = ${raw(rates)}
 
         //VERSION MODE SETUP
         var versionMode = false;
@@ -29,6 +30,7 @@
     <script src="${resource(dir: 'js', file: "/newSubmissionUtils/AIMHelper.js?ts=" + new Date().getTime())}" async></script>
     <script src="${resource(dir: 'js', file: "/newSubmissionUtils/questionHelper.js?ts=" + new Date().getTime())}" async></script>
     <script src="${resource(dir: 'js', file: "/newSubmissionUtils/submissionObj.js?ts=" + new Date().getTime())}" async></script>
+    <script src="${resource(dir: 'js', file: "/utils/ratingHelper.js?ts=" + new Date().getTime())}" async></script>
     <script src="${resource(dir: 'js', file: "/utils/JSONHelper.js?ts=" + new Date().getTime())}" async></script>
     <script src="${resource(dir: 'js', file: "/utils/stringUtils.js?ts=" + new Date().getTime())}" async></script>
     <script src="${resource(dir: 'js', file: "/utils/fileHelper.js?ts=" + new Date().getTime())}" async></script>
@@ -296,8 +298,13 @@
 
                             </div>
                         </div>
-                        <div class="col-xs-8 rightColumn " id="ratingBasisRequiredQuestionsContainer">
+                        <div class="col-xs-8 rightColumn">
+                            <div class="row" id="productConditionBasisRequiredQuestionsContainer">
 
+                            </div>
+                            <div class="row" id="ratingBasisRequiredQuestionsContainer">
+
+                            </div>
 
                         </div>
                         <div class="col-xs-12">

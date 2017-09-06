@@ -70,7 +70,7 @@
                 </button>
                 <button class="btn btn-xs btn-success" id="emailTest" type="button"
                         style="background-color: rgb(105, 210, 255); border-color: rgb(105, 210, 255); margin: 2px;"
-                        onclick="testEmail()">
+                        onclick="testPdf()">
                     %{--<i class= aria-hidden="true"></i>--}%
                     <span class="" style="font-size: 14px; font-weight: 500"> Test Email</span>
                 </button>

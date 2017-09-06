@@ -128,3 +128,24 @@ function splitByLine(string){
 
     return string.replace(re,"\n").split("\n");
 }
+
+function escapeDataAttributeValue(dataValueString){
+    var escapedString = dataValueString
+    //ESCAPE AMPERSANDS
+    escapedString = escapedString.replace(/&/g,"&amp;")
+
+    //ESCAPE DOUBLE QUOTES
+    escapedString = escapedString.replace(/"/g, "&quot;")
+
+    return escapedString
+}
+
+function replaceEachSpaceWith(originalString, charToReplaceSpace){
+    //REPLACES EACH INSTANCE OF A WHITE SPACE WITH A CHAR OR STRING
+    return originalString.replace(/\s/g, charToReplaceSpace)
+}
+
+function replaceAllSpacesWith(originalString, charToReplaceSpace){
+    //REPLACES A SINGLE OR MULTIPEL WHITESPACE WITH A CHAR OR STRING
+    return originalString.replace(/\s+/g, charToReplaceSpace)
+}

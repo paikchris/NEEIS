@@ -2,19 +2,56 @@ var testRateInfoMap = {}
 var testPolicyInfoMap = {}
 
 
-function calculatePercentRate(){
+function calculateTotalCoveragePremium(rateMap, ratingBasisMap){
+    var rateBasis = rateMap.rateBasis
+    var premium
 
+    if(rateBasis === 'LIMIT'){
+        var limitRateArray = jsonStringToObject( rateMap.limitRateArray )
+
+        for(var i=0;i<limitRateArray.length;i++){
+
+        }
+    }
+    else{
+        var rateValue = parseFloat(rateMap.rateValue)
+        var minPremium = rateMap.minPremium
+        var basisQuestionID = ratingBasisMap.basisQuestionID
+        var basisQuestionValue = parseFloat($('#' + basisQuestionID).val())
+
+        premium = basisQuestionValue * rateValue
+
+        if(premium < minPremium){
+            premium = minPremium
+        }
+    }
+
+    return premium
 }
-function calculateFlatRate(){
 
+function calculateLimitPremium(rateMap, limitDescString, userInputLimit){
+    var limitRateArray = jsonStringToObject(rateMap.limitRateArray)
+    var premium
+
+    for(var i=0;i<limitRateArray.length; i++){
+        var thisLimitRateMap = jsonStringToObject(limitRateArray[i])
+        if(thisLimitRateMap.limitDescription === limitDescString){
+            var limitDescription = thisLimitRateMap.limitDescription
+            var limitRateValue = parseFloat(thisLimitRateMap.rateValue)
+            var limitMinPremium = parseFloat(thisLimitRateMap.minPremium)
+
+            premium = userInputLimit * limitRateValue
+
+            if(premium < limitMinPremium){
+                premium = limitMinPremium
+            }
+
+            return premium
+        }
+    }
+
+    return undefined
 }
-
-
-
-
-
-
-
 
 function getRangePremiumAndDetail(rangeMap, policyInfoMap, rateBasis, ignoreMinPrem){
     //ASSUMES THIS RANGE HAS NO ADDITIONAL CONDITION
