@@ -20,6 +20,7 @@ class Producer {
             "commission": "Commission",
             "tax1099": "Tax1099",
             "email": "EMail",
+            "license": "License",
             "mailAddress1": "MailAddress1",
             "mailAddress2": "MailAddress2",
             "mailCity": "MailCity",
@@ -57,6 +58,7 @@ class Producer {
     BigDecimal commission
     String tax1099
     String email
+    String license
     String mailAddress1
     String mailAddress2
     String mailCity
@@ -95,6 +97,7 @@ class Producer {
         commission nullable: true, scale: 4, maxSize:32
         tax1099 nullable: true, maxSize: 1
         email nullable: true, maxSize: 128
+        license nullable:true, maxSize: 25
         mailAddress1 nullable: true, maxSize: 40
         mailAddress2 nullable: true, maxSize: 40
         mailCity nullable: true, maxSize: 32

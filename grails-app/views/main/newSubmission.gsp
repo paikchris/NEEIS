@@ -31,7 +31,7 @@
     <script src="${resource(dir: 'js', file: "/utils/stringUtils.js?ts=" + new Date().getTime())}" async></script>
     <script src="${resource(dir: 'js', file: "/utils/fileHelper.js?ts=" + new Date().getTime())}" async></script>
     <script src="${resource(dir: 'js', file: 'jquery.maskMoney.min.js')}" async></script>
-    <script src="${resource(dir: 'js', file: "newSubmissionV2.js?ts=" + new Date().getTime())}" async></script>
+    <script src="${resource(dir: 'js', file: "newSubmission.js?ts=" + new Date().getTime())}" async></script>
 
 
     <g:if test="${user.admin == "true"}">

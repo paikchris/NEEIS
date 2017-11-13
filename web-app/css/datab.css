@@ -1,10 +1,16 @@
-
+#page-content-wrapper{
+    font-size:12px;
+}
 /*OPERATIONS PAGE*/
-.form-group{
+.checkboxContainer{
     margin-bottom:0px
 }
 .form-group p{
-    margin-bottom:0px
+     margin-bottom:0px
+ }
+.form-group label.checkBoxLabel{
+    margin-bottom:0px;
+    font-weight:300
 }
 div.radioWithHiddenDiv_RadioContainer{
     padding-left: 0px;
@@ -34,6 +40,48 @@ label.questionText {
     font-weight: 400;
     margin-bottom:0px;
 }
+div.logicConditionRow div[class*="col-xs-"]{
+    padding-left: 3px;
+    padding-right: 3px;
+}
+div.logicConditionRow label.logicTextLabel{
+    display:block;
+    text-align: center;
+    font-size:12px;
+    height:24px;
+}
+div.logicConditionRow select{
+    font-size:12px;
+    height: 24px;
+}
+div.logicConditionRow input{
+    height:24px;
+    font-size: 12px;
+    padding:4px 8px;
+}
+div.logicConditionRow button{
+    height:24px;
+    font-size: 10px;
+    padding:2px 7px;
+}
+div.logicConditionRow .form-group{
+    margin:0px;
+}
+div.logicConditionRow div.subLogicConditionRow{
+    margin-right: 22px;
+    padding-left: 32px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+div.subLogicConditionRow div.logicConditionRow div.mainLogicContainer div.buttonColumn{
+}
+div.packageDetails_limitRow, div.packageDetails_deductRow{
+    padding: 1px 0px;
+}
+div.packageDetails_limitRow .form-group, div.packageDetails_deductRow .form-group{
+    margin-bottom:0px;
+}
+
 
 div.ratingBasis_RequiredQuestionsContainer, div.underwritingQuestionsContainer {
     margin-top: 12px;
@@ -57,14 +105,54 @@ div#questionToRateContainer{
     padding-top: 10px;
 }
 
+div#coveragesAllowedContainer h6.panel-title{
+    font-size:12px;
+}
+div#coveragesAllowedContainer div.panel-heading{
+    padding: 4px 12px;
+}
+
 
 /*PRODUCT PAGE*/
 div.productPage_limitRow, div.productPage_deductRow{
     padding: 1px 0px;
+}
+div.productPage_limitRow .form-group, div.productPage_deductRow .form-group{
+    margin-bottom:0px;
 }
 
 div#productPage_QuestionDetailsContainer div.requiredQuestion input,
 div#productPage_QuestionDetailsContainer div.uwQuestion input{
     height: 24px;
     font-size: 12px;
+}
+
+
+
+/*QUESTIONS PAGE*/
+div#questionsPage h6.panel-title{
+    font-size:14px;
+}
+div#questionsPage div.panel-heading{
+    padding: 4px 12px;
+}
+div.questionEditRow div.form-group{
+    margin-bottom:0px;
+}
+.questionEditRow{
+    background: rgb(227, 241, 255);
+    border-radius: 6px;
+    margin:2px;
+    padding-top:4px;
+}
+.questionEditRow.active{
+    background: rgb(171, 220, 255);
+}
+label.checkboxVerticalLayout{
+    display:inline-block;
+    font-weight:300;
+}
+label.radioHorizontalLayout{
+    margin-right: 20px;
+    font-weight:300;
 }

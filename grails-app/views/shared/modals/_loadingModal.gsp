@@ -11,5 +11,10 @@
         <div class="double-bounce1"></div>
         <div class="double-bounce2"></div>
     </div>
+    <div class="row" style="color: white;">
+        <div class="col-xs-4"></div>
+        <div class="col-xs-4 loadingModalText">Checking for Updates</div>
+        <div class="col-xs-4"></div>
+    </div>
 
 </div>

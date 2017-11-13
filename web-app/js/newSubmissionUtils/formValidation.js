@@ -6,7 +6,6 @@ function initializeListenerForNoBlankRequiredFields(){
     //CHANGE
     $(document).on('change', ":input[required]:visible", function() {
         validateThisInput(this)
-
     });
 
     //FOCUS OUT
@@ -119,6 +118,7 @@ function validate(){
 
     return isValid
 }
+
 //RETURNS VALID OR ERROR MESSAGE STRING
 function validateThisInput(input){
     var message = "VALID"
@@ -150,7 +150,7 @@ function validateThisInput(input){
 
     }
     else if($(input).hasClass('emailInput')){
-        if (ValidateEmail($(input).val()) == false) {
+        if (ValidateEmail($(input).val()) === false) {
             message = message + "Email is incorrect format \n"
             markClosestFormGroup_Error(input)
             return message;
@@ -159,7 +159,7 @@ function validateThisInput(input){
             markClosestFormGroup_Success(input)
         }
     }
-    else if ($(input).attr("id") === "phoneNumber") {
+    else if ($(input).hasClass("phoneNumberMask") ) {
         if(($(input).val().trim().indexOf("_") > -1) ){
             message = message + "Phone is Invalid \n"
             markClosestFormGroup_Error(input)
@@ -169,7 +169,7 @@ function validateThisInput(input){
             markClosestFormGroup_Success(input)
         }
     }
-    else if ($(input).attr("id") === "stateMailing") {
+    else if ($(input).hasClass("stateAddressInput") ){
         if($(input).val() === "invalid"){
             message = message + "Phone is Invalid \n"
             markClosestFormGroup_Error(input)
@@ -179,7 +179,7 @@ function validateThisInput(input){
             markClosestFormGroup_Success(input)
         }
     }
-    else if($(input).attr("id") === "zipCodeMailing"){
+    else if($(input).hasClass("zipcodeInput") ){
         if ($(input).val().trim().length != 5){
             // alert("zipcode not correct")
 
@@ -256,6 +256,14 @@ function validateThisInput(input){
 function ValidateEmail(email) {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
+}
+function emailQuickValidateInput(emailInput){
+    if (ValidateEmail($(emailInput).val()) === false) {
+        markClosestFormGroup_Error(emailInput)
+    }
+    else {
+        markClosestFormGroup_Success(emailInput)
+    }
 }
 
 //RETURNS TRUE IF VALID, FALSE = INVALID

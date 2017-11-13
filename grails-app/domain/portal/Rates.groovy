@@ -10,6 +10,9 @@ class Rates {
     String minPremium
     String coverageID
     String limitRateArray
+    String bracketRateArray
+    String flatAmount
+
 
     static constraints = {
         state nullable: true
@@ -21,8 +24,11 @@ class Rates {
         minPremium nullable:true
         coverageID nullable:true
         limitRateArray nullable:true
+        bracketRateArray nullable:true
+        flatAmount nullable:true
     }
     static mapping = {
         limitRateArray type: 'text'
+        bracketRateArray type: 'text'
     }
 }

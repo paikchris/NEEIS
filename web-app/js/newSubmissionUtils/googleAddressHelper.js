@@ -1,109 +1,17 @@
 
-//////////////////////////
-// This example displays an address form, using the autocomplete feature
-// of the Google Places API to help users fill in the information.
 // This example requires the Places library. Include the libraries=places
 // parameter when you first load the API. For example:
 // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
 
 var placeSearch, autocomplete;
 var componentForm = {
-    googleAutoAddress: 'short_name',
-    googleAutoAddress: 'long_name',
-    cityMailing: 'long_name',
-    stateMailing: 'short_name',
-    zipCodeMailing: 'short_name'
+    street_number: 'short_name',
+    route: 'long_name',
+    locality: 'long_name',
+    administrative_area_level_1: 'short_name',
+    country: 'long_name',
+    postal_code: 'short_name'
 };
-
-function initAutocomplete() {
-    // Create the autocomplete object, restricting the search to geographical
-    // location types.
-    autocomplete = new google.maps.places.Autocomplete(
-        /** @type {!HTMLInputElement} */
-        (document.getElementById('googleAutoAddress')), {
-            types: ['geocode']
-        });
-
-    // When the user selects an address from the dropdown, populate the address
-    // fields in the form.
-    autocomplete.addListener('place_changed', fillInAddress);
-}
-
-function fillInAddress() {
-    // Get the place details from the autocomplete object.
-    //console.log("FILLING IN ADDRESS");
-    var place = autocomplete.getPlace();
-
-    for (var component in componentForm) {
-
-        document.getElementById(component).value = '';
-        document.getElementById(component).disabled = false;
-    }
-
-    // Get each component of the address from the place details
-    // and fill the corresponding field on the form.
-    for (var i = 0; i < place.address_components.length; i++) {
-        var addressType = place.address_components[i].types[0];
-        //alert(addressType);
-        if (addressType === "street_number") {
-            document.getElementById('googleAutoAddress').value = place.address_components[i]['short_name'];
-        }
-        else if (addressType === "route") {
-            var temp = document.getElementById('googleAutoAddress').value
-            document.getElementById('googleAutoAddress').value = temp + " " + place.address_components[i]['long_name'];
-        }
-        else if (addressType === "locality") {
-            document.getElementById('cityMailing').value = place.address_components[i]['long_name'];
-
-            $("#cityMailing").attr('placeholder', "");
-            $("#cityMailing").trigger('change');
-        }
-        else if (addressType === "administrative_area_level_1") {
-            //document.getElementById('stateMailing').value = place.address_components[i]['long_name'];
-            var val = stateNameToAbbrevMAP[place.address_components[i]['long_name']];
-            var sel = document.getElementById('stateMailing');
-            var opts = sel.options;
-            for (var opt, j = 0; opt = opts[j]; j++) {
-                if (opt.value == val) {
-                    sel.selectedIndex = j;
-                    break;
-                }
-            }
-            $("#stateMailing").trigger('change');
-        }
-        else if (addressType === "postal_code") {
-
-            document.getElementById('zipCodeMailing').value = place.address_components[i]['long_name'];
-            $("#zipCodeMailing").attr('placeholder', "");
-            $("#zipCodeMailing").trigger('change');
-
-        }
-        //if (componentForm[addressType]) {
-        //    var val = place.address_components[i][componentForm[addressType]];
-        //    document.getElementById(addressType).value = val;
-        //}
-    }
-}
-
-// Bias the autocomplete object to the user's geographical location,
-// as supplied by the browser's 'navigator.geolocation' object.
-function geolocate() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            var geolocation = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            };
-            var circle = new google.maps.Circle({
-                center: geolocation,
-                radius: position.coords.accuracy
-            });
-            autocomplete.setBounds(circle.getBounds());
-        });
-    }
-}
-
-
 
 var stateNameToAbbrevMAP = {
     "": "",
@@ -161,4 +69,98 @@ var stateNameToAbbrevMAP = {
     "Guam": "GU",
     "Puerto Rico'": "PR",
     "Virgin Islands": "VI"
+}
+
+function initAutocomplete() {
+
+    try{
+        var addressAutoCompleteInputs = document.getElementsByClassName("addressAutoCompleteInput");
+
+        for (var i = 0; i < addressAutoCompleteInputs.length; i++) {
+            var autocomplete = new google.maps.places.Autocomplete(addressAutoCompleteInputs[i]);
+            autocomplete.inputId = addressAutoCompleteInputs[i].id;
+
+            google.maps.event.addListener(autocomplete, 'place_changed', function(){
+                // Get the place details from the autocomplete object.
+                var place = autocomplete.getPlace();
+
+
+                // Get each component of the address from the place details
+                // and fill the corresponding field on the form.
+                var autoCompleteContainer = $('#' + this.inputId).closest('.addressAutoCompleteContainer')
+
+                for (var i = 0; i < place.address_components.length; i++) {
+                    var addressType = place.address_components[i].types[0];
+
+                    if (addressType === "street_number") {
+                        $(autoCompleteContainer).find('.addressAutoCompleteInput').val(place.address_components[i]['short_name'])
+                    }
+                    else if (addressType === "route") {
+
+                        var temp = $(autoCompleteContainer).find('.addressAutoCompleteInput').val()
+                        $(autoCompleteContainer).find('.addressAutoCompleteInput').val(temp + ' ' + place.address_components[i]['long_name'])
+
+                    }
+                    else if (addressType === "locality") {
+                        $(autoCompleteContainer).find('.autoCompleteCity').val( place.address_components[i]['long_name'] )
+
+                        $(autoCompleteContainer).find('.autoCompleteCity').attr('placeholder', "");
+                        $(autoCompleteContainer).find('.autoCompleteCity').trigger('change');
+                    }
+                    else if (addressType === "administrative_area_level_1") {
+                        var val = stateNameToAbbrevMAP[place.address_components[i]['long_name']];
+
+                        $(autoCompleteContainer).find('.autoCompleteState').val(val)
+                        $(autoCompleteContainer).find('.autoCompleteState').trigger('change');
+                    }
+                    else if (addressType === "postal_code") {
+                        $(autoCompleteContainer).find('.autoCompleteZipcode').val(place.address_components[i]['long_name'])
+                        $(autoCompleteContainer).find('.autoCompleteZipcode').attr('placeholder', "");
+                        $(autoCompleteContainer).find('.autoCompleteZipcode').trigger('change');
+
+                    }
+                }
+            });
+        }
+    }
+    catch(e){
+        console.log(e)
+    }
+
+}
+
+function fillInAddress() {
+    // Get the place details from the autocomplete object.
+    var place = autocomplete.getPlace();
+
+    for (var component in componentForm) {
+        document.getElementById(component).value = '';
+        document.getElementById(component).disabled = false;
+    }
+
+    // Get each component of the address from the place details
+    // and fill the corresponding field on the form.
+    for (var i = 0; i < place.address_components.length; i++) {
+        var addressType = place.address_components[i].types[0];
+        if (componentForm[addressType]) {
+            var val = place.address_components[i][componentForm[addressType]];
+            document.getElementById(addressType).value = val;
+        }
+    }
+}
+
+function geolocate() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            var geolocation = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+            var circle = new google.maps.Circle({
+                center: geolocation,
+                radius: position.coords.accuracy
+            });
+            autocomplete.setBounds(circle.getBounds());
+        });
+    }
 }

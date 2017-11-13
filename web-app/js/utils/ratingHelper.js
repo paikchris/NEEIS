@@ -1,46 +1,168 @@
 var testRateInfoMap = {}
 var testPolicyInfoMap = {}
 
+function calculatePackageTotalPremium(packageID, selectedLOBIDArray){
+    var totalPackagePremium = 0
+    var operationObject = getCurrentOperationTypeObject()
+    var coverageMap = getCoverageObject(packageID)
+    var productObject = getProductObjectFromProductID(getProductIDForCoverage(packageID))
+    var rateID = productObject.rateCode
+    var rateObject = getRateObjectByID(rateID)
+    var ratingBasisID = rateObject.rateBasis
+    var ratingBasisObject = getRatingBasisObjectByID(ratingBasisID)
 
-function calculateTotalCoveragePremium(rateMap, ratingBasisMap){
+    var packageBasePremium = calculateTotalCoveragePremium(productObject, rateObject, ratingBasisObject)
+    totalPackagePremium = totalPackagePremium + packageBasePremium
+
+
+    var thisCoveragePackageMap = JSON.parse(operationObject.coveragePackageMap)[packageID]
+    for(var i=0;i<selectedLOBIDArray.length;i++){
+        var lobID = selectedLOBIDArray[i]
+        var lobInfoMap = getLOBObjectFromPackageMap(packageID, lobID)
+        var lobRateID = lobInfoMap.rateID
+        var lobRateObject = getRateObjectByID(lobRateID)
+        var lobRatingBasisID = lobRateObject.rateBasis
+        var lobRatingBasisObject = getRatingBasisObjectByID(lobRatingBasisID)
+
+        var thisLOBPremium = calculateTotalCoveragePremium(false, lobRateObject, lobRatingBasisObject, packageID)
+
+        totalPackagePremium = totalPackagePremium + thisLOBPremium
+    }
+
+    return totalPackagePremium
+}
+
+function calculateTotalCoveragePremium(productObject, rateMap, ratingBasisMap, ifLOB_PackageID){
     var rateBasis = rateMap.rateBasis
-    var premium
+    var premium = 0
 
-    if(rateBasis === 'LIMIT'){
-        var limitRateArray = jsonStringToObject( rateMap.limitRateArray )
+    if(rateBasis !== "invalid"){
+        if(rateBasis === 'LIMIT'){
+            var limitRateArray = jsonStringToObject( rateMap.limitRateArray )
 
-        for(var i=0;i<limitRateArray.length;i++){
+            for(var i=0;i<limitRateArray.length;i++){
+                var limDescription = limitRateArray[i].limitDescription
+                var userInputValue = getLimitValueFromLimitDescription(ifLOB_PackageID, limDescription)
 
+                premium = calculateLimitPremium(rateMap, limDescription, userInputValue)
+            }
+        }
+        else if(rateBasis === 'BRACKET'){
+            var minPremium = rateMap.minPremium
+            var basisQuestionID = ratingBasisMap.basisQuestionID
+            var basisQuestionValue = getFloatValueOfMoney($('#' + basisQuestionID).val())
+
+            var bracketRateArray = jsonStringToObject(rateMap.bracketRateArray)
+
+            var remainingAmountOfQuestionValue = basisQuestionValue
+            for(var i=0;i<bracketRateArray.length;i++) {
+                var thisBracketMap = jsonStringToObject(bracketRateArray[i])
+                var rateValue = parseFloat(thisBracketMap.rateValue)
+                var upto = parseFloat(thisBracketMap.upto)
+
+                if (remainingAmountOfQuestionValue > upto) {
+                    remainingAmountOfQuestionValue = remainingAmountOfQuestionValue - upto
+                    premium = premium + (upto * rateValue)
+                }
+                else {
+                    premium = premium + (remainingAmountOfQuestionValue * rateValue)
+                    remainingAmountOfQuestionValue = 0
+                }
+            }
+
+            if(premium < minPremium){
+                premium = minPremium
+            }
+        }
+        else if(rateBasis === 'FLAT'){
+            var flatAmount = parseFloat(rateMap.flatAmount)
+
+            premium = flatAmount
+
+            // if(premium < minPremium){
+            //     premium = minPremium
+            // }
+        }
+        else{
+            var rateValue = parseFloat(rateMap.rateValue)
+            var minPremium = rateMap.minPremium
+            var basisQuestionID = ratingBasisMap.basisQuestionID
+            var basisQuestionValue = getFloatValueOfMoney($('#' + basisQuestionID).val())
+
+            premium = basisQuestionValue * rateValue
+
+            if(premium < minPremium){
+                premium = minPremium
+            }
+        }
+
+        //CHECK ADDITIONAL OPTIONS
+        if(productObject){
+            premium = checkAdditionalOptionsForPremiumChanges(productObject, premium)
         }
     }
-    else{
-        var rateValue = parseFloat(rateMap.rateValue)
-        var minPremium = rateMap.minPremium
-        var basisQuestionID = ratingBasisMap.basisQuestionID
-        var basisQuestionValue = parseFloat($('#' + basisQuestionID).val())
 
-        premium = basisQuestionValue * rateValue
+    return parseFloat(premium)
+}
 
-        if(premium < minPremium){
-            premium = minPremium
+function calculatePackageLOBPremium(){
+}
+
+function checkAdditionalOptionsForPremiumChanges(productObject, currentPremium){
+    var updatedPremium = currentPremium
+    var additionalOptionArray = getSelectedProductAdditionalOptionMap()[productObject.productID]
+
+    for(var i=0; i<additionalOptionArray.length; i++){
+        var additionalOptionID = additionalOptionArray[i]
+
+        if(additionalOptionID === 'MED'){
+            var premiumToAdd = 25
+            updatedPremium = parseFloat(updatedPremium) + parseFloat(premiumToAdd)
+        }
+
+        if(additionalOptionID === 'BAI'){
+            var premiumToAdd = 100
+            updatedPremium = parseFloat(updatedPremium) + parseFloat(premiumToAdd)
+        }
+
+        if(additionalOptionID === 'WOS'){
+            var premiumToAdd = 100
+            updatedPremium = parseFloat(updatedPremium) + parseFloat(premiumToAdd)
+        }
+
+        if(additionalOptionID === 'INCAGG'){
+            var premiumToAdd = 250
+            updatedPremium = parseFloat(updatedPremium) + parseFloat(premiumToAdd)
+        }
+        if(additionalOptionID === 'CIVAUTH100'){
+            var premiumToAdd = 250
+            updatedPremium = parseFloat(updatedPremium) + parseFloat(premiumToAdd)
+        }
+        if(additionalOptionID === 'CIVAUTH500'){
+            var premiumToAdd = 500
+            updatedPremium = parseFloat(updatedPremium) + parseFloat(premiumToAdd)
         }
     }
 
-    return premium
+    return updatedPremium
 }
 
 function calculateLimitPremium(rateMap, limitDescString, userInputLimit){
     var limitRateArray = jsonStringToObject(rateMap.limitRateArray)
     var premium
 
+
     for(var i=0;i<limitRateArray.length; i++){
         var thisLimitRateMap = jsonStringToObject(limitRateArray[i])
-        if(thisLimitRateMap.limitDescription === limitDescString){
+
+        if(thisLimitRateMap.limitDescription === limitDescString.trim()){
             var limitDescription = thisLimitRateMap.limitDescription
             var limitRateValue = parseFloat(thisLimitRateMap.rateValue)
-            var limitMinPremium = parseFloat(thisLimitRateMap.minPremium)
+            var limitMinPremium = getFloatValueOfMoney(thisLimitRateMap.minPremium)
+            var userInputFloatValue = getFloatValueOfMoney(userInputLimit)
 
-            premium = userInputLimit * limitRateValue
+            premium = userInputFloatValue * limitRateValue
+
 
             if(premium < limitMinPremium){
                 premium = limitMinPremium
@@ -51,6 +173,10 @@ function calculateLimitPremium(rateMap, limitDescString, userInputLimit){
     }
 
     return undefined
+}
+
+function calculatePackageLOBPremium(){
+    
 }
 
 function getRangePremiumAndDetail(rangeMap, policyInfoMap, rateBasis, ignoreMinPrem){
@@ -565,3 +691,10 @@ function getTotalPremiumAndDetail(rateInfoMap, policyInfoMap, isPrimary){
 
     return { totalPremium:totalPremium, detail: rateCalcDetail, finalRateCalcDetail: finalRateCalcDetail }
 }
+
+
+
+
+
+
+//RATING LOGIC

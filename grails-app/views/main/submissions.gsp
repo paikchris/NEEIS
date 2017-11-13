@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="${resource(dir: 'js', file: "submissions.js?ts=" + new Date().getTime())}"></script>
     <meta name="layout" content="main">
     <link rel="stylesheet" href="${resource(dir: 'css', file: 'submissions.css')}" type="text/css">
 
@@ -42,63 +43,60 @@
         }
 
     </style>
+
+    <script>
+        var sL = ${raw(submissionList)}
+    </script>
 </head>
 
 <body>
-    <div class="col-xs-12">
+    %{--HEADER--}%
+    <div class="col-xs-12" style="margin-top:30px">
+        <div class="col-xs-4">
+            <h3 style=" color: rgba(0, 0, 0, 0.57); margin-top:0px; margin-bottom:0px;">My Submissions</h3>
+            <g:if test="${user.userRole == "Broker"}">
+                <span>Broker View</span>
+            </g:if>
+            <g:elseif test="${user.userRole == "Underwriter"}">
+                <span>Underwriter View</span>
+            </g:elseif>
+            <div id="userRole" style="display:none">${user.userRole}</div>
+            <div id="additionalInsuredListHidden" style="display:none">${additionalInsuredList}</div>
+            <div id="neeisUWListHidden" style="display:none">${neeisUWList}</div>
+        </div>
+        <div class="col-xs-4 ">
+            %{--<g:link action="downloadPDF" style="" id="hiddenCertButton">--}%
+                %{--<img src="/portal/images/pdfIcon.png" height="32" width="32"> Download Cert</img>--}%
+            %{--</g:link>--}%
+            <div class="input-group">
+                <input type="text" class="form-control" id="submissionSearch" placeholder="Search" disabled>
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" id="searchButton" disabled>Search</button>
+                </span>
+            </div><!-- /input-group -->
 
-    </div>
-
-<br>
-<div class="col-xs-12">
-    <div class="col-xs-4">
-        <h3 style=" color: rgba(0, 0, 0, 0.57); margin-top:0px; margin-bottom:0px;">My Submissions</h3>
-        <g:if test="${user.userRole == "Broker"}">
-            <span>Broker View</span>
-        </g:if>
-        <g:elseif test="${user.userRole == "Underwriter"}">
-            <span>Underwriter View</span>
-        </g:elseif>
-        <div id="userRole" style="display:none">${user.userRole}</div>
-        <div id="additionalInsuredListHidden" style="display:none">${additionalInsuredList}</div>
-        <div id="neeisUWListHidden" style="display:none">${neeisUWList}</div>
-    </div>
-    <div class="col-xs-4 ">
-        %{--<g:link action="downloadPDF" style="" id="hiddenCertButton">--}%
-            %{--<img src="/portal/images/pdfIcon.png" height="32" width="32"> Download Cert</img>--}%
-        %{--</g:link>--}%
-        <div class="input-group">
-            <input type="text" class="form-control" id="submissionSearch" placeholder="Search">
-            <span class="input-group-btn">
-                <button class="btn btn-default" type="button" id="searchButton">Search</button>
-            </span>
-        </div><!-- /input-group -->
-
-    </div>
-    <div class="col-xs-4">
-        <div class="dropdown">
-            <button class="btn btn-default dropdown-toggle pull-right" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                Filter
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
-                <li><a href="#" class="filterButton" data-filterOption="none"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> No Filter</a></li>
-                <li><a href="#" class="filterButton" data-filterOption="WRA"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Approval Requested</a></li>
-                <li><a href="#" class="filterButton" data-filterOption="BND"><span class="glyphicon glyphicon-transfer" aria-hidden="true"></span> Bound</a></li>
-                <li><a href="#" class="filterButton" data-filterOption="QO"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Quoted</a></li>
-                <li><a href="#" class="filterButton" data-filterOption="WB3"><span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span> Approved</a></li>
-                <li><a href="#" class="filterButton" data-filterOption="WB5"><span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span> Declined</a></li>
-            </ul>
+        </div>
+        <div class="col-xs-4">
+            <div class="dropdown">
+                <button class="btn btn-default dropdown-toggle pull-right" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" disabled>
+                    Filter
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
+                    <li><a href="#" class="filterButton" data-filterOption="none"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> No Filter</a></li>
+                    <li><a href="#" class="filterButton" data-filterOption="WRA"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Approval Requested</a></li>
+                    <li><a href="#" class="filterButton" data-filterOption="BND"><span class="glyphicon glyphicon-transfer" aria-hidden="true"></span> Bound</a></li>
+                    <li><a href="#" class="filterButton" data-filterOption="QO"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Quoted</a></li>
+                    <li><a href="#" class="filterButton" data-filterOption="WB3"><span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span> Approved</a></li>
+                    <li><a href="#" class="filterButton" data-filterOption="WB5"><span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span> Declined</a></li>
+                </ul>
+            </div>
         </div>
     </div>
 
 
-</div>
-    <div class="form-group col-xs-4 col-xs-offset-4">
-    </div>
-
-    <div class="form-group col-xs-12">
-
+    %{--SUBMISSION LIST TABLE--}%
+    <div class="col-xs-12">
         <div class="col-xs-12">
             <table class="table table-striped">
                 <thead>
@@ -116,104 +114,104 @@
                 </thead>
 
                 <tbody id="submissionRows" style="font-size: 13px;">
-                        <g:each in="${submissions}" var="s" status="i">
-                            <tbody class="submissionRowContainer">
-                                <g:if test="${s.seenByUW == "Y"}">
-                                    <tr class="submissionRow" style="cursor:pointer">
+                    <g:each in="${submissions}" var="s" status="i">
+                        <tbody class="submissionRowContainer">
+                            <g:if test="${s.seenByUW == "Y"}">
+                                <tr class="submissionRow" style="cursor:pointer">
+                            </g:if>
+                            <g:elseif test="${s.seenByUW == "N"}">
+                                %{--<tr style="font-weight: 500; background-color: rgba(21, 142, 71, 0.32)">--}%
+                                <tr class="submissionRow" style="cursor:pointer">
+                            </g:elseif>
+                            <g:else>
+                                <tr class="submissionRow" style="cursor:pointer">
+                            </g:else>
+
+                            <g:if test="${user.userRole == "Broker"}">
+                                <td><span class="" aria-hidden="" style="color: rgba(146, 221, 237, 1);font-size: 14px;"></span></td>
+                            </g:if>
+                            <g:elseif test="${user.userRole == "Underwriter"}">
+                                <g:if test="${s.web == "true"}">
+                                    <td><span class="glyphicon glyphicon-cloud" aria-hidden="true"
+                                              style="color: rgba(146, 221, 237, 1);font-size: 14px; min-width: 70px"></span></td>
                                 </g:if>
-                                <g:elseif test="${s.seenByUW == "N"}">
-                                    %{--<tr style="font-weight: 500; background-color: rgba(21, 142, 71, 0.32)">--}%
-                                    <tr class="submissionRow" style="cursor:pointer">
-                                </g:elseif>
                                 <g:else>
-                                    <tr class="submissionRow" style="cursor:pointer">
-                                </g:else>
-
-                                <g:if test="${user.userRole == "Broker"}">
                                     <td><span class="" aria-hidden="" style="color: rgba(146, 221, 237, 1);font-size: 14px;"></span></td>
-                                </g:if>
-                                <g:elseif test="${user.userRole == "Underwriter"}">
-                                    <g:if test="${s.web == "true"}">
-                                        <td><span class="glyphicon glyphicon-cloud" aria-hidden="true"
-                                                  style="color: rgba(146, 221, 237, 1);font-size: 14px; min-width: 70px"></span></td>
-                                    </g:if>
-                                    <g:else>
-                                        <td><span class="" aria-hidden="" style="color: rgba(146, 221, 237, 1);font-size: 14px;"></span></td>
-                                    </g:else>
-                                </g:elseif>
+                                </g:else>
+                            </g:elseif>
 
+                            <g:if test="${user.userRole == "Broker"}">
+                                <th scope="row"><a href="#" class="aimQuoteIDTD">${s.aimQuoteID}</a></th>
+                            </g:if>
+                            <g:elseif test="${user.userRole == "Underwriter"}">
+                                <th scope="row"><a href="#" class="aimQuoteIDTD">${s.aimQuoteID}</a></th>
+                            </g:elseif>
+
+                                <td class="namedInsuredTD">${s.namedInsured}</td>
+                                <td class="coveragesTD">${s.coverages}</td>
+                                <td  class="submittedByTD">${s.submittedBy}</td>
                                 <g:if test="${user.userRole == "Broker"}">
-                                    <th scope="row"><a href="#" class="aimQuoteIDTD">${s.aimQuoteID}</a></th>
+                                    <td  class="brokerEmail" style="display:none">${session.user.email}</td>
                                 </g:if>
                                 <g:elseif test="${user.userRole == "Underwriter"}">
-                                    <th scope="row"><a href="#" class="aimQuoteIDTD">${s.aimQuoteID}</a></th>
+                                    <td  class="brokerEmail" style="display:none">${s.brokerEmail}</td>
                                 </g:elseif>
 
-                                    <td class="namedInsuredTD">${s.namedInsured}</td>
-                                    <td class="coveragesTD">${s.coverages}</td>
-                                    <td  class="submittedByTD">${s.submittedBy}</td>
+                                <td  class="submitDateTD">${s.submitDate}</td>
+                                <td class="submissionStatusTD">
+                                    <g:if test="${s.statusCode == "NBR"}">
+                                    New Submission Received
+                                    </g:if>
+                                    <g:elseif test="${s.statusCode == "QO"}">
+                                        Quoted
+                                    </g:elseif>
+                                    <g:elseif test="${s.statusCode == "WRA"}">
+                                        Approval Requested
+                                    </g:elseif>
+                                    <g:elseif test="${s.statusCode == "WB3"}">
+                                        Approved
+                                    </g:elseif>
+                                    <g:elseif test="${s.statusCode == "BRQ"}">
+                                        Bind Requested
+                                    </g:elseif>
+                                    <g:elseif test="${s.statusCode == "BND"}">
+                                        Bound
+                                    </g:elseif>
+                                    <g:elseif test="${s.statusCode == "WB5"}">
+                                        Declined
+                                    </g:elseif>
+                                    <g:else>
+                                        ${s.statusCode}
+                                    </g:else>
+                                </td>
+
+
+                                <td class="underwriterTD">
                                     <g:if test="${user.userRole == "Broker"}">
-                                        <td  class="brokerEmail" style="display:none">${session.user.email}</td>
+                                        ${s.underwriter}
                                     </g:if>
                                     <g:elseif test="${user.userRole == "Underwriter"}">
-                                        <td  class="brokerEmail" style="display:none">${s.brokerEmail}</td>
+                                        ${s.underwriter}
                                     </g:elseif>
+                                </td>
 
-                                    <td  class="submitDateTD">${s.submitDate}</td>
-                                    <td class="submissionStatusTD">
-                                        <g:if test="${s.statusCode == "NBR"}">
-                                        New Submission Received
-                                        </g:if>
-                                        <g:elseif test="${s.statusCode == "QO"}">
-                                            Quoted
-                                        </g:elseif>
-                                        <g:elseif test="${s.statusCode == "WRA"}">
-                                            Approval Requested
-                                        </g:elseif>
-                                        <g:elseif test="${s.statusCode == "WB3"}">
-                                            Approved
-                                        </g:elseif>
-                                        <g:elseif test="${s.statusCode == "BRQ"}">
-                                            Bind Requested
-                                        </g:elseif>
-                                        <g:elseif test="${s.statusCode == "BND"}">
-                                            Bound
-                                        </g:elseif>
-                                        <g:elseif test="${s.statusCode == "WB5"}">
-                                            Declined
-                                        </g:elseif>
-                                        <g:else>
-                                            ${s.statusCode}
-                                        </g:else>
-                                    </td>
+                                <td><a class="attachmentsLink">Attachments</a></td>
 
-
-                                    <td class="underwriterTD">
-                                        <g:if test="${user.userRole == "Broker"}">
-                                            ${s.underwriter}
-                                        </g:if>
-                                        <g:elseif test="${user.userRole == "Underwriter"}">
-                                            ${s.underwriter}
-                                        </g:elseif>
-                                    </td>
-
-                                    <td><a class="attachmentsLink">Attachments</a></td>
-
-                                    %{--HIDDEN TDS--}%
-                                    <td class="statusCode" style="display:none">
-                                        ${s.statusCode}
-                                    </td>
-                                    <td class="aimVersionTD" style="display:none">${s.aimVersion}</td>
-                                </tr>
-                            </tbody>
-                        </g:each>
+                                %{--HIDDEN TDS--}%
+                                <td class="statusCode" style="display:none">
+                                    ${s.statusCode}
+                                </td>
+                                <td class="aimVersionTD" style="display:none">${s.aimVersion}</td>
+                            </tr>
+                        </tbody>
+                    </g:each>
                 </tbody>
             </table>
         </div>
-                </div>
     </div>
 
-<script src="${resource(dir: 'js', file: "submissions.js?ts=" + new Date().getTime())}"></script>
+
+
 
 
 <div class="modal fade" tabindex="-1" role="dialog" id="attachmentsViewModal">

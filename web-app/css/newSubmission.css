@@ -66,15 +66,124 @@ label.limitsLabel, label.deductsLabel{
 div#operationsCoveragesPanelBody span{
     font-size:12px;
 }
+div#operationsCoveragesPanelBody div#limitsDeductiblesContainer div.form-group,
+div#operationsCoveragesPanelBody div#premiumDetailContainer div.form-group{
+    margin-bottom:0px;
+}
 
 /*STEP 2 COVERAGE QUESTIONS */
 
 
 /*STEP 2 PREMIUM AND RATE INFO */
-
-div#operationsCoveragesPanelBody div#premiumLinesContainer div.limitPremiumLineRow span{
-    font-size: 10px;
+div#premiumLinesContainer div.premiumLineRow{
+    color: rgba(16, 47, 73, 1);
 }
+div#premiumLinesContainer div.premiumHeaderRow{
+    margin-top:6px;
+    color: rgba(35, 102, 159, 0.94);
+    background: rgba(84, 206, 255, 0.05);
+    border-radius: 4px;
+}
+div#premiumLinesContainer div.premiumHeaderRow span{
+    font-size:14px;
+}
+div#premiumLinesContainer div.premiumHeaderRow span.premiumLine_description{
+    font-weight:500;
+}
+div#premiumLinesContainer div.premiumLOBHeaderRow span{
+    font-size:13px;
+}
+div#premiumLinesContainer div.premiumLOBHeaderRow .premiumLine_description{
+    padding-left:16px;
+}
+div#premiumLinesContainer .premiumLineRow .lobIndent{
+    padding-left:28px;
+}
+div#premiumLinesContainer div.packageTotalLine .premiumLine_description{
+    padding-left:16px;
+}
+
+div#operationsCoveragesPanelBody div#premiumLinesContainer div.limitPremiumLineRow{
+    /*position:relative;*/
+    /*bottom:5px;*/
+}
+div#operationsCoveragesPanelBody div#premiumLinesContainer div.limitTotalPremiumLineRow{
+    /*position:relative;*/
+    /*bottom:10px;*/
+}
+div#operationsCoveragesPanelBody div#premiumLinesContainer div.limitPremiumLineRow .premiumLine_description{
+    padding-left:32px;
+}
+div#operationsCoveragesPanelBody div#premiumLinesContainer div.limitTotalPremiumLineRow{
+    margin-bottom:6px;
+}
+div#operationsCoveragesPanelBody div#premiumLinesContainer div.limitTotalPremiumLineRow .premiumLine_description{
+    padding-left:32px;
+    color: rgba(26, 77, 120, 0.75);
+    font-weight: 500;
+}
+div#operationsCoveragesPanelBody div#premiumLinesContainer div.limitPremiumLineRow:not(.coveragePremiumRow) span{
+    font-style: italic;
+    font-size: 11px;
+}
+div#operationsCoveragesPanelBody div#premiumLinesContainer .coverageTotalPremium{
+    font-size:14px;
+    color: rgba(35, 102, 159, 0.94);
+    font-weight:500;
+    padding-left:60px;
+}
+div#operationsCoveragesPanelBody div#premiumLinesContainer .packageTotalLine .coverageTotalPremium{
+    border-top: 1px solid gray;
+}
+
+div#taxLinesContainer div.taxRow{
+    color: rgb(21, 98, 31);
+    background: rgba(5, 255, 79, 0.05);
+    border-radius: 4px;
+}
+div#taxLinesContainer div.taxRow span{
+    font-size:14px;
+}
+div#taxLinesContainer div.taxRow span.taxLine_total{
+    padding-left:60px;
+}
+div#premiumTotalContainer div.totalPremiumRow span{
+    font-size:14px;
+    font-weight:500;
+}
+div#premiumTotalContainer div.totalPremiumRow span.totalPremium{
+    padding-left:60px;
+}
+
+/*STEP 3 UNDERWRITING QUESTIONS */
+div.uwQuestionCategoryContainer div.uwQuestionGroupRow:first-child{
+    margin-bottom:20px;
+}
+div.uwQuestionCategoryContainer div.uwQuestionGroupRow:not(:first-child):not(:last-child){
+    margin-top:20px;
+    margin-bottom:20px;
+}
+label.checkboxVerticalLayout{
+    display:inline-block;
+    font-weight:300;
+}
+label.radioHorizontalLayout{
+    margin-right: 20px;
+    font-weight:300;
+}
+div.hiddenDivContainer {
+    font-size: smaller;
+    line-height: 1em;
+    margin-top: 10px;
+}
+
+/*STEP 3 REVIEW PAGE*/
+span.reviewData{
+    margin-left:10px;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+}
+
 
 label{
     font-weight: 500;

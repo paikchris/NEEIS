@@ -20,6 +20,7 @@ class AdminController {
     //SERVICES
     def syncService
     def mySqlService
+    def aimSqlService
     def utilService
 
     //DATA SOURCES
@@ -36,19 +37,24 @@ class AdminController {
 
 
     def checkUser() {
-        log.info "CHECK USER"
-        log.info params
-
-        log.info session.user
+        println "CHECK USER"
+        println params
 
         AuthController ac = new AuthController()
-        def test = ac.check()
-        //println "TEST WASSSSS " + session.user;
-        if(test == true && session.user.admin == "true"){
-            //user is admin
+        def loggedIn = ac.check()
+
+        if(loggedIn){
+            if(session.user.admin == "true"){
+
+            }
+            else{
+                redirect(controller:'main', action:'index')
+            }
+
         }
-        else if(test == true){
-            redirect(controller:'main', action:'index')
+        else
+        {
+            redirect(controller:'auth', action:'index')
         }
 
     }
@@ -87,24 +93,35 @@ class AdminController {
         log.info "DATA MANAGEMENT"
         log.info params
 
-        //RISK CATEGORIES
-        List <RiskCategory> riskCategoryResults = RiskCategory.findAllWhere(activeFlag: "Y")
-        String riskCategories = utilService.gormResultsToJSObject(riskCategoryResults)
-
-        //RISK TYPES
-        List <RiskType> riskTypeResults = RiskType.findAllWhere(activeFlag: "Y")
-        String riskTypes = utilService.gormResultsToJSObject(riskTypeResults)
 
         //PRODUCTS
-        List <Products> productResults = Products.findAllWhere(activeFlag: "Y")
+        List <Products> productResults = Products.list()
+        productResults.sort{ it.productID }
         String products = utilService.gormResultsToJSObject(productResults)
 
         //OPERATIONS
         List <Operations> operationResults = Operations.list()
+        operationResults.sort{ it.description }
         String operations = utilService.gormResultsToJSObject(operationResults)
 
+
+        //OPERATION CATEGORIES
+        List operationCategoryResults = []
+        operationResults.each{
+            if( it.description.contains(" - ") ){
+                def operationCategoryMap = [:]
+                operationCategoryMap.operationID = it.operationID
+                operationCategoryMap.description = it.description.split(" - ")[0].trim()
+
+                operationCategoryResults << operationCategoryMap
+            }
+        }
+        operationCategoryResults = operationCategoryResults.unique{ it.description }
+        String operationCategories = new JsonBuilder(operationCategoryResults).toString()
+
         //COVERAGES
-        List <Coverages> coverageResults = Coverages.findAllWhere(activeFlag: "Y")
+        List <Coverages> coverageResults = Coverages.list()
+        coverageResults.sort{ it.coverageCode }
         String coverages = utilService.gormResultsToJSObject(coverageResults)
 
         //CONDITION BASIS
@@ -113,18 +130,29 @@ class AdminController {
 
         //CONDITION OPERATORS
         List <Conditions> conditionOperatorsResults = Conditions.findAllWhere(type: "operator")
-        String conditionOperators = utilService.gormResultsToJSObject(conditionBasisResults)
+        String conditionOperators = utilService.gormResultsToJSObject(conditionOperatorsResults)
 
         //QUESTIONS
         List <Questions> questionResults = Questions.list()
+
+        questionResults.sort{ it.weight }
+        log.info questionResults.weight
         String questions = utilService.gormResultsToJSObject(questionResults)
+
+        //QUESTION CATEGORIES
+        List <QuestionCategory> questionCategoryResults = QuestionCategory.list()
+        questionCategoryResults.sort{ it.weight }
+        log.info questionCategoryResults.weight
+        String questionCategories = utilService.gormResultsToJSObject(questionCategoryResults)
 
         //RATING BASIS
         List <RatingBasis> ratingBasisResults = RatingBasis.list()
+        ratingBasisResults.sort{ it.description }
         String ratingBasis = utilService.gormResultsToJSObject(ratingBasisResults)
 
         //RATES
         List <Rates> rateResults = portal.Rates.list()
+        rateResults.sort { it.rateID }
         String rates = utilService.gormResultsToJSObject(rateResults)
 
         //COMPANY
@@ -133,17 +161,37 @@ class AdminController {
 
         //FORMS
         List <Forms> formResults = Forms.list()
+        formResults.sort { it.formID }
         String forms = utilService.gormResultsToJSObject(formResults)
 
 
 
 
-        [user: session.user, riskCategories:riskCategories, riskCategoryResults:riskCategoryResults,
-         riskTypes:riskTypes, riskTypeResults:riskTypeResults, operations: operations, productResults:productResults, products:products,
+        [user: session.user, operations: operations,
+         productResults:productResults, products:products,
+         operationCategoryResults:operationCategoryResults, operationCategories:operationCategories,
          conditionBasisResults: conditionBasisResults, conditionBasis: conditionBasis, conditionOperatorsResults:conditionOperatorsResults,
-         conditionOperators: conditionOperators, questionResults:questionResults, questions:questions,
+         conditionOperators: conditionOperators,
+         questionResults:questionResults, questions:questions,
+         questionCategoryResults:questionCategoryResults, questionCategories:questionCategories,
          rateResults:rateResults, rates:rates, companyResults:companyResults, companies:companies, formResults:formResults, forms:forms,
          operationResults: operationResults, coverages: coverages, coverageResults: coverageResults, ratingBasisResults:ratingBasisResults, ratingBasis:ratingBasis ]
+    }
+
+    def uploadForm() {
+        log.info params
+        log.info "FORM ID ===== "  + params.formID
+
+        def f = request.getFile('formFile')
+        def formSavePath = servletContext.getRealPath("/docs/forms/${params.formID}.pdf")
+        if (f.empty) {
+            flash.message = 'file cannot be empty'
+            render(view: 'uploadForm')
+            return
+        }
+        f.transferTo(new File(formSavePath))
+//        response.sendError(200, 'Done')
+        render "Uploaded, Press back"
     }
 
     def syncAllWithDMU(){
@@ -158,44 +206,236 @@ class AdminController {
         render syncService.checkForUpdates()
     }
 
-    def emergencyIndication(){
-        intelledoxDAO.createEmergencyIndicationPDF(dataSource_aim)
 
+    //DATA ACCESS
+    def refreshProducts(){
+        log.info "REFRESH PRODUCTS"
+        log.info params
+
+        List <Products> productResults = Products.list()
+        productResults.sort{ it.productID }
+        String products = utilService.gormResultsToJSObject(productResults)
+
+        render products
+    }
+    def refreshOperationCategories(){
+        log.info "REFRESH OPERATION CATEGORIES"
+        log.info params
+
+        List <Operations> operationResults = Operations.list()
+        List operationCategoryResults = []
+        operationResults.each{
+            if( it.description.contains(" - ") ){
+                def operationCategoryMap = [:]
+                operationCategoryMap.operationID = it.operationID
+                operationCategoryMap.description = it.description.split(" - ")[0].trim()
+
+                operationCategoryResults << operationCategoryMap
+            }
+        }
+        operationCategoryResults = operationCategoryResults.unique{ it.description }
+        String operationCategories = new JsonBuilder(operationCategoryResults).toString()
+
+        render operationCategories
+    }
+    def refreshOperations(){
+        log.info "REFRESH OPERATIONS"
+        log.info params
+
+        List <Operations> operationResults = Operations.list()
+        operationResults.sort{ it.description }
+        String operations = utilService.gormResultsToJSObject(operationResults)
+
+        render operations
+    }
+    def refreshCoverages(){
+        log.info "REFRESH COVERAGES"
+        log.info params
+
+        List <Coverages> coverageResults = Coverages.list()
+        String coverages = utilService.gormResultsToJSObject(coverageResults)
+
+        render coverages
+    }
+    def refreshConditionBasis(){
+        log.info "REFRESH CONDITION BASIS"
+        log.info params
+
+        List <Conditions> conditionBasisResults = Conditions.findAllWhere(type: "basis")
+        String conditionBasis = utilService.gormResultsToJSObject(conditionBasisResults)
+
+        render conditionBasis
+    }
+    def refreshConditionOperators(){
+        log.info "REFRESH CONDITION OPERATORS"
+        log.info params
+
+        List <Conditions> conditionOperatorsResults = Conditions.findAllWhere(type: "operator")
+        String conditionOperators = utilService.gormResultsToJSObject(conditionOperatorsResults)
+
+        render conditionOperators
+    }
+    def refreshQuestions(){
+        log.info "REFRESH QUESTIONS"
+        log.info params
+
+        List <Questions> questionResults = Questions.list()
+        questionResults.sort{ it.weight }
+
+        String questions = utilService.gormResultsToJSObject(questionResults)
+
+        render questions
+    }
+    def refreshQuestionCategories(){
+        log.info "REFRESH QUESTIONS CATEGORIES"
+        log.info params
+
+        List <QuestionCategory> questionCategoryResults = QuestionCategory.list()
+        questionCategoryResults.sort{ it.weight }
+        log.info questionCategoryResults.weight
+        String questionCategories = utilService.gormResultsToJSObject(questionCategoryResults)
+
+        render questionCategories
+    }
+    def refreshRatingBasis(){
+        log.info "REFRESH RATING BASIS"
+        log.info params
+
+        List <RatingBasis> ratingBasisResults = RatingBasis.list()
+        ratingBasisResults.sort{ it.description }
+        String ratingBasis = utilService.gormResultsToJSObject(ratingBasisResults)
+
+        render ratingBasis
+    }
+    def refreshRates(){
+        log.info "REFRESH RATES"
+        log.info params
+
+        List <Rates> rateResults = portal.Rates.list()
+        rateResults.sort { it.rateID }
+        String rates = utilService.gormResultsToJSObject(rateResults)
+
+        render rates
+    }
+    def refreshCompanies(){
+        log.info "REFRESH COMPANIES"
+        log.info params
+
+        List <Company> companyResults = Company.list()
+        String companies = utilService.gormResultsToJSObject(companyResults)
+
+        render companies
+    }
+    def refreshForms(){
+        log.info "REFRESH FORMS"
+        log.info params
+
+        List <Forms> formResults = Forms.list()
+        String forms = utilService.gormResultsToJSObject(formResults)
+
+        render forms
     }
 
-
+    def createOperationRecord(){
+        render syncService.createOperation(params)
+    }
     def saveOperationsChanges(){
-        log.info "SAVING OPERATIONS CHANGES"
+        render syncService.saveOperationsChanges(params)
+    }
+    def deleteOperation(){
+        render syncService.deleteOperation(params)
+    }
+
+    def createCoverage(){
+        render syncService.createCoverage(params)
+    }
+    def saveCoverageChanges(){
+        render syncService.saveCoverageChanges(params)
+    }
+
+    def createProductRecord(){
+        log.info "CREATING NEW PRODUCT RECORD 1"
         log.info params
+
 
         def renderMessage = "Success"
 
         try{
-            def coverageProductMap = jsonSlurper.parseText(params.coverageProductMap)
-            def uwQuestionsMap = jsonSlurper.parseText(params.uwQuestionsMap)
-            def requiredQuestionsMap = jsonSlurper.parseText(params.requiredQuestionsMap)
-            def weightOrderedRequiredQuestions = jsonSlurper.parseText(params.weightOrderedRequiredQuestions)
-
-            Operations operationRecord = Operations.findByOperationID(params.operationID)
-
-            operationRecord.coverageProductMap = jsonOutput.toJson(coverageProductMap)
-            operationRecord.underwriterQuestionsMap = jsonOutput.toJson(uwQuestionsMap)
-            operationRecord.requiredQuestionsMap = jsonOutput.toJson(requiredQuestionsMap)
-            operationRecord.weightOrderedRequiredQuestions = jsonOutput.toJson(weightOrderedRequiredQuestions)
+            def productID = params.productID.toUpperCase()
+            def productName = params.productName
+            def coverageCode = params.coverageCode
+            def companyID = params.companyID
+            def productKey_PK = aimSqlService.getKeyFieldReferenceID()
+            def activeFlag = params.activeFlag
 
 
-            operationRecord.save(flush: true, failOnError: true)
+            //CHECK AIMSQL FOR EXISTING PRODUCTID
+            def results = aimSqlService.selectFromTableWhere("Product", "ProductID = '" + productID + "'")
+            if(results.size() == 0){
+                //SAVE CHANGES TO AIM
+                aimSqlService.insertRecord("Product", [
+                        ProductID: "'${productID}'",
+                        Description: "'${productName}'",
+                        CoverageID: "'${coverageCode}'",
+                        CompanyID: "'${companyID}'",
+                        ProductKey_PK: "'${productKey_PK}'",
+                        ActiveFlag: "'${activeFlag}'"]
+                )
+
+                Products productRecord = new Products(
+                        productID: productID,
+                        productName: productName,
+                        coverage: coverageCode,
+                        rateCode: "NONE",
+                        riskCompanyID: companyID,
+                        activeFlag:activeFlag)
+                productRecord.save(flush: true, failOnError: true)
+            }
+            else{
+                throw new Exception("Product Already Exists")
+            }
+
         }catch(Exception e){
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
             String exceptionAsString = sw.toString();
             log.info("Error Details - " + exceptionAsString)
-            renderMessage = "Error"
+            renderMessage = "Error " + exceptionAsString
         }
 
         render renderMessage
     }
+    def saveProductChanges(){
+        render syncService.saveProductChanges(params)
+    }
 
+    def createRateRecord(){
+        log.info "CREATING NEW RATE RECORD"
+        log.info params
+
+        def renderMessage = "Success"
+
+        try{
+            def rateID = params.rateID.toUpperCase()
+            def rateName = params.rateName
+            def ratingBasis = params.ratingBasis
+
+            Rates rateRecord = new Rates(
+                    rateID: rateID,
+                    rateCode: rateID,
+                    description: rateName,
+                    ratingBasis: ratingBasis)
+            rateRecord.save(flush: true, failOnError: true)
+        }catch(Exception e){
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+            renderMessage = "Error " + exceptionAsString
+        }
+
+        render renderMessage
+    }
     def saveRateChanges(){
         log.info "SAVING RATE CHANGES"
         log.info params
@@ -216,6 +456,14 @@ class AdminController {
                 def limitRateArray = jsonSlurper.parseText(params.limitRateAray)
                 rateRecord.limitRateArray = jsonOutput.toJson(limitRateArray)
             }
+            else if(params.rateBasis == 'BRACKET'){
+                def bracketRateArray = jsonSlurper.parseText(params.bracketRateArray)
+                rateRecord.bracketRateArray = jsonOutput.toJson(bracketRateArray)
+                rateRecord.minPremium = params.minPremium
+            }
+            else if(params.rateBasis == 'FLAT'){
+                rateRecord.flatAmount = params.flatAmount
+            }
             else{
                 rateRecord.rateValue = params.rateValue.toBigDecimal()
                 rateRecord.minPremium = params.minPremium
@@ -233,6 +481,30 @@ class AdminController {
         render renderMessage
     }
 
+    def createRatingBasisRecord(){
+        log.info "CREATING NEW RATING BASIS RECORD"
+        log.info params
+
+        def renderMessage = "Success"
+
+        try{
+            def basisID = params.ratingBasisID
+            def description = params.ratingBasisDescription
+
+            RatingBasis rateRecord = new RatingBasis(
+                    basisID: basisID,
+                    description: description)
+            rateRecord.save(flush: true, failOnError: true)
+        }catch(Exception e){
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+            renderMessage = "Error " + exceptionAsString
+        }
+
+        render renderMessage
+    }
     def saveRatingBasisChanges(){
         log.info "SAVING RATING BASIS CHANGES"
         log.info params
@@ -262,34 +534,274 @@ class AdminController {
         render renderMessage
     }
 
-    def saveProductChanges(){
-        log.info "SAVING PRODUCT CHANGES"
+    def createNewQuestion(){
+        log.info "CREATING NEW QUESTION RECORD"
         log.info params
 
         def renderMessage = "Success"
 
         try{
-            def formIDArray = jsonSlurper.parseText(params.formIDArray)
-            def limitArray = jsonSlurper.parseText(params.limitArray)
-            def deductArray = jsonSlurper.parseText(params.deductArray)
-            def requiredQuestions = jsonSlurper.parseText(params.requiredQuestions)
+            def questionID = params.questionID
+            def questionText = params.questionText
+            def questionCategory = params.questionCategory
 
-            def productMap = jsonSlurper.parseText(params.productMap)
+            Questions questionRecord = new Questions(
+                    questionID: questionID,
+                    questionText: questionText,
+                    questionType: 'basicText',
+                    category: questionCategory,
+                    weight: 1000,
+                    hiddenFlag: "N",
+                    gridSize: "xs",
+                    gridColumns: "3",
+                    containerClass: "",
+                    containerDataAttr: "",
+                    containerStyle: "",
+                    inputClass: "form-control questionAnswer showReview",
+                    inputType: "text",
+                    inputStyle: "",
+                    inputDataAttr: "",
+                    required: "N",
+                    disabled: "N",
+                    inputAddOnLeft: "N",
+                    inputAddOnRight: "N",
+                    inputButtonText: "",
+                    inputAddOnText: "",
+                    faIconLeft: "N",
+                    faIconRight: "N",
+                    faIconClass: "",
+                    faIconStyle: "",
+                    formGroupClass: "",
+                    formGroupStyle: "",
+                    formGroupDataAttr: "",
+                    htmlCheckboxRadioValText: "",
+                    htmlPlaceholder: "",
+                    attachments: "N"
+            )
 
-            Products productRecord = Products.findByProductID(params.productID)
 
-            productRecord.productID = productMap.productID
-            productRecord.formIDS = jsonOutput.toJson(formIDArray)
-            productRecord.productName = productMap.productName
-            productRecord.marketCompanyID = productMap.marketCompanyID
-            productRecord.coverage = productMap.coverage
-            productRecord.rateCode = productMap.rateCode
-            productRecord.terms = productMap.terms
-            productRecord.limitArray = jsonOutput.toJson(limitArray)
-            productRecord.deductArray = jsonOutput.toJson(deductArray)
-            productRecord.requiredQuestions = jsonOutput.toJson(requiredQuestions)
+            log.info questionRecord.containerClass
+            questionRecord.save(flush: true, failOnError: true)
 
-            productRecord.save(flush: true, failOnError: true)
+        }catch(Exception e){
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+            renderMessage = "Error " + exceptionAsString
+        }
+
+        render renderMessage
+    }
+    def saveQuestionChanges(){
+        log.info "SAVING QUESTION CHANGES"
+        log.info params
+
+        def renderMessage = "Success"
+
+        try{
+            def questionMap = jsonSlurper.parseText(params.questionMap)
+
+            Questions questionRecord = Questions.get(questionMap.id)
+
+            questionRecord.questionID = questionMap.questionID
+            questionRecord.questionType = questionMap.questionType
+            questionRecord.questionText = questionMap.questionText
+            questionRecord.category = questionMap.category
+
+            questionRecord.weight = questionMap.weight
+            questionRecord.hiddenFlag = questionMap.hiddenFlag
+            questionRecord.gridSize = questionMap.gridSize
+            questionRecord.gridColumns = questionMap.gridColumns
+            questionRecord.containerClass = questionMap.containerClass
+            questionRecord.containerDataAttr = questionMap.containerDataAttr
+            questionRecord.containerStyle = questionMap.containerStyle
+            questionRecord.inputClass = questionMap.inputClass
+            questionRecord.inputType = questionMap.inputType
+            questionRecord.inputStyle = questionMap.inputStyle
+            questionRecord.inputDataAttr = questionMap.inputDataAttr
+            questionRecord.required = questionMap.required
+            questionRecord.disabled = questionMap.disabled
+            questionRecord.inputAddOnLeft = questionMap.inputAddOnLeft
+            questionRecord.inputAddOnRight = questionMap.inputAddOnRight
+            questionRecord.inputButtonText = questionMap.inputButtonText
+            questionRecord.inputAddOnText = questionMap.inputAddOnText
+            questionRecord.faIconLeft = questionMap.faIconLeft
+            questionRecord.faIconRight = questionMap.faIconRight
+            questionRecord.faIconClass = questionMap.faIconClass
+            questionRecord.faIconStyle = questionMap.faIconStyle
+            questionRecord.formGroupClass = questionMap.formGroupClass
+            questionRecord.formGroupStyle = questionMap.formGroupStyle
+            questionRecord.formGroupDataAttr = questionMap.formGroupDataAttr
+            questionRecord.htmlCheckboxRadioValText = jsonOutput.toJson(questionMap.htmlCheckboxRadioValText)
+            questionRecord.htmlDataReviewName = questionMap.htmlDataReviewName
+            questionRecord.htmlPlaceholder = questionMap.htmlPlaceholder
+            questionRecord.attachments = questionMap.attachments
+
+            questionRecord.save(flush: true, failOnError: true)
+        }catch(Exception e){
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+            renderMessage = "Error " + exceptionAsString
+        }
+
+        render renderMessage
+    }
+    def deleteQuestion(){
+        log.info "DELETING QUESTION $params.questionID"
+        log.info params
+
+
+        def renderMessage = "Success"
+
+        try{
+            Questions questionRecord = Questions.findByQuestionID(params.questionID)
+            questionRecord.delete(flush: true, failOnError: true)
+
+            //LOOK FOR USAGES AND DELETE
+            Operations allOperations = Operations.list()
+
+            allOperations.each{
+                def operationRecord = it
+
+                operationRecord.underwriterQuestionsMap.replaceAll("\"${params.questionID}\",", "")
+
+
+            }
+        }catch(Exception e){
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+            renderMessage = "Error " + exceptionAsString
+        }
+
+        render renderMessage
+    }
+
+    def createNewQuestionCategory(){
+        log.info "CREATING NEW QUESTION CATEGORY RECORD"
+        log.info params
+
+        def renderMessage = "Success"
+
+        try{
+            def categoryCode = params.categoryCode
+            def categoryName = params.categoryName
+            def weight = params.weight
+
+
+
+            QuestionCategory questionCategoryRecord = new QuestionCategory(
+                    categoryCode: categoryCode,
+                    categoryName: categoryName,
+                    coverageCategoryFlag: 'N',
+                    weight: weight
+            )
+
+            questionCategoryRecord.save(flush: true, failOnError: true)
+
+            QuestionCategory qid = QuestionCategory.findByCategoryCode(categoryCode)
+            def dataid = qid.id
+
+            renderMessage = renderMessage + ":" + dataid
+        }catch(Exception e){
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+            renderMessage = "Error " + exceptionAsString
+        }
+
+        render renderMessage
+    }
+    def saveQuestionCategoryChanges(){
+        log.info "SAVING QUESTION CATEGORY CHANGES"
+        log.info params
+
+        def renderMessage = "Success"
+
+        try{
+            QuestionCategory questionCategory = QuestionCategory.get(params.questionCategoryID)
+
+            def oldCategoryCode = questionCategory.categoryCode
+            def oldCategoryName = questionCategory.categoryName
+
+            questionCategory.categoryCode = params.questionCategoryCode
+            questionCategory.categoryName = params.questionCategoryName
+
+            questionCategory.save(flush: true, failOnError: true)
+
+            //CHANGE QUESTIONS WITH THIS CATEGORY
+            def questionRecords = Questions.findAllByCategory(oldCategoryCode)
+            questionRecords.each{
+                log.info it
+                Questions thisQuestionRecord = it
+
+                thisQuestionRecord.category = params.questionCategoryCode
+
+                thisQuestionRecord.save(flush: true, failOnError: true)
+            }
+
+
+            renderMessage = renderMessage + ":" + oldCategoryCode
+
+        }catch(Exception e){
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+            renderMessage = "Error " + exceptionAsString
+        }
+
+        render renderMessage
+    }
+    def saveQuestionOrganizationChanges(){
+        log.info "SAVING QUESTION ORGANIZATION CHANGES"
+        log.info params
+
+        def renderMessage = "Success"
+
+        try{
+            def questionCategoryArray = jsonSlurper.parseText(params.questionCategoryMap)
+            def questionOrderArray = jsonSlurper.parseText(params.questionOrderMap)
+
+            questionCategoryArray.each{
+                def categoryID = it.id
+                def categoryCode = it.code
+                def categoryName = it.name
+                def categoryWeight = it.weight
+
+                QuestionCategory categoryRecord = QuestionCategory.get(categoryID)
+                if(categoryRecord != null){
+                    categoryRecord.categoryCode = categoryCode
+                    categoryRecord.categoryName = categoryName
+                    categoryRecord.weight = categoryWeight
+
+                    categoryRecord.save(flush: true, failOnError: true)
+                }
+
+            }
+
+            questionOrderArray.each{
+                def id = it.id
+                def questionID = it.questionID
+                def categoryID = it.categoryID
+                def weight = it.weight
+
+                Questions questionRecord = Questions.get(id)
+
+                if(questionRecord != null){
+                    questionRecord.questionID = questionID
+                    questionRecord.category = categoryID
+                    questionRecord.weight = weight
+
+                    questionRecord.save(flush: true, failOnError: true)
+                }
+            }
+
         }catch(Exception e){
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
@@ -300,6 +812,86 @@ class AdminController {
 
 
         render renderMessage
+    }
+    def deleteQuestionCategory(){
+        log.info "DELETING QUESTION CATEGORHY $params.categoryID"
+        log.info params
+
+
+        def renderMessage = "Success"
+
+        try{
+            QuestionCategory categoryRecord = QuestionCategory.get(params.categoryID)
+            categoryRecord.delete(flush: true, failOnError: true)
+        }catch(Exception e){
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+            renderMessage = "Error " + exceptionAsString
+        }
+
+        render renderMessage
+    }
+
+    def saveFormChanges(){
+        log.info "SAVING FORM CHANGES"
+        log.info params
+
+        def renderMessage = "Success"
+
+        try{
+            def dataid = params.id
+            def formID = params.formID
+            def formName = params.formName
+
+            Forms formRecord = Forms.get(dataid)
+
+            if(formRecord != null){
+                def oldFormID = formRecord.formID
+                formRecord.formID = formID
+                formRecord.formName = formName
+
+                formRecord.save(flush: true, failOnError: true)
+
+                if(oldFormID != formID){
+                    renameFormFile(oldFormID, formID)
+                }
+            }
+        }catch(Exception e){
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+            renderMessage = "Error"
+        }
+
+        render renderMessage
+    }
+    def renameFormFile(oldFileName, newFileName){
+        def formFilePath = servletContext.getRealPath("/docs/forms/${oldFileName}.pdf")
+        def newFilePath = servletContext.getRealPath("/docs/forms/${newFileName}.pdf")
+
+        def renderMessage = "Success"
+        //CHECK IF FILE EXISTS
+        try{
+            def oldFile = new File(formFilePath)
+            if(oldFile.exists()){
+                oldFile.renameTo newFilePath
+            }
+            else{
+                renderMessage = "File doesn't exist"
+            }
+
+        }catch(Exception e){
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+            renderMessage = "Error"
+        }
+
+        return renderMessage
     }
 
     def importCoverageClassesFromAIM(){
@@ -784,5 +1376,10 @@ class AdminController {
     }
 
 
+    def emergencyIndication(){
+        intelledoxDAO.createEmergencyIndicationPDF(dataSource_aim)
 
+    }
+
+   
 }

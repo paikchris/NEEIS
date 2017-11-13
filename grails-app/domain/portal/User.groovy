@@ -13,6 +13,7 @@ class User {
     String admin
     String aimContactID //
     String autoSaveData
+    String notificationMap
 
 
     String toString(){
@@ -29,5 +30,11 @@ class User {
         admin nullable:true
         aimContactID nullable:true
         autoSaveData nullable:true
+        notificationMap nullable:true
     }
+
+    static mapping = {
+        notificationMap type: 'text'
+    }
+
 }

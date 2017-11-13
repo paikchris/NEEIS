@@ -2,8 +2,64 @@
  * Created by paikchris on 8/23/16.
  */
 
+var stateAbbrevMap = {
+    "ALABAMA": "AL",
+    "ALASKA": "AK",
+    "ARIZONA": "AZ",
+    "ARKANSAS": "AR",
+    "CALIFORNIA": "CA",
+    "COLORADO": "CO",
+    "CONNECTICUT": "CT",
+    "DELAWARE": "DE",
+    "FLORIDA": "FL",
+    "GEORGIA": "GA",
+    "HAWAII": "HI",
+    "IDAHO": "ID",
+    "ILLINOIS": "IL",
+    "INDIANA": "IN",
+    "IOWA": "IA",
+    "KANSAS": "KS",
+    "KENTUCKY": "KY",
+    "LOUISIANA": "LA",
+    "MAINE": "ME",
+    "MARYLAND": "MD",
+    "MASSACHUSETTS": "MA",
+    "MICHIGAN": "MI",
+    "MINNESOTA": "MN",
+    "MISSISSIPPI": "MS",
+    "MISSOURI": "MO",
+    "MONTANA": "MT",
+    "NEBRASKA": "NE",
+    "NEVADA": "NV",
+    "NEW HAMPSHIRE": "NH",
+    "NEW JERSEY": "NJ",
+    "NEW MEXICO": "NM",
+    "NEW YORK": "NY",
+    "NORTH CAROLINA": "NC",
+    "NORTH DAKOTA": "ND",
+    "OHIO": "OH",
+    "OKLAHOMA": "OK",
+    "OREGON": "OR",
+    "PENNSYLVANIA": "PA",
+    "RHODE ISLAND": "RI",
+    "SOUTH CAROLINA": "SC",
+    "SOUTH DAKOTA": "SD",
+    "TENNESSEE": "TN",
+    "TEXAS": "TX",
+    "UTAH": "UT",
+    "VERMONT": "VT",
+    "VIRGINIA": "VA",
+    "WASHINGTON": "WA",
+    "WEST VIRGINIA": "WV",
+    "WISCONSIN": "WI",
+    "WYOMING": "WY"
+}
+
 
 $(document).ready(function () {
+
+    //OVERRIDE THE JQUERY ADD HTML METHOD TO INITIALIZE MASKS, AND DATEPICKERS ETC
+
     //ALLOW TAB TO SWITCH FOCUSES OF INPUTS
     $(document.body).on('keydown', ':input', function(e) {
         // console.log(e.which)
@@ -34,7 +90,7 @@ $(document).ready(function () {
     initializeGlobalListeners()
 
     //NAVBAR LISTENERS
-
+    initializeNotifications()
     //BUTTON LISTENERS
 
 
@@ -120,20 +176,49 @@ $(document).ready(function () {
             }
         }
     });
-
-
 });
 
+function pdfTest(){
+    $.ajax({
+        method: "POST",
+        url: "/main/testPDF",
+        data: {}
+    })
+        .done(function (msg) {
+            alert(msg)
+        });
+}
 
-//INITIALIZE GLOBAL LISTENERS
+///////////////////INITIALIZE GLOBAL LISTENERS///////////////////
 function initializeGlobalListeners(){
     datePickerInit()
 
     checkboxHiddenDivInit()
     radioHiddenDivInit()
+    hasHiddenDivInputInit()
     closeButtonListener()
     maskMoneyInit()
+    maskPercentInputInit()
+    keyPressCheckerInit()
+    capitalizeFirstLettersInputInit()
+    emailInputInit()
+    numericInputOnlyInit()
+
+    //MULTIROW
+    multiRowInputInit()
+
+    //INITIALIZE ANY GOOGLE ADDRESS AUTOCOMPLETES
+    initAutocomplete()
 }
+function initializeNotifications(){
+    startNotificationService()
+}
+function keyPressCheckerInit(){
+    $(document).keyup(function (e) {
+        keyPressChecker(e)
+    });
+}
+
 function datePickerInit(){
     //DATE PICKER SETUP
     var date_input = $('.datepicker'); //our date input has the name "date"
@@ -153,45 +238,227 @@ function datePickerInit(){
 function maskMoneyInit(){
     var options = {}
     $('.maskMoney').each(function (){
-        if( $(this).attr('data-prefix') ){
-            options.prefix = $(this).attr('data-prefix')
-        }
-        if( $(this).attr('data-precision') ){
-            options.precision = $(this).attr('data-precision')
-        }
-        if( $(this).attr('data-suffix') ){
-            options.suffix = $(this).attr('data-suffix')
-        }
-        if( $(this).attr('data-affixesStay') ){
-            options.affixesStay = $(this).attr('data-affixesStay')
-        }
-        if( $(this).attr('data-thousands') ){
-            options.thousands = $(this).attr('data-thousands')
-        }
-        if( $(this).attr('data-decimal') ){
-            options.decimal = $(this).attr('data-decimal')
-        }
-        if( $(this).attr('data-allowZero') ){
-            options.allowZero = $(this).attr('data-allowZero')
-        }
-        if( $(this).attr('data-allowNegative') ){
-            options.allowNegative = $(this).attr('data-allowNegative')
-        }
+        // if( $(this).attr('data-prefix') ){
+        //     options.prefix = $(this).attr('data-prefix')
+        // }
+        // if( $(this).attr('data-precision') ){
+        //     options.precision = $(this).attr('data-precision')
+        // }
+        // if( $(this).attr('data-suffix') ){
+        //     options.suffix = $(this).attr('data-suffix')
+        // }
+        // if( $(this).attr('data-affixesStay') ){
+        //     options.affixesStay = $(this).attr('data-affixesStay')
+        // }
+        // if( $(this).attr('data-thousands') ){
+        //     options.thousands = $(this).attr('data-thousands')
+        // }
+        // if( $(this).attr('data-decimal') ){
+        //     options.decimal = $(this).attr('data-decimal')
+        // }
+        // if( $(this).attr('data-allowZero') ){
+        //     options.allowZero = $(this).attr('data-allowZero')
+        // }
+        // if( $(this).attr('data-allowNegative') ){
+        //     options.allowNegative = $(this).attr('data-allowNegative')
+        // }
+        //
+        // $(this).maskMoney(options)
+        // $(this).maskMoney('mask')
 
-        $(this).maskMoney(options);
+        maskMoneyThisInput(this)
     });
+}
+function maskMoneyThisInput(thisInput){
+    var options = {}
 
+    if( $(thisInput).attr('data-prefix') ){
+        options.prefix = $(thisInput).attr('data-prefix')
+    }
+    if( $(thisInput).attr('data-precision') ){
+        options.precision = $(thisInput).attr('data-precision')
+    }
+    if( $(thisInput).attr('data-suffix') ){
+        options.suffix = $(thisInput).attr('data-suffix')
+    }
+    if( $(thisInput).attr('data-affixesStay') ){
+        options.affixesStay = $(thisInput).attr('data-affixesStay')
+    }
+    if( $(thisInput).attr('data-thousands') ){
+        options.thousands = $(thisInput).attr('data-thousands')
+    }
+    if( $(thisInput).attr('data-decimal') ){
+        options.decimal = $(thisInput).attr('data-decimal')
+    }
+    if( $(thisInput).attr('data-allowZero') ){
+        options.allowZero = $(thisInput).attr('data-allowZero')
+    }
+    if( $(thisInput).attr('data-allowNegative') ){
+        options.allowNegative = $(thisInput).attr('data-allowNegative')
+    }
+
+    $(thisInput).maskMoney(options)
+    $(thisInput).maskMoney('mask')
 }
 function closeButtonListener(){
     $(document.body).on('click', 'button.close', function(e) {
         $(this).parent().remove()
     });
 }
+function minimizeButtonListener(){
+    $(document.body).on('click', 'button.minimize', function(e) {
+        $(this).parent().remove()
+    });
+}
+function capitalizeFirstLettersInputInit(){
+    $(document.body).on('change', 'input.capitalizeFirstLetters', function(e) {
+        var originalString = $(this).val()
+        var capitalizedFirstLettersString = capitalizeFirstLetters( originalString )
+        // console.log(capitalizedFirstLettersString)
+        $(this).val( capitalizedFirstLettersString )
+    });
 
-//HTML CONSTANTS
+}
+function emailInputInit(){
+    $(document.body).on('change', 'input.emailInput', function(e) {
+        emailQuickValidateInput(this)
+    });
+}
+function maskPercentInputInit(){
+    $(document.body).off('change', 'input.percentInput').on('change', 'input.percentInput', function(e) {
+        var originalValueString = $(this).val()
+
+        var floatValue = parseFloat( numeral(originalValueString).format('0[.]0') )
+
+        if(floatValue > 100){
+            floatValue = 100
+        }
+        // var formattedPercent = numeral(originalValueString).format('0') + "%"
+        var formattedPercent = floatValue + "%"
+        $(this).val( formattedPercent )
+        e.stopPropagation()
+        e.preventDefault()
+    });
+
+}
+function numericInputOnlyInit(){
+    $(document.body).off('change', 'input.numericInputOnly').on('change', 'input.numericInputOnly', function(e) {
+        var originalString = $(this).val()
+        var stringWithOnlyNumbers = removeAllNonNumbersFromString(originalString)
+
+        $(this).val( stringWithOnlyNumbers )
+    });
+
+}
+
+function multiRowInputInit(){
+    $(document.body).off('click', 'button.multiRowInputAddButton').on('click', 'button.multiRowInputAddButton', function(e) {
+        var thisRow = $(this).closest('.multiRow')
+        var multiRowContainer = $(this).closest('.multiRowContainer')
+
+        //clone and clear
+        var newRow = $(thisRow).clone()
+        $(newRow).find('input').each(function(){
+            $(this).val("")
+        })
+
+        $(thisRow).after($(newRow))
+
+        initializeGlobalListeners()
+
+    });
+
+    $(document.body).off('click', 'button.multiRowInputRemoveButton').on('click', 'button.multiRowInputRemoveButton', function(e) {
+        var thisRow = $(this).closest('.multiRow')
+        var multiRowContainer = $(this).closest('.multiRowContainer')
+
+        //DELETE ONLY IF MORE THAN ONE ROW
+        if( $(multiRowContainer).find('.multiRow').length > 1){
+            $(thisRow).remove()
+
+        }
+
+    });
+}
 
 
-//BUTTON ICON FUNCTIONS
+
+
+///////////////////GLOBAL KEY PRESS CHECKER///////////////////
+function keyPressChecker(e){
+
+    //RETURN BUTTON
+    if (e.keyCode == 13) {
+
+        //RETURN BUTTON DISMISSING ALERT MODAL
+        if ($('#alertMessageModal').hasClass('in')) {
+            $('#alertMessageModal').modal('hide');
+        }
+    }
+}
+
+
+
+///////////////////MODAL FUNCTIONS///////////////////
+function showAlert(message){
+    $('#alertMessageContent').html(message)
+
+    $('#alertMessageModal').modal('show')
+}
+//LOADING SPINNER
+function showLoadingModal(){
+    $('#loadingModal').modal({
+        backdrop: 'static',
+        keyboard: false
+    })
+
+    $('#loadingModal').modal('show')
+}
+function hideLoadingModal(){
+    setLoadingModalText('')
+    $('#loadingModal').modal('hide')
+}
+function setLoadingModalText(loadingMessage){
+    $('#loadingModal .loadingModalText').html(loadingMessage)
+}
+//PROGRESS BAR
+function showProgressBar(){
+    $('#progressBarModal').modal({
+        backdrop: 'static',
+        keyboard: false
+    })
+    setProgressBarPercent('0')
+    setProgressBarMessage('')
+    $('#progressBarModal').modal('show');
+}
+function hideProgressBar(){
+    setProgressBarPercent('0')
+    setProgressBarMessage('')
+    $('#progressBarModal').modal('hide');
+}
+function setProgressBarMessage(message){
+    $('#progressBarHeader').html(message)
+}
+function setProgressBarPercent(percentString){
+    $('#progressBar_ProgressBar').attr('aria-valuenow', percentString).css("width", (percentString + "%") );
+}
+function animateProgressBar(percentString, animationTime){
+    $('#progressBar_ProgressBar').attr('aria-valuenow', percentString).animate({
+        width: (percentString + "%")
+    }, animationTime);
+}
+
+
+
+
+///////////////////HTML CONSTANTS///////////////////
+
+
+
+
+
+
+///////////////////BUTTON ICON FUNCTIONS///////////////////
 function spinnerHTML(){
     var s = $("<i class='fa fa-spinner fa-spin fa-fw leftButtonIcon'></i>")
     return s
@@ -207,7 +474,12 @@ function removeLoadingSpinnerFromButton(btnElement){
 }
 
 
-//INPUT DECORATION FUNCTIONS
+
+
+
+
+
+///////////////////INPUT DECORATION FUNCTIONS///////////////////
 function inputSpinnerHTML(optionalLoadingText){
     var s = "<span class='form-control-feedback inputSpinner'  style='right: 16px;top: 27px;font-size: 16px;width: 140px; color: rgb(47,97,155)'> ";
 
@@ -242,9 +514,15 @@ function removeGlyphFromInput(input){
     $(input).siblings('span.glyphicon').remove()
 }
 
-//CHECKBOX AND HIDDEN DIVS
+
+
+
+
+
+/////////////////////CHECKBOX AND HIDDEN DIVS///////////////////
 function checkboxHiddenDivInit(){
     $(document.body).on('change', '.checkboxHiddenDiv', function(e) {
+        // alert("check")
         if( $(this).is(':checked')){
             $(this).closest('.checkboxAndHiddenDivContainer').find('.hiddenContainer').css('display', '')
         }
@@ -272,7 +550,6 @@ function radioHiddenDivInit(){
        </div>
    </div>
      */
-    console.log('RADIO')
     $(document.body).on('change', '.radioWithHiddenDiv_Radio', function(e) {
         //GET GROUP
         var groupName = $(this).attr('name')
@@ -289,17 +566,35 @@ function radioHiddenDivInit(){
 
     });
 }
+function hasHiddenDivInputInit(){
+    $(document.body).on('change', '.hasHiddenDiv', function(e) {
+        var isRadioOrCheckbox = false
+        var hiddenGroupName = ""
+        var inputValue = ""
 
+        var inputType = $(this).attr('type')
+        if(inputType === 'checkbox' || inputType === 'radio'){
+            isRadioOrCheckbox = true
+            hiddenGroupName = $(this).attr('name') + "_HiddenGroup"
+            inputValue = $("input[name='" + $(this).attr('name') + "']:checked").val()
+        }else{
+            hiddenGroupName = $(this).attr('id')
+            inputValue = $(this).val()
+        }
 
-//ALERT MESSAGE FUNCTIONS
-function showAlert(message){
-    $('#alertMessageContent').html(message)
+        //HIDE ALL IN GROUP FIRST
+        $("*[data-hiddengroupname='" + hiddenGroupName + "']").closest('.hiddenDivContainer').css('display', 'none')
 
-    $('#alertMessageModal').modal('show')
+        //SHOW ONLY DIVS TRIGGERED BY INPUT VALUE
+        $("*[data-hiddengroupname='" + hiddenGroupName + "'][data-unhidetrigger='" + inputValue + "']").closest('.hiddenDivContainer').css('display', '')
+    });
+
 }
 
 
-//MOVE THIS TO ANOTHER FILE
+
+
+///////////////////////MOVE THIS TO ANOTHER FILE///////////////////
 function validateResetForm(){
     var validReset = true;
     $('.requiredResetPassword').each(function () {
@@ -357,7 +652,6 @@ function validateResetForm(){
 
     return validReset;
 }
-
 function sqlToJsDate(sqlDate){
 
     var offset = new Date().getTimezoneOffset();

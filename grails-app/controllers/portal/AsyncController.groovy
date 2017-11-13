@@ -72,6 +72,153 @@ class AsyncController {
         }
     }
 
+    def saveNewSubmission(){
+        log.info "SAVING SUBMISSION TO AIMSQL"
+        log.info params
+
+
+
+        try{
+            //CONVERT JSON TO GROOVY COLLECTIONS
+            def dataMap = new JsonSlurper().parseText(params.dataMap)
+            def uwQuestionsOrder = params.uwQuestionsOrder.split("&;&");
+            def uwQuestionsMap = new JsonSlurper().parseText(params.uwQuestionsMap)
+
+            //GET PRODUCER COMPANY INFO
+            Producer producerRecord = Producer.findByProducerID(session.user.company)
+            dataMap.brokerCompanyName = it.Name
+            dataMap.brokerCompanyAddress = it.Address1
+            dataMap.brokerCompanyCity = it.City
+            dataMap.brokerCompanyState = it.State
+            dataMap.brokerCompanyZip = it.Zip
+            dataMap.brokerCompanyPhone = it.Phone
+            dataMap.brokerCompanyLicense = it.License
+        }
+        catch (Exception e){
+            StringWriter writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter( writer );
+            e.printStackTrace( printWriter );
+            printWriter.flush();
+            String stackTrace = writer.toString();
+            log.info("Error Details - " + stackTrace)
+
+            quoteID = "Error Details - " + e
+        }
+    }
+
+
+    def saveSubmissionToAIM() {
+        log.info "SAVING SUBMISSION TO AIMSQL"
+        log.info params
+
+        def quoteID ="";
+        def indicationStatus="";
+
+
+
+        //SAVE INSURED
+        try {
+            //GATHERING TEST DATA
+            // def testDataRecord = testDataHelper.saveParams("savingSubmissionToAIM", JsonOutput.prettyPrint(JsonOutput.toJson(dataMap)))
+            def dataMap = new JsonSlurper().parseText(params.dataMap)
+            def uwQuestionsOrder = params.uwQuestionsOrder.split("&;&");
+            def uwQuestionsMap = new JsonSlurper().parseText(params.uwQuestionsMap)
+
+            //ADDITIONAL INFORMATION NECESSARY FOR INDICATION PDF
+            Sql aimsql = new Sql(dataSource_aim)
+            aimsql.eachRow("SELECT     *\n" +
+                    "FROM         Producer with (NOLOCK)\n" +
+                    "WHERE     ProducerID='${session.user.company}'" ) {
+
+                dataMap.brokerCompanyName = it.Name
+                dataMap.brokerCompanyAddress = it.Address1
+                dataMap.brokerCompanyCity = it.City
+                dataMap.brokerCompanyState = it.State
+                dataMap.brokerCompanyZip = it.Zip
+                dataMap.brokerCompanyPhone = it.Phone
+                dataMap.brokerCompanyLicense = it.License
+            }
+            aimsql.eachRow("SELECT     *\n" +
+                    "FROM         UserID with (NOLOCK)\n" +
+                    "WHERE     UserID='${dataMap.accountExec}'" ) {
+
+                dataMap.underwriterPhone = it.Wk_Phone
+                dataMap.underwriterFax = it.Wk_Fax
+            }
+
+            //SET LOGO
+            def agencyRecord = Agency.findAllWhere(agencyID: session.user.company)
+            if (agencyRecord.empty) {
+                // logic for handling no rows
+                dataMap.logoFile = "Barbican.png"
+            }
+            else if(agencyRecord != null && agencyRecord.logoFileName != null){
+                if(agencyRecord.logoFileName == "default"){
+                    dataMap.logoFile = "Barbican.png"
+                }
+                else{
+                    dataMap.logoFile = agencyRecord[0].logoFileName
+                }
+            }
+            else{
+                dataMap.logoFile = "Barbican.png"
+            }
+
+
+            def quoteAndIndicationStatus = aimDAO.saveNewSubmission(dataMap, dataSource_aim, session.user, uwQuestionsMap, uwQuestionsOrder)
+            def quoteIDCoverages = quoteAndIndicationStatus.split("&;&")[0]
+            indicationStatus = quoteAndIndicationStatus.split("&;&")[1]
+            log.info "QuoteID: " + quoteIDCoverages
+            //0620584;EPKG,0620585;CPK
+            def submitGroupID = ""
+            quoteIDCoverages.split(",").each{
+                submitGroupID = submitGroupID + it.split(";")[0] + ","
+            }
+            if (submitGroupID.endsWith(",")) {
+                submitGroupID = submitGroupID.substring(0, submitGroupID.length() - 1);
+            }
+
+
+            def now = new Date()
+            def timestamp = now.format(dateFormat, timeZone)
+
+
+            Submissions s;
+            log.info uwQuestionsMap
+
+            quoteIDCoverages.split(",").each{
+                quoteID = quoteID + it.split(";")[0] + ","
+
+                s = new portal.Submissions(submittedBy: session.user.email, aimQuoteID: it.split(";")[0], aimVersion: "A", namedInsured: dataMap.getAt("namedInsured"), submitDate: timestamp,
+                        coverages: it.split(";")[1], statusCode: "QO", underwriter: dataMap.getAt('accountExec')+"@neeis.com", questionAnswerMap: params.questionAnswerMap,
+                        uwQuestionMap:uwQuestionsMap, uwQuestionsOrder:uwQuestionsOrder, submitGroupID: submitGroupID)
+                s.save(flush: true, failOnError: true)
+            }
+
+            if (quoteID.endsWith(",")) {
+                quoteID = quoteID.substring(0, quoteID.length() - 1);
+            }
+        }
+        catch (Exception e) {
+            StringWriter writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter( writer );
+            e.printStackTrace( printWriter );
+            printWriter.flush();
+            String stackTrace = writer.toString();
+            log.info("Error Details - " + stackTrace)
+
+            quoteID = "Error Details - " + e
+        }
+
+
+
+
+        render quoteID + "&;&" + indicationStatus
+
+    }
+
+
+
     def getProductsForCoverageV2(){
         log.info("GETTING PRODUCTS FOR COVERAGE V2")
         log.info(params);
@@ -3803,116 +3950,6 @@ class AsyncController {
 //    }
 
 
-    def saveSubmissionToAIM() {
-        log.info "SAVING SUBMISSION TO AIMSQL"
-        log.info params
-
-        def quoteID ="";
-        def indicationStatus="";
-
-        //SAVE INSURED
-        try {
-            //GATHERING TEST DATA
-            // def testDataRecord = testDataHelper.saveParams("savingSubmissionToAIM", JsonOutput.prettyPrint(JsonOutput.toJson(dataMap)))
-            def dataMap = new JsonSlurper().parseText(params.dataMap)
-            def uwQuestionsOrder = params.uwQuestionsOrder.split("&;&");
-            def uwQuestionsMap = new JsonSlurper().parseText(params.uwQuestionsMap)
-
-            //ADDITIONAL INFORMATION NECESSARY FOR INDICATION PDF
-            Sql aimsql = new Sql(dataSource_aim)
-            aimsql.eachRow("SELECT     *\n" +
-                    "FROM         Producer with (NOLOCK)\n" +
-                    "WHERE     ProducerID='${session.user.company}'" ) {
-
-                dataMap.brokerCompanyName = it.Name
-                dataMap.brokerCompanyAddress = it.Address1
-                dataMap.brokerCompanyCity = it.City
-                dataMap.brokerCompanyState = it.State
-                dataMap.brokerCompanyZip = it.Zip
-                dataMap.brokerCompanyPhone = it.Phone
-                dataMap.brokerCompanyLicense = it.License
-            }
-            aimsql.eachRow("SELECT     *\n" +
-                    "FROM         UserID with (NOLOCK)\n" +
-                    "WHERE     UserID='${dataMap.accountExec}'" ) {
-
-                dataMap.underwriterPhone = it.Wk_Phone
-                dataMap.underwriterFax = it.Wk_Fax
-            }
-
-            //SET LOGO
-            def agencyRecord = Agency.findAllWhere(agencyID: session.user.company)
-            if (agencyRecord.empty) {
-                // logic for handling no rows
-                dataMap.logoFile = "Barbican.png"
-            }
-            else if(agencyRecord != null && agencyRecord.logoFileName != null){
-                if(agencyRecord.logoFileName == "default"){
-                    dataMap.logoFile = "Barbican.png"
-                }
-                else{
-                    dataMap.logoFile = agencyRecord[0].logoFileName
-                }
-            }
-            else{
-                dataMap.logoFile = "Barbican.png"
-            }
-
-
-            def quoteAndIndicationStatus = aimDAO.saveNewSubmission(dataMap, dataSource_aim, session.user, uwQuestionsMap, uwQuestionsOrder)
-            def quoteIDCoverages = quoteAndIndicationStatus.split("&;&")[0]
-            indicationStatus = quoteAndIndicationStatus.split("&;&")[1]
-            log.info "QuoteID: " + quoteIDCoverages
-            //0620584;EPKG,0620585;CPK
-            def submitGroupID = ""
-            quoteIDCoverages.split(",").each{
-                submitGroupID = submitGroupID + it.split(";")[0] + ","
-            }
-            if (submitGroupID.endsWith(",")) {
-                submitGroupID = submitGroupID.substring(0, submitGroupID.length() - 1);
-            }
-
-
-            def now = new Date()
-            def timestamp = now.format(dateFormat, timeZone)
-
-
-            Submissions s;
-            log.info uwQuestionsMap
-
-            quoteIDCoverages.split(",").each{
-                quoteID = quoteID + it.split(";")[0] + ","
-
-                s = new portal.Submissions(submittedBy: session.user.email, aimQuoteID: it.split(";")[0], aimVersion: "A", namedInsured: dataMap.getAt("namedInsured"), submitDate: timestamp,
-                        coverages: it.split(";")[1], statusCode: "QO", underwriter: dataMap.getAt('accountExec')+"@neeis.com", questionAnswerMap: params.questionAnswerMap,
-                        uwQuestionMap:uwQuestionsMap, uwQuestionsOrder:uwQuestionsOrder, submitGroupID: submitGroupID)
-                s.save(flush: true, failOnError: true)
-            }
-
-            if (quoteID.endsWith(",")) {
-                quoteID = quoteID.substring(0, quoteID.length() - 1);
-            }
-        }
-        catch (Exception e) {
-            StringWriter writer = new StringWriter();
-            PrintWriter printWriter = new PrintWriter( writer );
-            e.printStackTrace( printWriter );
-            printWriter.flush();
-            String stackTrace = writer.toString();
-            log.info("Error Details - " + stackTrace)
-
-            quoteID = "Error Details - " + e
-            // testDataRecord.endStatus = "Error"
-            // testDataRecord.endStatusDetail = exceptionAsString
-        }
-
-
-
-
-        render quoteID + "&;&" + indicationStatus
-
-    }
-
     def saveSpecialEventSubmission(){
         log.info "SAVING SPECIAL EVENT SUBMISSION TO AIMSQL"
         log.info params
@@ -4802,27 +4839,206 @@ class AsyncController {
         log.info params
 
         def testMap = [
-                brokerEmail: "johnkimsinbox@gmail.com",
+                brokerEmail: "andee.abad@icloud.com",
                 nameOfInsured: "TEST NAME",
-                submissionID: "00102"
+                submissionID: "00102",
+                underwriterEmail: "Andee@neeis.com",
+                brokerName: "andee",
+                brokerPhone: "111 111 1111",
+                brokerAgency: "New Empire"
         ]
 
         emailHelper.sendMessage(mailService, testMap)
 
         render "Success"
     }
-    def testPdf(){
+
+
+
+
+
+
+
+
+
+
+
+    def pdfTest(){
         log.info "PDF TEST"
         log.info params
 
-        PdfBox pdfHelper1 = new PdfBox()
-        PdfBox pdfHelper2 = new PdfBox()
+        def policyDataMapTest = [
+        'policyNumber' : 'TESTPOLICYNUMBER',
+//        policy number
+        'namedInsured' : 'testNameOfInsured',
+//        name of insured
+        'mailingAddressStreet' : '2333 Test Drive',
+//        street name
+        'mailingAddressCSZ' : 'Hermosa, CA 11111',
+//        address city state zip
+        'state' : 'CA',
+//        state
+        'termDuration' : '365',
+//        term duration
+        'proposedEffective' : '10/04/2017',
+//        effective date mm/dd/yyyy
+        'proposedExpiration' : '10/04/2018',
+//        expires date mm/dd/yyyy
+        'businessStructureSelect' : 'Film titled TestingPdfs',
+//        example: "Feature Film" + titled + "Street Survivor"
+        'totalBudgetConfirm' : '$800,000',
+//        GPC $
+        'packagePremium' : '$5,300.00',
+//        premium based off GPC x rate
+        'terrorism' : 'Rejectedtest',
+//        rejected or premium $$ for tria
+        'principalPhotoStart' : '10/04/2017',
+//        principal photo start date
+        'principalPhotoEnd' : '10/20/2017',
+//        principal photo end date
+        'filmingLocation' : 'Califorrrrrnia',
+//        filming location
+        'policyFee' : '$15.00',
+//        policy fee
+        'policyTotal' : '$5,484.60',
+//        policy total
+        'stampFee' : '$10.60',
+//        stamping fee
+        'surplusLines' : '$159.00',
+//        surplus line
+        'civilAuthorityCharge' : '$0.00',
+//        civil authority charge
+        'dateDisplay' : '05',
+//        stamping fee
+        'monthDisplay' : '10',
+//        surplus line
+        'yearDisplay' : '2017',
+//        civil authority charge
 
-        pdfHelper1.pdf = 1
-        pdfHelper2.pdf = 2
+        'castMemberInput' : 'N/A',
+//        CAST MEMBER NAMES LIST
+        'castMemberAge' : 'N/A',
+//        CAST MEMBER AGE LIST
+        'castMemberEffectiveDate' : 'N/A',
+//        CAST MEMBER EFFECTIVE DATE LIST
+        'castMemberRemarks' : 'N/A',
+//        CAST MEMBER REMARKS LIST
+        'insuredAnimalVal' : 'N/A',
+//        INSURED ANIMAL NAME LIST
+        'insuredAnimalInput' : 'N/A',
+//        INSURED ANIMAL INPUT LIST
+        'insuredAnimalNumber' : 'N/A',
+//        INSURED ANIMAL NUMBER OF ANIMALS LIST
+        'insuredAnimalEffect' : 'N/A',
+//        INSURED ANIMAL EFFECTIVE DATE LIST
+        'endorsements' : 'LIST ENDORSEMENTS HERE',
+//        LIST OF ENDORSEMENTS
 
-        pdfHelper.createDoc()
+//        LIMITS AND DEDUCTS
+        'extCastInsLimit' : 'N/A',
+//        extended preproduction cast coverage limit
+        'extCastInsDeduct' : 'N/A',
+//        extended preproduction cast coverage deductible
+        'castInsLimit' : 'Not covered',
+//        cast insurance limit
+        'castInsDeduct' : 'Not covered',
+//        cast insurance deductible
+        'rawDataNegFilmLimit' : '$800,000',
+//        raw data neg limit
+        'rawDataNegFilmDeduct' : 'Nil',
+//        raw data neg deduct
+        'faultyCovLimit' : '$800,000',
+//        faulty coverage limit
+        'faultyCovDeduct' : '15% of Loss / $5,000 Min',
+//        faulty coverage deductible
+        'miscEquipLimit' : '$1,000,000',
+//        misc equipment limit
+        'miscEquipDeduct' : '$3,500',
+//        misc equip deductible
+        'nohaLimit' : 'Included under\n' +
+                'Misc. Equip.',
+//        hired non-owned auto limit
+        'nohaDeduct' : '10% of Loss / $1,500 Min\n' +
+                '$10,000 Max',
+//        hired non-owned auto deductible
+        'extraExpenseLimit' : '$500,000',
+//        extra expense limit
+        'extraExpenseDeduct' : '$3,000',
+//        extra expense deductible
+        'utilFailLimit' : '$50,000',
+//        utility failure to supply limit
+        'utilFailDeduct' : '$3,000',
+//        utility failure to supply deductible
+        'civilAuthLimit' : '$1,000,000',
+//        civil auth limit
+        'civilAuthDeduct' : '$3,500',
+//        civil auth deductible
+        'propsLimit' : '$1,000,000',
+//        props limit
+        'propsDeduct' : '$2,500',
+//        props deductible
+        'animalCovLimit' : '$25,000',
+//        animal coverage limit
+        'animalCovDeduct' : '$25,000',
+//        animal coverage deductible
+        'tppdLimit' : '$1,000,000',
+//        third party property limit
+        'tppdDeduct' : '$3,500',
+//        third party property deductible
+        'officeContentsLimit' : '$50,000',
+//        office content limit
+        'officeContentsDeduct' : '$1,000',
+//        office content deductible
+        'electronicDataLimit' : '$25,000',
+//        electronic data limit
+        'electronicDataDeduct' : '$1,000',
+//        electronic data deductible
+        'moneyCurLimit' : '$25,000',
+//        money and currency limit
+        'moneyCurDeduct' : '$1,500',
+//        money and currency deductible
+        'fursJewArtsLimit' : '$5,000',
+//        furs jewelery arts limit
+        'fursJewArtsDeduct' : '$1,500',
+//        furs jewelery arts deductible
+        'tableOfContent' : 'table of content will go here',
+//        furs jewelery arts deductible
+        'titlePage' : 'Title for the Cover Page',
+//        furs jewelery arts deductible
+        ]
 
+        def pdfEndorsements = [
+                'declarationPage',
+                'SF0010617',
+                'SF0020617',
+                'SF0030617',
+                'SF0040617',
+                'SF0050617',
+                'SF0060617',
+                'SF0070617',
+                'SF0080617',
+                'SF0090617',
+                'SF0100617',
+                'SF0110617',
+                'SF0120617',
+                'SF0130617',
+                'SF0140617',
+                'SF0150617',
+                'SF0160617',
+                'SF0170617',
+                'SF0180617',
+                'NMA2918',
+                'NMA2340',
+                'LMA5020',
+                'LMA5021',
+                'LMA5091',
+                'LMA5209',
+                'LSW1001',
+                'LSW1135B'
+        ]
+//        pdfHelper.createDoc(policyDataMapTest, pdfEndorsements)
+//        pdfHelper.createIndicationDoc()
+        pdfHelper.createCert()
         render "Success"
     }
 }

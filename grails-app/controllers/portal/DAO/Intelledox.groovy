@@ -123,10 +123,10 @@ class Intelledox {
 \t\t<date>${timestamp}</date>
 \t\t<dateStart>${XmlUtil.escapeXml(jsonSerial.getAt('proposedEffectiveDate'))}</dateStart>
 \t\t<submission>${XmlUtil.escapeXml(jsonSerial.getAt('allQuoteIDs').split(';')[0])}</submission>
-\t\t<underwriter>${XmlUtil.escapeXml(jsonSerial.getAt('accountExecName'))}</underwriter>
-\t\t<underwriterPhone>${XmlUtil.escapeXml(jsonSerial.getAt('underwriterPhone'))}</underwriterPhone>
+\t\t<underwriter>"Jessica Maher"</underwriter>
+\t\t<underwriterPhone>"(424) 634-7394"</underwriterPhone>
 \t\t<underwriterFax>${XmlUtil.escapeXml(jsonSerial.getAt('underwriterFax'))}</underwriterFax>
-\t\t<underwriterEmail>${XmlUtil.escapeXml(jsonSerial.getAt('accountExecEmail'))}</underwriterEmail>
+\t\t<underwriterEmail>jessica@neeis.com</underwriterEmail>
 \t\t<total>Total:</total>
 \t\t<totalCost>${XmlUtil.escapeXml(jsonSerial.getAt('premiumAllLOBTotal'))}</totalCost>
 \t\t<addressOfInsured>${XmlUtil.escapeXml(jsonSerial.getAt('streetNameMailing'))}</addressOfInsured>
@@ -2626,3 +2626,7 @@ Joel Kelly-Dauten,,
     }
 }
 
+//<underwriter>${XmlUtil.escapeXml(jsonSerial.getAt('accountExecName'))}</underwriter>
+//\t\t<underwriterPhone>${XmlUtil.escapeXml(jsonSerial.getAt('underwriterPhone'))}</underwriterPhone>
+//\t\t<underwriterFax>${XmlUtil.escapeXml(jsonSerial.getAt('underwriterFax'))}</underwriterFax>
+//\t\t<underwriterEmail>${XmlUtil.escapeXml(jsonSerial.getAt('accountExecEmail'))}</underwriterEmail>

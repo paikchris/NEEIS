@@ -1256,6 +1256,7 @@ function submitPolicyToAIM(riskType, totalBudget, proposedTermLength, namedInsur
         width: "75%"
     }, 25000);
 
+
     var newSubmissionConfirmParam = "";
     autoSaveFunction();
 

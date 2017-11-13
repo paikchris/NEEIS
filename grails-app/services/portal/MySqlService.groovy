@@ -53,6 +53,14 @@ class MySqlService {
         return getColumnNameList(s)
     }
 
+    //GET LIST OF COLUMNS NOT ALLOWED TO BE NULL IN TABLE
+    ArrayList getNonNullableColumnsList(CharSequence tableName){
+        Class clazz = getClazz(tableName)
+        ArrayList <DefaultGrailsDomainClassProperty> nonNullableColumns = clazz.newInstance().domainClass.persistentProperties.findAll{ it.optional == false }.name
+
+        return nonNullableColumns
+    }
+
     //GET PROPERTIES OF THIS COLUMN IN THIS TABLE
     DefaultGrailsDomainClassProperty getColumnProperties(String tableName, String columnName){
         Class clazz = getClazz(tableName)
@@ -64,7 +72,7 @@ class MySqlService {
 
     //GET CLASS TYPE OF MYSQL COLUMN
     Class getClassTypeOfColumn(String tableName, String columnName){
-        log.info "$tableName $columnName"
+//        log.info "$tableName $columnName"
         Class clazz = getClazz(tableName)
         ArrayList <DefaultGrailsDomainClassProperty> list = getColumnPropertiesList(tableName)
         DefaultGrailsDomainClassProperty propertyMap = list.find{it.name == columnName}
@@ -133,23 +141,43 @@ class MySqlService {
         }
     }
 
-    //CONVERT GROOVY ROW RESULT TO LIST OF MAPS
+    //CONVERT GROOVY ROW RESULTS TO LIST OF MAPS
     List getResultCollection(List results){
         ArrayList columnList = getColumnNameList_FromInstance(results[0])
         ArrayList newListOfResults = []
         results.each{
             def row = it
             def rowMap = [:]
+
+            rowMap.id = it.id
            columnList.each {
                def columnName = it
                def columnValue = row[it]
                rowMap["${columnName}"] = columnValue
-//               log.info(rowMap.keySet())
            }
             newListOfResults.push(rowMap)
         }
 
         return newListOfResults
+    }
+
+
+    def getRowResultMap(resultRow){
+        ArrayList columnList = getColumnNameList_FromInstance(resultRow)
+
+        def row = resultRow
+        def rowMap = [:]
+        rowMap.id = row.id
+
+        columnList.each {
+
+            def columnName = it
+            def columnValue = row[it]
+            rowMap["${columnName}"] = columnValue
+        }
+
+        return rowMap
+
     }
 
 

@@ -18,5 +18,11 @@ class BootStrap {
 
     }
     def destroy = {
+
+        def sout = new StringBuilder(), serr = new StringBuilder()
+        def proc = 'systemctl restart grails.service'.execute()
+        proc.consumeProcessOutput(sout, serr)
+        proc.waitForOrKill(4000)
+        
     }
 }

@@ -142,6 +142,8 @@
 	<!-- Bootstrap JS file-->
 	<script src="${resource(dir: 'js', file: 'bootstrap.min.js')}" ></script>
 
+	<script src="${resource(dir: 'js/utils', file: 'notifications.js')}" ></script>
+
 	<!-- Neeis Global JS file-->
 	<script src="${resource(dir: 'js', file: 'global.js')}" ></script>
 
@@ -152,7 +154,8 @@
 	<link rel="stylesheet" href="${resource(dir: 'plugins/UI/bootstrap-wizard/css', file: 'smart_wizard_theme_arrows.css')}" type="text/css">
 	<script src="${resource(dir: 'plugins/UI/bootstrap-wizard/js', file: 'jquery.smartWizard.min.js')}" ></script>
 
-
+	%{--GOOGLE ADDRESS HELPER--}%
+	<script src="${resource(dir: 'js', file: "/newSubmissionUtils/googleAddressHelper.js?ts=" + new Date().getTime())}" async></script>
 
 	<!-- DATE PICKER PLUGIN -->
 	<script src="${resource(dir: 'js/vendor/', file: 'bootstrap-datepicker.js')}" ></script>
@@ -218,12 +221,12 @@
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 
 			<ul class="nav navbar-nav navbar-right">
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+				<li class="dropdown" >
+					<a href="#" class="dropdown-toggle" id="notificationDropdownToggle"  data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
 						<span class="glyphicon glyphicon-bell" aria-hidden="true"></span>
-						<span class="badge badge-notify">3</span>
+						<span class="badge badge-notify" id="notificationCountSpan">3</span>
 					</a>
-					<ul class="dropdown-menu">
+					<ul class="dropdown-menu" id="notificationListContainer">
 						<li><a href="#">Premium approved</a></li>
 						<li role="separator" class="divider"></li>
 						<li><a href="#">Document needs to be signed</a></li>

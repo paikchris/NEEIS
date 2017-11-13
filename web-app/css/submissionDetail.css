@@ -1,0 +1,21 @@
+#submissionBasicDetailContainer{
+    margin-left:20px;
+    margin-right:20px;
+}
+#submissionBasicDetailContainer label{
+    margin-bottom:0px;
+}
+#submissionBasicDetailContainer .infoLabel{
+   text-align:right;
+}
+
+#submissionVersionsContainer{
+    margin: 20px;
+}
+#submissionVersionsContainer label{
+    margin-bottom:0px;
+}
+#submissionVersionsContainer .infoLabel{
+    text-align:right;
+}
+

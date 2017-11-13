@@ -5,24 +5,42 @@ import groovy.json.JsonOutput
 import groovy.sql.Sql
 import helper.Utils;
 import portal.DAO.*
+import portal.Utils.Email;
 
 class MainController {
     def aimSqlService
     def utilService
+    def mailService
+    def submissionService
+    def pdfService
+    def mySqlService
+    def notificationService
+
     def beforeInterceptor = [action: this.&checkUser]
     def dataSource_aim
     AIMSQL aimDAO = new AIMSQL();
+    Email emailHelper = new Email()
 
     def timeZone = TimeZone.getTimeZone('PST')
     def dateFormat = 'yyyy-MM-dd HH:mm:ss.SSS'
     def jsonSlurper = new JsonSlurper()
+    def jsonOutput = new JsonOutput()
 
     def checkUser() {
         println "CHECK USER"
         println params
         AuthController ac = new AuthController()
-        def test = ac.check()
+        def loggedIn = ac.check()
+
+        if(loggedIn){
+
+        }
+        else
+        {
+            redirect(controller:'auth', action:'index')
+        }
     }
+
 
     def index() {
         def todaysDateFormat = 'EEEE MMMM d, yyyy'
@@ -114,9 +132,13 @@ class MainController {
         List <Products> productResults = Products.findAllWhere(activeFlag: "Y")
         String products = utilService.gormResultsToJSObject(productResults)
 
+        //PRODUCT CONDITIONS
+        List <Conditions> productConditionResults = Conditions.findAllWhere(type: 'basis')
+        String productConditions = utilService.gormResultsToJSObject(productConditionResults)
 
         //OPERATIONS
-        List <Operations> operationResults = Operations.list()
+        List <Operations> operationResults = Operations.findAllWhere(activeFlag: "Y")
+        operationResults.sort{ it.description }
         String operations = utilService.gormResultsToJSObject(operationResults)
 
         //COVERAGES
@@ -125,7 +147,13 @@ class MainController {
 
         //QUESTIONS
         List <Questions> questionResults = Questions.list()
+        questionResults.sort{ it.weight }
         String questions = utilService.gormResultsToJSObject(questionResults)
+
+        //QUESTION CATEGORIES
+        List <QuestionCategory> questionCategoryResults = QuestionCategory.list()
+        questionCategoryResults.sort{ it.weight }
+        String questionCategories = utilService.gormResultsToJSObject(questionCategoryResults)
 
         //RATING BASIS
         List <RatingBasis> ratingBasisResults = RatingBasis.list()
@@ -136,15 +164,71 @@ class MainController {
         String rates = utilService.gormResultsToJSObject(rateResults)
 
 
-        def filmRiskTypes = RiskType.findAllWhere(riskTypeCategory: "FP");
 
+
+
+        //////////VERSION STUFF///////////
         def versionMode = false;
         def versionLetter = "A"
+        def originalVersion = "A"
+        def originalQuoteID = ""
+        def versionMap = [:]
+
+
+        //AIM VARIABLES
+        def quoteRecord
+        def quoteRecordJSON
+        def versionRecords, dvVersionRecords, dvVersionView
+        def versionRecordsJSON, dvVersionRecordsJSON,dvVersionViewJSON
+
+        //MYSQL VARIABLES
+        Submissions submissionRecord
+        def submissionRecordJSON
+
+        //QUESTION ANSWER VARIABLES
+        def questionAnswerMap, questionAnswerOrganizedMap
+        def questionAnswerMapJSON, questionAnswerOrganizedMapJSON
+
+        if(params.newVersion == "true"){
+            versionMode = true
+            def versionQuoteID = params.q
+            //CHECK FOR QUOTE ID, AND USER HAS PERMISSION TO VIEW
+            quoteRecord = aimSqlService.selectRecords("Quote", [QuoteID: versionQuoteID, ContactID:session.user.aimContactID])[0]
+            quoteRecordJSON = jsonOutput.toJson(quoteRecord)
+
+            log.info quoteRecord
+            if(quoteRecord.size() > 0){
+                submissionRecord = Submissions.findByAimQuoteID(versionQuoteID)
+                submissionRecordJSON = utilService.gormResultsToJSObject(submissionRecord)
+
+                questionAnswerMap = jsonSlurper.parseText(submissionRecord.uwQuestionMap)
+                questionAnswerMapJSON = jsonOutput.toJson(questionAnswerMap)
+                questionAnswerOrganizedMap = jsonSlurper.parseText(submissionRecord.uwQuestionsOrder)
+                questionAnswerOrganizedMapJSON = jsonOutput.toJson(questionAnswerOrganizedMap)
+
+                versionRecords = aimSqlService.selectRecords("Version", [QuoteID: versionQuoteID])
+                dvVersionRecords = aimSqlService.selectRecords("dvVersionRecord", [QuoteID: versionQuoteID])
+                dvVersionView = aimSqlService.selectRecords("dvVersionView", [QuoteID: versionQuoteID])
+
+                versionRecordsJSON = jsonOutput.toJson(versionRecords)
+                dvVersionRecordsJSON = jsonOutput.toJson(dvVersionRecords)
+                dvVersionViewJSON = jsonOutput.toJson(dvVersionView)
+            }
+
+            //SET VERSION LETTER
+            versionLetter = jsonOutput.toJson(submissionService.getNextVersionLetter(params.vfrom))
+            originalVersion = jsonOutput.toJson(params.vfrom)
+            originalQuoteID = jsonOutput.toJson(params.q)
+
+
+            log.info "VERSION LETTER ====== " + versionLetter
+        }
+
+        def filmRiskTypes = RiskType.findAllWhere(riskTypeCategory: "FP");
         def editingVersion;
         def allVersionsInMysql = [];
         def aimSqlAllVersions = [];
         def mysqlSubmissionResult = [];
-        def questionAnswerMapJSON;
         def questionAnswerMapString;
         def dvResults =[];
         def verResults =[];
@@ -203,17 +287,116 @@ class MainController {
 
         [user: session.user,
          riskCategories:riskCategories, riskCategoryResults:riskCategoryResults,
-         riskTypes:riskTypes, riskTypeResults:riskTypeResults, filmRiskTypes:filmRiskTypes,
-         products:products,
+         riskTypes:riskTypes, riskTypeResults:riskTypeResults,
+         products:products, productConditionResults:productConditionResults, productConditions:productConditions,
          operations: operations, operationResults: operationResults,
          coverages: coverages, coverageResults: coverageResults,
          questionResults:questionResults, questions:questions,
+         questionCategoryResults:questionCategoryResults, questionCategories:questionCategories,
          ratingBasisResults:ratingBasisResults, ratingBasis:ratingBasis,
          rateResults:rateResults, rates:rates,
+
          versionMode:versionMode,
-         versionLetter:versionLetter, originalVersion: params.editingVersion, questionAnswerMap: questionAnswerMapJSON,
-         questionAnswerMapString:questionAnswerMapString, dvResults: dvResults[0], verResults:verResults[0], quoteResults:quoteResults[0]]
+         originalVersion: params.editingVersion,
+         questionAnswerMapString:questionAnswerMapString, dvResults: dvResults[0], verResults:verResults[0], quoteResults:quoteResults[0],
+
+         quoteRecord:quoteRecord, versionRecords:versionRecords, dvVersionRecords:dvVersionRecords, dvVersionView:dvVersionView, submissionRecord:submissionRecord,
+         quoteRecordJSON:quoteRecordJSON, versionRecordsJSON:versionRecordsJSON, dvVersionRecordsJSON:dvVersionRecordsJSON, dvVersionViewJSON:dvVersionViewJSON,
+         submissionRecordJSON: submissionRecordJSON, questionAnswerMap:questionAnswerMap, questionAnswerOrganizedMap:questionAnswerOrganizedMap, questionAnswerMapJSON:questionAnswerMapJSON,
+         questionAnswerOrganizedMapJSON:questionAnswerOrganizedMapJSON, versionLetter:versionLetter, originalVersion:originalVersion, originalQuoteID: originalQuoteID
+        ]
     }
+
+    def getTaxInfo(){
+        log.info "GETTING TAX INFO"
+        log.info params
+
+        def taxMap = aimSqlService.getTaxInfo(params.state)
+
+        render jsonOutput.toJson(taxMap)
+    }
+
+    def submitSubmission(){
+        log.info("SUBMIT SUBMISSION")
+        log.info(params);
+
+        def renderMessage = ""
+
+        try{
+            def submissionMap = jsonSlurper.parseText(params.submissionMap)
+            renderMessage = submissionService.saveSubmission(submissionMap)
+
+
+
+            //SEND EMAIL NOTIFICATION
+            //            def testMap = [
+            //                    brokerEmail: "andee.abad@icloud.com",
+            //                    nameOfInsured: submissionMap.namedInsured,
+            //                    submissionID: aimQuoteID,
+            //                    underwriterEmail: "Andee@neeis.com",
+            //                    brokerName: submissionMap.acctExecID,
+            //                    brokerPhone: submissionMap.brokerPhoneNumber,
+            //                    brokerAgency: submissionMap.brokerCompanyID
+            //            ]
+            def testMap = [
+                    brokerEmail: "andee.abad@icloud.com",
+                    nameOfInsured: submissionMap.namedInsured,
+                    submissionID: "QUOTEID",
+                    underwriterEmail: "Andee@neeis.com",
+                    brokerName: submissionMap.acctExecID,
+                    brokerPhone: submissionMap.brokerPhoneNumber,
+                    brokerAgency: submissionMap.brokerCompanyID
+            ]
+
+            log.info testMap.getClass()
+
+            emailHelper.sendMessage(mailService, testMap)
+
+            notificationService.addNewNotification("SUBMISSIONSUBMIT", session.user.id)
+
+            render renderMessage
+        }catch(Exception e){
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+            renderMessage = "Error"
+        }
+
+    }
+
+    def newSubmissionConfirm(){
+        log.info "CONFIRM NEW SUBMISSION"
+        log.info params
+
+        def submissionIDs = "";
+        def submissionIDArray = params.submissionID.split(";")[0]
+        def coverages = "";
+        def submission;
+        params.submissionID.split(",").each{
+            def quoteID = it.trim()
+            if(quoteID.size() > 0){
+                log.info quoteID
+                submission = Submissions.findAllByAimQuoteID(quoteID)
+                submissionIDs = submissionIDs + submission[0].aimQuoteID + ","
+                coverages = coverages + submission[0].coverages + ","
+            }
+        }
+
+        if (submissionIDs.endsWith(",")) {
+            submissionIDs = submissionIDs.substring(0, submissionIDs.length() - 1);
+        }
+        if (coverages.endsWith(",")) {
+            coverages = coverages.substring(0, coverages.length() - 1);
+        }
+
+        log.info(submissionIDs)
+
+
+        [user: session.user, submission: submission, submissionIDs: submissionIDs, coverages: coverages, pdfError:params.pdfError]
+    }
+
+    // OLD STUFF
 
     def newSubmission() {
         //RISK CATEGORIES
@@ -329,32 +512,6 @@ class MainController {
         log.info groupedMessages;
         [user: session.user, messageChains:groupedMessages, initialChainView: initial]
 
-    }
-
-    def submitSubmission(){
-        //METHOD TO HANDLE SUBMITTING ALL SUBMISSION INFO TO AIM
-        //WILL REDIRECT TO FINISH PAGE AFTER
-        log.info("SUBMITTING INFO TO AIM")
-        log.info(params);
-
-
-
-        //TESTING AIM SQL INSERT
-        Sql sql = new Sql(dataSource_aim)
-//        String query = "Select * from ZipCode"
-
-//        def results = sql.execute(query)
-//        sql.eachRow( 'select * from ZipCode' ) { log.info "$it.Zip -- ${it.City} --" }
-//        def zipcodeTest = '99999'
-//        sql.execute("insert into ZipCode (ZipCode) values (${zipcodeTest})")
-//        log.info( results )
-
-        log.info("Test Complete")
-//        sql.execute('delete from ZipCode where word_id = ?' , [5])
-
-
-
-        redirect(controller:'main', action:'index')
     }
 
     def checkNamedInsured(){
@@ -598,28 +755,26 @@ class MainController {
 
     }
 
-    def submissions(){
+    def submissionsBACKUP(){
         log.info ("MY SUBMISSION")
         log.info (params)
         Sql aimsql = new Sql(dataSource_aim)
+
+
         def submissions = [];
-        log.info(session.user.email)
-        log.info(session.user.userRole)
 
         def timeZone = TimeZone.getTimeZone('PST')
-
         def now = new Date()
         def dateFormat = 'yyyy-MM-dd HH:mm:ss.SSS'
-
         def timestamp = now.format(dateFormat, timeZone)
 
 
         if(session.user.userRole == "Broker"){
-            log.info("Broker")
+            //GET SUBMISSIONS LIST FOR BROKER (MYSQL)
             def webSubmissions = Submissions.where{
                 aimQuoteID != null && submittedBy == session.user.email
             }
-            log.info ("Web Submissions: " + webSubmissions.getClass())
+
             def webQuotesString = ";";
             webSubmissions.each{
                 webQuotesString = webQuotesString + it.aimQuoteID + ";"
@@ -729,6 +884,18 @@ class MainController {
                     ]
                     submissions.add(submissionObj)
                 }
+
+                def whereString = " (QuoteID LIKE '%${params.s}%') OR\n" +
+                        "          (NamedInsured LIKE '%${params.s}%') OR\n" +
+                        "          (Attention LIKE '%${params.s}%') OR\n" +
+                        "          (AcctExec LIKE '%${params.s}%') OR\n" +
+                        "          (CoverageID LIKE '%${params.s}%')\n" +
+                        "ORDER BY Received DESC"
+                def testRecords = aimSqlService.selectAllFromTableWhereWithFormatting("Quote", whereString)
+                log.info "SUBMISSIONS ==========="
+                testRecords.each{
+                    log.info it
+                }
             }
             else{
                 aimsql.eachRow( "SELECT Top 100 * FROM Quote with (NOLOCK) ORDER BY Received DESC") {
@@ -750,9 +917,13 @@ class MainController {
                     ]
                     submissions.add(submissionObj)
                 }
+
+
             }
 
             log.info(submissions)
+
+
         }
         else if(session.user.userRole == "Admin"){
             submissions = Submissions.findAll([sort: "submitDate",order: "desc"])
@@ -785,9 +956,155 @@ class MainController {
         }
 
 
+        //NEW STUFF
+        def aimSQLSubmissions = aimSqlService.aimSelectQuery("SELECT Top 100 * FROM Quote with (NOLOCK) ORDER BY Received DESC")
+        log.info "SUBMISSIONS ==========="
+        def submissionList = jsonOutput.toJson(aimSQLSubmissions)
 
-        [user: session.user, submissions: submissions, additionalInsuredList: additionalInsuredList, timestamp:timestamp, neeisUWList:neeisUWList]
+        [user: session.user, submissions: submissions, submissionList: submissionList, additionalInsuredList: additionalInsuredList, timestamp:timestamp, neeisUWList:neeisUWList]
     }
+
+    def submissions(){
+        log.info ("MY SUBMISSION")
+        log.info (params)
+        Sql aimsql = new Sql(dataSource_aim)
+
+
+        def submissionList = [];
+        def submissions = []
+
+        def timeZone = TimeZone.getTimeZone('PST')
+        def now = new Date()
+        def dateFormat = 'yyyy-MM-dd HH:mm:ss.SSS'
+        def timestamp = now.format(dateFormat, timeZone)
+
+
+        if(session.user.userRole == "Broker"){
+
+        }
+        else if(session.user.userRole == "Underwriter"){
+
+            //GET SUBMISSIONS IN MYSQL
+            def mySqlSubmissions = Submissions.list()
+            mySqlSubmissions = mySqlService.getResultCollection(mySqlSubmissions)
+
+            def webSubmissionIDArray = []
+            def webSubmissionsMap = [:]
+            mySqlSubmissions.each{
+                String quoteID = it.aimQuoteID
+                webSubmissionIDArray << quoteID
+                webSubmissionsMap[quoteID] = it
+            }
+
+
+            //GET SUBMISSIONS IN AIM
+            def aimSqlSubmissions = aimSqlService.aimSelectQuery("SELECT Top 100 * FROM Quote with (NOLOCK) ORDER BY Received DESC")
+            def aimSqlSubmissionsMap = [:]
+            aimSqlSubmissions.each{
+                String quoteID = it.QuoteID
+                aimSqlSubmissionsMap[quoteID] = it
+            }
+
+
+            //BUILD SUBMISSION LIST FOR BROWSER
+            aimSqlSubmissions.each{
+                String quoteID = it.QuoteID
+                def submissionMap = [:]
+
+                submissionMap.aimsql = aimSqlSubmissionsMap[quoteID]
+                if(webSubmissionsMap.containsKey(quoteID)){
+                    submissionMap.mysql = webSubmissionsMap[quoteID]
+                    submissionMap.webFlag = "Y"
+                }
+                else{
+                    submissionMap.webFlag = "N"
+                }
+
+                submissionList << submissionMap
+            }
+            submissionList = jsonOutput.toJson(submissionList)
+
+        }
+        else if(session.user.userRole == "Admin"){
+        }
+
+
+        //GET CERT INFO
+        def additionalInsuredList;
+        try{
+            log.info session.user.company
+            additionalInsuredList = Certwords.findAllByProducerid(session.user.company,[sort: "description",order: "desc"]);
+            log.info additionalInsuredList;
+        }
+        catch (Exception e){
+            log.info e
+        }
+
+        //GET NEEIS UNDERWRITER LIST
+        def neeisUWList;
+        try{
+            neeisUWList = User.findAllByUserRole("Underwriter",[sort: "firstName",order: "desc"]);
+            log.info neeisUWList
+        }
+        catch (Exception e){
+            log.info e
+        }
+
+
+
+
+        [user: session.user, submissions: submissions, submissionList: submissionList, additionalInsuredList: additionalInsuredList, timestamp:timestamp, neeisUWList:neeisUWList]
+    }
+
+    def submissionDetail(){
+        log.info ("SUBMISSION DETAIL")
+        log.info (params)
+
+
+        //AIM VARIABLES
+        def versionRecords, dvVersionRecords, dvVersionView
+        def versionRecordsJSON, dvVersionRecordsJSON,dvVersionViewJSON
+
+        //MYSQL VARIABLES
+        Submissions submissionRecord
+        def submissionRecordJSON
+
+        //QUESTION ANSWER VARIABLES
+        def questionAnswerMap, questionAnswerOrganizedMap
+        def questionAnswerMapJSON, questionAnswerOrganizedMapJSON
+
+
+
+        //CHECK FOR QUOTE ID, AND USER HAS PERMISSION TO VIEW
+        def quoteRecord = aimSqlService.selectRecords("Quote", [QuoteID: params.quoteID, ContactID:session.user.aimContactID])[0]
+        def quoteRecordJSON = jsonOutput.toJson(quoteRecord)
+
+
+        if(quoteRecord.size() > 0){
+            submissionRecord = Submissions.findByAimQuoteID(params.quoteID)
+            submissionRecordJSON = utilService.gormResultsToJSObject(submissionRecord)
+
+            questionAnswerMap = jsonSlurper.parseText(submissionRecord.uwQuestionMap)
+            questionAnswerMapJSON = jsonOutput.toJson(questionAnswerMap)
+            questionAnswerOrganizedMap = jsonSlurper.parseText(submissionRecord.uwQuestionsOrder)
+            questionAnswerOrganizedMapJSON = jsonOutput.toJson(questionAnswerOrganizedMap)
+
+            versionRecords = aimSqlService.selectRecords("Version", [QuoteID: params.quoteID])
+            dvVersionRecords = aimSqlService.selectRecords("dvVersionRecord", [QuoteID: params.quoteID])
+            dvVersionView = aimSqlService.selectRecords("dvVersionView", [QuoteID: params.quoteID])
+
+            versionRecordsJSON = jsonOutput.toJson(versionRecords)
+            dvVersionRecordsJSON = jsonOutput.toJson(dvVersionRecords)
+            dvVersionViewJSON = jsonOutput.toJson(dvVersionView)
+        }
+
+        [user: session.user,
+         quoteRecord:quoteRecord, versionRecords:versionRecords, dvVersionRecords:dvVersionRecords, dvVersionView:dvVersionView, submissionRecord:submissionRecord,
+         quoteRecordJSON:quoteRecordJSON, versionRecordsJSON:versionRecordsJSON, dvVersionRecordsJSON:dvVersionRecordsJSON, dvVersionViewJSON:dvVersionViewJSON,
+         submissionRecordJSON: submissionRecordJSON, questionAnswerMap:questionAnswerMap, questionAnswerOrganizedMap:questionAnswerOrganizedMap, questionAnswerMapJSON:questionAnswerMapJSON,
+         questionAnswerOrganizedMapJSON:questionAnswerOrganizedMapJSON]
+    }
+
 
     def getCertWords(){
         log.info ("GETTING CERT WORDS")
@@ -1106,31 +1423,7 @@ class MainController {
         [user: session.user, record:record, activity:activity, notes:notes, invoice:invoice, invoiceHeader:invoiceHeader]
     }
 
-    def newSubmissionConfirm(){
-        log.info "CONFIRM NEW SUBMISSION"
-        log.info params
 
-        def submissionIDs = "";
-        def coverages = "";
-        def submission;
-        params.submissionID.split(",").each{
-            submission = Submissions.findAllByAimQuoteID(it)
-            submissionIDs = submissionIDs + submission[0].aimQuoteID + ","
-            coverages = coverages + submission[0].coverages + ","
-        }
-
-        if (submissionIDs.endsWith(",")) {
-            submissionIDs = submissionIDs.substring(0, submissionIDs.length() - 1);
-        }
-        if (coverages.endsWith(",")) {
-            coverages = coverages.substring(0, coverages.length() - 1);
-        }
-
-        log.info(submissionIDs)
-
-
-        [user: session.user, submission: submission, submissionIDs: submissionIDs, coverages: coverages, pdfError:params.pdfError]
-    }
 
     def downloadPDF = {
 //        def sub = Submissions.get(params.id)
@@ -1146,6 +1439,18 @@ class MainController {
             else render "Error!" // appropriate error handling
         }
 
+    def downloadForm = {
+        log.info params
+        def webrootDir = servletContext.getRealPath("/docs/forms")
+        def file = new File(webrootDir, "${params.formID}.pdf")
+        if (file.exists())
+        {
+            response.setContentType("application/octet-stream") // or or image/JPEG or text/xml or whatever type the file is
+            response.setHeader("Content-disposition", "attachment;filename=\"${file.name}\"")
+            response.outputStream << file.bytes
+        }
+        else render "Error!" // appropriate error handling
+    }
     def getGroupedMessages(){
         def messages;
         def messageChainList = []
@@ -1188,6 +1493,13 @@ class MainController {
         return groupedMessages;
     }
 
+    def testPDF(){
+        log.info "TESTING PDF"
+        log.info params
+
+        render pdfService.createIndicationDoc(submissionMap, productDetailArray)
 
 
+
+    }
 }

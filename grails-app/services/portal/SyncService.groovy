@@ -60,6 +60,7 @@ class SyncService {
         /*TEST*/
 //        importMissingPropertiesForTable('Products')
 //        importMissingLimits()
+//        mySqlService.getNonNullableColumnsList('Products')
         /*TEST*/
 
         syncLog("\tCHECKING MYSQL TABLE COMPATIBILITY WITH AIM")
@@ -79,19 +80,23 @@ class SyncService {
             def mysqlTableName = it.key
             syncLog(mysqlTableName.toUpperCase() + ": ")
             importMissingRecordsForTable(mysqlTableName)
+
             importMissingPropertiesForTable(mysqlTableName)
         }
 
-        syncLog("LIMITS:")
-        importMissingLimits()
+        //MAKE SURE LIMIT AND DEDUCT ARRAYS ARE BUILT
+//        buildLimitArrays()
 
-        syncLog("FORMS:")
-        buildFormIDArrays()
-        syncLog("TODO: IMPORT FORMS")
-        importFormsFromAIM()
+//        syncLog("LIMITS:")
+//        importMissingLimits()
+
+//        syncLog("FORMS:")
+//        buildFormIDArrays()
+//        syncLog("TODO: IMPORT FORMS")
+//        importFormsFromAIM()
 
 
-        return "<span style='white-space:pre; font-size:10px'>" + syncLog.text+  "</span>"
+        return renderSyncLogHTML(syncLog.text)
     }
 
     def checkForUpdates(){
@@ -99,12 +104,15 @@ class SyncService {
         updatesNeeded = 0
         checkOnly = true
 
+        //SETUP
         def tablesToSync = grailsApplication.config.grails.mysqlToAimTableMap
-
         initializeSyncLog()
         syncLog("CHECKING SYNC STATUS")
-
         syncLog("\tCHECKING MYSQL TABLE COMPATIBILITY WITH AIM")
+
+        log.info tablesToSync
+
+        //BEGIN SYNC
         tablesToSync.each{
             def mysqlTableName = it.key
             def compatibility = ""
@@ -123,19 +131,40 @@ class SyncService {
             importMissingRecordsForTable(mysqlTableName)
             importMissingPropertiesForTable(mysqlTableName)
         }
-        syncLog("LIMITS:")
-        importMissingLimits()
-
-        syncLog("FORMS:")
-        importFormsFromAIM()
 
         syncLog("TOTAL UPDATES NEEDED: $updatesNeeded")
 
         updatesNeeded = 0
         checkOnly = false
-        return "<span style='white-space:pre; font-size:10px'>" + syncLog.text+  "</span>"
+        return renderSyncLogHTML(syncLog.text)
     }
 
+    def quickCheck(){
+        updatesNeeded = 0
+        checkOnly = true
+
+        //SETUP
+        def tablesToSync = grailsApplication.config.grails.mysqlToAimTableMap
+        initializeSyncLog()
+        syncLog("CHECKING SYNC STATUS")
+        syncLog("\tCHECKING MYSQL TABLE COMPATIBILITY WITH AIM")
+
+        //BEGIN SYNC
+        tablesToSync.each{
+            def mysqlTableName = it.key
+            syncLog(mysqlTableName.toUpperCase() + ": ")
+            importMissingRecordsForTable(mysqlTableName)
+            importMissingPropertiesForTable(mysqlTableName)
+        }
+
+        syncLog("TOTAL UPDATES NEEDED: $updatesNeeded")
+
+        updatesNeeded = 0
+        checkOnly = false
+        return updatesNeeded
+    }
+
+    //PRINT LAST SYNCED DATE AND TIME TO LOG
     def lastSynced(){
         def syncLogFilePath = grailsApplication.config.grails.syncLogPath
 
@@ -150,6 +179,7 @@ class SyncService {
         }
 
     }
+
     //CHECK DOMAIN CLASS TO SEE IF TYPE AND CONSTRAINTS ARE CORRECT, RETURNS TRUE IF TYPES ARE COMPATIBLE
     boolean isCompatibleWithAim(String tableName){
         Class mysqlTable = mySqlService.getClazz(tableName)
@@ -180,15 +210,22 @@ class SyncService {
 
     //IMPORT RECORDS FROM AIM THAT DON'T EXIST
     def importMissingRecordsForTable(String tableName){
+        /*
+        IMPORT RULES:
+        1. IMPORT MISSING ROWS
+        2. ENSURE NON-NULLABLE COLUMNS IN MYSQL ARE NOT NULL DURING IMPORT
+         */
         Class mysqlTable = mySqlService.getClazz(tableName)
         String aimsqlTableName = mySqlService.getAimTable(tableName)
         Map columnMap = mysqlTable.columnMap
+        ArrayList nonNullableColumns = mySqlService.getNonNullableColumnsList(tableName)
 
         syncLog("\tIMPORT MISSING RECORDS FOR ${tableName.toUpperCase()}")
 
-        //GET ROWS FROM AIMSQL TABLE, AND ITERATE THROUGH ALL COVERAGES
+        //GET ROWS FROM AIMSQL TABLE, AND ITERATE THROUGH ALL ROWS
         def aimsqlRows = aimSqlService.selectAllFromTableWithFormatting(aimsqlTableName)
         def importedCount = 0
+
         aimsqlRows.each{
             //CHECK IF RECORD EXISTS IN MYSQL, IF IT DOES NOT EXIST INSERT INTO MYSQL
             def aimSqlRecord = it
@@ -209,6 +246,27 @@ class SyncService {
 
                         insertMap[mysqlColumn] = aimSqlRecord[aimsqlColumn]
                     }
+
+                    //MAKE SURE THE ROW TO INSERT DOES NOT HAVE NON-NULLABLE COLUMNS THAT ARE NULL
+                    nonNullableColumns.each{
+                        def nonNullableColumnName = it
+                        if(insertMap.containsKey(nonNullableColumnName)){
+                            //Do nothing
+                        }
+                        else{
+                            //ENTER BLANK VALUE TO AVOID NON NULL VIOLATION
+                            def colClassType = (mySqlService.getClassTypeOfColumn(tableName, nonNullableColumnName))
+
+                            if(colClassType == "class java.lang.String"){
+                                insertMap[nonNullableColumnName] = ""
+                            }
+                            else{
+                                insertMap[nonNullableColumnName] = 0
+                            }
+                        }
+
+                    }
+
                     mysqlRecord = mysqlTable.newInstance(insertMap)
 
                     mysqlRecord.save(flush: true, failOnError: true)
@@ -227,68 +285,12 @@ class SyncService {
     }
 
     //FILL IN MISSING PROPERTIES FOR RECORDS FROM AIM
-    def importMissingPropertiesForTableBACKUP(String tableName){
-        Class mysqlTable = mySqlService.getClazz(tableName)
-        String aimsqlTableName = mySqlService.getAimTable(tableName)
-        Map<String,String> columnMap = mysqlTable.columnMap
-        def aimPrimaryKey = mysqlTable.aimPrimaryKey
-        def aimsqlRows = aimSqlService.selectAllFromTableWithFormatting(aimsqlTableName)
-
-
-        syncLog("\tCHECKING COLUMNS ARE SYNCED FOR: ${tableName}")
-        syncLog("\t${columnMap}")
-        def rowsInMysqlTable = mysqlTable.list()
-
-        def importedCount = 0
-        rowsInMysqlTable.each{
-            def mysqlRow = it
-            def aimRow = mySqlService.getAimRecord(mysqlRow)
-            columnMap.each{
-                def mysqlColumn = it.key
-                def aimsqlColumn = it.value
-
-                def mysqlColumnVal = mysqlRow[mysqlColumn]
-                def aimsqlColumnVal = aimRow[aimsqlColumn]
-
-                //IF VALUES ARE A STRING, TRIM WHITESPACE (DO THIS FILTER FIRST, TO CATCH BLANK SPACES THAT SHOULD BE NULL)
-                if(mysqlColumnVal.getClass() == String){
-                    mysqlColumnVal = mysqlColumnVal.trim()
-                }
-                if(aimsqlColumnVal.getClass() == String){
-                    aimsqlColumnVal = aimsqlColumnVal.trim()
-                }
-                //IF MYSQL VAL IS NULL, SHOULD BE EQUAL TO THE AIM VALUE OF '' OR NULL
-                if(mysqlColumnVal == null && (aimsqlColumnVal =='' || aimsqlColumnVal == null ) ){
-                    mysqlColumnVal = aimsqlColumnVal
-                }
-
-
-                if(!mysqlColumnVal.equals(aimsqlColumnVal) ){
-                    if(checkOnly){
-                        updatesNeeded++
-                    }
-                    else{
-                        syncLog("\t\tFIXING ${mysqlRow[mysqlTable.mysqlPrimaryKey]}, CHANGING ${mysqlColumn} FROM ${mysqlColumnVal } TO ${aimsqlColumnVal}")
-                        def updateRecord = mysqlTable.find("from ${tableName} as r where  r.${mysqlTable.mysqlPrimaryKey}='${aimRow[aimPrimaryKey]}'")
-                        updateRecord[mysqlColumn] = aimsqlColumnVal
-                        updateRecord.save(flush: true, failOnError: true)
-                        importedCount++
-                    }
-
-                }
-
-
-            }
-        }
-
-        if(importedCount == 0){
-            syncLog('\t\tNo Missing Column Information')
-        }
-        else{
-            syncLog('\t\tImported ' + importedCount + " Column Info")
-        }
-    }
     def importMissingPropertiesForTable(String tableName){
+        /*
+        IMPORT RULES:
+        1. IMPORT MISSING COLUMN DETAILS
+        2. MARK DELETED RECORDS IN AIMSQL INACTIVE IN MYSQL
+         */
         Class mysqlTable = mySqlService.getClazz(tableName)
         String aimsqlTableName = mySqlService.getAimTable(tableName)
         Map<String,String> columnMap = mysqlTable.columnMap
@@ -296,7 +298,6 @@ class SyncService {
         def mysqlPrimaryKey = mysqlTable.mysqlPrimaryKey
 
         def aimsqlRows = aimSqlService.selectAllFromTableWithFormatting(aimsqlTableName)
-
 
         syncLog("\tCHECKING COLUMNS ARE SYNCED FOR: ${tableName}")
         syncLog("\t${columnMap}")
@@ -326,11 +327,11 @@ class SyncService {
                     if(aimsqlColumnVal.getClass() == String){
                         aimsqlColumnVal = aimsqlColumnVal.trim()
                     }
+
                     //IF MYSQL VAL IS NULL, SHOULD BE EQUAL TO THE AIM VALUE OF '' OR NULL
                     if(mysqlColumnVal == null && (aimsqlColumnVal =='' || aimsqlColumnVal == null ) ){
                         mysqlColumnVal = aimsqlColumnVal
                     }
-
 
                     if(!mysqlColumnVal.equals(aimsqlColumnVal) ){
                         if(checkOnly){
@@ -343,12 +344,30 @@ class SyncService {
                             updateRecord.save(flush: true, failOnError: true)
                             importedCount++
                         }
-
                     }
 
+                    //ACP_OPERATIONS TABLE IN AIM DOES NOT HAVE A ACTIVE FLAG COLUMN. ALL RECORDS ARE ACTIVE
+                    if(tableName == 'Operations'){
+                        //SINCE THIS OPERATION RECORD EXISTS IN THE ACP_OPERATIONS TABLE IT IS ACTIVE
+                        if(mysqlRow.activeFlag == 'N'){
+                            syncLog("\t\t${mysqlRow[mysqlTable.mysqlPrimaryKey]} IS ACTIVE IN AIM, MAKING ${mysqlRow[mysqlTable.mysqlPrimaryKey]} ACTIVE IN MYSQL")
+                            mysqlRow.activeFlag = 'Y'
+                            mysqlRow.save(flush: true, failOnError: true)
+                            importedCount++
+                        }
+                    }
                 }
             }
+            else{
+                //IF THIS ROW NO LONGER EXISTS IN AIMSQL, DEACTIVATE IT IN MYSQL
+                if(mysqlRow.activeFlag == 'Y'){
+                    syncLog("\t\t${mysqlRow[mysqlTable.mysqlPrimaryKey]} WAS DELETED IN AIMSQL, DEACTIVATING ${mysqlRow[mysqlTable.mysqlPrimaryKey]} ")
+                    mysqlRow.activeFlag = 'N'
+                    mysqlRow.save(flush: true, failOnError: true)
+                    importedCount++
+                }
 
+            }
         }
 
         if(importedCount == 0){
@@ -432,6 +451,53 @@ class SyncService {
         else{
             syncLog('\tImported ' + importedCount + " Limits")
         }
+    }
+
+    def buildLimitArrays(){
+        def products = Products.list()
+
+        products.each{
+            def deductString = it.deduct
+            def limitString = it.limits
+            def deductArray = []
+            def limitArray = []
+            if(limitString != null){
+                limitString.split("\\r\\n|\\n|\\r").each{
+                    if(it.trim().size() > 0 && it.split("\t").size() > 1){
+                        def tempLimitMap = [:]
+                        //GET LIMIT DETAILS
+                        def limitVal = it.split("\t")[0]
+                        def limitDescription = it.split("\t")[1]
+                        limitDescription = limitDescription.substring(limitDescription.indexOf(':') + 1)
+
+                        tempLimitMap.limitAmount = limitVal
+                        tempLimitMap.limitDescription = limitDescription
+
+                        limitArray << tempLimitMap
+                    }
+                }
+            }
+
+            if(deductString != null) {
+                deductString.split("\\r\\n|\\n|\\r").each {
+                    if (it.trim().size() > 0 && it.split("\t").size() > 1) {
+                        def tempDeductMap = [:]
+                        //GET LIMIT DETAILS
+                        def deductAmount = it.split("\t")[0]
+                        def deductDescription = it.split("\t")[1]
+                        deductDescription = deductDescription.substring(deductDescription.indexOf(':') + 1)
+
+                        tempDeductMap.deductAmount = deductAmount
+                        tempDeductMap.deductDescription = deductDescription
+
+                        deductArray << tempDeductMap
+                    }
+                }
+            }
+            it.limitArray = jsonOutput.toJson(limitArray)
+            it.deductArray = jsonOutput.toJson(deductArray)
+        }
+
     }
 
     def importFormsFromAIM(){
@@ -541,35 +607,265 @@ class SyncService {
         }
     }
 
+    /***********RENDER SYNC LOG TO BROWSER **********/
+    def renderSyncLogHTML(logText){
+        def renderString =
+                "<div style='font-size:10px; line-height:1.2em; text-align:left'>" +
+                "   <div style='white-space:pre; overflow:auto; max-height:600px'>" + logText +  "</div>" +
+                "</div>"
 
-    /*********** DEPRECATED **********/
-
-    //IMPORT COVERAGE CLASSES FROM AIM THAT DON'T EXIST
-    def importFromAIM_Coverages(){
-        syncLog("IMPORT MISSING COVERAGES")
-        //GET ROWS FROM AIMSQL 'COVERAGE' TABLE, AND ITERATE THROUGH ALL COVERAGES
-        def results = aimSqlService.selectAllFromTableWithFormatting("Coverage")
-        def importedCount = 0
-        results.each{
-            //CHECK IF COVERAGE EXISTS IN MYSQL, IF IT DOES NOT EXIST INSERT INTO MYSQL
-            def coverageRecord = Coverages.findByCoverageCode(it.CoverageID)
-            if(coverageRecord == null){
-                importedCount++
-                syncLog('\t' + it.CoverageID)
-                coverageRecord = new portal.Coverages(coverageCode: it.CoverageID, coverageName: it.Description, activeFlag: it.ActiveFlag)
-                coverageRecord.save(flush: true, failOnError: true)
-            }
-        }
-
-        if(importedCount == 0){
-            syncLog('\tNo Missing Coverages')
-        }
-        else{
-            syncLog('\tImported ' + importedCount + " Coverages")
-        }
-
+        return renderString
     }
 
 
 
+    /***********DATA SAVING AND UPDATING FUNCTIONS **********/
+    //CREATE METHODS
+    def createCoverage(params){
+        log.info "CREATING NEW COVERAGE RECORD "
+        log.info params
+
+        def renderMessage = "Success"
+
+        try{
+            def coverageCode = params.coverageCode.toUpperCase()
+            def coverageName = params.coverageName
+            def activeFlag = params.activeFlag
+
+            //SAVE CHANGES TO AIM
+            aimSqlService.insertRecord("Coverage", [CoverageID: "'${coverageCode}'", Description: "'${coverageName}'", ActiveFlag: "'${activeFlag}'"])
+
+            Coverages coverageRecord = new Coverages (coverageCode: coverageCode, coverageName: coverageName, activeFlag:activeFlag, packageFlag: 'N', coverageOffered: 'N', listTypeID: 'C')
+            coverageRecord.save(flush: true, failOnError: true)
+        }catch(Exception e){
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+            renderMessage = "Error " + exceptionAsString
+        }
+
+        return renderMessage
+    }
+
+    def createOperation(params){
+        log.info "CREATING NEW OPERATION RECORD "
+        log.info params
+
+        def renderMessage = "Success"
+
+        try{
+            def operationID = params.operationID.toUpperCase()
+            def description = params.operationDescription
+            def activeFlag = params.activeFlag
+
+            //SAVE CHANGES TO AIM
+            aimSqlService.insertRecord("LkpCodes", [StatusID: "'${operationID}'", Description: "'${description}'", ActiveFlag: "'${activeFlag}'", TypeID: "'OPS'"])
+
+            Operations operationRecord = new Operations(operationID: operationID, description: description, activeFlag:activeFlag)
+            operationRecord.save(flush: true, failOnError: true)
+        }catch(Exception e){
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+            renderMessage = "Error " + exceptionAsString
+        }
+
+        return renderMessage
+    }
+
+    def deleteOperation(params){
+        log.info "DELETING OPERATION RECORD "
+        log.info params
+
+        def renderMessage = "Success"
+
+        try{
+            def operationID = params.operationID
+            def description = params.operationDescription
+            def activeFlag = params.activeFlag
+
+            //DELETE IN AIM
+            aimSqlService.insertRecord("LkpCodes", [StatusID: "'${operationID}'", Description: "'${description}'", ActiveFlag: "'${activeFlag}'"])
+
+            Operations operationRecord = new Operations(operationID: operationID, description: description, activeFlag:activeFlag)
+            operationRecord.save(flush: true, failOnError: true)
+        }catch(Exception e){
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+            renderMessage = "Error " + exceptionAsString
+        }
+
+        return renderMessage
+    }
+
+    //SAVE CHANGES TO MYSQL AND AIM
+    def saveOperationsChanges(params){
+        log.info "SAVING OPERATIONS CHANGES"
+        log.info params
+
+        def renderMessage = "Success"
+
+        try{
+            def operationID = params.operationID
+            def description = params.operationDescription
+            def activeFlag = params.activeFlag
+            def bindingAuthority = params.bindingAuthority
+            def coveragePackageMap = jsonSlurper.parseText(params.coveragePackageMap)
+            def coverageProductMap = jsonSlurper.parseText(params.coverageProductMap)
+            def uwQuestionsMap = jsonSlurper.parseText(params.uwQuestionsMap)
+            def requiredQuestionsMap = jsonSlurper.parseText(params.requiredQuestionsMap)
+            def weightOrderedRequiredQuestions = jsonSlurper.parseText(params.weightOrderedRequiredQuestions)
+            def monolineCoveragesArray = jsonSlurper.parseText(params.monolineArray)
+
+
+            log.info operationID
+            Operations operationRecord = Operations.findByOperationID(operationID)
+
+            operationRecord.description = description
+            operationRecord.activeFlag = activeFlag
+            operationRecord.bindingAuthority = bindingAuthority
+            operationRecord.coveragePackageMap = jsonOutput.toJson(coveragePackageMap)
+            operationRecord.coverageProductMap = jsonOutput.toJson(coverageProductMap)
+            operationRecord.underwriterQuestionsMap = jsonOutput.toJson(uwQuestionsMap)
+            operationRecord.requiredQuestionsMap = jsonOutput.toJson(requiredQuestionsMap)
+            operationRecord.weightOrderedRequiredQuestions = jsonOutput.toJson(weightOrderedRequiredQuestions)
+            operationRecord.monolineCoverages = jsonOutput.toJson(monolineCoveragesArray)
+
+            operationRecord.save(flush: true, failOnError: true)
+
+            //SAVE CHANGES TO AIM
+            aimSqlService.updateRecord("LkpCodes", [Description: "'${description}'", ActiveFlag: "'${activeFlag}'"], [StatusID: "'${operationID}'", TypeID: "'OPS'"])
+        }catch(Exception e){
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+            renderMessage = "Error"
+        }
+
+        log.info renderMessage
+        return renderMessage
+    }
+
+    def saveProductChanges(params){
+        log.info "SAVING PRODUCT CHANGES"
+        log.info params
+
+        def renderMessage = "Success"
+
+        try{
+            def productID = params.productID
+            def formIDArray = jsonSlurper.parseText(params.formIDArray)
+            def limitArray = jsonSlurper.parseText(params.limitArray)
+            def deductArray = jsonSlurper.parseText(params.deductArray)
+            def requiredQuestions = jsonSlurper.parseText(params.requiredQuestions)
+            def uwQuestions = jsonSlurper.parseText(params.uwQuestions)
+            def productMap = jsonSlurper.parseText(params.productMap)
+            def additionalOptionsArray = jsonSlurper.parseText(params.additionalOptionsArray)
+
+
+
+            def limitString = ""
+            limitArray.each{
+                def limitDescription = it.limitDescription
+                def limitAmount = it.limitAmount
+                limitString = limitString + limitAmount + "\t" + limitDescription + "\n"
+            }
+
+            def deductString = ""
+            deductArray.each{
+                def deductDescription = it.deductDescription
+                def deductAmount = it.deductAmount
+                deductString = deductString + deductDescription + "\t" + deductAmount + "\n"
+            }
+
+            Products productRecord = Products.findByProductID(productID)
+
+
+            productRecord.productID = productMap.productID
+            productRecord.formIDS = jsonOutput.toJson(formIDArray)
+            productRecord.productName = productMap.productName
+            productRecord.marketCompanyID = productMap.marketCompanyID
+            productRecord.riskCompanyID = productMap.riskCompanyID
+            productRecord.coverage = productMap.coverage
+            productRecord.rateCode = productMap.rateCode
+            productRecord.terms = productMap.terms
+            productRecord.limitArray = jsonOutput.toJson(limitArray)
+            productRecord.deductArray = jsonOutput.toJson(deductArray)
+            productRecord.limits = limitString
+            productRecord.deduct = deductString
+            productRecord.requiredQuestions = jsonOutput.toJson(requiredQuestions)
+            productRecord.uwQuestions = jsonOutput.toJson(uwQuestions)
+            productRecord.activeFlag = (productMap.activeFlag == 'Y' || productMap.activeFlag == 'N') ? productMap.activeFlag : 'N'
+            productRecord.additionalOptionsArray = jsonOutput.toJson(additionalOptionsArray)
+
+            productRecord.save(flush: true, failOnError: true)
+
+            //SAVE CHANGES TO AIM
+            aimSqlService.updateRecord("Product", [
+                    CoverageID: "'${productMap.coverage}'",
+                    ActiveFlag: "'${(productMap.activeFlag == 'Y' || productMap.activeFlag == 'N') ? productMap.activeFlag : 'N'}'",
+                    CompanyID: "'${productMap.riskCompanyID}'",
+                    BillCompanyID: "'${productMap.marketCompanyID}'",
+                    Description: "'${productMap.productName}'",
+                    Limits: "'${limitString}'",
+                    Deduct: "'${deductString}'",
+                    Subject: "'${productMap.terms}'",
+                    Endorse: "'${productMap.forms}'"
+            ], [ProductID: "'${productID}'"])
+        }catch(Exception e){
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+            renderMessage = "Error"
+        }
+
+
+        return renderMessage
+    }
+
+    def saveCoverageChanges(params){
+        log.info "SAVING COVERAGE CHANGES"
+        log.info params
+
+        def renderMessage = "Success"
+
+        try{
+            def coverageObjectMap = jsonSlurper.parseText(params.coverageMap)
+
+
+            Coverages coverageRecord = Coverages.findByCoverageCode(coverageObjectMap.coverageCode)
+
+            coverageRecord.coverageCode = coverageObjectMap.coverageCode
+            coverageRecord.coverageName = coverageObjectMap.coverageName
+            coverageRecord.listTypeID = coverageObjectMap.listTypeID
+            coverageRecord.coverageOffered = coverageObjectMap.coverageOffered
+            coverageRecord.activeFlag = coverageObjectMap.activeFlag
+            coverageRecord.packageFlag = coverageObjectMap.packageFlag
+
+            coverageRecord.save(flush: true, failOnError: true)
+
+            //SAVE CHANGES TO AIM
+            aimSqlService.updateRecord("Coverage", [
+                    CoverageID: "'${coverageRecord.coverageCode}'",
+                    Description: "'${coverageRecord.coverageName}'",
+                    ListTypeID: "'${coverageRecord.listTypeID}'",
+                    ActiveFlag: "'${coverageRecord.activeFlag}'"
+            ], [CoverageID: "'${coverageRecord.coverageCode}'"])
+        }catch(Exception e){
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+            renderMessage = "Error"
+        }
+
+
+        return renderMessage
+    }
 }

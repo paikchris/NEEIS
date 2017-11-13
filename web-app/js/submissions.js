@@ -7,77 +7,35 @@ var ratesMapToSave;
 var downloadFrameCount = 0;
 var userRole
 var neeisUWList
+var submissions
 
 $(document).ready(function () {
+    submissions = sL
     init();
 });
 
 function init(){
     setUserRole()
     setNeeisUnderwriterList()
-    initializeSmartWizardReview()
+
+    initializeSubmissionRows()
 
     initializeListeners()
-
-    initializeDatePickers()
 }
 
 function initializeListeners(){
+
+    //STATUS ACTION BUTTONS
+    $(document).on('click', '.reviewIndicationButton', function () {
+        var quoteID = $(this).closest('.submissionQuickOptions').data('quoteid')
+        window.location.href = "./../main/submissionDetail.gsp?quoteID=" + quoteID.trim();
+    });
+
+
+
+
     $("#submissionSearch").on('input', function() {
 
-        //$.ajax({
-        //    method: "POST",
-        //    url: "/Async/searchSubmissions",
-        //    data: {riskType:  "",
-        //        searchString :  $(this).val()
-        //
-        //    }
-        //})
-        //    .done(function (msg) {
-        //        //alert(msg);
-        //        console.log(msg);
-        //
-        //        var htmlString = "";
-        //        var submissionsArray = msg.split("&;;&");
-        //        var aimQuoteID = "";
-        //        var namedInsured = "";
-        //        var coverages = "";
-        //        var submittedBy = "";
-        //        var submitDate = "";
-        //        var statusCode = "";
-        //        var underwriter = "";
-        //
-        //
-        //        submissionsArray.forEach(function(it) {
-        //            var aimQuoteID = it.split("&,&")[0];
-        //            var namedInsured = it.split("&,&")[1];
-        //            var coverages = it.split("&,&")[2];
-        //            var submittedBy = it.split("&,&")[3];
-        //            var submitDate = it.split("&,&")[4];
-        //            var statusCode = it.split("&,&")[5];
-        //            if(statusCode === "QO"){
-        //                statusCode = "Quoted";
-        //            }
-        //
-        //            var underwriter = it.split("&,&")[6];
-        //            if(underwriter == "null"){
-        //                underwriter = "";
-        //            }
-        //
-        //            htmlString = htmlString + "<tr>" +
-        //            "<th scope='row'><a href='./../main/submissionView?s=${s.aimQuoteID}'>" + aimQuoteID + "</a></th>" +
-        //            "<td>" + namedInsured + "</td>" +
-        //            "<td>" + coverages + "</td>" +
-        //            "<td>" + submittedBy + "</td>" +
-        //            "<td>" + submitDate + "</td>" +
-        //                "<td>" + statusCode + "</td>" +
-        //                "<td>" + underwriter + "</td>" +
-        //            "<td><a href='./../web-app/attachments/testpdf.pdf'>my link</a></td>" +
-        //            "</tr>";
-        //        });
-        //
-        //        $('#submissionRows').html(htmlString);
-        //    });
     });
 
     $(document).on('click', '#searchButton', function () {
@@ -1429,17 +1387,194 @@ function initializeListeners(){
 }
 
 
-//INIT FUNCTIONS
-function initializeSmartWizardReview(){
-    $('#smartwizard').smartWizard({
-        theme: 'arrows',
-        transitionEffect: 'fade', // Effect on navigation, none/slide/fade
-        transitionSpeed: '400',
-        autoAdjustHeight:false,
-        selected: 0
-    });
+//////////////////////INIT FUNCTIONS////////////////////////////
+function initializeSubmissionRows(){
+    var submissionRowsContainer = $('#submissionRows')
+    var submissionRowsHTML = ""
+    for(var i=0;i<submissions.length;i++){
+        var submissionObject = submissions[i]
+        submissionRowsHTML = submissionRowsHTML + submissionRowContainerHTML(submissionObject)
+    }
+
+    $(submissionRowsContainer).html(submissionRowsHTML)
+}
+function setUserRole(){
+    try{
+        userRole = $('#userRole').html().trim();
+    }
+    catch(e){
+        console.log("Could not verify user, continuing as a Broker")
+        userRole = "Broker"
+    }
+}
+function setNeeisUnderwriterList(){
+
+
+    try{
+        neeisUWList = $('#neeisUWListHidden').html().trim().slice(1, -1).split(",");
+    }
+    catch(e){
+        neeisUWList = []
+    }
 }
 
+
+//////////////////////HTML FUNCTIONS////////////////////////////
+function submissionRowContainerHTML(submissionObject){
+    var htmlString = "" +
+        "   <tr class='submissionRow' style='cursor:pointer' data-quoteid='" + submissionObject.aimsql.QuoteID + "'>" +
+        "       <td><span class='glyphicon glyphicon-cloud' aria-hidden='true' style='color: rgba(146, 221, 237, 1);font-size: 14px; min-width: 70px'></span></td>" +
+        "       <th scope='row'><a href='#' class='aimQuoteIDTD'>" + submissionObject.aimsql.QuoteID + "</a></th>" +
+        "       <td class='namedInsuredTD'>" + submissionObject.aimsql.NamedInsured + "</td>" +
+        "       <td class='coveragesTD'>" + submissionObject.aimsql.CoverageID + "</td>" +
+        "       <td class='submittedByTD'>" + submissionObject.aimsql.Attention + "</td>" +
+        "       <td class='submitDateTD'>" + submissionObject.aimsql.Received + "</td>" +
+        "       <td class='submissionStatusTD'>" + submissionObject.aimsql.StatusID + "</td>" +
+        "       <td class='underwriterTD'>" + submissionObject.aimsql.AcctExec + "</td>" +
+        "       <td><a class='attachmentsLink'>Attachments</a></td>" +
+        "   </tr>" +
+        "   <tr class='versionRowSpinner' style='display: none; cursor: pointer; text-align: center; padding: 10px; color: rgba(0, 0, 0, 0.568627); height: 56.5px;'> " +
+        "       <td colspan='9' class='' style='opacity: 1;'>" +
+        "           <i class='fa fa-spinner fa-spin fa-3x fa-fw'></i>" +
+        "       </td>" +
+        "   </tr>"
+
+    return htmlString
+}
+function optionsRowHTML(submissionObject){
+    var htmlString = "" +
+        "<tr class='submissionQuickOptions' data-quoteid='" + submissionObject.aimsql.QuoteID + "' style='background-color: rgba(90, 153, 183, 0.26)'>" +
+        "   <td colspan='9'>" +
+        "       <div class='col-xs-12' style='text-align:center'>" +
+        "           <div class='statusActionButtonsContainer' style='display: inline-block'>" +
+                        getStatusActionButtonsHTML(submissionObject) +
+        "           </div>" +
+        "               <button type='button' class='btn btn-sm btn-default submissionOptionButton generateCert' > Certificates </button>" +
+        "               <button type='button' class='btn btn-sm btn-default submissionOptionButton reviewButton' > " +
+        "                   <i class='fa fa-pencil-square-o' aria-hidden='true'></i>" +
+        "                   <span>Review </span>" +
+        "               </button>" +
+        "               <div class='btn-group uwSwitchButtonGroup'>" +
+        "                   <button type='button' class='btn btn-sm btn-default dropdown-toggle submissionOptionButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
+        "                       <i class='fa fa-user-circle-o' aria-hidden='true'></i>" +
+        "                       <span class=''>Switch UW</span>" +
+        "                       <span class='caret'></span>" +
+        "                   </button>"
+
+    htmlString = htmlString + underwriterDropdownHTML() +
+        "               </div>"
+
+    //CREATE NEW VERSION BUTTON
+    htmlString = htmlString +
+        "           <button type='button' class='btn btn-sm btn-default submissionOptionButton createVersionButton' > " +
+        "               <i class='fa fa-files-o' aria-hidden='true'></i>" +
+        "               <span>Create New Version </span>" +
+        "           </button>"
+
+
+
+    htmlString = htmlString +
+        "       </div>" +
+        "   </td>" +
+        "</tr>"
+
+
+    return htmlString
+}
+function underwriterDropdownHTML(){
+    var htmlString = "" +
+        "<ul class='dropdown-menu'>"
+
+    for(var i=0; i<neeisUWList.length;i++){
+        htmlString = htmlString + "" +
+            "<li>" +
+            "   <a href='#' class='switchUWOption'>" + neeisUWList[i] + "</a>" +
+            "</li>"
+    }
+
+    htmlString = htmlString +
+        "</ul>"
+
+    return htmlString
+}
+
+//STATUS ACTIONS BUTTONS
+function reviewIndicationButtonHTML(){
+    var htmlString = "" +
+        "<button type='button' class='btn btn-sm btn-default statusActionButton reviewIndicationButton'> " +
+        "   <i class='fa fa-flag' aria-hidden='true'></i>" +
+        "   <span>Review Indication</span>" +
+        "</button>"
+
+    return htmlString
+}
+
+
+
+
+//LISTENER ACTION FUNCTIONS
+function submissionRowClickAction(submissionRow){
+    var quoteID = $(submissionRow).attr('data-quoteid')
+    console.log(quoteID)
+    var submissionObject = getSubmissionObjectFromQuoteID(quoteID)
+
+    //CLOSE OTHER OPTION ROWS
+    $('.submissionQuickOptions').remove()
+
+    //SHOW OPTIONS ROW
+    $(submissionRow).after(optionsRowHTML(submissionObject))
+}
+
+
+//SUBMISSION FUNCTIONS
+function getSubmissionObjectFromQuoteID(quoteID){
+    for(var i=0;i<submissions.length;i++){
+        if(quoteID === submissions[i].aimsql.QuoteID){
+            return submissions[i]
+        }
+    }
+}
+function getSubmissionStatusFromQuoteID(quoteID){
+    var submissionObj = getSubmissionObjectFromQuoteID(quoteID)
+
+    return submissionObj.StatusID
+}
+
+//SUBMISSION STATUS FUNCTIONS
+function getStatusActionButtonsHTML(submissionObject){
+    var statusID = submissionObject.aimsql.StatusID
+    var statusActionsButtonHTML = ""
+    console.log(statusID)
+    if(statusID === "ACK"){
+        statusActionsButtonHTML = statusActionsButtonHTML + reviewIndicationButtonHTML()
+    }
+
+    return statusActionsButtonHTML
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//OLD STUFF
 function initializeDatePickers(){
     var date_input = $('.datepicker'); //our date input has the name "date"
     var container = $('#page-content-wrapper');
@@ -1454,32 +1589,16 @@ function initializeDatePickers(){
     };
     date_input.datepicker(options);
 }
-
-function setUserRole(){
-    try{
-        userRole = $('#userRole').html().trim();
-    }
-    catch(e){
-        console.log("Could not verify user, continuing as a Broker")
-        userRole = "Broker"
-    }
+function initializeSmartWizardReview(){
+    $('#smartwizard').smartWizard({
+        theme: 'arrows',
+        transitionEffect: 'fade', // Effect on navigation, none/slide/fade
+        transitionSpeed: '400',
+        autoAdjustHeight:false,
+        selected: 0
+    });
 }
-
-function setNeeisUnderwriterList(){
-
-
-    try{
-        neeisUWList = $('#neeisUWListHidden').html().trim().slice(1, -1).split(",");
-    }
-    catch(e){
-        neeisUWList = []
-    }
-}
-
-
-
-//LISTENER ACTION FUNCTIONS
-function submissionRowClickAction(element){
+function submissionRowClickActionBACKUP(element){
     //ON CLICK OF SUBMISSION ROW
     //1.IF VERSION PANELS ARE OPEN, HIDE THE VERSION ROWS
     //2.IF QUICK OPTIONS ARE OPEN, CLOSE
@@ -1561,16 +1680,8 @@ function quickOptionsShowAction(element){
                 "<td class='QOstatusCode' style='display:none'>" + statusCode +  "</td>" +
                 "<td class='QOUWAssigned' style='display:none'>" + underwriter +  "</td>" +
                 "<td colspan='9'>" +
-                "<div class='col-xs-12' style='text-align:center'>" +
+                "<div class='col-xs-12' style='text-align:center'>" ;
 
-                //MESSAGING BUTTON
-                // "<button type='button' class='btn btn-sm btn-default submissionOptionButton messageButton' disabled='disabled'> " +
-                //     "<i class='fa fa-envelope-o' aria-hidden='true'></i>" +
-                // "<span>Message Underwriter </span>" +
-                // "<span class='underWriterToMessage' style='display: none;'>" + underwriter
-                // "</span>" +
-                // "</button>" +
-                "";
 
             //APPROVE/REVIEW/BIND BUTTONS
             if(statusCode === "QO"){
@@ -1646,17 +1757,6 @@ function quickOptionsShowAction(element){
 
                 "<td colspan='9'>" +
                 "<div class='col-xs-12' style='text-align:center'>";
-
-
-            //MESSAGING BUTTON
-            //htmlString = htmlString +
-            // "<button type='button' class='btn btn-sm btn-default submissionOptionButton messageButton' disabled='disabled'> " +
-            // "<i class='fa fa-envelope-o' aria-hidden='true'></i>" +
-            // "<span>Message Broker </span>" +
-            // "<span class='underWriterToMessage' style='display: none;'>" + underwriter + "</span>" +
-            // "<span class='brokerToMessage' style='display:none'>" + brokerEmail +  "</span>" +
-            // "<span class='brokerName' style='display:none'>" + broker +  "</span>" +
-            // "</button>" +
 
 
             //APPROVE, DECLINE, BIND BUTTONS
@@ -1798,6 +1898,26 @@ function quickOptionsShowAction(element){
     }
 }
 
+function createVersionRowHTMLString(dvVersionData, versionData, quoteDetails, submissionRowParent){
+
+    var htmlString = "" +
+        "<tr class='versionRow' style='cursor:pointer'> " +
+        "<td><i class='fa fa-level-up fa-rotate-90' aria-hidden='true'></i>" +
+        "<span class='aimVersionTD' style='color: rgba(100, 152, 163, 1); font-weight: 700; font-size: 11px;'> " + trimQuoteMarks(versionData.Version) + "</span></td> " +
+        "<th scope='row'><a href='#' class='aimQuoteIDTD'>" + trimQuoteMarks(dvVersionData.QuoteID) + "</a></th> " +
+        "<td class='namedInsuredTD'>" + trimQuoteMarks(quoteDetails.namedInsured) + "</td> " +
+        "<td class='coveragesTD'>" + trimQuoteMarks(quoteDetails.coverages) + "</td> " +
+        "<td class='submittedByTD'>" + trimQuoteMarks(quoteDetails.broker) + "</td> " +
+        "<td class='brokerEmail' style='display:none'>" + trimQuoteMarks(quoteDetails.brokerEmail) + "</td> " +
+        "<td class='submitDateTD'>" + trimQuoteMarks(versionData.Quoted) + "</td> " +
+        "<td class='submissionStatusTD'>" + trimQuoteMarks(dvVersionData.StatusID) + "</td> " +
+        "<td class='underwriterTD'>" + trimQuoteMarks(quoteDetails.underwriter) + "</td> " +
+        "<td class=''> </td> " +
+        "<td class='statusCode' style='display:none'>" + trimQuoteMarks(dvVersionData.StatusID) + " </td> " +
+        "</tr>";
+
+    return htmlString
+}
 function getVersionsOfQuote(quoteDetails, elementClicked){
     $.ajax({
         method: "POST",
@@ -2202,28 +2322,6 @@ function saveByteArray(reportName, byte) {
 };
 
 
-
-//FUNCTIONS FOR CREATING VERSION ROWS IN SUBMISSION PAGE
-function createVersionRowHTMLString(dvVersionData, versionData, quoteDetails, submissionRowParent){
-
-    var htmlString = "" +
-        "<tr class='versionRow' style='cursor:pointer'> " +
-            "<td><i class='fa fa-level-up fa-rotate-90' aria-hidden='true'></i>" +
-            "<span class='aimVersionTD' style='color: rgba(100, 152, 163, 1); font-weight: 700; font-size: 11px;'> " + trimQuoteMarks(versionData.Version) + "</span></td> " +
-            "<th scope='row'><a href='#' class='aimQuoteIDTD'>" + trimQuoteMarks(dvVersionData.QuoteID) + "</a></th> " +
-            "<td class='namedInsuredTD'>" + trimQuoteMarks(quoteDetails.namedInsured) + "</td> " +
-            "<td class='coveragesTD'>" + trimQuoteMarks(quoteDetails.coverages) + "</td> " +
-            "<td class='submittedByTD'>" + trimQuoteMarks(quoteDetails.broker) + "</td> " +
-            "<td class='brokerEmail' style='display:none'>" + trimQuoteMarks(quoteDetails.brokerEmail) + "</td> " +
-            "<td class='submitDateTD'>" + trimQuoteMarks(versionData.Quoted) + "</td> " +
-            "<td class='submissionStatusTD'>" + trimQuoteMarks(dvVersionData.StatusID) + "</td> " +
-            "<td class='underwriterTD'>" + trimQuoteMarks(quoteDetails.underwriter) + "</td> " +
-            "<td class=''> </td> " +
-            "<td class='statusCode' style='display:none'>" + trimQuoteMarks(dvVersionData.StatusID) + " </td> " +
-        "</tr>";
-
-    return htmlString
-}
 
 function trimQuoteMarks(str){
     var returnString = str;

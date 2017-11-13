@@ -17,10 +17,12 @@ class AuthController {
         log.info "Checking Session"
         log.info "Session = " + session.user
 
-        if(!session.user){
+        logMemoryStats()
+
+        if(session.user == null){
             //i.e. user not logged in
             log.info("Not logged in")
-            redirect(controller:'auth', action:'login')
+//
             return false
         }
         else{
@@ -33,9 +35,10 @@ class AuthController {
         log.info "Checking Session"
         log.info "Session = " + session.user
 
-        if(!session.user){
+        if(session.user == null){
             //i.e. user not logged in
             log.info("Not logged in")
+//
             return false
         }
         else{
@@ -47,6 +50,24 @@ class AuthController {
     }
     def iesupport(){
 
+    }
+    def logMemoryStats(){
+        int mb = 1024*1024;
+        //Getting the runtime reference from system
+        Runtime runtime = Runtime.getRuntime();
+//        log.info("##### Heap utilization statistics [MB] #####");
+
+        //Print used memory
+        log.info("Used Memory:" + (runtime.totalMemory() - runtime.freeMemory()) / mb);
+
+        //Print free memory
+        log.info("Free Memory:" + runtime.freeMemory() / mb);
+
+        //Print total available memory
+        log.info("Total Memory:" + runtime.totalMemory() / mb);
+
+        //Print Maximum available memory
+        log.info("Max Memory:" + runtime.maxMemory() / mb);
     }
     def register() {
         log.info("REGISTER PAGE");
@@ -142,7 +163,7 @@ class AuthController {
                 aimsql.commit();
             }
 
-            u = new portal.User(userRole:userRole, email:params.email, password:params.password,
+            u = new User(userRole:userRole, email:params.email, password:params.password,
                     company:params.company, firstName: params.firstName, lastName: params.lastName, phoneNumber: params.phoneNumber, defaultUnderwriter: "",aimContactID:userReferenceID)
             u.save(flush: true, failOnError: true)
 
@@ -158,19 +179,21 @@ class AuthController {
 ////                assert resp.statusLine.statusCode == 201
 //            }
         }
+
         catch(Exception e){
             error=true;
             log.info(e)
-            if(User.findWhere(email:params.email) ){
+            if(portal.User.findWhere(email:params.email) ){
                 log.info("User with that email already exists.")
             }
             redirect(controller:'auth', action:'register', params: [registerError: "User with that email already exists"])
         }
 
-        if(error==false){
-            session.user = u
+        if(error==false) {
+
+            session.user = u;
             log.info(u)
-            redirect(controller:'auth', action:'index')
+            redirect(controller: 'auth', action: 'index')
         }
 
     }
@@ -228,7 +251,7 @@ class AuthController {
 
     def login(){
         log.info("LOGGING IN")
-        log.info(params)
+        log.info("Params: " + params)
         request.getHeaderNames().each {
             log.info(it+":"+request.getHeader(it))
         }
@@ -237,9 +260,19 @@ class AuthController {
 
 
         session.user = user
-        log.info(user)
+        log.info("User session info: " + session.user)
+
+
+
+
 
         if (user){
+            //FIX AIM CONTACT ID IF NULL
+            if(session.user.aimContactID == null){
+                aimSqlService.fixUserAimContactID(submissionMap.brokerEmail)
+            }
+
+
             log.info "Logged In"
             redirect(controller:'main',action:'newSubmission')
 
@@ -254,8 +287,11 @@ class AuthController {
 
     }
     def logout(){
+        log.info("LOGGING OUT")
         println "LOGOUT"
         session.user = null;
+        log.info("User session info: " + session.user)
+        log.info "Logged Out"
         redirect(url: "/")
     }
 
@@ -279,7 +315,7 @@ class AuthController {
 
     def checkEmail(){
         log.info "CHECKING EMAIL"
-        log.info params
+        log.info("Params: " + params)
         def renderString = "";
         if(User.findWhere(email:params.email) ){
             renderString = "Error:User with that email already exists."
@@ -287,6 +323,6 @@ class AuthController {
         else{
             renderString = "OK:Email/Username is available"
         }
-        render renderString;
+        render text: renderString;
     }
 }

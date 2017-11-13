@@ -17,6 +17,7 @@ class Coverages {
     String listTypeID //B = Both, C = Coverage Drop Down Only, L = LOB Drop Down Only
     String coverageOffered
     Integer coverageOfferedDisplayOrder
+    String packageFlag
 
     static constraints = {
         coverageCode unique:true, maxSize: 6, validator:{ it.toUpperCase() == it }
@@ -25,11 +26,14 @@ class Coverages {
 
         activeFlag maxSize: 1, inList: ["N", "Y"], validator:{ it.toUpperCase() == it }
 
+        packageFlag nullable:false, maxSize: 1, inList: ["N", "Y"], validator:{ it.toUpperCase() == it }
+
+
         coverageOffered maxSize: 1, inList: ["N", "Y"], validator:{ it.toUpperCase() == it }
 
         coverageOfferedDisplayOrder nullable: true
 
-        listTypeID nullable: true, maxSize: 1, validator:{ it.toUpperCase() == it }, inList: ["B", "C", "L", null]
+        listTypeID nullable: true, maxSize: 1, inList: ["B", "C", "L", null]
     }
 
 

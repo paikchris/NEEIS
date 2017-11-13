@@ -2,7 +2,7 @@
  * Created by paikchris on 8/23/16.
  */
 
-// var versionMode
+var versionMode = false
 var autoSaveMap = {};
 var loadedAutoSaveMap;
 var currentStep;
@@ -18,11 +18,23 @@ var loadedSubmissionMap = {};
 var ratePremiumsRunning = false;
 var ratePremiumsLock = false;
 
+
 //DATA OBJECTS
 var riskTypeObject = {}
-var riskTypes, riskCategories, products, operations, coverages, questions, ratingBasisArray, rates
+var riskTypes, riskCategories, products, productConditions, operations, coverages, questions, questionCategories,
+    ratingBasisArray, rates, conditionBasisArray
 var riskTypeString
-var submission = new Submission1()
+var submission = new Submission()
+
+//VERSION VARIABLES
+var quoteRecord, versionRecords, dvVersionRecords, dvVersionView, submissionRecord
+var versionQuestionAnswerMap, versionQuestionAnswerOrganizedMap
+var versionLetter = 'A'
+var originalVersion = 'A'
+var originalQuoteID = ""
+
+//TYPEAHEAD DATA
+var typeahead_operations
 
 //TESTING MODE V2
 var testingMode = true;
@@ -33,13 +45,17 @@ var allWells
 var allNextBtn
 var allPrevBtn
 
-//FUNCTIONS TO KEEP
-$(document).ready(function () {
-    newSubmissionInit();
+var currentCivAuthChecked = ""
 
+$(document).ready(function () {
+    newSubmissionInit()
+
+    //TYPEAHEAD INIT
+    typeAheadDatasetsInit()
+    typeAheadInit()
 
     if(versionMode==true){
-        versionModeInit();
+        versionModeInit()
     }
 
 
@@ -50,11 +66,17 @@ function newSubmissionInit() {
     riskTypes = rT
     riskCategories = rC
     products = pr
+    productConditions = pC
     operations = oT
     coverages = cT
     questions = qL
+    questionCategories = qC
     ratingBasisArray = rB
     rates = rL
+    conditionBasisArray = cB
+
+    versionMode = vM
+
 
     mandatoryQuestionsForProductInit()
 
@@ -75,6 +97,43 @@ function newSubmissionInit() {
 
 }
 function clickChangeListenerInit(){
+
+    $(document.body).on('click', '#CIVAUTH100_addOptionCheckbox, #CIVAUTH500_addOptionCheckbox', function() {
+        if($(this).attr('id') === 'CIVAUTH100_addOptionCheckbox'){
+            if($(this).is(':checked')){
+                if(currentCivAuthChecked === "CIV100"){
+                    $(this).prop('checked', false)
+                    currentCivAuthChecked = ""
+                }
+                else{
+                    currentCivAuthChecked = "CIV100"
+                }
+            }
+            else{
+                currentCivAuthChecked = "CIV100"
+            }
+        }
+        else if($(this).attr('id') === 'CIVAUTH500_addOptionCheckbox'){
+            if($(this).is(':checked')){
+                if(currentCivAuthChecked === "CIV500"){
+                    $(this).prop('checked', false)
+                    currentCivAuthChecked = ""
+                }
+                else{
+                    currentCivAuthChecked = "CIV500"
+                }
+            }
+            else{
+                currentCivAuthChecked = "CIV500"
+            }
+        }
+
+    });
+
+    ///////////////////STEP 1 INSURED INFO///////////////////
+
+    ///////////////////STEP 2 SELECT OPERATION AND COVERAGES///////////////////
+
     //WHEN OPERATION TYPE CHANGES, UPDATE COVERAGES AVAILABLE
     $(document).on('change', '#operationsDropdown', function () {
         operationDropdownChange(this);
@@ -83,26 +142,65 @@ function clickChangeListenerInit(){
     //LISTEN TO COVERAGE CHECKBOXES CHANGING
     $(document).on('change', '.coverageCheckbox', function () {
         coverageCheckboxChangeAction(this);
+    })
 
-        //CHECK IF ALL PRODUCT CONDITION QUESTIONS ARE FILLED
+    $(document).on('change', '.packageCoverageCheckbox', function () {
+        packageCoverageCheckboxChangeAction(this);
+    })
 
-        //JUST IN CASE THEY CHANGE COVERAGE AFTER ALL QUESTIONS ARE FILLED
-        checkIfReadyToRate(this)
+    $(document).on('change', '.additionalOption', function () {
+        if(isReadyToShowLimitAndDeducts()){
+            fillLimitDeductContainer()
+            showLimitDeductContainer()
+
+            //PREMIUM ONLY DISPLAYS IF LIMITS AND DEDUCTS SHOW CORRECTLY
+            if(isReadyToRatePremiums()){
+                calculatePremiumsAndFillContainer()
+                showPremiumRateContainer()
+            }
+            else{
+
+            }
+        }
     });
+
 
     //LISTEN TO REQUIRED QUESTIONS CHANGES
     $(document).on('change', 'div.requiredQuestion input', function () {
         //THIS CHANGED INPUT MAY HAVE CHANGED PRODUCTS, UPDATE AND RECHECK ALL QUESTIONS
         updateRequiredQuestions()
-        checkIfReadyToRate(this);
+        updateAdditionalOptions()
+
+        if(isReadyToShowLimitAndDeducts()){
+            fillLimitDeductContainer()
+            showLimitDeductContainer()
+
+            //PREMIUM ONLY DISPLAYS IF LIMITS AND DEDUCTS SHOW CORRECTLY
+            if(isReadyToRatePremiums()){
+                calculatePremiumsAndFillContainer()
+                showPremiumRateContainer()
+            }
+        }
     });
-    
+
+    //LIMIT RATING BASIS LIMIT INPUTS
+    $(document).on('change', 'div#limitsDeductiblesContainer input.limitValue', function () {
+        //IF LIMIT INPUT CHANGES, RERATE PRODUCTS
+        if(isReadyToRatePremiums()){
+            calculatePremiumsAndFillContainer()
+            showPremiumRateContainer()
+        }
+    });
+
+
+
+
     //WHEN THE STATE CHANGES IN STEP 3, UPDATE PREMIUMS FOR TAX
     $(document).on('change', '#stateMailing', function () {
         stateChangeAction(this);
     });
 
-    
+
 
 
     //GOTO STEP 2 AFTER CLICKING ON RISKTYPE
@@ -135,6 +233,12 @@ function clickChangeListenerInit(){
     $(document.body).on('click', '.card', function () {
         riskCategoryCardClickAction(this)
     });
+
+
+    $(document.body).on('click', '#submitSubmissionButton', function () {
+        submitSubmission()
+    });
+
 }
 function mandatoryQuestionsForProductInit(){
     //LISTENER TO CHECK WHEN ALL MANDATORY QUESTIONS FOR PRODUCT DISPLAY ARE COMPLETE
@@ -176,8 +280,238 @@ function stepWizardInit(){
     validateAndNavigateToStep(1)
 }
 function versionModeInit(){
-    versionModeFillOutQuestions();
+    //VERSION MODE INIT STUFF
+    if(versionMode === true){
+        quoteRecord = qR
+        versionRecords = vR
+        dvVersionRecords = dVR
+        dvVersionView = dVV
+        submissionRecord = sR
+
+        versionQuestionAnswerMap = vAM
+        versionQuestionAnswerOrganizedMap = vAOM
+        versionLetter = vL
+        originalVersion = oV
+        originalQuoteID = oQID
+
+        versionModeUserInputMap = JSON.parse(submissionRecord.userInputMap)
+
+        versionModeFillStep1()
+    }
+
+    // versionModeFillOutQuestions();
 }
+function typeAheadDatasetsInit(){
+    //OPERATIONS
+    typeahead_operations = []
+    for(var i=0;i<operations.length;i++){
+        typeahead_operations.push(operations[i].description)
+    }
+}
+
+///////////////////VERSION MODE FUNCTIONS///////////////////
+function versionModeFillStep1(){
+    //STEP 1 ANSWERS
+    $('#namedInsured').val(quoteRecord.NamedInsured)
+    $('#streetAddressMailing').val(quoteRecord.Address1 + " " + quoteRecord.Address2)
+    $('#cityMailing').val(quoteRecord.City)
+    $('#zipCodeMailing').val(quoteRecord.Zip)
+    $('#stateMailing').val(quoteRecord.State)
+
+    $('#namedInsuredContact').val(versionModeUserInputMap.namedInsuredContact)
+    $('#namedInsuredEmail').val(versionModeUserInputMap.namedInsuredEmail)
+    $('#namedInsuredPhone').val(versionModeUserInputMap.namedInsuredPhone)
+
+
+
+    $('#namedInsured').attr('placeholder', '')
+    $('#streetAddressMailing').attr('placeholder', '')
+    $('#cityMailing').attr('placeholder', '')
+    $('#zipCodeMailing').attr('placeholder', '')
+    $('#stateMailing').attr('placeholder', '')
+
+    $('#namedInsuredContact').attr('placeholder', '')
+    $('#namedInsuredEmail').attr('placeholder', '')
+    $('#namedInsuredPhone').attr('placeholder', '')
+
+
+    $('#namedInsured').attr('disabled', 'disabled')
+
+
+}
+function versionModeFillStep2(){
+
+    //SELECT OPERATION
+    $('#operationsDropdown').val(versionModeUserInputMap.operationsDropdown)
+    $('#operationsDropdown').trigger('change')
+
+
+    /*
+    1. FILL QUESTIONS THAT ARE INITIALLY ON PAGE
+    2. CHECK THE COVERAGES
+    3. FILL NEW QUESTIONS FOR COVERAGES
+    4. CHECK ADDITIONAL OPTION CHECKBOXES
+     */
+
+    //FILL REQUIRED QUESTIONS ON PAGE
+    var alreadyFilledQuestionIDs = []
+    $('#step-2 div.requiredQuestion').find('input,select').each(function(){
+
+        var elementID = $(this).attr('id')
+        var inputElement = $('#' + elementID)
+
+        if(versionModeUserInputMap[elementID]){
+            var inputValue = versionModeUserInputMap[elementID]
+
+            if($(inputElement).is(':checkbox') || $(inputElement).is(':radio')){
+                if(inputValue === true){
+                    $(inputElement).trigger('click')
+                }
+                else if(inputValue === false){
+                    $(inputElement).attr('checked', false)
+
+                }
+            }
+            else{
+                $(inputElement).val(inputValue)
+                $(inputElement).attr('placeholder', '')
+                $(inputElement).trigger('change')
+            }
+
+            alreadyFilledQuestionIDs.push(elementID)
+        }
+    })
+
+    //CHECK COVERAGE CHECKBOXES
+    var userInputMapKeys = Object.keys(versionModeUserInputMap)
+    for(var i=0;i<userInputMapKeys.length;i++) {
+        var inputID = userInputMapKeys[i]
+        var inputElement = $('#' + inputID)
+        var inputValue = versionModeUserInputMap[inputID]
+
+        if(inputID.indexOf('_CoverageCheckbox')){
+            if($(inputElement).is(':checkbox') || $(inputElement).is(':radio')){
+                if(inputValue === true){
+                    $(inputElement).trigger('click')
+                }
+                else if(inputValue === false){
+                    $(inputElement).attr('checked', false)
+
+                }
+            }
+            else{
+                $(inputElement).val(inputValue)
+                $(inputElement).attr('placeholder', '')
+            }
+        }
+    }
+
+    coverageCheckboxChangeAction()
+
+    //FILL NEW QUESTIONS FOR COVERAGES
+    $('#step-2 div.requiredQuestion').find('input,select').each(function(){
+        var elementID = $(this).attr('id')
+        var inputElement = $('#' + elementID)
+
+        if(versionModeUserInputMap[elementID] && alreadyFilledQuestionIDs.indexOf(elementID) > -1 ){
+            var inputValue = versionModeUserInputMap[elementID]
+
+            if($(inputElement).is(':checkbox') || $(inputElement).is(':radio')){
+                if(inputValue === true){
+                    $(inputElement).trigger('click')
+                }
+                else if(inputValue === false){
+                    $(inputElement).attr('checked', false)
+
+                }
+            }
+            else{
+                $(inputElement).val(inputValue)
+                $(inputElement).attr('placeholder', '')
+                $(inputElement).trigger('change')
+            }
+
+            alreadyFilledQuestionIDs.push(elementID)
+        }
+    })
+
+
+    //CHECK ADDITIONAL OPTIONS
+    $('#coveragesAvailableContainer input.additionalOption').each(function(){
+        var elementID = $(this).attr('id')
+        var inputElement = $('#' + elementID)
+
+        if(versionModeUserInputMap[elementID]){
+            var inputValue = versionModeUserInputMap[elementID]
+
+            if($(inputElement).is(':checkbox') || $(inputElement).is(':radio')){
+                if(inputValue === true){
+                    $(inputElement).trigger('click')
+                }
+                else if(inputValue === false){
+                    $(inputElement).attr('checked', false)
+
+                }
+            }
+            else{
+                $(inputElement).val(inputValue)
+                $(inputElement).attr('placeholder', '')
+                $(inputElement).trigger('change')
+            }
+        }
+    })
+
+
+}
+function versionModeFillStep3(){
+
+    //FILL REQUIRED QUESTIONS
+    $('#step-3').find('input,select').each(function(){
+        var elementID = $(this).attr('id')
+        var inputElement = $('#' + elementID)
+
+        if(versionModeUserInputMap[elementID]){
+            var inputValue = versionModeUserInputMap[elementID]
+
+            if($(inputElement).is(':checkbox') || $(inputElement).is(':radio')){
+                if(inputValue === true){
+                    $(inputElement).trigger('click')
+                }
+                else if(inputValue === false){
+                    $(inputElement).attr('checked', false)
+
+                }
+            }
+            else{
+                $(inputElement).val(inputValue)
+                $(inputElement).attr('placeholder', '')
+                $(inputElement).trigger('change')
+            }
+        }
+    })
+}
+
+function buildUserInputMap(){
+    var userInputMap = {}
+
+    $('input,select').each(function(){
+        var inputID = $(this).attr('id')
+        var inputValue = ""
+        if($(this).is(':checkbox') || $(this).is(':radio') ){
+            inputValue = $(this).is(":checked")
+        }
+        else{
+            inputValue = $(this).val()
+        }
+
+        userInputMap[inputID] = inputValue
+    })
+
+    return userInputMap
+
+
+}
+
 
 
 ///////////////////NAVIGATION FUNCTIONS -> ALL WILL POINT TO validateAndNavigateToStep METHOD///////////////////
@@ -205,18 +539,38 @@ function circleNavButtonClickAction(button){
 }
 function validateAndNavigateToStep(stepNum){
 
+    //BASIC INPUT VALIDATION
     if(validate()){
+        //FURTHER VALIDATION BASED ON STEP NUMBER
         if(stepNum === 1){
             showStep(stepNum)
         }
         else if(stepNum === 2){
             showStep(stepNum)
+            if(versionMode === true){
+                versionModeFillStep2()
+            }
         }
         else if(stepNum === 3){
+            if( isReadyToRatePremiums() ){
+                buildUWQuestionSection()
+                showStep(stepNum)
+                if(versionMode === true){
+                    versionModeFillStep3()
+                }
+
+            }
+            else{
+                $('#alertMessageContent').html("Please complete required fields.");
+                $('#alertMessageModal').modal('show');
+            }
+
+
 
         }
         else if(stepNum === 4){
-
+            buildReview()
+            showStep(stepNum)
         }
     }
     else{
@@ -229,6 +583,9 @@ function validateAndNavigateToStep(stepNum){
 
 
 }
+function scrollToTopOfPage(){
+    document.body.scrollTop = document.documentElement.scrollTop = 0;
+}
 function showStep(stepNumToShow){
     var $target = $('#step-' + stepNumToShow)
     var $item = $('#buttonCircleStep' + stepNumToShow);
@@ -239,6 +596,122 @@ function showStep(stepNumToShow){
     allWells.hide();
     $target.show();
     $target.find('input:eq(0)').focus();
+    scrollToTopOfPage
+}
+function furtherValidationStep3(){
+    //1. OPERATION TYPE MUST BE CHOSEN
+    //2. AT LEAST ONE COVERAGE MUST BE SELECTED
+    //3. ALL PRODUCT CONDITION REQUIRED QUESTIONS MUST BE FILLED
+    //4. ALL RATING BASIS REQUIRED QUESTIONS MUST BE FILLED
+    //5. EACH COVERAGE MUST HAVE A PREMIUM
+
+    // var valid = true
+    //
+    // if( getSelectedOperationID() === 'invalid'){
+    //     valid = false
+    //     markClosestFormGroup_Error($('#operationsDropdown'))
+    // }
+
+}
+function isReadyToSubmit(){
+
+}
+function submitSubmission(){
+    $('#progressBarHeader').html("Please wait, your submission is being processed.")
+    $('.progress-bar').attr('aria-valuenow', "75").animate({
+        width: "75%"
+    }, 25000);
+
+    $('#progressBarModal').modal('show')
+    $.ajax({
+        method: "POST",
+        url: "/main/submitSubmission",
+        data: {
+            submissionMap: JSON.stringify(submission.getObject())
+        }
+    })
+        .done(function (msg) {
+            //alert(msg);
+            //0620584,0620585
+            var indicationPDFError = false;
+
+            //IF RESPONSE HAS "INDICATION ERROR" THERE WAS AN ISSUE GENERATING THE INDICATION PDF
+            if (msg.split("&;&")[1] === "Indication Error") {
+                alert("Submission was successful however, the Indication PDF is currently not available. Please contact your underwriter for further details. ");
+                // $('#alertMessageModal').modal('show');
+                indicationPDFError = true;
+            }
+
+            //IF RESPONSE DOESN'T START WITH ERROR, IT WAS SUBMITTED SUCCESSFULLY TO AIM
+            if (!msg.startsWith("Error")) {
+                newSubmissionConfirmParam = msg;
+
+                //ATTACH FILES
+                var formData = new FormData();
+                var formDataNew = getFormDataWithAllAttachedFilesNew();
+                var quoteIDs = msg.split("&;&")[0];
+                var submissionHasFile = false;
+
+                //LOOP THROUGH ATTACH BUTTONS TO GATHER FILES IN FORM DATA
+                if (Object.keys(attachedFileMap).length != 0) {
+                    submissionHasFile = true;
+                    formData.append("attachedFileMap", JSON.stringify(attachedFileMap))
+                }
+
+                //IF ATTACHED FILES EXIST, CALL ATTACH CONTROLLER
+                if (submissionHasFile) {
+                    $('.progress-bar').attr('aria-valuenow', "75").animate({
+                        width: "75%"
+                    }, 2000);
+
+                    formData.append('quoteIDs', quoteIDs);
+                    $.ajax({
+                        method: "POST",
+                        url: "/async/attachAndUploadFiles",
+                        data: formData,
+                        cache: false,
+                        contentType: false,
+                        processData: false
+                    }).done(function (msg) {
+                        //console.log("Finished Uploading");
+                        $('.progress-bar').attr('aria-valuenow', "100").css("width", "100%");
+                        $('#progressBarModal').modal('hide');
+
+                        //CLEAR AUTOSAVE INFO
+                        autoSaveMap = {};
+                        Cookies.remove('autosaveData');
+
+                        //REDIRECT TO SAVE SUCCESSFUL PAGE
+                        window.location.href = "./../main/newSubmissionConfirm.gsp?submissionID=" + newSubmissionConfirmParam + "&pdfError=" + indicationPDFError;
+
+                    });
+                }
+                else {
+                    //console.log ("REDIRECTING");
+                    $('.progress-bar').attr('aria-valuenow', "100").animate({
+                        width: "100%"
+                    }, 2000);
+                    $('#progressBarModal').modal('hide');
+
+                    //CLEAR AUTOSAVE INFO
+                    autoSaveMap = {};
+                    Cookies.remove('autosaveData');
+
+                    //ADD NOTIFICATION SUBMITTED FOR USER
+                    // var notificationCode = "SUBMISSIONSUBMIT"
+                    // addNewNotification(notificationCode)
+
+                    //REDIRECT TO SAVE SUCCESSFUL PAGE
+                    window.location.href = "./../main/newSubmissionConfirm.gsp?submissionID=" + newSubmissionConfirmParam + "&pdfError=" + indicationPDFError;
+                }
+            }
+            else {
+                $('#progressBarModal').modal('hide');
+                alert(msg)
+            }
+
+
+        });
 }
 
 ///////////////////SUBMISSION OBJECT FUNCTIONS///////////////////
@@ -262,8 +735,6 @@ function getRatingBasisObjectByID(ratingBasisID){
     }
 }
 
-
-
 ///////////////////STEP 1 -INSURED INFO FUNCTIONS///////////////////
 
 
@@ -271,10 +742,18 @@ function getRatingBasisObjectByID(ratingBasisID){
 
 //OPERATION TYPE
 function operationDropdownChange(input){
-    //GET COVERAGES AVAILABLE FOR THIS OPERATION TYPE
-    buildCoveragesAvailableSection()
-    //BUILD COVERAGE AVAILABLE SECTION
+    var selectedOperation = getSelectedOperationID()
 
+    if(selectedOperation === 'invalid'){
+        clearCoveragesAvailableSection()
+        hideCoveragesAvailableSection()
+        clearRequiredQuestions()
+    }
+    else{
+        buildCoveragesAvailableSection()
+        showCoveragesAvailableSection()
+        updateRequiredQuestions()
+    }
 }
 function getCurrentOperationTypeObject(){
     for(var i=0; i < operations.length; i++ ){
@@ -288,33 +767,152 @@ function getSelectedOperationID(){
 }
 
 //COVERAGE FUNCTIONS
+function hideCoveragesAvailableSection(){
+    $('#coveragesAvailableContainer').css('display', 'none')
+}
+function showCoveragesAvailableSection(){
+    $('#coveragesAvailableContainer').css('display', '')
+}
+function clearCoveragesAvailableSection(){
+    $('#coverageOptionsContainer').html('')
+}
 function buildCoveragesAvailableSection(){
     var operationsObject = getCurrentOperationTypeObject()
-    var covArray = operationsObject.coverages.split(',')
 
     if(operationsObject.coverageProductMap){
         var coverageProductMap = jsonStringToObject(operationsObject.coverageProductMap)
+        var coveragePackageMap
+        if(operationsObject.coveragePackageMap){
+            coveragePackageMap = jsonStringToObject(operationsObject.coveragePackageMap)
+        }
+        else{
+            coveragePackageMap = {}
+        }
+
         var coverageProductMapKeys = Object.keys(coverageProductMap)
         var finalHTML = ""
 
-        for(var i=0; i<coverageProductMapKeys.length; i++){
-            finalHTML = finalHTML + getCoverageOptionContainerRowHTML(coverageProductMapKeys[i])
+        //BUILD PACKAGE CHECKBOXES FIRST
+        finalHTML = finalHTML + getPackageCheckboxesForCoveragesSectionHTML()
+
+        //BUILD OTHER COVERAGE CHECKBOXES
+        if(coverageProductMapKeys.length > 0){
+            var nonPackageCoverageCount = 0
+
+            for(var i=0; i<coverageProductMapKeys.length; i++){
+                var covID = coverageProductMapKeys[i]
+                var coverageObject = getCoverageObject(covID)
+
+
+                if(coverageObject.packageFlag === 'Y' && coveragePackageMap[covID]){
+
+                    // var coveragesInPackageArray = jsonStringToObject(coveragePackageMap[covID])
+                    //
+                    // //ALLOW CHECKBOX FOR PACKAGE IF NO COVERAGES ARE IN THE PACKAGE
+                    // if(coveragesInPackageArray.length === 0 ){
+                    //     finalHTML = finalHTML + getCoverageOptionContainerRowHTML(covID)
+                    // }
+                }
+                else{
+                    nonPackageCoverageCount++
+                    finalHTML = finalHTML + getCoverageOptionContainerRowHTML(covID)
+                }
+
+            }
+
+            //GIVE COVERAGE SECTION HEADER IF THERE ARE COVERAGES
+            if(nonPackageCoverageCount > 0){
+                finalHTML = "<label>Coverages</label>" + finalHTML
+            }
+
+            $('#coverageOptionsContainer').html(finalHTML)
+        }
+        else{
+            clearCoveragesAvailableSection()
+            $('#coverageOptionsContainer').html("No Coverages Available")
         }
 
-        $('#coverageOptionsContainer').html(finalHTML)
+    }
+    else{
+        clearCoveragesAvailableSection()
+        $('#coverageOptionsContainer').html("No Coverages Available")
+    }
+}
+function getPackageCheckboxesForCoveragesSectionHTML(){
+    var operationsObject = getCurrentOperationTypeObject()
+    var htmlString = ""
+
+    if(operationsObject.coveragePackageMap){
+        var coveragePackageMap = JSON.parse(operationsObject.coveragePackageMap)
+
+        var packageIDs = Object.keys(coveragePackageMap)
+
+        htmlString = htmlString +
+            "<label>Packages</label>"
+
+        for(var i=0;i<packageIDs.length;i++){
+            var covID = packageIDs[i]
+            var packagesCoveragesArray = coveragePackageMap[covID]
+
+            htmlString = htmlString + getPackageOptionContainerRowHTML(covID, packagesCoveragesArray)
+
+        }
     }
 
+    return htmlString
 
+}
+function getPackageOptionContainerRowHTML(covID, packageCoveragesArray){
+    var covObj = getCoverageObject(covID)
+    var operationObject = getCurrentOperationTypeObject()
 
+    var checkboxLabelText = covObj.coverageName
+
+    //CHECK IF OPTION IS MONOLINE
+    if(operationObject.monolineCoverages !== null){
+        var monolineCoverages = JSON.parse(operationObject.monolineCoverages)
+
+        if(monolineCoverages.indexOf(covID) > -1){
+            checkboxLabelText = checkboxLabelText + " (Mono Line)"
+        }
+    }
+
+    var coverageRowHTML =
+        "<div class='row coverageContainer packageContainer checkboxAndHiddenDivContainer' id='" + covID + "_CoverageOptionContainer' data-covid='" + covID + "'> " +
+        "<div class='col-xs-12 form-group checkboxContainer'> " +
+        "<label class='checkboxVerticalLayout'><input type='checkbox' class='coverageCheckbox packageCheckbox checkboxHiddenDiv' id='" + covID + "_CoverageCheckbox' data-covid='" + covID + "'/> " +
+        checkboxLabelText + " " +
+        "</label> " +
+        "</div> " +
+        "<div class='coverageQuestionsContainer hiddenContainer' style='display:none'> "
+
+    coverageRowHTML = coverageRowHTML +
+        "</div> " +
+        "</div>"
+
+    return coverageRowHTML
 }
 function getCoverageOptionContainerRowHTML(covID){
     var covObj = getCoverageObject(covID)
+    var operationObject = getCurrentOperationTypeObject()
+
+    var checkboxLabelText = covObj.coverageName
+
+    //CHECK IF OPTION IS MONOLINE
+    if(operationObject.monolineCoverages !== null){
+        var monolineCoverages = JSON.parse(operationObject.monolineCoverages)
+
+        if(monolineCoverages.indexOf(covID) > -1){
+            checkboxLabelText = checkboxLabelText + " (Mono Line)"
+        }
+    }
 
     var coverageRowHTML =
-        "<div class='row coverageContainer checkboxAndHiddenDivContainer' id='" + covID + "_CoverageOptionContainer'> " +
+        "<div class='row coverageContainer checkboxAndHiddenDivContainer' id='" + covID + "_CoverageOptionContainer' data-covid='" + covID + "'> " +
         "<div class='col-xs-12 form-group checkboxContainer'> " +
-        "<p><input type='checkbox' class='coverageCheckbox checkboxHiddenDiv' id='" + covID + "_CoverageCheckbox' data-covid='" + covID + "'/> " + covObj.coverageName + " " +
-        "</p> " +
+        "<label class='checkboxVerticalLayout'><input type='checkbox' class='coverageCheckbox checkboxHiddenDiv' id='" + covID + "_CoverageCheckbox' data-covid='" + covID + "'/> " +
+        checkboxLabelText + " " +
+        "</label> " +
         "</div> " +
         "<div class='coverageQuestionsContainer hiddenContainer' style='display:none'> " +
         "</div> " +
@@ -323,16 +921,205 @@ function getCoverageOptionContainerRowHTML(covID){
     return coverageRowHTML
 }
 function coverageCheckboxChangeAction(checkbox){
-    // clearRequiredQuestions()
     updateRequiredQuestions()
+
+    updateAdditionalOptions()
+
+    //IF THIS COVERAGE IS ALREADY CHECKED IN A PACKAGE OR ELSEWHERE, UNCHECK TO AVOID DUPLICATES
+    removeDuplicateCoveragesAndPackageLOBS(checkbox)
+
+    if(isReadyToShowLimitAndDeducts()){
+        fillLimitDeductContainer()
+        showLimitDeductContainer()
+
+        //PREMIUM ONLY DISPLAYS IF LIMITS AND DEDUCTS SHOW CORRECTLY
+        if(isReadyToRatePremiums()){
+            calculatePremiumsAndFillContainer()
+            showPremiumRateContainer()
+        }
+        else{
+
+        }
+    }
+}
+function packageCoverageCheckboxChangeAction(checkbox){
+    //MUST REWRITE THIS FUNCTIONS LATER FOR PACKAGE LOBS SPECIFICALLY
+    // // clearRequiredQuestions()
+    // updateRequiredQuestions()
+    //
+    // updateAdditionalOptions()
+    updateRequiredQuestions()
+    //IF THIS COVERAGE IS ALREADY CHECKED IN A PACKAGE OR ELSEWHERE, UNCHECK TO AVOID DUPLICATES
+    removeDuplicateCoveragesAndPackageLOBS(checkbox)
+
+    // updateRequiredQuestions()
+
+    if(isReadyToShowLimitAndDeducts()){
+        fillLimitDeductContainer()
+        showLimitDeductContainer()
+
+        //PREMIUM ONLY DISPLAYS IF LIMITS AND DEDUCTS SHOW CORRECTLY
+        if(isReadyToRatePremiums()){
+            calculatePremiumsAndFillContainer()
+            showPremiumRateContainer()
+        }
+        else{
+
+        }
+    }
+}
+function removeDuplicateCoveragesAndPackageLOBS(checkbox){
+    var covID = $(checkbox).attr('data-covid')
+
+    if($(checkbox).is(':checked') ){
+        //IF THE CHECKBOX CHECKED WAS A PACKAGE CHECKBOX OR A COVERAGE CHECKBOX
+        if($(checkbox).hasClass('packageCheckbox')){
+            var packageContainer = $(checkbox).closest('.packageContainer')
+
+            //LOOP THROUGH THE PACKAGE COVERAGE CHECKBOXES AND CHECK IF ANY CHECKED ARE THE SAME AS THE COVERAGE CHECKED
+            $(packageContainer).find('.packageCoverageCheckbox:checked').each(function(){
+                var thisPackageCoverageID = $(this).attr('data-covid')
+
+                //FIND THE COVERAGE CHECKBOX AND SEE IF IT IS CHECKED
+                $('#' + thisPackageCoverageID + '_CoverageCheckbox:checked').prop('checked', false)
+            })
+
+        }
+        //IF THE CHECKBOX CHECKED IS A PACKAGE LOB CHECKBOX
+        else if($(checkbox).hasClass('packageCoverageCheckbox')){
+            var thisPackageCoverageID = $(checkbox).attr('data-covid')
+
+            //FIND THE COVERAGE CHECKBOX AND SEE IF IT IS CHECKED
+            $('#' + thisPackageCoverageID + '_CoverageCheckbox:checked').prop('checked', false)
+        }
+        else{
+            if($('.' + covID + '_packageCoverageCheckbox').length > 0){
+                //LOOP THROUGH PACKAGE OPTION CHECKBOXES WITH SAME COVERAGE
+                $('.' + covID + '_packageCoverageCheckbox').each(function(){
+                    var thisPackageCoverageCheckbox = $('.' + covID + '_packageCoverageCheckbox')
+                    var thisPackageCheckbox = $(thisPackageCoverageCheckbox).closest('.coverageContainer').find('input.coverageCheckbox')
+
+
+                    //IF PACKAGE LOB IS SELECTED, DESELECT :CANT HAVE MULTIPLE
+                    if($(thisPackageCoverageCheckbox).is(':checked')){
+                        var requiredFlag =  $(thisPackageCoverageCheckbox).attr('data-requiredflag')
+                        if(requiredFlag === 'Y'){
+                            //UNCHECK THE PACKAGE ENTIRELY
+                            $(thisPackageCheckbox).prop('checked', false)
+                            $(thisPackageCheckbox).trigger('change')
+                        }
+                        else{
+                            $(thisPackageCoverageCheckbox).prop('checked', false)
+                            $(thisPackageCoverageCheckbox).trigger('change')
+                        }
+                    }
+                    else{
+
+                    }
+
+                })
+            }
+        }
+
+    }
+}
+function getCoveragesSelectedArrayBACKUP(){
+    //THIS IS THE ORIGINAL GET COVERAGES SELECTED FUNCTION, WHERE THERE WERE NO SEPERATE PACKAGE CHECKBOXES
+    var covArray = []
+    var operationObject = getCurrentOperationTypeObject()
+    $('#coverageOptionsContainer .coverageCheckbox:checked').each(function () {
+        covArray.push($(this).data('covid'))
+    })
+
+    //CHECK FOR PACKAGES, IF PACKAGE MAP IS NULL CREATE EMPTY ARRAY FOR NOW TO AVOID ERROR
+    if(operationObject.coveragePackageMap === null){
+        operationObject.coveragePackageMap = []
+    }
+    var coveragePackageMap = jsonStringToObject(operationObject.coveragePackageMap)
+    var packagesArray = Object.keys(coveragePackageMap)
+
+    //LOOP THROUGH AVAILABLE PACKAGES FOR OPERATION
+    for(var i=0;i<packagesArray.length;i++){
+        var packageID = packagesArray[i]
+        var coveragesInPackageArray = jsonStringToObject(coveragePackageMap[packageID])
+
+        //LOOP THROUGH COVERAGES IN THIS PACKAGE AND CHECK IF THEY WERE SELECTED
+        var numCovSelectedInPackage = 0
+        var coveragesToRemove = []
+        for(var c=0;c<coveragesInPackageArray.length;c++){
+            var covID = coveragesInPackageArray[c].covID
+
+            if( covArray.indexOf(covID) > -1 ){
+                numCovSelectedInPackage++
+                coveragesToRemove.push(covID)
+            }
+        }
+
+        //IF 2 OR MORE OF THE PACKAGE COVERAGES ARE SELECTED
+        if(numCovSelectedInPackage >= 2){
+            //REMOVE PACKAGE COVERAGES FROM ARRAY
+            var adjustedCovArray = []
+            var found
+            for (var i = 0; i < covArray.length; i++) {
+                found = false;
+                // find covArray[i] in coveragesToRemove
+                for (var j = 0; j < coveragesToRemove.length; j++) {
+                    if (covArray[i] == coveragesToRemove[j]) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    adjustedCovArray.push(covArray[i]);
+                }
+            }
+            covArray = adjustedCovArray
+            covArray.push(packageID)
+        }
+    }
+
+    return covArray
 }
 function getCoveragesSelectedArray(){
     var covArray = []
+    var operationObject = getCurrentOperationTypeObject()
+
     $('#coverageOptionsContainer .coverageCheckbox:checked').each(function () {
         covArray.push($(this).data('covid'))
     })
 
     return covArray
+}
+function getCoveragesAndPackagesSelectedArray(){
+    //GET COVERAGES CHECKED
+    var allCoveragesPackagesArray = []
+    $('#coverageOptionsContainer .coverageCheckbox:checked').each(function(){
+        allCoveragesPackagesArray.push($(this).data('covid'))
+    })
+
+    //GET PACKAGES SELECTED
+    var coveragesAndPackagesArray = getCoveragesSelectedArray()
+    for(var i=0;i<coveragesAndPackagesArray.length;i++){
+        var covID = coveragesAndPackagesArray[i]
+        if(allCoveragesPackagesArray.indexOf(covID) === -1){
+            allCoveragesPackagesArray.push(covID)
+        }
+    }
+
+    return allCoveragesPackagesArray
+}
+function getLOBSSelectedInPackageArray(packageID){
+    var lobsSelectedInPackageArray = []
+    var packageContainer = $('#' + packageID + '_CoverageOptionContainer')
+
+    $(packageContainer).find('input.packageCoverageCheckbox:checked').each(function(){
+        var thisPackageLOBID = $(this).attr('data-covid')
+        lobsSelectedInPackageArray.push(thisPackageLOBID)
+
+    })
+
+    return lobsSelectedInPackageArray
+
 }
 function getCoverageObject(covID){
     for(var i=0; i < coverages.length; i++ ){
@@ -342,97 +1129,655 @@ function getCoverageObject(covID){
     }
 }
 
+//ADDITIONAL OPTIONS
+function updateAdditionalOptions(){
+    var operationsObject = getCurrentOperationTypeObject()
 
-//PRODUCT AND RATING BASIS REQUIRED QUESTIONS SECTION
+    //REMEMBER ADDITIONAL OPTIONS CHECKED
+    var selectedAdditionalOptionIDs = []
+    $('#step-2 input.additionalOption:checked').each(function(){
+        var elementID = $(this).attr('id')
+        selectedAdditionalOptionIDs.push(elementID)
+    })
+
+    //REMEMBER PACKAGE OPTIONS CHECKED
+    var selectedPackageLOBS = {}
+    $('#step-2 input.packageCheckbox:checked').each(function(){
+        var packageContainer = $(this).closest('.packageContainer')
+        var packageID = $(this).attr('data-covid')
+
+        //LOOP THROUGH THIS PACKAGES CHECKED LOBS
+        var tempCheckedLOBArray = []
+        $(packageContainer).find('input.packageCoverageCheckbox:checked').each(function(){
+            var packageLOBID = $(this).attr('data-covid')
+
+            tempCheckedLOBArray.push(packageLOBID)
+        })
+
+        selectedPackageLOBS[packageID] = tempCheckedLOBArray
+
+    })
+
+
+    clearAllAdditionalOptions()
+    var coveragesSelected = getCoveragesAndPackagesSelectedArray()
+
+    for(var i=0; i<coveragesSelected.length; i++){
+        var covID = coveragesSelected[i]
+        var coverageRowHTML = ""
+        var addOnPackageHTML = ""
+        var additionalOptionsHTML = ""
+
+        //PACKAGE COVERAGES CHECKBOXES
+        if(operationsObject.coveragePackageMap){
+
+            var coveragePackageMap = JSON.parse(operationsObject.coveragePackageMap)
+            if(coveragePackageMap[covID]){
+                var packageCoveragesArray = coveragePackageMap[covID]
+
+                for(var i=0;i<packageCoveragesArray.length;i++){
+                    var packageCoverageMap = packageCoveragesArray[i]
+                    var packageCoverageID = packageCoverageMap.covID
+                    var packageCoverageObject = getCoverageObject(packageCoverageID)
+
+                    if(packageCoverageMap !== null && packageCoverageMap !== undefined){
+                        //IF THIS LOB IS A ADD ON
+                        if(packageCoverageMap.addOnFlag === "Y"){
+                            addOnPackageHTML = addOnPackageHTML + "" +
+                                "<div class='row'>" +
+                                "   <div class='col-xs-12'>" +
+                                "       <label class='checkboxVerticalLayout' style='margin-left:36px; font-size:11px'>" +
+                                "           <input type='checkbox' class='packageCoverageCheckbox packageAddOnCheckbox " + packageCoverageID + "_packageCoverageCheckbox' " +
+                                "               data-covid='" + packageCoverageID + "' " +
+                                "               data-requiredflag='" + packageCoverageMap.requiredFlag + "' "
+
+                            if(packageCoverageMap.requiredFlag === 'Y'){
+                                coverageRowHTML = coverageRowHTML + " checked='true' disabled='disabled'"
+                            }
+                            addOnPackageHTML = addOnPackageHTML +
+                                "           > " + packageCoverageObject.coverageName +
+                                "        </label>" +
+                                "   </div>" +
+                                "</div>"
+                        }
+                        //IF THIS LOB IS REGULAR
+                        else{
+                            coverageRowHTML = coverageRowHTML + "" +
+                                "<div class='row'>" +
+                                "   <div class='col-xs-12'>" +
+                                "       <label class='checkboxVerticalLayout' style='margin-left:20px; font-size:11px'>" +
+                                "           <input type='checkbox' class='packageCoverageCheckbox packageAddOnCheckbox " + packageCoverageID + "_packageCoverageCheckbox' " +
+                                "               data-covid='" + packageCoverageID + "' " +
+                                "               data-requiredflag='" + packageCoverageMap.requiredFlag + "' "
+
+                            if(packageCoverageMap.requiredFlag === 'Y'){
+                                coverageRowHTML = coverageRowHTML + " checked='true' disabled='disabled'"
+                            }
+                            coverageRowHTML = coverageRowHTML +
+                                "           > " + packageCoverageObject.coverageName +
+                                "        </label>" +
+                                "   </div>" +
+                                "</div>"
+                        }
+                    }
+                }
+
+                //FORMAT LOB ADD ON SECTION
+                addOnPackageHTML = "" +
+                    "<div class='row' style='margin-top:10px;'>" +
+                    "   <div class='col-xs-12'>" +
+                    "       <span style='margin-left: 22px; font-size: 11px; font-weight: 500;'>Add On Coverages</span>" +
+                    "   </div>" +
+                    "</div>" +
+                    addOnPackageHTML
+
+
+            }
+        }
+
+        //ADDITIONAL OPTION CHECKBOXES
+        if(getProductIDForCoverage(covID) !== null && getProductIDForCoverage(covID) !== undefined){
+            var productID = getProductIDForCoverage(covID)
+            var productObject = getProductObjectFromProductID(productID)
+
+            if(productObject.additionalOptionsArray !== null && productObject.additionalOptionsArray !== undefined){
+                var additionalOptionsArray = JSON.parse(productObject.additionalOptionsArray)
+
+
+                for(var j=0;j<additionalOptionsArray.length;j++){
+                    var additionalOptionID = additionalOptionsArray[j]
+                    $('#' + covID + '_CoverageOptionContainer').find('.hiddenContainer').html()
+                    if(additionalOptionID === "BAI"){
+                        additionalOptionsHTML = additionalOptionsHTML + BAIOptionHTML()
+                    }
+                    if(additionalOptionID === "WOS"){
+                        additionalOptionsHTML = additionalOptionsHTML + WOSOptionHTML()
+                    }
+                    if(additionalOptionID === "EAI"){
+                        additionalOptionsHTML = additionalOptionsHTML + EAIOptionHTML()
+                    }
+                    if(additionalOptionID === "MED"){
+                        additionalOptionsHTML = additionalOptionsHTML + MEDOptionHTML()
+                    }
+                    if(additionalOptionID === "INCAGG"){
+                        additionalOptionsHTML = additionalOptionsHTML + INCAGGOptionHTML()
+                    }
+                    if(additionalOptionID === "CIVAUTH"){
+                        additionalOptionsHTML = additionalOptionsHTML + CIVAUTHOptionHTML()
+                    }
+                    if(additionalOptionID === "ANIMAL"){
+                        additionalOptionsHTML = additionalOptionsHTML + ANIMALOptionHTML()
+                    }
+                }
+
+            }
+        }
+
+        $('#' + covID + '_CoverageOptionContainer').find('.hiddenContainer').html(additionalOptionsHTML + coverageRowHTML + addOnPackageHTML)
+
+    }
+
+
+    //RESELECT PREVIOUS CHECKED ADDITIONAL OPTIONS
+    for(var i=0; i<selectedAdditionalOptionIDs.length; i++){
+        $('#' + selectedAdditionalOptionIDs[i]).prop('checked', true)
+    }
+
+    //RESELECT PREVIOUS CHECKED PACKAGE LOBS
+    var selectedPackageIDs = Object.keys(selectedPackageLOBS)
+    for(var i=0; i<selectedPackageIDs.length; i++){
+        var packageID = selectedPackageIDs[i]
+        var packageContainer = $('#' + packageID + '_CoverageOptionContainer')
+
+        //MAKE SURE PACKAGE CHECKBOX IS CHECKED
+        $('#' + packageID + '_CoverageCheckbox').prop('checked', true)
+
+        //LOOP THROUGH SAVED LOB ARRAY AND CHECK THE LOBS IN THIS PACKAGE
+        var tempLOBIDArray = jsonStringToObject(selectedPackageLOBS[packageID])
+        for(var j=0;j<tempLOBIDArray.length;j++){
+            var lobID = tempLOBIDArray[j]
+
+            $(packageContainer).find('.' + lobID + '_packageCoverageCheckbox').prop('checked', true)
+        }
+    }
+}
+function clearAllAdditionalOptions(){
+    $('.coverageContainer .hiddenContainer').html("")
+}
+function BAIOptionHTML(){
+    var htmlString = "" +
+        "<div class='row'>" +
+        "   <div class='col-xs-12'>" +
+        "       <label class='checkboxVerticalLayout' style='margin-left:20px; font-size:11px'>" +
+        "           <input type='checkbox' class='additionalOption' id='BAI_addOptionCheckbox' data-addoptionid='BAI'> Blanket Additional Insured " +
+        "       </label>" +
+        "   </div>" +
+        "</div>"
+
+
+    return htmlString
+}
+function WOSOptionHTML(){
+    var htmlString = "" +
+        "<div class='row'>" +
+        "   <div class='col-xs-12'>" +
+        "       <label class='checkboxVerticalLayout' style='margin-left:20px; font-size:11px'>" +
+        "           <input type='checkbox' class='additionalOption' id='WOS_addOptionCheckbox' data-addoptionid='WOS'> Waiver of Subrogation " +
+        "       </label>" +
+        "   </div>" +
+        "</div>"
+
+    return htmlString
+}
+function EAIOptionHTML(){
+    var htmlString = "" +
+        "<div class='row'>" +
+        "   <div class='col-xs-12'>" +
+        "       <label class='checkboxVerticalLayout' style='margin-left:20px; font-size:11px'>" +
+        "           <input type='checkbox' class='additionalOption' id='EAI_addOptionCheckbox' data-addoptionid='EAI'> Each Additional Insured " +
+        "       </label>" +
+        "   </div>" +
+        "</div>"
+    return htmlString
+}
+function MEDOptionHTML(){
+    var htmlString = "" +
+        "<div class='row'>" +
+        "   <div class='col-xs-12'>" +
+        "       <label class='checkboxVerticalLayout' style='margin-left:20px; font-size:11px'>" +
+        "           <input type='checkbox' class='additionalOption' id='MED_addOptionCheckbox' data-addoptionid='MED'> Medical Payments " +
+        "       </label>" +
+        "   </div>" +
+        "</div>"
+
+    return htmlString
+}
+function INCAGGOptionHTML(){
+    var htmlString = "" +
+        "<div class='row'>" +
+        "   <div class='col-xs-12'>" +
+        "       <label class='checkboxVerticalLayout' style='margin-left:20px; font-size:11px'>" +
+        "           <input type='checkbox' class='additionalOption' id='INCAGG_addOptionCheckbox' data-addoptionid='INCAGG'> Increased Aggregate Limit to 2 Million " +
+        "       </label>" +
+        "   </div>" +
+        "</div>"
+
+    return htmlString
+}
+function CIVAUTHOptionHTML(){
+    var htmlString = "" +
+        "<div class='row'>" +
+        "   <div class='col-xs-12'>" +
+        "       <label class='checkboxVerticalLayout' style='margin-left:20px; font-size:11px'>" +
+        "           <input type='radio' class='additionalOption' id='CIVAUTH100_addOptionCheckbox' " +
+        "               name='CIVAUTH_addOptionCheckbox' " +
+        "               data-addoptionid='CIVAUTH100'" +
+        "               previousvalue='false'> Civil Authority (US Only) - $100K Limit " +
+        "       </label>" +
+        "   </div>" +
+        "</div>" +
+        "<div class='row'>" +
+        "   <div class='col-xs-12'>" +
+        "       <label class='checkboxVerticalLayout' style='margin-left:20px; font-size:11px'>" +
+        "           <input type='radio' class='additionalOption' id='CIVAUTH500_addOptionCheckbox' " +
+        "               name='CIVAUTH_addOptionCheckbox' " +
+        "               data-addoptionid='CIVAUTH500'" +
+        "               previousvalue='false'> Civil Authority (US Only) - $500K Limit " +
+        "       </label>" +
+        "   </div>" +
+        "</div>"
+
+    return htmlString
+}
+function ANIMALOptionHTML(){
+    var htmlString = "" +
+        "<div class='row'>" +
+        "   <div class='col-xs-12'>" +
+        "       <label class='checkboxVerticalLayout' style='margin-left:20px; font-size:11px; margin-top:4px;'> Animal Mortality" +
+        "       </label>" +
+        "   </div>" +
+        "</div>"+
+        "<div class='row'>" +
+        "   <div class='col-xs-12' style='margin-top:-6px'>" +
+        "       <label class='checkboxVerticalLayout' style='margin-left:20px; font-size:11px'>" +
+        "           <input type='checkbox' class='additionalOption' id='ANIMAL_BIRDFISH_addOptionCheckbox' data-addoptionid='ANIMAL'> Domestic Birds Or Fish " +
+        "       </label>" +
+        "   </div>" +
+        "</div>"+
+        "<div class='row'>" +
+        "   <div class='col-xs-12'>" +
+        "       <label class='checkboxVerticalLayout' style='margin-left:20px; font-size:11px'>" +
+        "           <input type='checkbox' class='additionalOption' id='ANIMAL_DOGS_addOptionCheckbox' data-addoptionid='ANIMAL'> Dogs (with certain breed exceptions) " +
+        "       </label>" +
+        "   </div>" +
+        "</div>"+
+        "<div class='row'>" +
+        "   <div class='col-xs-12'>" +
+        "       <label class='checkboxVerticalLayout' style='margin-left:20px; font-size:11px'>" +
+        "           <input type='checkbox' class='additionalOption' id='ANIMAL_REPTILE_addOptionCheckbox' data-addoptionid='ANIMAL'> Reptiles (Non-Venomous) " +
+        "       </label>" +
+        "   </div>" +
+        "</div>"+
+        "<div class='row'>" +
+        "   <div class='col-xs-12'>" +
+        "       <label class='checkboxVerticalLayout' style='margin-left:20px; font-size:11px'>" +
+        "           <input type='checkbox' class='additionalOption' id='ANIMAL_SMALL_addOptionCheckbox' data-addoptionid='ANIMAL'> Small Domestic Animals (Other) " +
+        "       </label>" +
+        "   </div>" +
+        "</div>"+
+        "<div class='row'>" +
+        "   <div class='col-xs-12'>" +
+        "       <label class='checkboxVerticalLayout' style='margin-left:20px; font-size:11px'>" +
+        "           <input type='checkbox' class='additionalOption' id='ANIMAL_FARM_addOptionCheckbox' data-addoptionid='ANIMAL'> Farm Animals " +
+        "       </label>" +
+        "   </div>" +
+        "</div>"+
+        "<div class='row'>" +
+        "   <div class='col-xs-12'>" +
+        "       <label class='checkboxVerticalLayout' style='margin-left:20px; font-size:11px'>" +
+        "           <input type='checkbox' class='additionalOption' id='ANIMAL_CATS_addOptionCheckbox' data-addoptionid='ANIMAL'> Wild Cats (Caged) " +
+        "       </label>" +
+        "   </div>" +
+        "</div>"+
+        "<div class='row'>" +
+        "   <div class='col-xs-12'>" +
+        "       <label class='checkboxVerticalLayout' style='margin-left:20px; font-size:11px'>" +
+        "           <input type='checkbox' class='additionalOption' id='ANIMAL_OTHER_addOptionCheckbox' data-addoptionid='ANIMAL'> Other - Refer Only " +
+        "       </label>" +
+        "   </div>" +
+        "</div>"
+
+
+
+    return htmlString
+}
+function getSelectedProductAdditionalOptionMap(){
+    var selectedProductAdditionalOptionMap = {}
+    var productsSelectedArray = getProductsSelectedArray()
+
+    for(var i=0;i<productsSelectedArray.length; i++){
+        var productID = productsSelectedArray[i]
+        var productObject = getProductObjectFromProductID(productID)
+        var covID = productObject.coverage
+
+        var selectedOptionsForProduct = []
+
+        $('#' + covID + '_CoverageOptionContainer').find('.additionalOption:checked').each(function(){
+            var additionalOptionID = $(this).data('addoptionid')
+            selectedOptionsForProduct.push(additionalOptionID)
+        })
+
+        selectedProductAdditionalOptionMap[productID] = selectedOptionsForProduct
+    }
+
+    return selectedProductAdditionalOptionMap
+}
+function additionalOptionChange(){
+    if($('#BAI_addOptionCheckbox').is(':checked')){
+    }
+    else{
+    }
+
+    if($('#WOS_addOptionCheckbox').is(':checked')){
+
+    }
+    else{
+
+    }
+
+    if($('#EAI_addOptionCheckbox').is(':checked')){
+
+    }
+    else{
+
+    }
+
+    if($('#MED_addOptionCheckbox').is(':checked')){
+
+    }
+    else{
+
+    }
+
+    if($('#INCAGG_addOptionCheckbox').is(':checked')){
+
+    }
+    else{
+
+    }
+
+    if($('#CIVAUTH_addOptionCheckbox').is(':checked')){
+
+    }
+    else{
+
+    }
+
+}
+
+//PRODUCT CONDITION AND RATING BASIS REQUIRED QUESTIONS SECTION
 function clearRequiredQuestions(){
     $('#ratingBasisRequiredQuestionsContainer').empty()
+}
+function updateRatingRequiredQuestion(){
+    var covSelectedArray = getCoveragesSelectedArray()
+    for(var i=0;i<covSelectedArray.length; i++){
+        var covID = covSelectedArray[i]
+        var productID = getProductIDForCoverage(covID)
+
+        if( getProductIDForCoverage(covID) ){
+
+            //GET RATING BASIS REQUIRED QUESTIONS
+            if(getProductObjectFromProductID(productID) !== undefined){
+                var productObject = getProductObjectFromProductID(productID)
+
+                if(productObject.rateCode !== undefined && productObject.rateCode !== null){
+                    var rateID = productObject.rateCode
+                    var rateObject = getRateObjectByID(rateID)
+                    var ratingBasisID = rateObject.rateBasis
+                    var ratingBasisObject = getRatingBasisObjectByID(ratingBasisID)
+                    var ratingBasisQuestionID = ratingBasisObject.basisQuestionID
+
+                    //IF RATING BASIS QUESTION ID EXISTS
+                    if(ratingBasisQuestionID !== undefined && ratingBasisQuestionID !== null && ratingBasisQuestionID.trim().length !== 0){
+                        //CHECK TO MAKE SURE NOT TO INSERT A DUPLICATE QUESTION
+                        if($('#' + ratingBasisQuestionID).length === 0){
+                            var questionHTML = ""
+                            // questionHTML = "<div class='row'>"
+                            questionHTML = questionHTML + getNewSubmissionRequiredQuestion(questionID)
+                            // questionHTML = questionHTML + "</div>"
+                            $('#ratingBasisRequiredQuestionsContainer').append(questionHTML)
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+
 }
 function updateRequiredQuestions(){
     var operationsObject = getCurrentOperationTypeObject()
 
     //SAVE ANSWERS TO REFILL LATER FOR SAME QUESTIONS
     var questionAnswers = {}
-    $('.requiredQuestion input:text').each(function(){
+    $('.requiredQuestion input').each(function(){
         var elementID = $(this).attr('id')
         var value = $(this).val()
-        questionAnswers[elementID] = value
+
+        if($(this).attr('type') === 'radio' || $(this).attr('type') === 'checkbox' ){
+            value = $(this).is(':checked')
+            questionAnswers[elementID] = value
+        }
+        else{
+            questionAnswers[elementID] = value
+        }
     })
 
     //REMOVE ALL QUESTIONS
     clearRequiredQuestions()
 
     //GET COVERAGES CHECKED
-    var coveragesCheckedIdsArray = []
-    $('.coverageCheckbox:checked').each(function(){
-        coveragesCheckedIdsArray.push($(this).data('covid'))
-    })
-
+    var allCoveragesPackagesArray = getCoveragesAndPackagesSelectedArray()
 
     //GET PRODUCT CONDITION QUESTIONS FOR COVERAGES CHECKED
-    var ratingBasisMap = jsonStringToObject(operationsObject.ratingBasisMap)
-    var operationProductConditionRequirdQuestionsMap = jsonStringToObject(getCurrentOperationTypeObject().requiredQuestionsMap)
-    var requiredQuestionsForCoveragesCheckedArray = []
-    for(var i=0;i<coveragesCheckedIdsArray.length; i++){
-        var thisCovID = coveragesCheckedIdsArray[i]
-        var thisCovRequiredQuestionsArray = jsonStringToObject( operationProductConditionRequirdQuestionsMap[thisCovID].requiredQuestions )
+    if(getCurrentOperationTypeObject().requiredQuestionsMap){
+        var operationObject = getCurrentOperationTypeObject()
+        var operationProductConditionRequirdQuestionsMap = jsonStringToObject(operationObject.requiredQuestionsMap)
 
-        //LOOP THROUGH THIS COVERAGES REQUIRED QUESTIONS
-        for(var j=0; j<thisCovRequiredQuestionsArray.length; j++){
-            //IF THIS QUESTION DOESN'T ALREADY EXIST, ADD IT
-            if(requiredQuestionsForCoveragesCheckedArray.indexOf(thisCovRequiredQuestionsArray[j])){
-                requiredQuestionsForCoveragesCheckedArray.push(thisCovRequiredQuestionsArray[j])
+        //CHECK FOR ANY MISSING QUESTIONS FOR PRODUCT CONDITION, PRODUCT REQUIRED QUESTIONS AND RATING REQUIRED QUESTIONS
+        var coverageProductMap = jsonStringToObject(operationObject.coverageProductMap)
+        var additionalRequiredQuestionsMap = jsonStringToObject(getRequiredQuestionsForProductLogicConditions(coverageProductMap))
+        var productRequiredQuestionsArray = []
+
+
+        //COMBINE ALL REQUIRED QUESTIONS
+        var requiredQuestionsForCoveragesCheckedArray = []
+        for(var i=0;i<allCoveragesPackagesArray.length; i++){
+            var thisCovID = allCoveragesPackagesArray[i]
+            var thisCovRequiredQuestionsArray = jsonStringToObject( operationProductConditionRequirdQuestionsMap[thisCovID].requiredQuestions )
+            var additionalRequiredQuestionsArray = additionalRequiredQuestionsMap[thisCovID]
+
+            thisCovRequiredQuestionsArray = thisCovRequiredQuestionsArray.concat(additionalRequiredQuestionsArray)
+
+            //LOOP THROUGH THIS COVERAGES REQUIRED QUESTIONS
+            for(var j=0; j<thisCovRequiredQuestionsArray.length; j++){
+                //IF THIS QUESTION DOESN'T ALREADY EXIST, ADD IT
+                if(requiredQuestionsForCoveragesCheckedArray.indexOf(thisCovRequiredQuestionsArray[j])){
+                    requiredQuestionsForCoveragesCheckedArray.push(thisCovRequiredQuestionsArray[j])
+                }
             }
         }
-    }
 
-    //FILTER QUESTIONS FOR DUPLICATES
-    var requiredQuestionsForCoveragesCheckedArray_Filtered = []
-    for(var i=0; i<requiredQuestionsForCoveragesCheckedArray.length;i++){
-        if(requiredQuestionsForCoveragesCheckedArray_Filtered.indexOf(requiredQuestionsForCoveragesCheckedArray[i]) === -1){
-            requiredQuestionsForCoveragesCheckedArray_Filtered.push(requiredQuestionsForCoveragesCheckedArray[i])
+
+
+
+        //FILTER QUESTIONS FOR DUPLICATES
+        var requiredQuestionsForCoveragesCheckedArray_Filtered = []
+
+        for(var i=0; i<requiredQuestionsForCoveragesCheckedArray.length;i++){
+            if(requiredQuestionsForCoveragesCheckedArray_Filtered.indexOf(requiredQuestionsForCoveragesCheckedArray[i]) === -1 ){
+                if($('#' + requiredQuestionsForCoveragesCheckedArray[i]).length === 0){
+                    requiredQuestionsForCoveragesCheckedArray_Filtered.push(requiredQuestionsForCoveragesCheckedArray[i])
+                }
+
+            }
         }
+
+        //SORT QUESTIONS BY WEIGHT
+        var requiredQuestionsForCoveragesCheckedArray_Sorted = []
+        requiredQuestionsForCoveragesCheckedArray_Sorted = requiredQuestionsForCoveragesCheckedArray_Filtered.sort(sortByWeightAscending)
+
+
+        //BUILD HTML FOR REQUIRED QUESTIONS
+        var finalHTML = ""
+        // finalHTML = finalHTML + "<div class='row'>"
+        for(var i=0;i<requiredQuestionsForCoveragesCheckedArray_Sorted.length;i++){
+            finalHTML = finalHTML + getNewSubmissionRequiredQuestion(requiredQuestionsForCoveragesCheckedArray_Sorted[i])
+        }
+        // finalHTML = finalHTML + "</div>"
+
+        //INSERT INTO REQUIRED QUESTIONS CONTAINER
+        $('#ratingBasisRequiredQuestionsContainer').html(finalHTML)
+
+        //CHECK HEIGHTS OF QUESTION CONTAINERS, IF HEIGHT IS DIFFERENT WILL MESS UP ALIGNMENT. APPLY LARGEST DIV HEIGHT IN ROW TO ALL CONTAINERS
+        var gridSizeCount = 0
+        var rowHeight = 0
+        var elementsInRow = []
+        $('#ratingBasisRequiredQuestionsContainer div.requiredQuestion').each(function(){
+            var thisGridSize = $(this).attr('data-gridsize')
+            var thisHeight = $(this).height()
+
+
+            // console.log(thisGridSize)
+            console.log(parseInt(gridSizeCount) + parseInt(thisGridSize))
+
+            if( (parseInt(gridSizeCount) + parseInt(thisGridSize) ) <= 12 ){
+                if(thisHeight > rowHeight){
+                    rowHeight = thisHeight
+                }
+
+                elementsInRow.push( $(this) )
+
+                gridSizeCount = parseInt(gridSizeCount) + parseInt(thisGridSize)
+            }
+            else{
+                console.log(elementsInRow)
+                //LOOP THROUGH THE ROWS IN THE ROW
+                for(var i=0;i<elementsInRow.length;i++){
+                    var questionElement = elementsInRow[i]
+                    console.log(rowHeight)
+                    $(questionElement).height(rowHeight)
+                }
+
+                gridSizeCount = thisGridSize
+                rowHeight = thisHeight
+            }
+        })
+
+        //REINSERT PREVIOUSLY FILLED OUT
+        var questionAnswersKeys = Object.keys(questionAnswers)
+        for(var i=0;i<questionAnswersKeys.length; i++){
+            var elementID = questionAnswersKeys[i]
+            var inputElement = $('#' + elementID)
+
+            if( $(inputElement).attr('type') === 'radio' || $(inputElement).attr('type') === 'checkbox'  ){
+                if(questionAnswers[elementID]){
+                    $(inputElement).prop('checked', true)
+                }
+                else{
+                    $(inputElement).prop('checked', false)
+                }
+            }
+            else{
+                $(inputElement).val(questionAnswers[elementID])
+            }
+
+        }
+        initializeGlobalListeners()
+
+        //LOOP THROUGH COVERAGES CHOSEN, IF PRODUCT IS DETERMINED, ADD ANY PRODUCT SPECIFIC REQUIRED QUESTIONS
+        updateWithProductRequiredQuestions()
+
+        //REINSERT PREVIOUSLY FILLED OUT AGAIN FOR ADDITIONAL QUESTIONS ADDED
+        var questionAnswersKeys = Object.keys(questionAnswers)
+        for(var i=0;i<questionAnswersKeys.length; i++){
+            var elementID = questionAnswersKeys[i]
+            var element = $('#' + elementID)
+
+            if( $(element).attr('type') === 'radio' || $(element).attr('type') === 'checkbox' ){
+                $(element).prop('checked', questionAnswers[elementID])
+            }
+            else{
+                $(element).val(questionAnswers[elementID])
+            }
+        }
+        initializeGlobalListeners()
+
+        //UPDATE RATING REQUIRED QUESTIONS
+        updateRatingRequiredQuestion()
+        updatePackageRequiredRatingQuestions()
+
+        //REINSERT PREVIOUSLY FILLED OUT AGAIN FOR ADDITIONAL QUESTIONS ADDED
+        var questionAnswersKeys = Object.keys(questionAnswers)
+        for(var i=0;i<questionAnswersKeys.length; i++){
+            var elementID = questionAnswersKeys[i]
+            var element = $('#' + elementID)
+
+            if( $(element).attr('type') === 'radio' || $(element).attr('type') === 'checkbox' ){
+                $(element).prop('checked', questionAnswers[elementID])
+            }
+            else{
+                $(element).val(questionAnswers[elementID])
+            }
+        }
+        initializeGlobalListeners()
     }
 
-    //SORT QUESTIONS BY WEIGHT
-    var requiredQuestionsForCoveragesCheckedArray_Sorted = []
-    requiredQuestionsForCoveragesCheckedArray_Sorted = requiredQuestionsForCoveragesCheckedArray_Filtered.sort(sortByWeightDescending)
+}
+function updatePackageRequiredRatingQuestions(){
+    var covSelectedArray = getCoveragesSelectedArray()
+    var coveragePackageMap = JSON.parse(getCurrentOperationTypeObject().coveragePackageMap)
+
+    for(var i=0;i<covSelectedArray.length; i++){
+        var covID = covSelectedArray[i]
+
+        //IF COVERAGE IS A PACKAGE, GET CHECKED PACKAGE LOBS AND LOOP THROUGH
+        if(coveragePackageMap[covID]){
+            var packageMapForThisPackage = coveragePackageMap[covID]
+            var selectedLOBArrayForPackage = getLOBSSelectedInPackageArray(covID)
+
+            if(selectedLOBArrayForPackage.length > 0){
+                for(var j=0;j<packageMapForThisPackage.length;j++){
+                    if(selectedLOBArrayForPackage.indexOf(packageMapForThisPackage[j].covID) > -1 ){
+                        var lobID = packageMapForThisPackage[j].covID
+                        var rateID = packageMapForThisPackage[j].rateID
+
+                        if(rateID !== undefined && rateID !== null){
+                            var rateObject = getRateObjectByID(rateID)
+                            var rateBasisID = rateObject.rateBasis
+                            var ratingBasisObject = getRatingBasisObjectByID(rateBasisID)
+
+                            var ratingBasisQuestionID = ratingBasisObject.basisQuestionID
+
+                            //IF RATING BASIS QUESTION ID EXISTS
+                            if(ratingBasisQuestionID !== undefined && ratingBasisQuestionID !== null && ratingBasisQuestionID.trim().length !== 0){
+                                //CHECK TO MAKE SURE NOT TO INSERT A DUPLICATE QUESTION
+                                if($('#' + ratingBasisQuestionID).length === 0){
+                                    var questionHTML = ""
+                                    // questionHTML = "<div class='row'>"
+                                    questionHTML = questionHTML + getNewSubmissionRequiredQuestion(ratingBasisQuestionID)
+                                    // questionHTML = questionHTML + "</div>"
+                                    $('#ratingBasisRequiredQuestionsContainer').append(questionHTML)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
 
-    //BUILD HTML FOR REQUIRED QUESTIONS
-    var finalHTML = ""
-    finalHTML = finalHTML + "<div class='row'>"
-    for(var i=0;i<requiredQuestionsForCoveragesCheckedArray_Sorted.length;i++){
-        finalHTML = finalHTML + getNewSubmissionRequiredQuestion(requiredQuestionsForCoveragesCheckedArray_Sorted[i])
-    }
-
-    finalHTML = finalHTML + "</div>"
-
-
-    //INSERT INTO REQUIRED QUESTIONS CONTAINER
-    $('#ratingBasisRequiredQuestionsContainer').html(finalHTML)
-
-    //CALL GLOBAL INITIALIZER FOR NEW ELEMENTS
-    initializeGlobalListeners()
-
-
-    //REINSERT PREVIOUSLY FILLED OUT
-    var questionAnswersKeys = Object.keys(questionAnswers)
-    for(var i=0;i<questionAnswersKeys.length; i++){
-        var elementID = questionAnswersKeys[i]
-        $('#' + elementID).val(questionAnswers[elementID])
-    }
-
-
-
-
-    //LOOP THROUGH COVERAGES CHOSEN, IF PRODUCT IS DETERMINED, ADD ANY PRODUCT SPECIFIC REQUIRED QUESTIONS
-    updateWithProductRequiredQuestions()
-
-    //REINSERT PREVIOUSLY FILLED OUT AGAIN FOR ADDITIONAL QUESTIONS ADDED
-    var questionAnswersKeys = Object.keys(questionAnswers)
-    for(var i=0;i<questionAnswersKeys.length; i++){
-        var elementID = questionAnswersKeys[i]
-        $('#' + elementID).val(questionAnswers[elementID])
+        }
     }
 }
 function updateWithProductRequiredQuestions(){
@@ -443,15 +1788,29 @@ function updateWithProductRequiredQuestions(){
 
         if( getProductIDForCoverage(covID) ){
 
+            //GET PRODUCT REQUIRED QUESTIONS AND RATING BASIS REQUIRED QUESTIONS
             if(getProductObjectFromProductID(productID).requiredQuestions){
-                var productRequiredQuestionsArray = jsonStringToObject( getProductObjectFromProductID(productID).requiredQuestions )
+                var productObject = getProductObjectFromProductID(productID)
+                var productRequiredQuestionsArray = jsonStringToObject( productObject.requiredQuestions )
+                // var rateID = productObject.rateCode
+                // var rateObject = getRateObjectByID(rateID)
+                // var ratingBasisID = rateObject.rateBasis
+                // var ratingBasisObject = getRatingBasisObjectByID(ratingBasisID)
+                // var ratingBasisQuestionID = ratingBasisObject.basisQuestionID
+                //
+                // //ADD RATING BASIS QUESTION ID TO REQUIRED QUESTIONS ARRAY
+                // productRequiredQuestionsArray.push(ratingBasisQuestionID)
+
                 //LOOP THROUGH PRODUCTS REQUIRED QUESTIONS ARRAY
                 for(var j=0; j<productRequiredQuestionsArray.length; j++){
                     var questionID = productRequiredQuestionsArray[j]
 
                     //CHECK TO MAKE SURE NOT TO INSERT A DUPLICATE QUESTION
                     if($('#' + questionID).length === 0){
-                        var questionHTML = getNewSubmissionRequiredQuestion(questionID)
+                        var questionHTML = ""
+                        // questionHTML = "<div class='row'>"
+                        questionHTML = questionHTML + getNewSubmissionRequiredQuestion(questionID)
+                        // questionHTML = questionHTML + "</div>"
                         $('#ratingBasisRequiredQuestionsContainer').append(questionHTML)
                     }
                 }
@@ -462,35 +1821,128 @@ function updateWithProductRequiredQuestions(){
 }
 function sortByWeightDescending(a, b){
     return (getQuestionObjectByID(b).weight) > (getQuestionObjectByID(a).weight) ? 1 : -1;
+}
+function sortByWeightAscending(a, b){
+    if(getQuestionObjectByID(a) && getQuestionObjectByID(b)){
+        return (getQuestionObjectByID(b).weight) < (getQuestionObjectByID(a).weight) ? 1 : -1;
+    }
+    else{
+        return 1
+    }
 
 }
-function checkIfReadyToRate(inputChanged){
-    console.log("CHECKING IF READY TO RATE")
-    console.log(isAllProductsDeterminedForCoveragesChosen() && isAllRequiredQuestionsComplete())
-    //CHECK IF ALL REQUIRED QUESTIONS ARE FILLED OUT, IF YES, RATE PREMIUM
-    if( isAllProductsDeterminedForCoveragesChosen() && isAllRequiredQuestionsComplete()){
+function isReadyToShowLimitAndDeducts(){
+    //PAGE IS READY TO SHOW LIMITS AND DEDUCTS WHEN:
+    //1. PRODUCT CONDITION QUESTIONS ARE FILLED
+    //2. PRODUCT SPECIFIC REQUIRED QUESTIONS ARE FILLED
+    //3. ALL CHECKED/SELECTED COVERAGES HAVE DETERMINED PRODUCTS
+    //4. AT LEAST ONE COVERAGE HAS BEEN SELECTED
+    //HIDES LIMIT AND PREMIUM CONTAINERS IF FALSE
 
-        //SHOW LIMIT AND PREMIUM SECTION
-        fillLimitDeductContainer()
-        showLimitDeductContainer()
-
-        fillPremiumRateContainer()
-        showPremiumRateContainer()
+    if( isAllProductsDeterminedForCoveragesChosen() && isAllRequiredQuestionsComplete()
+        && $('.coverageCheckbox:checked').length > 0 ){
+        return true
     }
     else{
         //HIDE LIMIT AND PREMIUM SECTION
         hideLimitDeductContainer()
         hidePremiumRateContainer()
+        return false
+    }
+}
+function isReadyToRatePremiums(){
+    //PAGE IS READY TO RATE AND DISPLAY PREMIUMS WHEN:
+    //1. LIMITS ARE DISPLAYED OR READY TO BE DISPLAYED
+    //2. IF A RATING BASIS IS "LIMIT", ALL LIMIT INPUTS ARE FILLED
+    //HIDE PREMIUM CONTAINER IF FALSE
+
+
+    //CHECK IF PRODUCT REQUIRED QUESTIONS EXIST
+    var productsSelectedArray = getProductsSelectedArray()
+    for(var i=0; i<productsSelectedArray.length; i++){
+        var productID = productsSelectedArray[i]
+        var productObject = getProductObjectFromProductID(productID)
+
+        if(productObject.requiredQuestions !== null && productObject.requiredQuestions !== undefined){
+            var productRequiredQuestionsArray = jsonStringToObject(productObject.requiredQuestions)
+
+            //LOOP THROUGH PRODUCT REQUIRED QUESTIONS
+            for(var j=0; j<productRequiredQuestionsArray.length; j++){
+                var questionID = productRequiredQuestionsArray[j]
+
+                //CHECK IF QUESTIONS EXIST
+                if( $('#step-2 #' + questionID).length === 0 ){
+                    return false
+                }
+
+                //CHECK IF QUESTION IS FILLED ?
+            }
+
+            //CHECK IF ALL RATING REQUIRED QUESTIONS EXIST
+            if(productObject.rateCode !== undefined && productObject.rateCode !== null){
+                var rateID = productObject.rateCode
+                var rateObject = getRateObjectByID(rateID)
+                var ratingBasisID = rateObject.rateBasis
+                var ratingBasisObject = getRatingBasisObjectByID(ratingBasisID)
+                var ratingBasisQuestionID = ratingBasisObject.basisQuestionID
+
+                //IF RATING BASIS QUESTION ID EXISTS
+                if(ratingBasisQuestionID !== undefined && ratingBasisQuestionID !== null && ratingBasisQuestionID.trim().length !== 0){
+                    if( $('#step-2 #' + ratingBasisQuestionID).length === 0 ){
+                        return false
+                    }
+                }
+
+            }
+        }
+
     }
 
+    //CHECK IF LIMITS AND DEDUCTIBLES ARE READY TO DISPLAY
+    if( isReadyToShowLimitAndDeducts() ){
 
+        //IF LIMITS AND DEDUCTIBLES ARE READY, CHECK IF ANY COVERAGE/PRODUCT HAS A LIMIT RATING BASIS
+        if(isRatingBasisLimitForAnyCoverages()){
+
+            //IF A COVERAGE/PRODUCT HAS A LIMIT RATING BASIS, CHECK IF ALL LIMIT INPUTS ARE FILLED
+            if(isAllLimitInputFieldsFilled()){
+
+                //THERE IS A LIMIT RATING BASIS, AND ALL LIMIT INPUTS ARE FILLED
+                return true
+            }
+            else{
+
+                //THERE IS A LIMIT RATING BASIS, BUT NOT ALL LIMIT INPUTS ARE FILLED
+                return false
+            }
+        }
+        else{
+
+            //LIMITS AND DEDUCTIBLES ARE READY TO DISPLAY, AND NO COV/PRODUCT HAS A LIMIT RATING BASIS
+            return true
+        }
+    }
+    else{
+        hidePremiumRateContainer()
+        return false
+    }
 }
 function isAllRequiredQuestionsComplete(){
     var isComplete = true
     $('div.requiredQuestion input').each(function(){
-        if( $(this).val().trim().length === 0 && $(this).val().trim() !== 'invalid'){
-            isComplete = false
+        if($(this).attr('type') === 'radio' || $(this).attr('type') === 'checkbox'){
+            var groupName = $(this).attr('name')
+            var value = $("div.requiredQuestion input[name='" + groupName + "']:checked").val()
+            if(value === undefined || value === null || value.trim().length === 0){
+                isComplete = false
+            }
         }
+        else{
+            if( $(this).val().trim().length === 0 || $(this).val().trim() === 'invalid'){
+                isComplete = false
+            }
+        }
+
     })
 
     return isComplete
@@ -540,6 +1992,52 @@ function isAllProductsDeterminedForCoveragesChosen(){
 
     return true;
 }
+function checkIfReadyToShowLimitsAndPremiumsAndShow(){
+    if(isReadyToShowLimitAndDeducts()){
+        fillLimitDeductContainer()
+        showLimitDeductContainer()
+
+        //PREMIUM ONLY DISPLAYS IF LIMITS AND DEDUCTS SHOW CORRECTLY
+        if(isReadyToRatePremiums()){
+            calculatePremiumsAndFillContainer()
+            showPremiumRateContainer()
+        }
+        else{
+
+        }
+    }
+}
+function buildRequiredQuestionAndAnswerMap(){
+    var requiredQuestionAnswerMap = {}
+
+    $('div.requiredQuestion').each(function(){
+        var questionType = $(this).attr('data-inputtype')
+        var questionID = $(this).attr('data-questionid')
+
+        if(questionType === 'text'){
+            requiredQuestionAnswerMap[questionID] = $(this).find('input#' + questionID).val()
+        }
+        else if(questionType === 'radio'){
+            var groupName = questionType + "_RadioGroup"
+            requiredQuestionAnswerMap[questionID] = $(this).find("input[name='" + groupName + "']:checked").val()
+        }
+        else if(questionType === 'checkbox'){
+            var groupName = questionType + "_CheckboxGroup"
+
+            $("input[name='" + groupName + "']:checked").each(function(){
+                requiredQuestionAnswerMap[questionID] = $(this).val()
+            })
+        }
+        else if(questionType === 'dropdown'){
+            requiredQuestionAnswerMap[questionID] = $(this).find('#' + questionID).val()
+        }
+    })
+
+    return requiredQuestionAnswerMap
+}
+function isRatingRequiredQuestionsExist(){
+
+}
 
 //LIMITS DEDUCTIBLES FUNCTIONS
 function showLimitDeductContainer(){
@@ -578,6 +2076,7 @@ function buildLimitDeductibleContainersForEachCoverage(){
 
 
     $('#limitsDeductiblesContainer').html( $(temporaryContainer).html() )
+    initializeGlobalListeners()
 }
 function getLimDeductCovContainerHTML(covID){
     var covContainer =
@@ -620,9 +2119,12 @@ function getLimDeductCoverageLabelRow(covID){
 }
 function buildLimDedRows(productID){
     var productMap = getProductObjectFromProductID(productID)
+    var covID = productMap.coverage
     var limitArray = []
     var deductArray = []
-    if(productMap.limitArray != null && productMap.limitArray.trim().length > 2){
+
+    //LIMITS AND DEDUCTS CURRENTLY STORED IN TWO FORMATS, CHECK FOR FORMAT
+    if(productMap.limitArray !== undefined && productMap.limitArray !== null && productMap.limitArray.trim().length > 2){
         limitArray = jsonStringToObject( productMap.limitArray )
     }
     else if(productMap.limits){
@@ -631,8 +2133,7 @@ function buildLimDedRows(productID){
     else{
 
     }
-
-    if(productMap.deductArray != null && productMap.deductArray.trim().length > 2){
+    if(productMap.deductArray !== undefined && productMap.deductArray !== null && productMap.deductArray.trim().length > 2){
         deductArray = jsonStringToObject( productMap.deductArray )
     }
     else if(productMap.deduct){
@@ -641,6 +2142,38 @@ function buildLimDedRows(productID){
     else{
 
     }
+
+
+    //CHECK IF THIS PRODUCT IS PACKAGE. IF PACKAGE CHECK FOR ADDITIONAL LIMITS FOR PACKAGE LOBS
+    var selectedLOBSForCoverage = getLOBSSelectedInPackageArray(covID)
+    if(selectedLOBSForCoverage.length > 0){
+        var operationObject = getCurrentOperationTypeObject()
+        var coveragePackageMap = jsonStringToObject(operationObject.coveragePackageMap)
+        var lobMapArray = coveragePackageMap[covID]
+
+        //LOOP THROUGH LOBS AND FIND THE SELECTED INFO MAPS
+        for(var i=0;i<selectedLOBSForCoverage.length;i++){
+            var lobID = selectedLOBSForCoverage[i]
+
+            //GET THE LOB MAP
+            var lobMap = {}
+            for(var j=0;j<lobMapArray.length;j++){
+                if(lobMapArray[j].covID === lobID){
+                    lobMap = lobMapArray[j]
+                    var thisLOBLimitArray = jsonStringToObject(lobMap.limitArray)
+                    limitArray = limitArray.concat(thisLOBLimitArray)
+
+                    var thisLOBDeductArray = jsonStringToObject(lobMap.deductArray)
+                    deductArray = deductArray.concat(thisLOBDeductArray)
+                }
+            }
+        }
+    }
+
+
+
+    checkAdditionalOptionsForLimitChanges(productID, limitArray)
+
 
 
     var limDeductColumns =
@@ -659,13 +2192,70 @@ function buildLimDedRows(productID){
 
     return limDeductColumns
 }
+function checkAdditionalOptionsForLimitChanges(productID, limitArray){
+    var additionalOptionArray = getSelectedProductAdditionalOptionMap()[productID]
+
+
+    for(var i=0; i<additionalOptionArray.length; i++){
+        var additionalOptionID = additionalOptionArray[i]
+        if(additionalOptionID === 'MED'){
+            var MEDLimitMap = {}
+            MEDLimitMap.limitAmount = "$5,000"
+            MEDLimitMap.limitDescription = "Medical Payments (Per Person)"
+            limitArray.push(MEDLimitMap)
+        }
+        if(additionalOptionID === 'BAI'){
+            var BAILimitMap = {}
+            BAILimitMap.limitAmount = "Incl"
+            BAILimitMap.limitDescription = "Blanket Additional Insured"
+            limitArray.push(BAILimitMap)
+        }
+        if(additionalOptionID === 'WOS'){
+            var WOSLimitMap = {}
+            WOSLimitMap.limitAmount = "Incl"
+            WOSLimitMap.limitDescription = "Waiver of Subrogation"
+            limitArray.push(WOSLimitMap)
+        }
+        if(additionalOptionID === 'EAI'){
+            var EAILimitMap = {}
+            EAILimitMap.limitAmount = "$5,000"
+            EAILimitMap.limitDescription = "Additional Charge to Include Medical Payments"
+            limitArray.push(EAILimitMap)
+        }
+        if(additionalOptionID === 'INCAGG'){
+            for(var j=0;j<limitArray.length;j++){
+                var thisLimitMap = limitArray[j]
+                if(thisLimitMap.limitDescription === 'General Aggregate Limit'){
+                    thisLimitMap.limitAmount = '$2,000,000'
+                }
+            }
+        }
+        if(additionalOptionID === 'CIVAUTH100'){
+
+            var EAILimitMap = {}
+            EAILimitMap.limitAmount = "$100,000"
+            EAILimitMap.limitDescription = "Civil Authority (US Only)"
+            limitArray.push(EAILimitMap)
+        }
+        if(additionalOptionID === 'CIVAUTH500'){
+            var EAILimitMap = {}
+            EAILimitMap.limitAmount = "$500,000"
+            EAILimitMap.limitDescription = "Civil Authority (US Only)"
+            limitArray.push(EAILimitMap)
+        }
+
+
+    }
+}
+
 function getLimitRowsHTML(limitArray, productID, covID){
     var limitRowsHTML = ""
     for(var i=0; i<limitArray.length; i++){
         var limitValue
         var limitDescription
 
-        if(jsonStringToObject( limitArray[i] ).limitDescription){
+        //LIMITS AND DEDUCTS CURRENTLY STORED IN TWO FORMATS, CHECK FOR FORMAT
+        if(jsonStringToObject( limitArray[i] ).limitDescription !== null || jsonStringToObject( limitArray[i] ).limitDescription !== undefined){
             limitValue = jsonStringToObject( limitArray[i] ).limitAmount
             limitDescription = jsonStringToObject( limitArray[i] ).limitDescription
         }
@@ -674,20 +2264,103 @@ function getLimitRowsHTML(limitArray, productID, covID){
             limitDescription = limitArray[i].split('\t')[1]
         }
 
+        //REMOVE COV: STRING FROM LIMIT DESCRIPTION
         limitDescription = removeCoverageIdentifierFromLimDeduct(limitDescription, covID)
+
+        //GET THE CLASS STRING USED IN HTML FOR PRODUCTID
         var productIDClassString = replaceEachSpaceWith(productID.trim(), "_")
 
+        //IF THE RATE BASIS FOR THIS PRODUCT IS LIMIT RATING THEN HTML NEEDS INPUT FIELDS
+        var rateCode_product = getProductObjectFromProductID(productID).rateCode
+        var rateBasis_product = getRateObjectByID(rateCode_product).rateBasis
+
+        //CHECK IF COVERAGE IS A PACKAGE, IF PACKAGE THEN NEED TO CHECK THE LOB RATES FOR A LIMIT RATING
+        var coverageObject = getCoverageObject(covID)
+        var rateBasis_LOBHasLimitRate = false
+        if(coverageObject.packageFlag === 'Y'){
+            var selectedLOBArray = getLOBSSelectedInPackageArray(covID)
+
+            for(var j=0;j<selectedLOBArray.length;j++){
+                var lobID = selectedLOBArray[j]
+                var lobInfoMap = getLOBObjectFromPackageMap(covID, lobID)
+                var rateID_LOB = lobInfoMap.rateID
+                var rateBasis_LOB = getRateObjectByID(rateID_LOB).rateBasis
+                if(rateBasis_LOB === 'LIMIT'){
+                    rateBasis_LOBHasLimitRate = true
+                }
+            }
+        }
+
+
+        //IF A LIMIT RATING BASIS EXISTS, GET LIST OF LIMITS THAT NEED TO BE INPUTS
+        var limitDescriptionsThatNeedInputs = []
+        if(rateBasis_product === 'LIMIT' || rateBasis_LOBHasLimitRate) {
+            //GET A LIST OF LIMIT DESCRIPTIONS NEEDING TO BE INPUTS
+
+
+            //FIRST CHECK THE PRODUCT RATE OBJECT FOR LIMITS THAT NEED TO BE INPUTS, ADD INPUT LIMITS TO ARRAY
+            if (rateBasis_product === 'LIMIT') {
+                var rateObject = getRateObjectByID(rateCode_product)
+                var rate_limitArray = jsonStringToObject(rateObject.limitRateArray)
+                for (var c = 0; c < rate_limitArray.length; c++) {
+                    var thisLimMap = rate_limitArray[c]
+                    var thisLimDesc = thisLimMap.limitDescription
+                    limitDescriptionsThatNeedInputs.push(thisLimDesc.trim())
+                }
+            }
+
+            //SECOND CHECK THE LOB RATE OBJECTS FOR LIMITS THAT NEED TO BE INPUTS, ADD INPUT LIMITS TO ARRAY
+            if (rateBasis_LOBHasLimitRate) {
+                var selectedLOBArray = getLOBSSelectedInPackageArray(covID)
+
+                for (var j=0; j < selectedLOBArray.length; j++) {
+                    var lobID = selectedLOBArray[j]
+                    var lobInfoMap = getLOBObjectFromPackageMap(covID, lobID)
+                    var rateID_LOB = lobInfoMap.rateID
+                    var rateBasis_LOB = getRateObjectByID(rateID_LOB).rateBasis
+                    if (rateBasis_LOB === 'LIMIT') {
+                        var rateObject = getRateObjectByID(rateID_LOB)
+                        var rate_limitArray = jsonStringToObject(rateObject.limitRateArray)
+                        for (var c=0; c < rate_limitArray.length; c++) {
+                            var thisLimMap = rate_limitArray[c]
+                            var thisLimDesc = thisLimMap.limitDescription
+                            limitDescriptionsThatNeedInputs.push(thisLimDesc.trim())
+                        }
+                    }
+                }
+            }
+        }
+
+
         limitRowsHTML = limitRowsHTML +
-            "<div class='row limitRow " + productIDClassString + "_LimitRow' data-limitdescription='" + escapeDataAttributeValue(limitDescription) + "'>" +
-            "   <div class='col-xs-4'>" +
-            "       <span class='limitValue " + productIDClassString + "_LimitRow_LimitValue' " +
-            "           data-limitdescription='" + escapeDataAttributeValue(limitDescription) + "'>" + limitValue + "</span>" +
-            "   </div>" +
+            "<div class='row limitRow " + productIDClassString + "_LimitRow' data-limitdescription='" + escapeDataAttributeValue(limitDescription) + "'>"
+
+        if(limitDescriptionsThatNeedInputs.indexOf( limitDescription.trim() ) > -1 ){
+            limitRowsHTML = limitRowsHTML +
+                "   <div class='col-xs-4 form-group'>" +
+                "       <input class='limitValue maskMoney input-xs form-control " + productIDClassString + "_LimitRow_LimitValue ' " +
+                "           data-limitdescription='" + escapeDataAttributeValue(limitDescription) + "'" +
+                "           data-prefix='$'" +
+                "           data-precision='0'" +
+                "           required='true' " +
+                "           value='" + limitValue + "'>" +
+                "   </div>"
+        }
+        else{
+            limitRowsHTML = limitRowsHTML +
+                "   <div class='col-xs-4'>" +
+                "       <span class='limitValue " + productIDClassString + "_LimitRow_LimitValue' " +
+                "           data-limitdescription='" + escapeDataAttributeValue(limitDescription) + "'>" + limitValue + "</span>" +
+                "   </div>"
+        }
+
+        limitRowsHTML = limitRowsHTML +
             "   <div class='col-xs-8'>" +
             "       <span class='limitDescription " + productIDClassString + "_LimitRow_LimitDescription' " +
             "           data-limitdescription='" + escapeDataAttributeValue(limitDescription) + "'>" + limitDescription + "</span>" +
             "   </div>" +
             "</div>"
+
     }
 
     return limitRowsHTML
@@ -697,7 +2370,7 @@ function getDeductRowsHTML(deductArray, productID, covID){
     for(var i=0; i<deductArray.length; i++){
         var deductValue
         var deductDescription
-        if(jsonStringToObject( deductArray[i] ).deductDescription){
+        if(jsonStringToObject( deductArray[i] ).deductDescription !== null || jsonStringToObject( deductArray[i] ).deductDescription !== undefined){
             deductValue = jsonStringToObject( deductArray[i] ).deductAmount
             deductDescription = jsonStringToObject( deductArray[i] ).deductDescription
         }
@@ -739,21 +2412,23 @@ function buildCoverageAndProductSelectedMap(){
 
     return coveragesAndProductsSelectedMap
 }
-function getLimitValueFromLimitDescription(productID, limitDescription){
+function getLimitValueFromLimitDescription(covID, limitDescription){
     var thisLimitValue = ""
-    var productIDClassString = replaceEachSpaceWith(productID.trim(), "_")
+    var limitContainer = $('#' + covID + '_LimDeductColumnsContainer .limitColumn')
 
-    $('.' + productIDClassString + "_LimitRow_LimitValue").each(function(){
-        var thisLimitDescription = $(this).data('limitdescription').trim()
-        console.log(thisLimitDescription)
-        console.log(limitDescription)
+    $(limitContainer).find('.limitRow').each(function(){
+        var thisLimitDescription = $(this).data('limitdescription')
         if(thisLimitDescription === limitDescription){
-            thisLimitValue = $(this).html().trim()
+            var thisInputLimit = $(this).find('.limitValue')
+            thisLimitValue = $(thisInputLimit).val().trim()
+
+            //IF THIS LIMIT INPUT VALUE IS STILL BLANK ("") THEN REPLACE WITH ZERO
+            if(thisLimitValue === ""){
+                thisLimitValue = "0"
+            }
             return thisLimitValue
         }
     })
-
-    console.log(thisLimitValue)
 
     if(thisLimitValue === ""){
         return undefined
@@ -780,6 +2455,135 @@ function getDeductValueFromDeductDescription(productID, deductDescription){
         return thisDeductValue
     }
 }
+function isAllLimitInputFieldsFilled(){
+    var unfilledLimitInputCount = $('div#limitsDeductiblesContainer input.limitValue').filter(function() { return $(this).val().trim().length === 0; }).length
+    if(unfilledLimitInputCount > 0){
+        ratingBasisIsLimitAndAllLimitsAreFilled = false
+    }
+    else{
+        ratingBasisIsLimitAndAllLimitsAreFilled = true
+    }
+
+    return ratingBasisIsLimitAndAllLimitsAreFilled
+}
+function isRatingBasisLimitForAnyCoverages(){
+    var covSelectedArray = getCoveragesSelectedArray()
+    var atLeastOneProductHasLimitRateBasis = false
+
+    for(var i=0;i<covSelectedArray.length;i++){
+        var thisProductID = getProductIDForCoverage(covSelectedArray[i])
+        var rateCode = getProductObjectFromProductID(thisProductID).rateCode
+        var rateObject = getRateObjectByID(rateCode)
+        var rateBasis = rateObject.rateBasis
+
+        if(rateBasis === 'LIMIT'){
+            atLeastOneProductHasLimitRateBasis = true
+        }
+    }
+
+    return atLeastOneProductHasLimitRateBasis
+}
+function buildLimitMapForSelectedProducts(){
+    var productsSelected = getProductsSelectedArray()
+    var limitMap = {}
+    for(var i=0; i<productsSelected.length; i++){
+        var productID = productsSelected[i]
+        var productObject = getProductObjectFromProductID(productID)
+        var tempLimitArray = productObject.limitArray
+        limitMap[productID] = jsonStringToObject(tempLimitArray)
+    }
+
+    return limitMap
+}
+function buildDeductMapForSelectedProducts(){
+    var productsSelected = getProductsSelectedArray()
+    var deductMap = {}
+    for(var i=0; i<productsSelected.length; i++){
+        var productID = productsSelected[i]
+        var productObject = getProductObjectFromProductID(productID)
+        var tempDeductArray = productObject.deductArray
+        deductMap[productID] = jsonStringToObject(tempDeductArray)
+    }
+
+    return deductMap
+}
+function buildLimitDeductMapForAllProducts(){
+    var productsSelected = getProductsSelectedArray()
+    var finalLimitDeductMap = {}
+    for(var i=0; i<productsSelected.length; i++){
+        var productID = productsSelected[i]
+        var productObject = getProductObjectFromProductID(productID)
+        var limitArray = jsonStringToObject(productObject.limitArray)
+        var deductArray = jsonStringToObject(productObject.deductArray)
+        var thisProductLimitDeductArray =[]
+
+
+        //LOOP THROUGH LIMIT ARRAY FIRST
+        for(var l=0;l<limitArray.length;l++){
+            var limitDeductMap = {}
+            var thisLimitMap = limitArray[l]
+            var thisLimitName = thisLimitMap.limitDescription
+            var thisLimitValue = thisLimitMap.limitAmount
+
+            limitDeductMap.description = thisLimitName
+            limitDeductMap.limitValue = thisLimitValue
+
+            //CHECK FOR USER INPUTS FOR LIMIT
+            $('.limDeductColumnsContainer').each(function(){
+                var thisProductID = $(this).data('productid')
+
+                if(productID === thisProductID){
+                    if($(this).find(".limitValue.input-xs[data-limitdescription='" + thisLimitName + "']").length > 0){
+                        var limitInput = $(this).find(".limitValue.input-xs[data-limitdescription='" + thisLimitName + "']")
+
+                        limitDeductMap.limitValue = $(limitInput).val()
+                    }
+
+                }
+            })
+
+
+            thisProductLimitDeductArray.push(limitDeductMap)
+        }
+
+        //LOOP THROUGH DEDUCTS
+        for(var d=0;d<deductArray.length;d++){
+            var limitDeductMap = {}
+            var thisDeductMap = deductArray[d]
+            var thisDeductName = thisDeductMap.deductDescription
+            var thisDeductValue = thisDeductMap.deductAmount
+
+            //CHECK IF LIMIT WITH SAME DESCRIPTION EXISTS
+            var descriptionExists = false
+            for(var l=0;l<thisProductLimitDeductArray.length;l++){
+                var tempMap = thisProductLimitDeductArray[l]
+                if( tempMap.description === thisDeductName ){
+                    descriptionExists = true
+                    limitDeductMap = tempMap
+                }
+            }
+
+            if(descriptionExists){
+                limitDeductMap.deductValue = thisDeductValue
+            }
+            else{
+                limitDeductMap.description = thisDeductName
+                limitDeductMap.deductValue = thisDeductValue
+                thisProductLimitDeductArray.push(limitDeductMap)
+            }
+        }
+        finalLimitDeductMap[productID] = thisProductLimitDeductArray
+
+
+        //IF LIMITS ARE INPUTS REPLACE IN FINAL MAP WITH USER INPUTS
+
+
+
+    }
+
+    return finalLimitDeductMap
+}
+
 
 //PREMIUM AND RATE INFO
 function showPremiumRateContainer(){
@@ -791,133 +2595,547 @@ function hidePremiumRateContainer(){
 function clearPremiumRateContainer(){
     $('#premiumDetailContainer').empty()
 }
-function fillPremiumRateContainer(){
+function calculatePremiumsAndFillContainer(){
     buildPremiumLinesForEachCoverage()
 }
+
 function buildPremiumLinesForEachCoverage(){
     var premiumLinesContainer = $('#premiumLinesContainer')
     var premiumLinesHTML = ""
+
     var covArray = submission.coverages()
 
+
     for(var i=0;i<covArray.length; i++){
-        premiumLinesHTML = premiumLinesHTML + getPremiumLineHTML(covArray[i])
+        var covID = covArray[i]
+        var coverageObject = getCoverageObject(covID)
+        var productObject = getProductObjectFromProductID(getProductIDForCoverage(covID))
+        var operationMap = getCurrentOperationTypeObject()
+        var coveragePackageLOBInfoArray = jsonStringToObject(operationMap.coveragePackageMap)[covID]
+
+        //CREATE CONTAINER FOR THIS COVERAGE ID
+        premiumLinesHTML = premiumLinesHTML + "<div class='" + covID + "_PremiumLinesContainer'>"
+
+        //CHECK IF PACKAGE
+        if(coverageObject.packageFlag === 'Y'){
+            var lobSelectedArray = getLOBSSelectedInPackageArray(covID)
+
+            premiumLinesHTML = premiumLinesHTML + buildPackagePremiumRows(covID)
+        }
+        else{
+            var rateID = productObject.rateCode
+            premiumLinesHTML = premiumLinesHTML + getPremiumLineHTML(rateID, covID, false)
+        }
+
+        premiumLinesHTML = premiumLinesHTML + "</div>"
+
     }
+
 
     $(premiumLinesContainer).html(premiumLinesHTML)
 
-}
-function getPremiumLineHTML(covID){
-    var coverageMap = getCoverageObject(covID)
-    var operationMap = getCurrentOperationTypeObject()
-    var productMap = getProductObjectFromProductID(getProductIDForCoverage(covID))
 
+    buildPremiumTotalLines()
+    buildTaxInfo()
+
+}
+function buildPremiumTotalLines(){
+    var premiumLinesContainer = $('#premiumLinesContainer')
+    var taxLinesContainer = $('#taxLinesContainer')
+    var totalPremiumForAllCoverages = 0
+    var totalPremiumAndTax = 0
+
+    //CALCULATE TOTAL PREMIUM
+    totalPremiumForAllCoverages = calculatePremiumSubTotal()
+
+    //ADD TAX LINES TO TOTAL
+    $(taxLinesContainer).find('.taxValue').each(function(){
+        var thisTaxValue = getFloatValueOfMoney( $(this).html().trim() )
+        totalPremiumForAllCoverages = totalPremiumForAllCoverages + thisTaxValue
+    })
+
+
+    var totalPremiumRowHTML = "<div class='row totalPremiumRow' style=''> " +
+        "   <div class='col-xs-4'> " +
+        "       <span class='premiumLine_description'>" + "Total:" + "</span> " +
+        "   </div> " +
+        "   <div class='col-xs-2'> " +
+        "       <span class='premiumLine_premiumBasis'>" + "" + "</span> " +
+        "   </div> " +
+        "   <div class='col-xs-2'> " +
+        "       <span class='premiumLine_basisValue'>" + "" + "</span> " +
+        "   </div> " +
+        "   <div class='col-xs-2'> " +
+        "       <span class='premiumLine_rate'>" + "" + "</span> " +
+        "   </div> " +
+        "   <div class='col-xs-2'> " +
+        "       <span class='premiumLine_premium totalPremium' style=''>" + formatMoney(totalPremiumForAllCoverages) + "</span> " +
+        "   </div> " +
+        "</div>"
+
+    $('#premiumTotalContainer').html(totalPremiumRowHTML)
+}
+function calculatePremiumSubTotal(){
+    var premiumLinesContainer = $('#premiumLinesContainer')
+    var totalPremiumForAllCoverages = 0
+
+    //CALCULATE TOTAL PREMIUM
+    $(premiumLinesContainer).find('.coverageTotalPremium').each(function(){
+        var thisPremium = getFloatValueOfMoney( $(this).html().trim() )
+        totalPremiumForAllCoverages = totalPremiumForAllCoverages + thisPremium
+    })
+
+    return totalPremiumForAllCoverages
+}
+function buildPackagePremiumRows(packageID){
     var premiumLineHTML = ""
-    //IF PRODUCT HAS A VALID RATE CODE, RATE ACCORDING TO RATE
-    if(productMap.rateCode !== null && productMap.rateCode !== undefined
-        && productMap.rateCode !== 'invalid' && productMap.rateCode !== 'NONE' ){
-        var rateMap = getRateObjectByID(productMap.rateCode)
+
+    var packageProductID = getProductIDForCoverage(packageID)
+    var productObject = getProductObjectFromProductID(packageProductID)
+    var rateID = productObject.rateCode
+
+
+    //PACKAGE HEADER LINE
+    premiumLineHTML = premiumLineHTML + getPremiumLineHTML(rateID, packageID, false)
+    //PACKAGE LOB LINES
+    var lobIDArray = getLOBSSelectedInPackageArray(packageID)
+    for(var i=0;i<lobIDArray.length;i++){
+        var lobID = lobIDArray[i]
+        var lobObject = getLOBObjectFromPackageMap(packageID, lobID)
+        var rateID = lobObject.rateID
+
+        premiumLineHTML = premiumLineHTML + getPremiumLineHTML(rateID, lobID, packageID)
+
+    }
+
+    if(lobIDArray.length > 0){
+        premiumLineHTML = premiumLineHTML + getPremiumLineHTML_PackageTotal(packageID)
+    }
+
+    return premiumLineHTML
+}
+
+function getPremiumLineHTML_CoverageHeader(covID){
+    var coverageMap = getCoverageObject(covID)
+
+    var premiumLineHTML = "<div class='row premiumHeaderRow premiumLineRow " + coverageMap.coverageCode + "_PremiumLineRow'> " +
+        "   <div class='col-xs-4'> " +
+        "       <span class='premiumLine_description'>" + coverageMap.coverageName + "</span> " +
+        "   </div> " +
+        "   <div class='col-xs-2'> " +
+        "       <span class='premiumLine_premiumBasis'>" + "" + "</span> " +
+        "   </div> " +
+        "   <div class='col-xs-2'> " +
+        "       <span class='premiumLine_basisValue'>" + "" + "</span> " +
+        "   </div> " +
+        "   <div class='col-xs-2'> " +
+        "       <span class='premiumLine_rate'>" + "" + "</span> " +
+        "   </div> " +
+        "   <div class='col-xs-2'> " +
+        "       <span class='premiumLine_premium'>" + "" + "</span> " +
+        "   </div> " +
+        "</div>"
+
+    return premiumLineHTML
+}
+function getPremiumLineHTML_PackageTotal(packageID){
+    var premiumLineHTML = ""
+    var premium = calculatePackageTotalPremium(packageID, getLOBSSelectedInPackageArray(packageID))
+    var packageObject = getCoverageObject(packageID)
+
+    premiumLineHTML = premiumLineHTML + "<div class='row premiumLineRow packageTotalLine " + packageObject.coverageCode + "_PremiumLineRow'> " +
+        "   <div class='col-xs-4'> " +
+        "       <span class='premiumLine_description' style=''>" + packageObject.coverageName + " Total </span> " +
+        "   </div> " +
+        "   <div class='col-xs-2'> " +
+        "       <span class='premiumLine_premiumBasis'>" + "" + "</span> " +
+        "   </div> " +
+        "   <div class='col-xs-2'> " +
+        "       <span class='premiumLine_basisValue'>" + "" + "</span> " +
+        "   </div> " +
+        "   <div class='col-xs-2'> " +
+        "       <span class='premiumLine_rate'></span> " +
+        "   </div> " +
+        "   <div class='col-xs-2'> " +
+        "       <span class='premiumLine_premium coverageTotalPremium'>" + formatMoney(premium) + "</span> " +
+        "   </div> " +
+        "</div>"
+
+    return premiumLineHTML
+
+}
+function getPremiumLineHTML(rateID, covID, ifLOB_PackageID){
+    var coverageMap = getCoverageObject(covID)
+    var productMap
+    var premiumLineHTML = ""
+    var limitHeaderStyleString = ""
+    var limitHeaderRowClass = ""
+    var lobLimitLineIndentClass = ""
+    var totalPremiumClassString = ""
+
+    if(ifLOB_PackageID){
+        lobLimitLineIndentClass = "lobIndent"
+        limitHeaderStyleString = ""
+        limitHeaderRowClass = "premiumLOBHeaderRow"
+        totalPremiumClassString = "lobTotalPremium"
+
+
+    }
+    else{
+        productMap = getProductObjectFromProductID(getProductIDForCoverage(covID))
+        limitHeaderRowClass = "premiumHeaderRow"
+        totalPremiumClassString = "coverageTotalPremium"
+    }
+    //THIS FUNCTION WILL HANDLE BOTH MONOLINE COVIDS AND PACKAGE LOBS
+    if(rateID !== null && rateID !== undefined
+        && rateID !== 'invalid' && rateID !== 'NONE' ){
+        var rateMap = getRateObjectByID(rateID)
         var ratingBasisMap = getRatingBasisObjectByID(rateMap.rateBasis)
 
+        var totalCoveragePremium = 0
+
         if(rateMap.rateBasis === 'LIMIT'){
+            var totalPremium = 0
             var limitRateArray = jsonStringToObject( rateMap.limitRateArray )
 
-            premiumLineHTML = "<div class='row premiumLineRow'> " +
-                "   <div class='col-xs-3'> " +
-                "       <span>" + coverageMap.coverageName + "</span> " +
+            premiumLineHTML = premiumLineHTML +
+                "<div class='row premiumLineRow " + limitHeaderRowClass + " " + coverageMap.coverageCode + "_PremiumLineRow'> " +
+                "   <div class='col-xs-4'> " +
+                "       <span class='premiumLine_description'>" + coverageMap.coverageName + "</span> " +
                 "   </div> " +
-                "   <div class='col-xs-1'> " +
-                "       <span>" + "-" + "</span> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_premiumBasis'>" + "" + "</span> " +
                 "   </div> " +
-                "   <div class='col-xs-1'> " +
-                "       <span>" + "-" + "</span> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_basisValue'>" + "" + "</span> " +
                 "   </div> " +
-                "   <div class='col-xs-1'> " +
-                "       <span>" + "-" + "</span> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_rate'>" + "" + "</span> " +
                 "   </div> " +
-                "   <div class='col-xs-1'> " +
-                "       <span>-</span> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_premium'></span> " +
                 "   </div> " +
                 "</div>"
 
             for(var i=0; i<limitRateArray.length; i++){
                 var thisLimitRateMap = limitRateArray[i]
-                var limitDescription = "\t" + thisLimitRateMap.limitDescription
-                var userInputLimitValue = getLimitValueFromLimitDescription(productMap.productID, thisLimitRateMap.limitDescription)
+                var limitDescription = thisLimitRateMap.limitDescription
 
-                premiumLineHTML = premiumLineHTML + "<div class='row premiumLineRow limitPremiumLineRow'> " +
-                    "   <div class='col-xs-3'> " +
-                    "       <span style='white-space: pre;'>" + limitDescription + "</span> " +
+                //GET USER INPUT FROM LIMIT INPUT
+                var userInputLimitValue = ""
+                var limitPremium = ""
+                if(ifLOB_PackageID){
+                    userInputLimitValue = getLimitValueFromLimitDescription(ifLOB_PackageID, thisLimitRateMap.limitDescription)
+                }
+                else{
+                    userInputLimitValue = getLimitValueFromLimitDescription(covID, thisLimitRateMap.limitDescription)
+                }
+
+                if(userInputLimitValue === undefined){
+                    userInputLimitValue = "NOT FOUND"
+                    limitPremium = 0
+                }
+                else{
+                    userInputLimitValue = formatMoney(removeAllNonNumbersFromString(userInputLimitValue))
+                    limitPremium = calculateLimitPremium(rateMap, limitDescription, userInputLimitValue )
+                }
+
+
+                var limitLineStyleString = ""
+                if(ifLOB_PackageID){
+                    limitLineStyleString = ""
+                }
+
+                premiumLineHTML = premiumLineHTML +
+                    "<div class='row premiumLineRow limitPremiumLineRow " + coverageMap.coverageCode + "_PremiumLineRow'>" +
+                    "   <div class='col-xs-4'> " +
+                    "       <span class='premiumLine_description " + lobLimitLineIndentClass + "' " +
+                    "           style='white-space: pre;" + limitLineStyleString + "'>" + limitDescription + "</span> " +
                     "   </div> " +
-                    "   <div class='col-xs-1'> " +
-                    "       <span>" + rateMap.rateBasis + "</span> " +
+                    "   <div class='col-xs-2'> " +
+                    "       <span class='premiumLine_premiumBasis'>" + rateMap.rateBasis + "</span> " +
                     "   </div> " +
-                    "   <div class='col-xs-1'> " +
-                    "       <span>" + userInputLimitValue + "</span> " +
+                    "   <div class='col-xs-2'> " +
+                    "       <span class='premiumLine_basisValue'>" + userInputLimitValue + "</span> " +
                     "   </div> " +
-                    "   <div class='col-xs-1'> " +
-                    "       <span>" + thisLimitRateMap.rateValue + "</span> " +
+                    "   <div class='col-xs-2'> " +
+                    "       <span class='premiumLine_rate'>" + thisLimitRateMap.rateValue + "</span> " +
                     "   </div> " +
-                    "   <div class='col-xs-1'> " +
-                    "       <span>" + calculateLimitPremium(rateMap, limitDescription, userInputLimitValue) + "</span> " +
+                    "   <div class='col-xs-2'> " +
+                    "       <span class='premiumLine_premium'>" + formatMoney(limitPremium) + "</span> " +
                     "   </div> " +
                     "</div>"
+
+                totalPremium = totalPremium + limitPremium
             }
 
+            premiumLineHTML = premiumLineHTML +
+                "<div class='row premiumLineRow coveragePremiumRow limitTotalPremiumLineRow " + coverageMap.coverageCode + "_PremiumLineRow' > " +
+                "   <div class='col-xs-4'> " +
+                "       <span class='premiumLine_description " +  lobLimitLineIndentClass  + "' " +
+                "           style='white-space: pre;'>" + coverageMap.coverageCode + " Total" + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_premiumBasis'>" + "" + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_basisValue'>" + "" + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_rate'>" + "" + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_premium " + totalPremiumClassString + "'>" + formatMoney(totalPremium) + "</span> " +
+                "   </div> " +
+                "</div>"
 
+            totalCoveragePremium = totalPremium
+
+
+        }
+        else if (rateMap.rateBasis === 'BRACKET'){
+            var ratingBasisQuestion = $('#' + ratingBasisMap.basisQuestionID)
+            var premium = calculateTotalCoveragePremium(productMap, rateMap, ratingBasisMap, ifLOB_PackageID)
+
+            premiumLineHTML = premiumLineHTML + "<div class='row premiumLineRow " + limitHeaderRowClass + " " + coverageMap.coverageCode + "_PremiumLineRow'> " +
+                "   <div class='col-xs-4'> " +
+                "       <span class='premiumLine_description' style='" + limitHeaderStyleString + "'>" + coverageMap.coverageName + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_premiumBasis'>" + rateMap.rateBasis + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_basisValue'>" + formatMoney($(ratingBasisQuestion).val()) + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_rate'>" + jsonStringToObject(rateMap.bracketRateArray)[0].rateValue + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_premium " + totalPremiumClassString + "'>" + formatMoney(premium) + "</span> " +
+                "   </div> " +
+                "</div>"
+
+
+            totalCoveragePremium = premium
+        }
+        else if (rateMap.rateBasis === 'FLAT'){
+            var premium = calculateTotalCoveragePremium(productMap, rateMap, ratingBasisMap, ifLOB_PackageID)
+            premiumLineHTML = premiumLineHTML + "<div class='row premiumLineRow " + limitHeaderRowClass + " " + coverageMap.coverageCode + "_PremiumLineRow'> " +
+                "   <div class='col-xs-4'> " +
+                "       <span class='premiumLine_description' style='" + limitHeaderStyleString + "'>" + coverageMap.coverageName + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_premiumBasis'>" + rateMap.rateBasis + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_basisValue'>" + formatMoney(rateMap.flatAmount) + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_rate'> FLAT </span> " +
+                "   </div> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_premium " + totalPremiumClassString + "'>" + formatMoney(premium) + "</span> " +
+                "   </div> " +
+                "</div>"
+
+            totalCoveragePremium = premium
         }
         else{
             var ratingBasisQuestion = $('#' + ratingBasisMap.basisQuestionID)
-            premiumLineHTML = "<div class='row premiumLineRow'> " +
-                "   <div class='col-xs-3'> " +
-                "       <span>" + coverageMap.coverageName + "</span> " +
+            var premium = calculateTotalCoveragePremium(productMap, rateMap, ratingBasisMap, ifLOB_PackageID)
+
+            premiumLineHTML = premiumLineHTML + "<div class='row premiumLineRow " + limitHeaderRowClass + " " + coverageMap.coverageCode + "_PremiumLineRow'> " +
+                "   <div class='col-xs-4'> " +
+                "       <span class='premiumLine_description' style='" + limitHeaderStyleString + "'>" + coverageMap.coverageName + "</span> " +
                 "   </div> " +
-                "   <div class='col-xs-1'> " +
-                "       <span>" + rateMap.rateBasis + "</span> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_premiumBasis'>" + rateMap.rateBasis + "</span> " +
                 "   </div> " +
-                "   <div class='col-xs-1'> " +
-                "       <span>" + $(ratingBasisQuestion).val() + "</span> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_basisValue'>" + formatMoney($(ratingBasisQuestion).val()) + "</span> " +
                 "   </div> " +
-                "   <div class='col-xs-1'> " +
-                "       <span>" + rateMap.rateValue + "</span> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_rate'>" + rateMap.rateValue + "</span> " +
                 "   </div> " +
-                "   <div class='col-xs-1'> " +
-                "       <span>" + calculateTotalCoveragePremium(rateMap, ratingBasisMap) + "</span> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_premium " + totalPremiumClassString + "'>" + formatMoney(premium) + "</span> " +
                 "   </div> " +
                 "</div>"
+
+            totalCoveragePremium = premium
         }
+
     }
     else{
         //IF PRODUCT DOES NOT HAVE A VALID RATE CODE
-        premiumLineHTML = "<div class='row premiumLineRow'> " +
-            "   <div class='col-xs-3'> " +
-            "       <span>" + coverageMap.coverageName + "</span> " +
+        premiumLineHTML = "<div class='row premiumLineRow " + limitHeaderRowClass + " " + coverageMap.coverageCode + "_PremiumLineRow'> " +
+            "   <div class='col-xs-4'> " +
+            "       <span class='premiumLine_description'>" + coverageMap.coverageName + "</span> " +
             "   </div> " +
-            "   <div class='col-xs-1'> " +
-            "       <span> N/A </span> " +
+            "   <div class='col-xs-2'> " +
+            "       <span class='premiumLine_premiumBasis'> N/A </span> " +
             "   </div> " +
-            "   <div class='col-xs-1'> " +
-            "       <span>N/A </span> " +
+            "   <div class='col-xs-2'> " +
+            "       <span class='premiumLine_basisValue'>N/A </span> " +
             "   </div> " +
-            "   <div class='col-xs-1'> " +
-            "       <span>N/A </span> " +
+            "   <div class='col-xs-2'> " +
+            "       <span class='premiumLine_rate'>N/A </span> " +
             "   </div> " +
-            "   <div class='col-xs-1'> " +
-            "       <span>N/A </span> " +
+            "   <div class='col-xs-2'> " +
+            "       <span class='premiumLine_premium'>N/A </span> " +
             "   </div> " +
             "</div>"
     }
 
-
-
-
     return premiumLineHTML
 }
 
+function buildPremiumMap(){
+    var coveragesSelected = getCoveragesSelectedArray()
+    var premiumMap = {}
+    var totalPremium = 0
+    var totalTax = 0
+    var totalPremiumAndTax = 0
+
+    for(var i=0;i<coveragesSelected.length;i++){
+        var coverageCode = coveragesSelected[i]
+        var productID = getProductIDForCoverage(coverageCode)
+        var premiumLinesArrayForCoverage = []
+        var premiumMapForCoverage = {}
+        var totalPremiumForCoverage = 0
+
+        premiumMapForCoverage.coverageName = getCoverageObject(coverageCode).coverageName
+
+        //BUILD PREMIUM LINES ARRAY
+        $('#step-2 .' + coverageCode + '_PremiumLineRow').each(function(){
+            var premiumLineRow = $(this)
+            var tempPremiumMapForCoverage = {}
+            tempPremiumMapForCoverage.description = $(premiumLineRow).find('.premiumLine_description').html()
+            tempPremiumMapForCoverage.productID = productID
+            tempPremiumMapForCoverage.premiumBasis = $(premiumLineRow).find('.premiumLine_premiumBasis').html()
+            tempPremiumMapForCoverage.basisValue = $(premiumLineRow).find('.premiumLine_basisValue').html()
+            tempPremiumMapForCoverage.rate = $(premiumLineRow).find('.premiumLine_rate').html()
+            tempPremiumMapForCoverage.premium = $(premiumLineRow).find('.premiumLine_premium').html()
+
+            //COVERAGE TOTAL PREMIUM
+            if( $(premiumLineRow).find('.coverageTotalPremium').length > 0 ){
+                totalPremiumForCoverage = totalPremiumForCoverage + getFloatValueOfMoney( $(premiumLineRow).find('.coverageTotalPremium').html().trim() )
+            }
+
+            premiumLinesArrayForCoverage.push(tempPremiumMapForCoverage)
+        })
+        premiumMapForCoverage.premiumLinesArray = premiumLinesArrayForCoverage
+
+        //BUILD TOTAL PREMIUM FOR COVERAGE
+        premiumMapForCoverage.premium = totalPremiumForCoverage
+        totalPremium = totalPremium + totalPremiumForCoverage
+
+
+        premiumMap[coverageCode] = premiumMapForCoverage
+    }
+    premiumMap.totalPremium = totalPremium
+
+    //TOTAL UP TAX
+    var taxLines = []
+    $('#taxLinesContainer .taxRow').each(function(){
+        var tempTaxMap = {}
+        var taxValue = getFloatValueOfMoney( $(this).find('.taxValue').html() )
+        var taxName = $(this).find('.taxLine_description').html()
+        var taxCode = $(this).attr('data-taxcode')
+
+        tempTaxMap.taxCode = taxCode
+        tempTaxMap.name = taxName
+        tempTaxMap.value = taxValue
+        taxLines.push(tempTaxMap)
+        totalTax = totalTax + taxValue
+    })
+
+    totalPremiumAndTax = totalPremium + totalTax
+    premiumMap.taxLines = taxLines
+    premiumMap.totalTax = totalTax
+    premiumMap.totalPremiumAndTax = totalPremiumAndTax
+
+
+
+    return premiumMap
+}
+function buildTaxInfo(){
+    var selectedState = $('#stateMailing').val().trim()
+    var taxMap = {}
+
+    if(selectedState !== 'invalid'){
+        $.ajax({
+            method: "POST",
+            url: "/main/getTaxInfo",
+            data: {
+                state: selectedState
+            }
+        })
+            .done(function(msg) {
+                if(msg === "Error"){
+                    console.log("Error")
+                }
+                else{
+                    taxMap = jsonStringToObject(msg)
+                    buildTaxRows(taxMap)
+                    buildPremiumTotalLines()
+                }
+            });
+    }
+    else if(selectedState === 'invalid'){
+        taxMap = {}
+    }
+}
+function buildTaxRows(taxMap){
+    var taxMapKeys = Object.keys(taxMap)
+    var taxRowsHTML = ""
+    var subTotalPremium = calculatePremiumSubTotal()
+
+    for(var i=0;i<taxMapKeys.length;i++){
+        var taxCode = taxMapKeys[i]
+        var taxCodeMap = taxMap[taxCode]
+
+        //CHECK IF THIS KEY IS A TAX CODE OR ADDITIONAL INFO
+        if(taxCodeMap !== null && taxMap[taxCode].name !== undefined){
+            var taxName = taxCodeMap.name
+            var taxValue = taxCodeMap.taxValue
+
+
+            if(taxValue !== undefined && taxName !== undefined){
+                taxRowsHTML = taxRowsHTML +
+                    "<div class='row taxRow' data-taxcode='" + taxCode + "' style=''> " +
+                    "   <div class='col-xs-4'> " +
+                    "       <span class='taxLine_description'>" + taxName + "</span> " +
+                    "   </div> " +
+                    "   <div class='col-xs-2'> " +
+                    "       <span class='taxLine_premiumBasis'>" + "" + "</span> " +
+                    "   </div> " +
+                    "   <div class='col-xs-2'> " +
+                    "       <span class='taxLine_basisValue'>" + "" + "</span> " +
+                    "   </div> " +
+                    "   <div class='col-xs-2'> " +
+                    "       <span class='taxLine_rate'>" + taxValue + "</span> " +
+                    "   </div> " +
+                    "   <div class='col-xs-2'> " +
+                    "       <span class='taxLine_total taxValue'>" + formatMoney(taxValue * subTotalPremium) + "</span> " +
+                    "   </div> " +
+                    "</div>"
+            }
+        }
+
+
+    }
+
+    $('#taxLinesContainer').html(taxRowsHTML)
+
+
+}
+
 //PRODUCT FUNCTIONS
-function getConditionBasisInputFromConditionBasisID(ratingBasisID){
-    for(var i=0;i<ratingBasisArray.length;i++){
-        if(ratingBasisArray[i].basisID === ratingBasisID){
-            return ratingBasisArray[i].basisQuestionID
+function getConditionBasisInputFromConditionBasisID(productConditionBasisID){
+    for(var i=0;i<productConditions.length;i++){
+        if(productConditions[i].conditionID === productConditionBasisID){
+            return productConditions[i].questionID
         }
     }
 }
@@ -926,53 +3144,21 @@ function getProductIDForCoverage(covID){
     var coverageProductMap = jsonStringToObject(operationMap.coverageProductMap)
     var thisCoverageConditionArray = jsonStringToObject(coverageProductMap[covID])
 
-
     if(thisCoverageConditionArray != null){
 
         //IF COVERAGE CONDITION IS 'ALWAYS'
-        if(thisCoverageConditionArray[0].condition === 'Always'){
+        if(thisCoverageConditionArray[0].logicCondition === 'ALWAYS'){
             return thisCoverageConditionArray[0].productID
         }
-        //IF COVERAGE CONDITION IS 'WHEN'
-        else if(thisCoverageConditionArray[0].condition === 'When'){
-
+        //IF COVERAGE CONDITION IS 'IF'
+        else if(thisCoverageConditionArray[0].logicCondition === 'IF'){
             //ITERATE THROUGH CONDITIONS, WILL ACCEPT FIRST CONDITION THAT'S VALID
             for(var i=0; i<thisCoverageConditionArray.length; i++){
-                var conditionBasisID = thisCoverageConditionArray[i].conditionBasis
-                var conditionOperator = thisCoverageConditionArray[i].conditionOperator
-                var conditionBasisValue = parseFloat(thisCoverageConditionArray[i].basisValue)
-                var conditionBasisInput = $('#' + getConditionBasisInputFromConditionBasisID(conditionBasisID))
-
-                //CHECK IF CONDITION BASIS QUESTION HAS BEEN ANSWERED, IF YES PROCEED WITH PRODUCT DETERMINATION
-                if($(conditionBasisInput).val() !== undefined && $(conditionBasisInput).val() !== null && $(conditionBasisInput).val().trim().length > 0 ){
-                    var actualBasisValue = parseFloat($(conditionBasisInput).val().replace(/[^0-9.]/g, ""))
-
-                    //WHAT IS THE OPERATOR (<,>,<=,>=, etc), AND IS CONDITION TRUE
-                    if(conditionOperator === 'LESSTHAN'){
-                        if(actualBasisValue < conditionBasisValue){
-                            return thisCoverageConditionArray[i].productID
-                        }
-                    }
-                    else if(conditionOperator === 'LESSEQUAL'){
-                        if(actualBasisValue <= conditionBasisValue){
-                            return thisCoverageConditionArray[i].productID
-                        }
-                    }
-                    else if(conditionOperator === 'GREATERTHAN'){
-                        if(actualBasisValue > conditionBasisValue){
-                            return thisCoverageConditionArray[i].productID
-                        }
-                    }
-                    else if(conditionOperator === 'GREATEREQUAL'){
-                        if(actualBasisValue >= conditionBasisValue){
-                            return thisCoverageConditionArray[i].productID
-                        }
-                    }
-                    else if(conditionOperator === 'EQUAL'){
-                        if(actualBasisValue === conditionBasisValue){
-                            return thisCoverageConditionArray[i].productID
-                        }
-                    }
+                if( evaluateLogicConditionRow(thisCoverageConditionArray[i]) === false ){
+                    continue
+                }
+                else{
+                    return evaluateLogicConditionRow(thisCoverageConditionArray[i])
 
                 }
             }
@@ -980,6 +3166,173 @@ function getProductIDForCoverage(covID){
 
     }
 }
+
+//PACKAGE LOB FUNCTIONS
+function getLOBObjectFromPackageMap(packageID, lobID){
+    var coveragePackageMap = jsonStringToObject(getCurrentOperationTypeObject().coveragePackageMap)
+    var packageLOBInfoArray = coveragePackageMap[packageID]
+
+    for(var i=0; i<packageLOBInfoArray.length;i++){
+        if(packageLOBInfoArray[i].covID === lobID){
+            return packageLOBInfoArray[i]
+        }
+    }
+}
+
+//LOGIC CONDITION FUNCTIONS
+function getConditionBasisObject(conditionBasisID){
+    for(var i=0; i < conditionBasisArray.length; i++ ){
+        if(conditionBasisArray[i].conditionID === conditionBasisID){
+            return conditionBasisArray[i]
+        }
+    }
+}
+function evaluateLogicConditionRow(logicConditionRowMap){
+    var rowLogicCondition = logicConditionRowMap.logicCondition
+    var productID = logicConditionRowMap.productID
+
+    if(rowLogicCondition === "ALWAYS"){
+        return productID
+    }
+    else{
+        var conditionOperator = logicConditionRowMap.conditionOperator
+        var conditionBasis = logicConditionRowMap.conditionBasis
+        var conditionBasisValue = formatBasisValue(logicConditionRowMap.conditionBasisValue)
+
+        //GET ACTUAL BASIS VALUE
+        var actualBasisValue = getActualBasisValue(conditionBasis)
+
+        if(actualBasisValue !== undefined && actualBasisValue !== null ){
+            //IF THIS LOGIC CONDITION IS TRUE
+            if( evaluateCondition(conditionOperator, conditionBasisValue, actualBasisValue) ){
+                //CHECK FOR SUB LOGIC CONDITIONS
+                var subLogicArray = jsonStringToObject(logicConditionRowMap.subLogic)
+
+                for(var i=0;i<subLogicArray.length;i++){
+                    var subLogicConditionRowMap = jsonStringToObject(subLogicArray[i])
+                    var subLogicProductID = subLogicConditionRowMap.productID
+
+                    if( evaluateLogicConditionRow(subLogicConditionRowMap) ){
+                        return subLogicProductID
+                    }
+                    else{
+                        continue
+                    }
+                }
+
+                return productID
+            }
+            else{
+                return false
+            }
+        }
+        else{
+            return false
+        }
+    }
+
+    return false
+}
+function evaluateCondition(conditionOperator, conditionBasisValue, actualBasisValue){
+    //WHAT IS THE OPERATOR (<,>,<=,>=, etc), AND IS CONDITION TRUE
+    if(conditionOperator === 'LESSTHAN'){
+        if(actualBasisValue < conditionBasisValue){
+            return true
+        }
+    }
+    else if(conditionOperator === 'LESSEQUAL'){
+        if(actualBasisValue <= conditionBasisValue){
+            return true
+        }
+    }
+    else if(conditionOperator === 'GREATERTHAN'){
+        if(actualBasisValue > conditionBasisValue){
+            return true
+        }
+    }
+    else if(conditionOperator === 'GREATEREQUAL'){
+        if(actualBasisValue >= conditionBasisValue){
+            return true
+        }
+    }
+    else if(conditionOperator === 'EQUAL'){
+        if(actualBasisValue === conditionBasisValue){
+            return true
+        }
+    }
+
+    return false
+}
+function getActualBasisValue(conditionBasis){
+    var conditionBasisInputID = getConditionBasisInputFromConditionBasisID(conditionBasis)
+    var questionObject = getQuestionObjectForID(conditionBasisInputID)
+
+    //CHECK IF QUESTION EXISTS ON PAGE, IF NOT RETURN UNDEFINED
+    if( $('#step-2 #' + conditionBasisInputID).length > 0){
+        if( questionObject.inputType === 'radio' || questionObject.inputType === 'checkbox' ){
+            var conditionBasisInput = $('div.requiredQuestion.' + conditionBasisInputID)
+            var actualBasisValue = $(conditionBasisInput).find("input[type='" + questionObject.inputType + "']:checked").val()
+
+            return formatBasisValue(actualBasisValue)
+        }
+        else{
+            var conditionBasisInput = $('#' + conditionBasisInputID)
+            var actualBasisValue = $(conditionBasisInput).val()
+
+            if(conditionBasis === "POLICYLENGTH"){
+                actualBasisValue = removeAllNonNumbersFromString(actualBasisValue)
+            }
+
+            return formatBasisValue(actualBasisValue)
+        }
+    }
+    else{
+        return undefined
+    }
+
+}
+function formatBasisValue(conditionBasisValue){
+    //IF CONDITION BASIS IS MONEY
+    if( isStringMoney(conditionBasisValue)){
+        return getFloatValueOfMoney(conditionBasisValue)
+    }
+    //IF CONDITION BASIS IS A NUMBER
+    else if( isNaN(conditionBasisValue) === false ){
+        return getFloatValueOfMoney(conditionBasisValue)
+    }
+    else{
+        return conditionBasisValue
+    }
+}
+function getRequiredQuestionsForProductLogicConditions(coverageProductMap){
+    var coverageProductMapKeys = Object.keys(coverageProductMap)
+    var requiredQuestionsMap = {}
+
+    for(var i=0; i<coverageProductMapKeys.length; i++){
+        var covID = coverageProductMapKeys[i]
+        var logicConditionRows = coverageProductMap[covID]
+        var requiredQuestionsArray = []
+
+        for(var j=0; j<logicConditionRows.length; j++){
+            var logicConditionRow = logicConditionRows[j]
+            var logicCondition = logicConditionRow.logicCondition
+
+            if(logicCondition !== 'ALWAYS'){
+                var conditionBasisID = logicConditionRow.conditionBasis
+                var requiredQuestion = getConditionBasisObject(conditionBasisID).questionID
+
+                requiredQuestionsArray.push(requiredQuestion)
+            }
+
+        }
+
+        requiredQuestionsMap[covID] = requiredQuestionsArray
+    }
+
+    return requiredQuestionsMap
+}
+
+
 function getProductsSelectedArray(){
     var tempMap = buildCoverageAndProductSelectedMap()
     var tempMapKeys = Object.keys(tempMap)
@@ -998,6 +3351,464 @@ function getProductObjectFromProductID(productID){
         }
     }
 }
+
+
+
+
+
+
+
+///////////////////STEP 3 - UNDERWRITING QUESTIONS///////////////////
+function getFilteredQuestionListForCoveragesSelected(){
+    //COMBINES QUESTIONS FOR ALL COVERAGES SELECTED INTO ONE LIST, REMOVING DUPLICATES
+    var selectedOperationMap = getCurrentOperationTypeObject()
+    var selectedCoveragesArray = getCoveragesAndPackagesSelectedArray()
+
+    var uwQuestionMap = JSON.parse(selectedOperationMap.underwriterQuestionsMap)
+
+    //LOOP THROUGH COVERAGES SELECTED, COMBINE ALL QUESTIONS IN TO ONE CATEGORY-QUESTION MAP
+    var combinedQuestionMap = {}
+    for(var i=0;i<selectedCoveragesArray.length;i++){
+        var covID = selectedCoveragesArray[i]
+        var coverageCategoryMap = jsonStringToObject(uwQuestionMap[covID])
+        var categoryCodesForCoverage = Object.keys(coverageCategoryMap)
+
+        for(var k=0;k<categoryCodesForCoverage.length;k++){
+            var categoryCode = categoryCodesForCoverage[k]
+            var categoryQuestionsArray = coverageCategoryMap[categoryCode]
+
+            if(categoryCode in combinedQuestionMap){
+                combinedQuestionMap[categoryCode].concat(categoryQuestionsArray)
+
+                //REMOVE DUPLICATES
+                combinedQuestionMap[categoryCode] = combinedQuestionMap[categoryCode].filter( function( item, index, inputArray ) {
+                    return inputArray.indexOf(item) == index;
+                });
+            }
+            else{
+                combinedQuestionMap[categoryCode] = categoryQuestionsArray
+            }
+
+        }
+    }
+
+    //LOOP THROUGH ONCE MORE TO REORDER QUESTIONS BASED ON WEIGHT IN EACH CATEGORY
+    var allCategoryCodes = Object.keys(coverageCategoryMap)
+    for(var i=0;i<allCategoryCodes.length;i++){
+        var categoryCode = allCategoryCodes[i]
+
+        if(combinedQuestionMap[categoryCode]){
+            var tempArray = combinedQuestionMap[categoryCode]
+            combinedQuestionMap[categoryCode] = tempArray.sort(sortByWeightAscending)
+        }
+
+    }
+
+
+
+    return combinedQuestionMap
+}
+function buildUWQuestionSection(){
+    var FORM_COL_SIZE = '12'
+    var columns = 2
+
+    //SAVE EXISTING ANSWERS
+    var savedAnswers = buildUWQuestionAndAnswerMap()
+
+    //CLEAR EXISTING UW QUESTIONS
+    clearAllUWQuestions()
+
+    var finalQuestionMap = getFilteredQuestionListForCoveragesSelected()
+    var categories = Object.keys(finalQuestionMap)
+
+    for(var i=0;i<categories.length;i++){
+        var categoryCode = categories[i]
+        var categoryQuestionArray = finalQuestionMap[categoryCode]
+
+        for(var q=0;q<categoryQuestionArray.length;q++){
+            var questionID = categoryQuestionArray[q]
+            var questionObject = getQuestionObjectForID(questionID)
+            var questionHTML
+
+            questionHTML = getNewSubmissionUWQuestion(questionID, {gridColumns : '12'})
+            $('#' + categoryCode + '_QuestionCategoryContainer').append(questionHTML)
+
+
+        }
+    }
+
+    initializeGlobalListeners()
+    showHideQuestionCategoryPanels()
+
+    //FILL IN SAVED ANSWERS
+    var savedQuestionsArray = Object.keys(savedAnswers)
+
+    for(var i=0;i<savedQuestionsArray.length;i++){
+        var questionElementID = savedQuestionsArray[i]
+        var questionAnswer = savedAnswers[questionElementID]
+
+        $('#' + questionElementID).val(questionAnswer)
+    }
+}
+function showHideQuestionCategoryPanels(){
+    $('.uwQuestionCategoryPanel').each(function(){
+        if( $(this).find('.uwQuestion').length === 0 ){
+            $(this).css('display', 'none')
+        }
+        else{
+            $(this).css('display', '')
+        }
+    })
+}
+function getLeftOrRightColumnToInsert(categoryCode){
+    //CALCULATES WHICH COLUMN HAS LESS QUESTIONS TO INSERT INTO, TO EVEN OUT THE COLUMNS
+    var $el = $('#bottom');  //record the elem so you don't crawl the DOM everytime
+    var bottom = $el.position().top + $el.outerHeight(true);
+
+    var leftColumnElement = $('#' + categoryCode + '_QuestionCategoryContainer .questionLeftColumn')
+    var rightColumnElement = $('#' + categoryCode + '_QuestionCategoryContainer .questionRightColumn')
+
+    var leftBottom = $(leftColumnElement).position().top + $(leftColumnElement).outerHeight(true)
+    var rightBottom = $(rightColumnElement).position().top + $(rightColumnElement).outerHeight(true)
+
+    if(leftBottom > rightBottom){}
+
+
+
+
+}
+function clearAllUWQuestions(){
+    $('#step-3 div.row.uwQuestionRow').remove()
+}
+
+//QUESTIONS
+function getQuestionObjectForID(questionID){
+    for(var i=0;i<questions.length;i++){
+        if(questionID === questions[i].questionID){
+            return questions[i]
+        }
+    }
+
+}
+function buildUWQuestionAndAnswerMap(){
+    var questionAnswerMap = {}
+
+    $('div.uwQuestion').each(function(){
+        var questionType = $(this).attr('data-inputtype')
+        var questionID = $(this).attr('data-questionid')
+
+        if(questionType === 'text'){
+            questionAnswerMap[questionID] = $(this).find('input#' + questionID).val()
+        }
+        else if(questionType === 'radio'){
+            var groupName = questionType + "_RadioGroup"
+            questionAnswerMap[questionID] = $(this).find("input[name='" + groupName + "']:checked").val()
+        }
+        else if(questionType === 'checkbox'){
+            var groupName = questionType + "_CheckboxGroup"
+
+            $("input[name='" + groupName + "']:checked").each(function(){
+                questionAnswerMap[questionID] = $(this).val()
+            })
+        }
+        else if(questionType === 'dropdown'){
+            questionAnswerMap[questionID] = $(this).find('#' + questionID).val()
+        }
+        else if(questionType === 'custom_mailingAddress'){
+            var addressContainer = $(this)
+            $(addressContainer).find('input,select').each(function(){
+                questionID = $(this).attr('id')
+                questionAnswerMap[questionID] = $(this).val()
+            })
+        }
+    })
+
+    return questionAnswerMap
+}
+function buildAllQuestionAndAnswerMap(){
+    var questionAnswerArray = []
+
+    $('div.uwQuestion').each(function(){
+        var questionAnswerMap = {}
+        var questionType = $(this).attr('data-inputtype')
+        var questionID = $(this).attr('data-questionid')
+
+        if(questionType === 'text'){
+            questionAnswerMap.questionID = questionID
+            questionAnswerMap.questionText = getQuestionObjectForID(questionID).questionText
+            questionAnswerMap.answer = $(this).find('input#' + questionID).val()
+        }
+        else if(questionType === 'radio'){
+            var groupName = questionID + "_RadioGroup"
+            questionAnswerMap.questionID = questionID
+            questionAnswerMap.questionText = getQuestionObjectForID(questionID).questionText
+            questionAnswerMap.answer = $(this).find("input[name='" + groupName + "']:checked").val()
+        }
+        else if(questionType === 'checkbox'){
+            var groupName = questionType + "_CheckboxGroup"
+
+            questionAnswerMap.questionID = questionID
+            questionAnswerMap.questionText = getQuestionObjectForID(questionID).questionText
+
+            var tempAnswer = []
+            $("input[name='" + groupName + "']:checked").each(function(){
+                tempAnswer.push( $(this).val() )
+            })
+            questionAnswerMap.answer = tempAnswer.join()
+        }
+        else if(questionType === 'dropdown'){
+            questionAnswerMap.questionID = questionID
+            questionAnswerMap.questionText = getQuestionObjectForID(questionID).questionText
+
+            questionAnswerMap.answer = $(this).find('#' + questionID).val()
+        }
+        else if(questionType === 'custom_mailingAddress'){
+            var addressContainer = $(this)
+
+            $(addressContainer).find('input,select').each(function(){
+                questionID = $(this).attr('id')
+                questionAnswerMap[questionID] = $(this).val()
+            })
+        }
+
+        questionAnswerArray.push(questionAnswerMap)
+    })
+
+    return questionAnswerArray
+}
+function buildAnswersToQuestionsMap(){
+    var answersToQuestionMap = {}
+
+    $('div.uwQuestion').each(function(){
+        var questionID = $(this).attr('data-questionid')
+        var questionType = $(this).attr('data-inputtype')
+
+        if(questionType === 'text'){
+            answersToQuestionMap[questionID] = $(this).find('input#' + questionID).val()
+        }
+        else if(questionType === 'radio'){
+            var groupName = questionID + "_RadioGroup"
+            answersToQuestionMap[questionID] = $(this).find("input[name='" + groupName + "']:checked").val()
+        }
+        else if(questionType === 'checkbox'){
+            var groupName = questionType + "_CheckboxGroup"
+
+            var tempAnswer = []
+            $("input[name='" + groupName + "']:checked").each(function(){
+                tempAnswer.push( $(this).val() )
+            })
+            answersToQuestionMap[questionID] = tempAnswer.join()
+        }
+        else if(questionType === 'dropdown'){
+            answersToQuestionMap[questionID] = $(this).find('#' + questionID).val()
+        }
+        else if(questionType === 'custom_mailingAddress'){
+            //TODO
+        }
+
+        //IF QUESTION ANSWER IS UNDEFINED
+        if(answersToQuestionMap[questionID] === undefined){
+            answersToQuestionMap[questionID] = "Not Answered"
+        }
+    })
+
+    return answersToQuestionMap
+}
+function buildUWQuestionsForIndication(){
+    var questionAnswerKeyMap = buildAnswersToQuestionsMap()
+    var questionsCategoryAnswersArray = []
+
+    $('.uwQuestionCategoryPanel').each(function(){
+        var displayCSS = $(this).css('display')
+
+        if( displayCSS.trim() !== "none" ){
+            var categoryMap = {}
+            var categoryID = $(this).attr('data-questioncategoryid')
+            var categoryName = $(this).attr('data-questioncategoryname')
+
+            var categoryQuestionsArray = []
+            $(this).find('div.uwQuestion').each(function(){
+                var questionAnswerMap = {}
+                var questionID = $(this).attr('data-questionid')
+                var questionText = getQuestionObjectForID(questionID).questionText
+                var questionAnswer = questionAnswerKeyMap[questionID]
+
+                questionAnswerMap.questionID = questionID
+                questionAnswerMap.questionText = questionText
+                questionAnswerMap.questionAnswer = questionAnswer
+
+                categoryQuestionsArray.push(questionAnswerMap)
+            })
+
+            categoryMap.categoryID = categoryID
+            categoryMap.categoryName = categoryName
+            categoryMap.questionsArray = categoryQuestionsArray
+
+            questionsCategoryAnswersArray.push(categoryMap)
+        }
+    })
+
+    return questionsCategoryAnswersArray
+}
+
+
+
+
+///////////////////STEP 4 - REVIEW SECTION///////////////////
+function buildReview(){
+    //INSURED INFO
+    $('#review_namedInsured').html( $('#namedInsured').val().trim() )
+    $('#review_namedInsuredStreetAddress').html( $('#streetAddressMailing').val().trim() )
+    $('#review_namedInsuredCity').html( $('#cityMailing').val().trim() )
+    $('#review_namedInsuredZipcode').html( $('#zipCodeMailing').val().trim() )
+    $('#review_namedInsuredState').html( $('#stateMailing').val().trim() )
+
+    //BROKER INFO
+    $('#review_brokerName').html( $('#brokerName').val().trim() )
+    $('#review_brokerEmail').html( $('#brokerEmail').val().trim() )
+
+    //OPERATIONS AND COVERAGES
+    $('#review_operationTypeName').html( $('#operationsDropdown option:selected').text().trim() )
+
+    //LIMITS AND DEDUCTBILES
+    var limDedReviewHTML = $('#limitsDeductiblesContainer').parent().clone()
+    $(limDedReviewHTML).find('*').removeAttr('id')
+    $(limDedReviewHTML).find('input').each(function(){
+        var inputValue = $(this).val()
+        var spanHTML = "<div class='col-xs-4'><span>" + inputValue + "</span></div>"
+        $(this).before(spanHTML)
+        $(this).closest('.form-group').remove()
+    })
+
+    $('#review_coverageBreakdown').html( $(limDedReviewHTML) )
+
+    //RATE BREAKDOWN
+    var rateReviewHTML = $('#premiumDetailContainer').parent().clone()
+    $(rateReviewHTML).find('*').removeAttr('id')
+
+    $('#review_rateBreakdown').html( $(rateReviewHTML) )
+
+
+    //TERMS
+    $('#review_termsString').html(buildTermsStringForAllProducts())
+
+
+
+    //UNDERWRITING QUESTIONS
+    var reviewHTML = ""
+    $('div#step-2 .requiredQuestion').each(function(){
+        reviewHTML = reviewHTML + getReviewHTMLFromQuestionContainer(this)
+    })
+    $('div#step-3 div.uwQuestionCategoryPanel').each(function(){
+        var questionCategoryName = $(this).data('questioncategoryname')
+
+        if($(this).find('.uwQuestion').length > 0){
+            reviewHTML = reviewHTML +
+                "<div class='row'>" +
+                "   <div class='col-xs-12'>" +
+                "       <h4>" + questionCategoryName + "</h4>" +
+                "   </div>" +
+                "</div>"
+
+            $(this).find('.uwQuestion').each(function(){
+                reviewHTML = reviewHTML + getReviewHTMLFromQuestionContainer(this)
+            })
+        }
+
+
+
+
+    })
+    $('#review_UnderwritingQuestions').html(reviewHTML)
+}
+function getReviewHTMLFromQuestionContainer(questionContainer){
+    var questionText = $(questionContainer).find('.questionText').html()
+    var questionInputType = $(questionContainer).attr('data-inputtype')
+    var questionAnswer = ""
+    var questionReviewHTML = ""
+
+    //FIND ANSWERS FOR THIS QUESTION
+    if(questionInputType === "radio"){
+        $(questionContainer).find('input').each(function(){
+            if($(this).is(':checked')){
+                var optionLabelElement = $(this).closest('label.questionOptionLabel')
+                var optionText = $(optionLabelElement).clone()    //clone the element
+                    .children() //select all the children
+                    .remove()   //remove all the children
+                    .end()  //again go back to selected element
+                    .text()
+
+                questionAnswer = questionAnswer +
+                    optionText + ", "
+            }
+        })
+    }
+    else if(questionInputType === "checkbox"){
+        $(questionContainer).find('input').each(function(){
+            if($(this).is(':checked')){
+                var optionLabelElement = $(this).closest('label.questionOptionLabel')
+                var optionText = $(optionLabelElement).clone()    //clone the element
+                    .children() //select all the children
+                    .remove()   //remove all the children
+                    .end()  //again go back to selected element
+                    .text()
+
+                questionAnswer = questionAnswer +
+                    optionText + ", "
+            }
+        })
+    }
+    else if(questionInputType === "multiColumnInput") {
+    }
+    else{
+        $(questionContainer).find('input').each(function(){
+            //IF THE INPUTS VALUE IS NOT BLANK
+            if($(this).val().trim().length !== 0){
+                questionAnswer = questionAnswer + $(this).val() + ", "
+            }
+            else{
+                //IF INPUT VALUE IS BLANK
+                //SKIP
+            }
+
+        })
+    }
+
+    questionAnswer = removeTrailingComma(questionAnswer)
+
+    if(questionAnswer.trim().length === 0){
+        questionAnswer = "N/A"
+    }
+
+    questionReviewHTML = questionReviewHTML +
+        "<div class='row reviewDataRow'>" +
+        "   <div class='col-xs-4'>" +
+        "       <span class='reviewData' style='font-weight:500'>" + questionText + "</span>" +
+        "   </div>" +
+        "   <div class='col-xs-8'>" +
+        "       <span class='reviewDataAnswer'>" + questionAnswer + "</span>" +
+        "   </div>" +
+        "</div>"
+
+    return questionReviewHTML
+}
+function buildTermsStringForAllProducts(){
+    var productsArray = getProductsSelectedArray()
+    var finalTermsString = ""
+
+    for(var i=0;i<productsArray.length;i++){
+        var productID = productsArray[i]
+        var productObject = getProductObjectFromProductID(productID)
+
+        var termsString = productObject.terms.trim()
+        finalTermsString = finalTermsString + productObject.coverage + " - " + productID + "\n\n"
+        finalTermsString = finalTermsString + termsString
+        finalTermsString = finalTermsString + "\n\n\n\n"
+    }
+
+    return finalTermsString
+}
+
 
 
 
@@ -1194,6 +4005,11 @@ function stateChangeAction(elem){
         //UNLICENSED STATE
         alert($(elem).val() + " requires further review before providing a quote. Feel free to continue with your submission and a NEEIS Underwriter will contact you.");
     }
+
+    if(getCurrentOperationTypeObject()){
+        buildPremiumLinesForEachCoverage()
+    }
+
 }
 /*************************************************/
 
@@ -1658,2324 +4474,3 @@ function keyPressChecker(e){
         }
     }
 }
-
-/*
-function filmingLocationAdd(elem){
-    var htmlString = "";
-    var count = 0;
-    $('#locationDivContainer').children('.locationDiv').each(function () {
-        //alert($(this).html());
-        count++
-        //alert(count);
-        htmlString = $(elem).html();
-        htmlString = htmlString.replace("Physical Address", "Location " + (count + 1));
-        htmlString = htmlString.replace("Location " + count, "Location " + (count + 1));
-    });
-
-    $("#locationDivContainer").append("<div class='locationDiv'>" + htmlString + "</div>");
-
-}
-
-function filmingLocationRemove(elem){
-    var htmlString = "";
-    var count = 0;
-    //alert($(elem).closest('.locationDiv').find('h5').html())
-    if ($(elem).closest('.locationDiv').find('h5').html() === "Physical Address") {
-
-    }
-    else {
-        $(elem).closest('.locationDiv').remove();
-        $('#locationDivContainer').children('.locationDiv').each(function () {
-            //alert($(elem).html());
-            count++
-            var locationHeader = $(elem).find('h5').html();
-            //alert(locationHeader);
-            if (locationHeader == "Physical Address") {
-
-            }
-            else {
-                $(elem).find('h5').html("Location " + count);
-            }
-
-            //htmlString = $(elem).html();
-            //htmlString = htmlString.replace("Location " + count , "Location " + (count+1));
-        });
-    }
-    //$("#locationDivContainer").append("<br><br><div class='locationDiv'>" + htmlString + "</div>");
-}
-
-function riskCategoryCardClickAction(elem){
-    if ($(elem).hasClass("cardselected")) {
-        $(elem).removeClass("cardselected");
-        $(elem).addClass("card-unselected");
-        $(".drawer").removeClass("open");
-    }
-    else {
-        $('.cardselected').each(function () {
-            $(elem).removeClass("cardselected");
-            $(elem).addClass("card-unselected");
-
-        });
-        $(".drawer").removeClass("open");
-        $(elem).addClass("cardselected");
-        $(elem).removeClass("card-unselected");
-
-        $(elem).parent().siblings(".drawerContainer").children(".drawer").addClass("open");
-    }
-}
-
-function clearProductChoices() {
-
-    $('.EPKGDiv').css("display", "");
-    $('.CPKDiv').css("display", "");
-    $("#EPKGNOHAOption").css("display", "");
-    $('#PIPChoiceInput').css("display", "none");
-    $('#pipChoiceSelections').css("display", "none");
-    $('#PIP1Input').css("display", "none");
-    $('#PIP2Input').css("display", "none");
-    $('#PIP3Input').css("display", "none");
-    $('#PIP4Input').css("display", "none");
-    $('#PIP5Input').css("display", "none");
-    $('.PIP5Options').css("display", "none");
-    $('#DICEOptions').css("display", "none");
-    $('#SPECIFICOptions').css("display", "none");
-}
-
-function logIntoLegacyNeeis() {
-    $('#producerIDhidden').html().trim();
-    window.location.href = "http://104.131.41.129:3000/redirect?email=test15@test.com&password=newpassword&producerID=TVD";
-
-}
-
-function ratePremiums(thisObj) {
-    // console.log("Rating Premiums");
-    // console.log(ratePremiumsLock)
-    ratePremiumsRunning = true;
-    var rateMap = {};
-    var val = $(thisObj).val();
-    if (isRiskTypeSelected()) {
-        riskChosen = getRiskTypeChosen();
-    }
-    else if (thisObj === "runRatesButton") {
-        riskChosen = reviewRiskChosen; //FROM REVIEW SUBMISSION MODAL]
-        $('#rateContainer :input').each(function () {
-            rateMap["" + $(this).attr('id')] = $(this).val();
-
-        });
-
-    }
-
-    //IF SGP FILM
-    if (riskChosen === "Film Projects Without Cast (With Work Comp)" || riskChosen === "Film Projects With Cast (With Work Comp)") {
-        ratePremiumsSGP();
-    }
-    else {//IF BARBICAN FILM
-        var prodString = $(".productsSelect option[value='" + val + "']").text();
-        var productsSelected = "";
-        var additionalProducts = "";
-        var pipChoiOptions = "";
-
-
-        ///////////////////////////// Film Projects With Cast (No Work Comp)
-        if (riskChosen === "Film Projects With Cast (No Work Comp)") {
-            if ($('#EPKGcoverage').is(':checked')) {
-                productsSelected = productsSelected + "EPKG" + ":" + "EPKG37" + ",";
-            }
-            if ($('#CPKInputRadio').is(':checked')) {
-                productsSelected = productsSelected + $('#CPKInputRadio').attr('class').replace("coverageRadioButton ", "") + ":" + $('#CPKInputRadio').val() + ",";
-                if ($('#CPKInputRadio').hasClass("CPK")) {
-                    productsSelected = productsSelected + "NOAL" + ":" + "NOAL01" + ",";
-                }
-            }
-            if ($('#CGLInputRadio').is(':checked')) {
-                productsSelected = productsSelected + $('#CGLInputRadio').attr('class').replace("coverageRadioButton ", "") + ":" + $('#CGLInputRadio').val() + ",";
-            }
-            //if($('#EPKGCASTAdditionalCoverage').is(':checked')){
-            //    additionalProducts = additionalProducts + "EPKGCASTAdditionalCoverage" + ":" + "EPKGCASTAdditionalCoverage" + ",";
-            //}
-
-            if ($('#EPKGCASTEssentialAdditionalCoverage').is(':checked')) {
-                additionalProducts = additionalProducts + "EPKGCASTEssentialAdditionalCoverage" + ":" + "EPKGCASTEssentialAdditionalCoverage" + ",";
-            }
-            //alert($("#hardwareElectronicDataCheckbox").is(':checked'));
-            $(".additionalCoverageCheckboxEPKG").each(function (index) {
-                if ($(this).is(':checked')) {
-                    additionalProducts = additionalProducts + $(this).attr("id") + ":" + $(this).attr("id") + ",";
-                }
-            });
-
-        }
-        else {
-            $(".coverageRadioButton").each(function (index) {
-                if ($(this).is(':checked')) {
-                    productsSelected = productsSelected + $(this).attr('class').replace("coverageRadioButton ", "") + ":" + $(this).val() + ",";
-                    if ($(this).hasClass("CPK")) {
-                        productsSelected = productsSelected + "NOAL" + ":" + "NOAL01" + ",";
-                    }
-                }
-            });
-            $(".additionalCoverageCheckboxEPKG").each(function (index) {
-                if ($(this).is(':checked')) {
-                    additionalProducts = additionalProducts + $(this).attr("id") + ":" + $(this).attr("id") + ",";
-                }
-            });
-        }
-
-        ///////////////////////////// Film Projects With Cast (No Work Comp)
-
-
-        $("#EPKGNOHAAdditionalCoverage").each(function (index) {
-            if ($(this).is(':checked')) {
-                productsSelected = productsSelected + "NOHA" + ":" + $(this).val() + ",";
-            }
-        });
-
-        $(".additionalCoverageCheckboxCPKCGL").each(function (index) {
-            if ($(this).is(':checked')) {
-                additionalProducts = additionalProducts + $(this).attr("id") + ":" + $(this).attr("id") + ",";
-            }
-        });
-
-        $('.PIPCHOIOption').each(function (index) {
-            if ($(this).is(':checked')) {
-                pipChoiOptions = pipChoiOptions + $(this).attr('id') + ",";
-            }
-
-        });
-        $(".additionalCoverageCheckboxPIP5").each(function (index) {
-            if ($(this).is(':checked')) {
-                additionalProducts = additionalProducts + $(this).attr("id") + ":" + $(this).attr("id") + ",";
-            }
-        });
-
-
-        //alert(productsSelected);
-
-        var CGLNOALLimit = "";
-        var elem = document.createElement('textarea');
-        $('.PIPCHOILimitsInput').each(function (index) {
-            elem.innerHTML = $(this).parent().siblings(".coverageColumn").children().first().html();
-            var decoded = elem.value;
-            if ($(this).val().length == 0) {
-                pipchoiceLimits = pipchoiceLimits + decoded + "&;&" + 0 + "&;;&";
-                $(this).val("0");
-            }
-            else {
-                pipchoiceLimits = pipchoiceLimits + decoded + "&;&" + $(this).val() + "&;;&";
-            }
-
-            //var tempLimit = $("#totalBudgetInput").val().replace(/\$|,/g, '')
-            //console.log("LIMIT AMOUNT1 === " + tempLimit)
-            //if(riskChosen === "Film Projects With Cast (No Work Comp)"){
-            //    tempLimit = parseInt($("#totalBudgetInput").val().replace(/\$|,/g, ''));
-            //    tempLimit = Math.ceil(tempLimit / 1000) * 1000;
-            //}
-            //console.log("LIMIT AMOUNT === " + tempLimit)
-
-            if (decoded === "Miscellaneous Rented Equipment") {
-                pipChoiceMisc = $(this).val();
-            }
-            else if (decoded === "Extra Expense") {
-                pipChoiceExtra = $(this).val();
-            }
-            else if (decoded === "Props, Sets & Wardrobe") {
-                pipChoiceProps = $(this).val();
-            }
-            else if (decoded === "Third Party Prop Damage Liab") {
-                pipChoiceThird = $(this).val();
-            }
-            else if (decoded === "Hired Auto Physical Damage") {
-                pipChoiceNOHA = $(this).val();
-            }
-            else if (decoded === "Cast Insurance") {
-                pipChoiceCast = $(this).val();
-            }
-            else if (decoded === "Cast Essential") {
-                pipChoiceCastEssential = $(this).val();
-            }
-        });
-        //console.log(pipChoiceMisc);
-        $('.CPKNOHALimitsInput').each(function (index) {
-            elem.innerHTML = $(this).parent().siblings(".coverageColumn").children().first().html();
-            var decoded = elem.value;
-            if (decoded === "Hired Auto Physical Damage") {
-                CGLNOALLimit = $(this).val();
-            }
-        });
-        //console.log(pipchoiceLimits);
-        //alert(productsSelected)
-        //alert(additionalProducts)
-
-        if (productsSelected.length > 0 && parseFloat($("#totalBudgetConfirm").val().replace(/\$|,/g, '')) > 0) {
-            if (riskChosen === "Film Projects Without Cast (With Work Comp)" || riskChosen === "Film Projects With Cast (With Work Comp)") {
-                ratePremiumsRunning = false;
-            }
-            else {
-                $.ajax({
-                    method: "POST",
-                    url: "/Async/ratePremiums",
-                    //url: "/Async/newRatePremiums",
-                    data: {
-                        riskType: riskChosen,
-                        productsSelected: productsSelected,
-                        pipChoiOptions: pipChoiOptions,
-                        pipChoiceLimits: pipchoiceLimits.replace(/\$|,/g, ''),
-                        additionalProducts: additionalProducts,
-                        totalBudget: $("#totalBudgetConfirm").val().replace(/\$|,/g, ''),
-                        proposedTermLength: $("#proposedTermLength").val(),
-                        costOfHire: $('#costOfHireInput').val().replace(/\$|,/g, ''),
-                        castEssentialNum: $('#castEssentialInput').val(),
-                        rateMap: JSON.stringify(rateMap)
-
-                    }
-                })
-                    .done(function (msg) {
-                        // alert(msg);
-                        //alert( "Data Saved: " + msg );
-                        responseJSON = JSON.parse(msg);
-                        //alert(responseJSON.coverages.length);
-
-                        if ($('#runRatesButton').length > 0) { //IF IN REVIEW PANEL AND RERUNNING RATES
-                            var tempRateMap = {}
-                            ////PIP1 RATING
-                            //submissionRateMap["pip1_negativeFilmVideoRateMinPrem"] = pip1_negativeFilmVideoRateMinPrem
-                            //submissionRateMap["pip1_faultyStockCameraProcessingRateMinPrem"] = pip1_faultyStockCameraProcessingRateMinPrem
-                            //submissionRateMap["pip1_miscRentedEquipRateMinPrem"] = pip1_miscRentedEquipRateMinPrem
-                            //submissionRateMap["pip1_propsSetWardrobeRateMinPrem"] = pip1_propsSetWardrobeRateMinPrem
-                            //submissionRateMap["pip1_thirdPartyPropDamageRateMinPrem"] = pip1_thirdPartyPropDamageRateMinPrem
-                            //submissionRateMap["pip1_extraExpenseRateMinPrem"] = pip1_extraExpenseRateMinPrem
-                            //submissionRateMap["pip1_minPremium"] = pip1_minPremium
-                            for (var i = 0; i < responseJSON.coverages.length; i++) {
-                                if (responseJSON.coverages[i].coverageCode === "EPKG") {
-                                    $('#PIPCHOIRatesRow').css('display', 'none');
-                                    $('#PIP1RatesRow').css('display', 'none');
-                                    $('#PIP2RatesRow').css('display', 'none');
-                                    $('#PIP3RatesRow').css('display', 'none');
-                                    $('#PIP4RatesRow').css('display', 'none');
-                                    $('#PIP5RatesRow').css('display', 'none');
-                                    tempRateMap = responseJSON.coverages[i].submissionRateMap;
-                                    if (responseJSON.coverages[i].productCode === "PIP CHOI") {
-                                        $('#PIPCHOIRatesRow').css('display', '')
-
-                                    }
-                                    else if (responseJSON.coverages[i].productCode === "PIP 1") {
-
-                                        $('#PIP1RatesRow').css('display', '')
-                                    }
-                                    else if (responseJSON.coverages[i].productCode === "PIP 2") {
-
-                                        $('#PIP2RatesRow').css('display', '')
-                                    }
-                                    else if (responseJSON.coverages[i].productCode === "PIP 3") {
-
-                                        $('#PIP3RatesRow').css('display', '')
-                                    }
-                                    else if (responseJSON.coverages[i].productCode === "PIP 4") {
-
-                                        $('#PIP4RatesRow').css('display', '')
-                                    }
-                                    else if (responseJSON.coverages[i].productCode === "PIP 4") {
-
-                                        $('#PIP5RatesRow').css('display', '')
-                                    }
-                                    $('#PIPCHOI_miscRate').val(tempRateMap['pipChoice_miscRentedEquipRateMinPrem'][0]);
-                                    $('#PIPCHOI_miscMP').val(tempRateMap['pipChoice_miscRentedEquipRateMinPrem'][1]);
-                                    $('#PIPCHOI_propsRate').val(tempRateMap['pipChoice_propsSetWardrobeRateMinPrem'][0]);
-                                    $('#PIPCHOI_propsMP').val(tempRateMap['pipChoice_propsSetWardrobeRateMinPrem'][1]);
-                                    $('#PIPCHOI_thirdRate').val(tempRateMap['pipChoice_thirdPartyPropDamageRateMinPrem'][0]);
-                                    $('#PIPCHOI_thirdMP').val(tempRateMap['pipChoice_thirdPartyPropDamageRateMinPrem'][1]);
-                                    $('#PIPCHOI_extraRate').val(tempRateMap['pipChoice_extraExpenseRateMinPrem'][0]);
-                                    $('#PIPCHOI_extraMP').val(tempRateMap['pipChoice_extraExpenseRateMinPrem'][1]);
-                                    $('#PIPCHOI_NOHARate').val(tempRateMap['pipChoice_NOHARateMinPrem'][0]);
-                                    $('#PIPCHOI_NOHAMP').val(tempRateMap['pipChoice_NOHARateMinPrem'][1]);
-
-                                    $('#PIP1_Rate').val("flat");
-                                    $('#PIP1_MP').val(tempRateMap['pip1_minPremium']);
-
-                                    $('#PIP2_Rate').val("flat");
-                                    $('#PIP2_MP').val(tempRateMap['pip2_PIP2premium']);
-                                    $('#PIP2_NOHARate').val(tempRateMap['pip2_NOHARateMinPrem'][0]);
-                                    $('#PIP2_NOHAMP').val(tempRateMap['pip2_NOHARateMinPrem'][1]);
-
-                                    $('#PIP3_Rate').val(tempRateMap['pip3_negativeFilmVideoRateMinPrem'][0]);
-                                    $('#PIP3_MP').val(tempRateMap['pip3_negativeFilmVideoRateMinPrem'][1]);
-
-                                    $('#PIP4_Rate').val(tempRateMap['pip4_negativeFilmVideoRateMinPrem'][0]);
-                                    $('#PIP4_MP').val(tempRateMap['pip4_negativeFilmVideoRateMinPrem'][1]);
-
-                                    $('#PIP5_Rate').val(tempRateMap['pip5_negativeFilmVideoRateMinPrem'][0]);
-                                    $('#PIP5_MP').val(tempRateMap['pip5_negativeFilmVideoRateMinPrem'][1]);
-                                }
-                            }
-
-                        }
-
-                        var limitDeductibleString = "";
-                        var lobDistString = "";
-                        var CPKincluded = false;
-                        var EPKGincluded = false;
-                        var termsInsert = "";
-                        var beginTerms = "";
-                        var endorseInsert = "";
-                        for (var i = 0; i < responseJSON.coverages.length; i++) {
-                            if (responseJSON.coverages[i].coverageCode === "CPK") {
-                                CPKincluded = true;
-                                beginTerms = responseJSON.coverages[i].beginTerms;
-                            }
-                            if (responseJSON.coverages[i].coverageCode === "EPKG") {
-                                EPKGincluded = true;
-                                beginTerms = responseJSON.coverages[i].beginTerms;
-                            }
-                        }
-                        for (var i = 0; i < responseJSON.coverages.length; i++) {
-                            //alert(Object.keys(responseJSON.coverages[i].limits));
-                            if (responseJSON.coverages[i].coverageCode === "NOHA") {
-                                continue;
-                            }
-
-                            limitDeductibleString = limitDeductibleString + "<div class='row coverageCodeRow'>" +
-                                "<div class='col-xs-6 ' >";
-                            if (responseJSON.coverages[i].coverageCode === "NOAL" && CPKincluded) {
-                                limitDeductibleString = limitDeductibleString + "<strong class='coverageCodeString' style='font-size:13px'>" + "NOAL" + "</strong>";
-                                limitDeductibleString = limitDeductibleString + "</div>" +
-                                    "<div class='col-xs-2 ' >" +
-                                    "<span'>" + "-" + "</span>" +
-                                    "</div>" +
-                                    "<div class='col-xs-2 ' >" +
-                                    "<strong style='font-size:13px'>" + "</strong>" +
-                                    "</div>" +
-                                    "<div class='col-xs-2 ' >" +
-                                    "<span'>" + "-" + "</span>" +
-                                    "</div>" +
-                                    "</div>";
-                            }
-                            else if (responseJSON.coverages[i].coverageCode === "EPKG") {
-                                if (responseJSON.coverages[i].productCode === "PIP CHOI") {
-                                    limitDeductibleString = limitDeductibleString + "<strong class='coverageCodeString' style='font-size:13px'>" + "EPKG" + "</strong>";
-                                    limitDeductibleString = limitDeductibleString +
-                                        "<span class='productID_pull' id='" + responseJSON.coverages[i].productCode.replace(/ /g, "") + "' data-cov='" + responseJSON.coverages[i].coverageCode + "' style='display:none'>" + responseJSON.coverages[i].productCode + "</span>";
-
-                                    limitDeductibleString = limitDeductibleString + "</div>" +
-                                        "<div class='col-xs-2 ' >" +
-                                        "<span style='font-size:9px;'>" + "*Max $1,000,000" + "</span>" +
-                                        "</div>" +
-                                        "<div class='col-xs-2 ' >" +
-                                        "<strong style='font-size:13px'>" + "</strong>" +
-                                        "</div>" +
-                                        "<div class='col-xs-2 ' >" +
-                                        "<span>" + "-" + "</span>" +
-                                        "</div>" +
-                                        "</div>";
-                                }
-                                else if (responseJSON.coverages[i].productCode === "PIP 1") {
-                                    limitDeductibleString = limitDeductibleString + "<strong class='coverageCodeString' style='font-size:13px'>" + "EPKG" + "</strong>";
-                                    limitDeductibleString = limitDeductibleString +
-                                        "<span class='productID_pull' id='" + responseJSON.coverages[i].productCode.replace(/ /g, "") + "' data-cov='" + responseJSON.coverages[i].coverageCode + "' style='display:none'>" + responseJSON.coverages[i].productCode + "</span>";
-                                    limitDeductibleString = limitDeductibleString + "</div>" +
-                                        "<div class='col-xs-2 ' >" +
-                                        "<span style='font-size:9px;'>" + "" + "</span>" +
-                                        "</div>" +
-                                        "<div class='col-xs-2 ' >" +
-                                        "<strong style='font-size:13px'>" + "</strong>" +
-                                        "</div>" +
-                                        "<div class='col-xs-2 ' >" +
-                                        "<span>" + "-" + "</span>" +
-                                        "</div>" +
-                                        "</div>";
-                                }
-                                else {
-                                    limitDeductibleString = limitDeductibleString + "<strong class='coverageCodeString' style='font-size:13px'>" + responseJSON.coverages[i].coverageCode + "</strong>";
-                                    limitDeductibleString = limitDeductibleString +
-                                        "<span class='productID_pull' id='" + responseJSON.coverages[i].productCode.replace(/ /g, "") + "' data-cov='" + responseJSON.coverages[i].coverageCode + "' style='display:none'>" + responseJSON.coverages[i].productCode + "</span>";
-                                    limitDeductibleString = limitDeductibleString + "</div>" +
-                                        "<div class='col-xs-2 ' >" +
-                                        "<span'>" + "-" + "</span>" +
-                                        "</div>" +
-                                        "<div class='col-xs-2 ' >" +
-                                        "<strong style='font-size:13px'>" + "</strong>" +
-                                        "</div>" +
-                                        "<div class='col-xs-2 ' >" +
-                                        "<span'>" + "-" + "</span>" +
-                                        "</div>" +
-                                        "</div>";
-                                }
-
-                            }
-                            else if (responseJSON.coverages[i].coverageCode === "CPK") {
-                                limitDeductibleString = limitDeductibleString + "<strong class='coverageCodeString' style='font-size:13px'>" + "CGL" + "</strong>";
-                                limitDeductibleString = limitDeductibleString +
-                                    "<span class='productID_pull' id='" + responseJSON.coverages[i].productCode.replace(/ /g, "") + "' data-cov='" + responseJSON.coverages[i].coverageCode + "' style='display:none'>" + responseJSON.coverages[i].productCode + "</span>";
-                                limitDeductibleString = limitDeductibleString + "</div>" +
-                                    "<div class='col-xs-2 ' >" +
-                                    "<span>" + "-" + "</span>" +
-                                    "</div>" +
-                                    "<div class='col-xs-2 ' >" +
-                                    "<strong style='font-size:13px'>" + "</strong>" +
-                                    "</div>" +
-                                    "<div class='col-xs-2 ' >" +
-                                    "<span>" + "-" + "</span>" +
-                                    "</div>" +
-                                    "</div>";
-                            }
-                            else {
-                                limitDeductibleString = limitDeductibleString + "<strong class='coverageCodeString' style='font-size:13px'>" + responseJSON.coverages[i].coverageCode + "</strong>";
-                                limitDeductibleString = limitDeductibleString +
-                                    "<span class='productID_pull' id='" + responseJSON.coverages[i].productCode.replace(/ /g, "") + "' data-cov='" + responseJSON.coverages[i].coverageCode + "' style='display:none'>" + responseJSON.coverages[i].productCode + "</span>";
-                                limitDeductibleString = limitDeductibleString + "</div>" +
-                                    "<div class='col-xs-2 ' >" +
-                                    "<span'>" + "-" + "</span>" +
-                                    "</div>" +
-                                    "<div class='col-xs-2 ' >" +
-                                    "<strong style='font-size:13px'>" + "</strong>" +
-                                    "</div>" +
-                                    "<div class='col-xs-2 ' >" +
-                                    "<span'>" + "-" + "</span>" +
-                                    "</div>" +
-                                    "</div>";
-                            }
-
-
-                            var limitLines = Object.keys(responseJSON.coverages[i].limits);
-                            if (responseJSON.coverages[i].coverageCode === "EPKG") {
-                                if (limitLines.indexOf("Cast Insurance") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Cast Insurance"), 1);
-                                    limitLines.push("Cast Insurance");
-                                }
-                                if (limitLines.indexOf("Cast Essential") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Cast Essential"), 1);
-                                    limitLines.push("Cast Essential");
-                                }
-                                if (limitLines.indexOf("Negative Film & Videotape") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Negative Film & Videotape"), 1);
-                                    limitLines.push("Negative Film & Videotape");
-                                }
-                                if (limitLines.indexOf("Faulty Stock & Camera Processing") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Faulty Stock & Camera Processing"), 1);
-                                    limitLines.push("Faulty Stock & Camera Processing");
-                                }
-                                if (limitLines.indexOf("Miscellaneous Rented Equipment") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Miscellaneous Rented Equipment"), 1);
-                                    limitLines.push("Miscellaneous Rented Equipment");
-                                }
-                                if (limitLines.indexOf("INC:Non-Owned Auto Physical Damage") > -1) {
-                                    limitLines.splice(limitLines.indexOf("INC:Non-Owned Auto Physical Damage"), 1);
-                                    limitLines.push("INC:Non-Owned Auto Physical Damage");
-                                }
-                                if (limitLines.indexOf("Extra Expense") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Extra Expense"), 1);
-                                    limitLines.push("Extra Expense");
-                                }
-                                if (limitLines.indexOf("Props, Sets & Wardrobe") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Props, Sets & Wardrobe"), 1);
-                                    limitLines.push("Props, Sets & Wardrobe");
-                                }
-                                if (limitLines.indexOf("Third Party Prop Damage Liab") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Third Party Prop Damage Liab"), 1);
-                                    limitLines.push("Third Party Prop Damage Liab");
-                                }
-                                if (limitLines.indexOf("Office Contents") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Office Contents"), 1);
-                                    limitLines.push("Office Contents");
-                                }
-                                if (limitLines.indexOf("Civil Authority (US Only)") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Civil Authority (US Only)"), 1);
-                                    limitLines.push("Civil Authority (US Only)");
-                                }
-                                if (limitLines.indexOf("Money and Currency") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Money and Currency"), 1);
-                                    limitLines.push("Money and Currency");
-                                }
-                                if (limitLines.indexOf("Furs, Jewelry, Art & Antiques") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Furs, Jewelry, Art & Antiques"), 1);
-                                    limitLines.push("Furs, Jewelry, Art & Antiques");
-                                }
-                                if (limitLines.indexOf("Talent and Non Budgeted Costs") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Talent and Non Budgeted Costs"), 1);
-                                    limitLines.push("Talent and Non Budgeted Costs");
-                                }
-                                if (limitLines.indexOf("Administrative Costs") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Administrative Costs"), 1);
-                                    limitLines.push("Administrative Costs");
-                                }
-                                if (limitLines.indexOf("Hardware") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Hardware"), 1);
-                                    limitLines.push("Hardware");
-                                }
-                                if (limitLines.indexOf("Data and Media") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Data and Media"), 1);
-                                    limitLines.push("Data and Media");
-                                }
-                                if (limitLines.indexOf("Electronic Data Extra Expense") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Electronic Data Extra Expense"), 1);
-                                    limitLines.push("Electronic Data Extra Expense");
-                                }
-                                //
-                                if (limitLines.indexOf("Animal Mortality") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Animal Mortality"), 1);
-                                    limitLines.push("Animal Mortality");
-                                }
-
-                                if (limitLines.indexOf("Animal Mortality Under Cast Insurance (Domestic Birds/Fish)") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (Domestic Birds/Fish)"), 1);
-                                    limitLines.push("Animal Mortality Under Cast Insurance (Domestic Birds/Fish)");
-                                }
-                                if (limitLines.indexOf("Animal Mortality Under Cast Insurance (Dogs w/ Breed Exceptions)") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (Dogs w/ Breed Exceptions)"), 1);
-                                    limitLines.push("Animal Mortality Under Cast Insurance (Dogs w/ Breed Exceptions)");
-                                }
-                                if (limitLines.indexOf("Animal Mortality Under Cast Insurance (Reptiles (Non-Venomous))") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (Reptiles (Non-Venomous))"), 1);
-                                    limitLines.push("Animal Mortality Under Cast Insurance (Reptiles (Non-Venomous))");
-                                }
-                                if (limitLines.indexOf("Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))"), 1);
-                                    limitLines.push("Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))");
-                                }
-                                if (limitLines.indexOf("Animal Mortality Under Cast Insurance (Farm Animals)") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (Farm Animals)"), 1);
-                                    limitLines.push("Animal Mortality Under Cast Insurance (Farm Animals)");
-                                }
-                                if (limitLines.indexOf("Animal Mortality Under Cast Insurance (Wild Cats (Caged))") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (Wild Cats (Caged))"), 1);
-                                    limitLines.push("Animal Mortality Under Cast Insurance (Wild Cats (Caged))");
-                                }
-                                if (limitLines.indexOf("Animal Mortality Under Cast Insurance (All Others - Refer Only)") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Animal Mortality Under Cast Insurance (All Others - Refer Only)"), 1);
-                                    limitLines.push("Animal Mortality Under Cast Insurance (All Others - Refer Only)");
-                                }
-
-                                if (limitLines.indexOf("Animal Mortality (Birds or Fish)") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Animal Mortality (Birds or Fish)"), 1);
-                                    limitLines.push("Animal Mortality (Birds or Fish)");
-                                }
-                                if (limitLines.indexOf("Animal Mortality (Dogs w/ Breed Exceptions)") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Animal Mortality (Dogs w/ Breed Exceptions)"), 1);
-                                    limitLines.push("Animal Mortality (Dogs w/ Breed Exceptions)");
-                                }
-                                if (limitLines.indexOf("Animal Mortality (Reptiles Non-Venomous)") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Animal Mortality (Reptiles Non-Venomous)"), 1);
-                                    limitLines.push("Animal Mortality (Reptiles Non-Venomous)");
-                                }
-                                if (limitLines.indexOf("Animal Mortality (Small Domestic Animals - Other)") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Animal Mortality (Small Domestic Animals - Other)"), 1);
-                                    limitLines.push("Animal Mortality (Small Domestic Animals - Other)");
-                                }
-                                if (limitLines.indexOf("Animal Mortality (Farm Animals)") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Animal Mortality (Farm Animals)"), 1);
-                                    limitLines.push("Animal Mortality (Farm Animals)");
-                                }
-                                if (limitLines.indexOf("Animal Mortality (Wild Cats - Caged)") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Animal Mortality (Wild Cats - Caged)"), 1);
-                                    limitLines.push("Animal Mortality (Wild Cats - Caged)");
-                                }
-                                if (limitLines.indexOf("Animal Mortality (All Others - Refer Only)") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Animal Mortality (All Others - Refer Only)"), 1);
-                                    limitLines.push("Animal Mortality (All Others - Refer Only)");
-                                }
-
-
-                                if (limitLines.indexOf("Hired Auto Physical Damage") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Hired Auto Physical Damage"), 1);
-                                    limitLines.push("Hired Auto Physical Damage");
-                                }
-                            }
-                            else if (responseJSON.coverages[i].coverageCode === "CPK" || responseJSON.coverages[i].coverageCode === "CGL") {
-                                if (limitLines.indexOf("Each Occurrence") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Each Occurrence"), 1);
-                                    limitLines.push("Each Occurrence");
-                                }
-                                if (limitLines.indexOf("General Aggregate Limit") > -1) {
-                                    limitLines.splice(limitLines.indexOf("General Aggregate Limit"), 1);
-                                    limitLines.push("General Aggregate Limit");
-                                }
-                                if (limitLines.indexOf("Products & Completed Operations") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Products & Completed Operations"), 1);
-                                    limitLines.push("Products & Completed Operations");
-                                }
-                                if (limitLines.indexOf("Personal & Advertising Injury") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Personal & Advertising Injury"), 1);
-                                    limitLines.push("Personal & Advertising Injury");
-                                }
-                                if (limitLines.indexOf("Fire Damage (Any One Fire)") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Fire Damage (Any One Fire)"), 1);
-                                    limitLines.push("Fire Damage (Any One Fire)");
-                                }
-
-                                if (limitLines.indexOf("Medical Payments (Per Person)") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Medical Payments (Per Person)"), 1);
-                                    limitLines.push("Medical Payments (Per Person)");
-                                }
-                                if (limitLines.indexOf("Increased Agg Limit") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Increased Agg Limit"), 1);
-                                    limitLines.push("Increased Agg Limit");
-                                }
-                                if (limitLines.indexOf("Blanket Additional Insured Endorsement") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Blanket Additional Insured Endorsement"), 1);
-                                    limitLines.push("Blanket Additional Insured Endorsement");
-                                }
-                                if (limitLines.indexOf("Waiver of Subrogation") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Waiver of Subrogation"), 1);
-                                    limitLines.push("Waiver of Subrogation");
-                                }
-                                if (limitLines.indexOf("Additional Charge to Include Medical Payments") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Additional Charge to Include Medical Payments"), 1);
-                                    limitLines.push("Additional Charge to Include Medical Payments");
-                                }
-
-
-                                if (limitLines.indexOf("Non-Owned & Hired Auto Liability") > -1) {
-                                    limitLines.splice(limitLines.indexOf("Non-Owned & Hired Auto Liability"), 1);
-                                    limitLines.push("Non-Owned & Hired Auto Liability");
-                                }
-
-                                //PUSH IN FRONT
-
-                            }
-
-
-                            limitLines.forEach(function (key, index) {
-                                //alert.log(e);
-                                if (key === "Non-Owned Auto Physical Damage" && (responseJSON.coverages[i].productCode === "PIP 5" ||
-                                        responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")) {
-                                    return;
-                                }
-                                var premiumForCoverageLine = "";
-                                if (responseJSON.coverages[i].premiums[key]) {
-                                    premiumForCoverageLine = responseJSON.coverages[i].premiums[key][1];
-                                    //console.log("Premium: " + premiumForCoverageLine);
-                                }
-                                else {
-                                    premiumForCoverageLine = "undefined";
-                                }
-
-                                limitDeductibleString = limitDeductibleString + "<div class='row lobRow " +
-                                    responseJSON.coverages[i].productCode.replace(/ /g, "_") + " " +
-                                    responseJSON.coverages[i].coverageCode + " " +
-                                    responseJSON.coverages[i].coverageCode + "_LOBRow'";
-                                if (index % 2 == 0) {
-                                    if (key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
-                                            responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")) {
-                                        limitDeductibleString = limitDeductibleString + " style= 'background-color: rgba(38, 80, 159, 0.13); height:44px'";
-                                    }
-                                    else {
-                                        limitDeductibleString = limitDeductibleString + " style= 'background-color: rgba(38, 80, 159, 0.13)'";
-                                    }
-
-                                }
-                                limitDeductibleString = limitDeductibleString + ">" +
-                                    "<div class='col-xs-6 coverageColumn' style='padding-left:20px'>";
-
-                                if (key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
-                                        responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")) {
-                                    limitDeductibleString = limitDeductibleString + "<span>" + key + "</span>" + "<br>" +
-                                        "<span style='margin-left: 20px; font-size: 12px;'>Non-Owned Auto Physical Damage</span>" +
-                                        "</div>" +
-                                        "<div class='col-xs-2 limitColumn'>";
-                                }
-                                else if (key === "INC:Non-Owned Auto Physical Damage") {
-                                    limitDeductibleString = limitDeductibleString + "<span>" + key.split(":")[1] + "</span>" +
-                                        "</div>" +
-                                        "<div class='col-xs-2 limitColumn' style='line-height: 1.3'>";
-                                }
-                                else if (key === "Cast Essential") {
-                                    limitDeductibleString = limitDeductibleString + "<span>" + key + "</span>" +
-                                        "</div>" +
-                                        "<div class='col-xs-2 limitColumn' style='line-height: 1.3'>";
-                                }
-                                else {
-                                    limitDeductibleString = limitDeductibleString + "<span>" + key + "</span>" +
-                                        "</div>" +
-                                        "<div class='col-xs-2 limitColumn'>";
-                                }
-
-
-                                if (responseJSON.coverages[i].productCode === "PIP CHOI") {
-                                    if (key === "Hired Auto Physical Damage") {
-                                        limitDeductibleString = limitDeductibleString + "<span class='limit'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
-                                    }
-                                    else if (key === "Cast Essential") {
-                                        limitDeductibleString = limitDeductibleString + "<span class='limit' style='font-size:9px'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
-                                    }
-                                    else {
-                                        limitDeductibleString = limitDeductibleString + "<input class='form-control limit PIPCHOILimitsInput " + key.replace(/\s+/g, '').replace(/[^a-zA-Z-]/g, '') + "' type='text' placeholder = '$' name='numBuildings' " +
-                                            "style='font-size: 12px;padding: 2px;margin-top: 3px; margin-bottom:3px; height: 20px;'/>";
-                                    }
-
-                                }
-                                else if (key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
-                                        responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")) {
-
-                                    limitDeductibleString = limitDeductibleString + "<span class='limit'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span> " +
-                                        "<br>" +
-                                        "<span style='font-size: 12px;'>Included</span>";
-
-
-                                }
-                                else if (responseJSON.coverages[i].coverageCode === "NOAL" && CPKincluded) {
-                                    limitDeductibleString = limitDeductibleString + "<span class='limit'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
-                                }
-                                else {
-                                    if (key === "Cast Essential") {
-                                        limitDeductibleString = limitDeductibleString + "<span class='limit' style='font-size:11px'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
-                                    }
-                                    else if (key === "INC:Non-Owned Auto Physical Damage") {
-                                        limitDeductibleString = limitDeductibleString + "<span class='limit' style='font-size:11px;'>" + formatMoney(responseJSON.coverages[i].limits[key].split(":")[0]) + "</span>";
-                                    }
-                                    else {
-                                        limitDeductibleString = limitDeductibleString + "<span class='limit'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
-                                    }
-
-                                }
-
-
-                                limitDeductibleString = limitDeductibleString + "</div>";
-
-
-                                if (key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
-                                        responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")) {
-                                    limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 premiumColumn'>" +
-                                        "<span class='premium " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "PremiumLine' >" + formatMoney(premiumForCoverageLine) + "</span> <br><span></span>" +
-                                        "</div>";
-                                }
-                                else if (key === "Cast Essential") {
-                                    limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 premiumColumn' style=''>" +
-                                        "<span class='premium " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "PremiumLine' >" + formatMoney(premiumForCoverageLine) + "</span>" +
-                                        "</div>";
-                                }
-                                else {
-                                    limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 premiumColumn'>" +
-                                        "<span class='premium " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "PremiumLine' >" + formatMoney(premiumForCoverageLine) + "</span>" +
-                                        "</div>";
-                                }
-
-                                if (key === "Miscellaneous Rented Equipment" && (responseJSON.coverages[i].productCode === "PIP 5" ||
-                                        responseJSON.coverages[i].productCode === "PIP 4" || responseJSON.coverages[i].productCode === "PIP 3")) {
-                                    limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 deductibleColumn'>" +
-                                        "<span class='deductible " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "DeductLine' style='font-size: 14px;padding-left:8px;'>" + formatMoney(responseJSON.coverages[i].deductibles[key]) +
-                                        "</span><br>" +
-                                        "<span class='deductible NOHADeductLine' >" + formatMoney(responseJSON.coverages[i].deductibles["Non-Owned Auto Physical Damage"]) +
-                                        "</span>";
-                                }
-                                else if (key === "Cast Essential") {
-                                    limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 deductibleColumn' style=''>" +
-                                        "<span class='deductible " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "DeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles[key]) +
-                                        "</span>";
-                                }
-                                else {
-                                    limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 deductibleColumn'>" +
-                                        "<span class='deductible " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "DeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles[key]) +
-                                        "</span>";
-                                }
-                                limitDeductibleString = limitDeductibleString + "</div>" +
-                                    "</div>";
-                            });
-                            limitDeductibleString = limitDeductibleString + "<div class='row' style='border-top: 1px solid rgba(0, 0, 0, 0.19);'>" +
-                                "<div class='col-xs-6 ' >" +
-                                "<strong style='font-size:13px'>" + "</strong>" +
-                                "</div>" +
-                                "<div class='col-xs-2 ' >" +
-                                "<span'>" + "-" + "</span>" +
-                                "</div>" +
-                                "<div class='col-xs-2 ' >" +
-                                "<strong style='font-size:13px' class='" + responseJSON.coverages[i].productCode.replace(/ /g, '_') + " productTotalPremium" +
-                                "' id='" + responseJSON.coverages[i].productCode.replace(/ /g, '') + "PremiumTotal'>" + formatMoney(responseJSON.coverages[i].productTotalPremium) + "</strong>" +
-                                "</div>" +
-                                "<div class='col-xs-2 ' >" +
-                                "<span'>" + "-" + "</span>" +
-                                "</div>" +
-                                "</div>";
-                            limitDeductibleString = limitDeductibleString + "<span id='" + responseJSON.coverages[i].coverageCode + "_RateInfo' style='display:none'>" +
-                                responseJSON.coverages[i].rateInfo + "</span>";
-                            limitDeductibleString = limitDeductibleString + "<span id='" + responseJSON.coverages[i].coverageCode + "_IndicationRateInfo' style='display:none'>" +
-                                responseJSON.coverages[i].indicationRateInfo + "</span>";
-                            limitDeductibleString = limitDeductibleString + "<br>";
-
-                            var lobLines = Object.keys(responseJSON.coverages[i].lobDist);
-                            lobLines.forEach(function (key, index) {
-                                for (var k = 0; k < responseJSON.coverages[i].lobDist[key].split(";").length; k++) {
-                                    if (responseJSON.coverages[i].lobDist[key].split(";")[k].length > 0) {
-                                        lobDistString = lobDistString + "<div class='row'";
-                                        if (index % 2 == 0) {
-                                            lobDistString = lobDistString + " style= 'background-color: rgba(38, 80, 159, 0.13); padding-left:10px;'";
-                                        }
-                                        lobDistString = lobDistString + ">" +
-                                            "<div class='col-xs-4'>" +
-                                            "<span class='lineOfBusinessSpan'>" + responseJSON.coverages[i].lobDist[key].split(";")[k].split(",")[0] + "</span>" +
-                                            "</div>" +
-                                            "<div class='col-xs-3'>" +
-                                            "<span class='premiumSpan' id='" + responseJSON.coverages[i].coverageCode + "PremiumLOBTotal'>" + formatMoney(responseJSON.coverages[i].lobDist[key].split(";")[k].split(",")[1]) + "</span>" +
-                                            "</div>" +
-                                            "<div class='col-xs-3'>" +
-                                            "<span class='agentPercentSpan'>" + responseJSON.coverages[i].lobDist[key].split(";")[k].split(",")[3] + "</span>" +
-                                            "</div>" +
-                                            "</div>";
-                                    }
-                                }
-
-
-                            });
-
-                            if (responseJSON.coverages[i].coverageCode != "NOAL") {
-                                //termsInsert = termsInsert +
-                                //    responseJSON.coverages[i].coverageCode + " - " + responseJSON.coverages[i].productCode + "\n"  +  responseJSON.coverages[i].terms + "\n\n\n";
-                                var prefix = "ALL:";
-                                var find = prefix;
-                                var re = new RegExp(find, 'g');
-                                var endorseBody = responseJSON.coverages[i].endorse;
-
-                                endorseBody = endorseBody.replace(re, '');
-
-                                prefix = "EPKG:";
-                                find = prefix;
-                                re = new RegExp(find, 'g');
-                                endorseBody = endorseBody.replace(re, '');
-
-                                prefix = "CPK:";
-                                find = prefix;
-                                re = new RegExp(find, 'g');
-                                endorseBody = endorseBody.replace(re, '');
-
-                                prefix = "CGL:";
-                                find = prefix;
-                                re = new RegExp(find, 'g');
-                                endorseBody = endorseBody.replace(re, '');
-
-                                prefix = "NOAL:";
-                                find = prefix;
-                                re = new RegExp(find, 'g');
-                                endorseBody = endorseBody.replace(re, '');
-
-                                prefix = "NOHA:";
-                                find = prefix;
-                                re = new RegExp(find, 'g');
-                                endorseBody = endorseBody.replace(re, '');
-
-                                endorseInsert = endorseInsert +
-                                    "<span id='" + responseJSON.coverages[i].coverageCode + "_EndorsementForms'>" +
-                                    responseJSON.coverages[i].coverageCode + " - " + responseJSON.coverages[i].productCode + "\n" +
-                                    endorseBody + "\n\n\n" +
-                                    "</span>"
-                                ;
-                            }
-
-
-                            if (responseJSON.coverages[i].productCode === "PIP CHOI") {
-                                $('#limitsHeader').html("Please Enter Desired Limits");
-                            }
-                        }
-
-                        $("#limitsDeductPremiumInsert").html(limitDeductibleString);
-                        $("#premDistributionInsert").html(lobDistString);
-                        $("#termsInsert").html(beginTerms + termsInsert);
-                        $("#endorseInsert").html(endorseInsert);
-                        var disclaimerInsert = "*TRIA is rejected as per form LMA 5091 U.S. Terrorism Risk Insurance Act 2002.  " +
-                            "TRIA can be afforded for an additional premium charge equal to 1% of the total premium indication.";
-                        $("#disclaimerInsert").html(disclaimerInsert);
-
-                        //$("#premDistributionInsert").html(lobDistString);
-
-                        //Add NOAL to CPK if valid
-                        //console.log("lENGTH = " + $('.NOAL01PremiumTotal').length)
-                        if ($('#NOAL01PremiumTotal').length > 0) {
-                            var noalPrem = $('#NOAL01PremiumTotal').html();
-                            var cpkPrem = $('#BARCPKGCPremiumTotal').html();
-
-                            var v1 = noalPrem;
-                            v1 = v1.replace("$", "");
-                            v1 = v1.replace(/,/g, "");
-
-                            var v2 = cpkPrem;
-                            v2 = v2.replace("$", "");
-                            v2 = v2.replace(/,/g, "");
-
-                            $("#CPKPremiumLOBTotal").html(formatMoney(parseFloat(v1) + parseFloat(v2)));
-
-
-                        }
-
-                        $('.PIPCHOILimitsInput').maskMoney({
-                            prefix: '$',
-                            precision: "0"
-                        });
-
-                        //var tempLimit = parseInt($("#totalBudgetInput").val().replace(/\$|,/g, ''));
-                        //console.log("LIMIT AMOUNT1 === " + tempLimit)
-                        //if(riskChosen === "Film Projects With Cast (No Work Comp)"){
-                        //    tempLimit = Math.ceil(tempLimit / 1000) * 1000;
-                        //}
-                        //console.log("LIMIT AMOUNT === " + tempLimit / 1000)
-
-                        $('.PIPCHOILimitsInput').val($("#totalBudgetInput").val());
-                        if (pipChoiceMisc.length > 0) {
-                            $(".MiscellaneousRentedEquipment").val(pipChoiceMisc);
-                        }
-                        if (pipChoiceExtra.length > 0) {
-                            $(".ExtraExpense").val(pipChoiceExtra);
-                        }
-                        if (pipChoiceProps.length > 0) {
-                            $(".PropsSetsWardrobe").val(pipChoiceProps);
-                        }
-                        if (pipChoiceThird.length > 0) {
-                            $(".ThirdPartyPropDamageLiab").val(pipChoiceThird);
-                        }
-                        if (pipChoiceNOHA.length > 0) {
-                            $(".HiredAutoPhysicalDamage").val(pipChoiceNOHA);
-                        }
-                        if (pipChoiceCast.length > 0) {
-                            $(".CastInsurance").val(pipChoiceCast);
-                        }
-                        if (pipChoiceCastEssential.length > 0) {
-                            $(".CastEssential").val(pipChoiceCastEssential);
-                        }
-
-                        $('.PIPCHOILimitsInput').trigger("keyup");
-                        $('.CPKNOHALimitsInput').maskMoney({
-                            prefix: '$',
-                            precision: "0"
-                        });
-                        $('.CPKNOHALimitsInput').val($("#totalBudgetConfirm").val().split(".")[0]);
-                        if (CGLNOALLimit.length > 0) {
-                            $(".HiredAutoPhysicalDamage").val(CGLNOALLimit);
-                        }
-                        $('.CPKNOHALimitsInput').trigger("keyup");
-                        getTaxInfo();
-                        totalUpPremiumAndTax();
-                        addOverflowTransitionClass();
-                        $('#castInsuranceRequiredCheckBox').trigger('change');
-                        ratePremiumsRunning = false;
-                        enableCoverageOptionsContainer()
-                    });
-
-            }
-
-
-        }
-        else {
-            //alert("clear all");
-            $("#limitsDeductPremiumInsert").html("");
-            $("#premDistributionInsert").html("");
-            $("#termsInsert").html("");
-            $("#endorseInsert").html("");
-            $("#taxRows").html("");
-            $("#premiumAllLOBTotal").html("");
-            $("#disclaimerInsert").html("");
-            ratePremiumsRunning = false;
-        }
-
-    }
-    enableCoverageOptionsContainer()
-
-
-
-}
-
-function disableCoverageOptionsContainer(){
-    // $('#coverageOptionsContainer').css('color', 'rgba(31, 31, 31, 0.35)')
-
-    $('#coverageOptionsReview').addClass("panel-default");
-    $('#coverageOptionsReview').removeClass("panel-primary");
-    $('#coverageOptionsReview').parent().css("color", "rgba(31, 31, 31, 0.35)");
-    $('#coverageOptionsTitle').css("color", "rgba(31, 31, 31, 0.35)");
-
-}
-
-function enableCoverageOptionsContainer(){
-    $('#coverageOptionsReview').addClass("panel-primary");
-    $('#coverageOptionsReview').removeClass("panel-default");
-    $('#coverageOptionsReview').parent().css("color", "#1f1f1f");
-    $('#coverageOptionsTitle').css("color", "#fff");
-
-}
-
-function ratePremiumsSGP(){
-    ratePremiumsRunning = true;
-    var numProductSelected = $('.productOptionRadio:checked').length
-
-    var dataMap = getPremiumInfoMapSGP();
-    if ( numProductSelected > 0 && parseFloat($("#totalBudgetConfirm").val().replace(/\$|,/g, '')) > 0) {
-        $.ajax({
-            method: "POST",
-            url: "/Async/ratePremiumsSGP",
-            //url: "/Async/newRatePremiums",
-            data: {
-                riskType: riskChosen,
-                dataMap: JSON.stringify(dataMap)
-
-            }
-        })
-            .done(function(msg) {
-                // alert(msg);
-                //alert( "Data Saved: " + msg );
-                var responseJSON = JSON.parse(msg);
-                //alert(responseJSON.coverages.length);
-
-                if ($('#runRatesButton').length > 0) { //IF IN REVIEW PANEL AND RERUNNING RATES
-                    var tempRateMap = {}
-                    ////PIP1 RATING
-                    //submissionRateMap["pip1_negativeFilmVideoRateMinPrem"] = pip1_negativeFilmVideoRateMinPrem
-                    //submissionRateMap["pip1_faultyStockCameraProcessingRateMinPrem"] = pip1_faultyStockCameraProcessingRateMinPrem
-                    //submissionRateMap["pip1_miscRentedEquipRateMinPrem"] = pip1_miscRentedEquipRateMinPrem
-                    //submissionRateMap["pip1_propsSetWardrobeRateMinPrem"] = pip1_propsSetWardrobeRateMinPrem
-                    //submissionRateMap["pip1_thirdPartyPropDamageRateMinPrem"] = pip1_thirdPartyPropDamageRateMinPrem
-                    //submissionRateMap["pip1_extraExpenseRateMinPrem"] = pip1_extraExpenseRateMinPrem
-                    //submissionRateMap["pip1_minPremium"] = pip1_minPremium
-                    for (var i = 0; i < responseJSON.coverages.length; i++) {
-                        if (responseJSON.coverages[i].coverageCode === "EPKG") {
-                            $('#PIPCHOIRatesRow').css('display', 'none');
-                            $('#PIP1RatesRow').css('display', 'none');
-                            $('#PIP2RatesRow').css('display', 'none');
-                            $('#PIP3RatesRow').css('display', 'none');
-                            $('#PIP4RatesRow').css('display', 'none');
-                            $('#PIP5RatesRow').css('display', 'none');
-                            tempRateMap = responseJSON.coverages[i].submissionRateMap;
-                            if (responseJSON.coverages[i].productCode === "PIP CHOI") {
-                                $('#PIPCHOIRatesRow').css('display', '')
-
-                            }
-                            else if (responseJSON.coverages[i].productCode === "PIP 1") {
-
-                                $('#PIP1RatesRow').css('display', '')
-                            }
-                            else if (responseJSON.coverages[i].productCode === "PIP 2") {
-
-                                $('#PIP2RatesRow').css('display', '')
-                            }
-                            else if (responseJSON.coverages[i].productCode === "PIP 3") {
-
-                                $('#PIP3RatesRow').css('display', '')
-                            }
-                            else if (responseJSON.coverages[i].productCode === "PIP 4") {
-
-                                $('#PIP4RatesRow').css('display', '')
-                            }
-                            else if (responseJSON.coverages[i].productCode === "PIP 4") {
-
-                                $('#PIP5RatesRow').css('display', '')
-                            }
-                            $('#PIPCHOI_miscRate').val(tempRateMap['pipChoice_miscRentedEquipRateMinPrem'][0]);
-                            $('#PIPCHOI_miscMP').val(tempRateMap['pipChoice_miscRentedEquipRateMinPrem'][1]);
-                            $('#PIPCHOI_propsRate').val(tempRateMap['pipChoice_propsSetWardrobeRateMinPrem'][0]);
-                            $('#PIPCHOI_propsMP').val(tempRateMap['pipChoice_propsSetWardrobeRateMinPrem'][1]);
-                            $('#PIPCHOI_thirdRate').val(tempRateMap['pipChoice_thirdPartyPropDamageRateMinPrem'][0]);
-                            $('#PIPCHOI_thirdMP').val(tempRateMap['pipChoice_thirdPartyPropDamageRateMinPrem'][1]);
-                            $('#PIPCHOI_extraRate').val(tempRateMap['pipChoice_extraExpenseRateMinPrem'][0]);
-                            $('#PIPCHOI_extraMP').val(tempRateMap['pipChoice_extraExpenseRateMinPrem'][1]);
-                            $('#PIPCHOI_NOHARate').val(tempRateMap['pipChoice_NOHARateMinPrem'][0]);
-                            $('#PIPCHOI_NOHAMP').val(tempRateMap['pipChoice_NOHARateMinPrem'][1]);
-
-                            $('#PIP1_Rate').val("flat");
-                            $('#PIP1_MP').val(tempRateMap['pip1_minPremium']);
-
-                            $('#PIP2_Rate').val("flat");
-                            $('#PIP2_MP').val(tempRateMap['pip2_PIP2premium']);
-                            $('#PIP2_NOHARate').val(tempRateMap['pip2_NOHARateMinPrem'][0]);
-                            $('#PIP2_NOHAMP').val(tempRateMap['pip2_NOHARateMinPrem'][1]);
-
-                            $('#PIP3_Rate').val(tempRateMap['pip3_negativeFilmVideoRateMinPrem'][0]);
-                            $('#PIP3_MP').val(tempRateMap['pip3_negativeFilmVideoRateMinPrem'][1]);
-
-                            $('#PIP4_Rate').val(tempRateMap['pip4_negativeFilmVideoRateMinPrem'][0]);
-                            $('#PIP4_MP').val(tempRateMap['pip4_negativeFilmVideoRateMinPrem'][1]);
-
-                            $('#PIP5_Rate').val(tempRateMap['pip5_negativeFilmVideoRateMinPrem'][0]);
-                            $('#PIP5_MP').val(tempRateMap['pip5_negativeFilmVideoRateMinPrem'][1]);
-                        }
-                    }
-
-                }
-
-                var limitDeductibleString = "";
-                var lobDistString = "";
-                var CPKincluded = false;
-                var EPKGincluded = false;
-                var termsInsert = "";
-                var beginTerms = "";
-                var endorseInsert = "";
-
-                for (var i = 0; i < responseJSON.coverages.length; i++) {
-                    limitDeductibleString = limitDeductibleString + "<div class='row coverageCodeRow'>" +
-                        "<div class='col-xs-6 ' >";
-                    limitDeductibleString = limitDeductibleString + "<strong class='coverageCodeString' style='font-size:13px'>" + responseJSON.coverages[i].coverageCode + "</strong>";
-                    limitDeductibleString = limitDeductibleString +
-                        "<span class='productID_pull' id='" + responseJSON.coverages[i].productCode.replace(/ /g, "") + "' data-cov='" + responseJSON.coverages[i].coverageCode + "' style='display:none'>" + responseJSON.coverages[i].productCode + "</span>";
-                    limitDeductibleString = limitDeductibleString + "</div>" +
-                        "<div class='col-xs-2 ' >" +
-                        "<span'>" + "-" + "</span>" +
-                        "</div>" +
-                        "<div class='col-xs-2 ' >" +
-                        "<span style='font-size:13px'>"  + "</span>" +
-                        "</div>" +
-                        "<div class='col-xs-2 ' >" +
-                        "<span'>" + "-" + "</span>" +
-                        "</div>" +
-                        "</div>";
-
-                    var lobLines = Object.keys(responseJSON.coverages[i].lobDist);
-                    if (responseJSON.coverages[i].coverageCode === "EPKG") {
-                        if (lobLines.indexOf("Cast Insurance") > -1) {
-                            lobLines.splice(lobLines.indexOf("Cast Insurance"), 1);
-                            lobLines.push("Cast Insurance");
-                        }
-                        if (lobLines.indexOf("Cast Essential") > -1) {
-                            lobLines.splice(lobLines.indexOf("Cast Essential"), 1);
-                            lobLines.push("Cast Essential");
-                        }
-                        if (lobLines.indexOf("Negative Film & Videotape") > -1) {
-                            lobLines.splice(lobLines.indexOf("Negative Film & Videotape"), 1);
-                            lobLines.push("Negative Film & Videotape");
-                        }
-                        if (lobLines.indexOf("Faulty Stock & Camera Processing") > -1) {
-                            lobLines.splice(lobLines.indexOf("Faulty Stock & Camera Processing"), 1);
-                            lobLines.push("Faulty Stock & Camera Processing");
-                        }
-                        if (lobLines.indexOf("Miscellaneous Rented Equipment") > -1) {
-                            lobLines.splice(lobLines.indexOf("Miscellaneous Rented Equipment"), 1);
-                            lobLines.push("Miscellaneous Rented Equipment");
-                        }
-                        if (lobLines.indexOf("INC:Non-Owned Auto Physical Damage") > -1) {
-                            lobLines.splice(lobLines.indexOf("INC:Non-Owned Auto Physical Damage"), 1);
-                            lobLines.push("INC:Non-Owned Auto Physical Damage");
-                        }
-                        if (lobLines.indexOf("Extra Expense") > -1) {
-                            lobLines.splice(lobLines.indexOf("Extra Expense"), 1);
-                            lobLines.push("Extra Expense");
-                        }
-                        if (lobLines.indexOf("Props, Sets & Wardrobe") > -1) {
-                            lobLines.splice(lobLines.indexOf("Props, Sets & Wardrobe"), 1);
-                            lobLines.push("Props, Sets & Wardrobe");
-                        }
-                        if (lobLines.indexOf("Third Party Prop Damage Liab") > -1) {
-                            lobLines.splice(lobLines.indexOf("Third Party Prop Damage Liab"), 1);
-                            lobLines.push("Third Party Prop Damage Liab");
-                        }
-                        if (lobLines.indexOf("Office Contents") > -1) {
-                            lobLines.splice(lobLines.indexOf("Office Contents"), 1);
-                            lobLines.push("Office Contents");
-                        }
-                        if (lobLines.indexOf("Civil Authority (US Only)") > -1) {
-                            lobLines.splice(lobLines.indexOf("Civil Authority (US Only)"), 1);
-                            lobLines.push("Civil Authority (US Only)");
-                        }
-                        if (lobLines.indexOf("Money and Currency") > -1) {
-                            lobLines.splice(lobLines.indexOf("Money and Currency"), 1);
-                            lobLines.push("Money and Currency");
-                        }
-                        if (lobLines.indexOf("Furs, Jewelry, Art & Antiques") > -1) {
-                            lobLines.splice(lobLines.indexOf("Furs, Jewelry, Art & Antiques"), 1);
-                            lobLines.push("Furs, Jewelry, Art & Antiques");
-                        }
-                        if (lobLines.indexOf("Talent and Non Budgeted Costs") > -1) {
-                            lobLines.splice(lobLines.indexOf("Talent and Non Budgeted Costs"), 1);
-                            lobLines.push("Talent and Non Budgeted Costs");
-                        }
-                        if (lobLines.indexOf("Administrative Costs") > -1) {
-                            lobLines.splice(lobLines.indexOf("Administrative Costs"), 1);
-                            lobLines.push("Administrative Costs");
-                        }
-                        if (lobLines.indexOf("Hardware") > -1) {
-                            lobLines.splice(lobLines.indexOf("Hardware"), 1);
-                            lobLines.push("Hardware");
-                        }
-                        if (lobLines.indexOf("Data and Media") > -1) {
-                            lobLines.splice(lobLines.indexOf("Data and Media"), 1);
-                            lobLines.push("Data and Media");
-                        }
-                        if (lobLines.indexOf("Electronic Data Extra Expense") > -1) {
-                            lobLines.splice(lobLines.indexOf("Electronic Data Extra Expense"), 1);
-                            lobLines.push("Electronic Data Extra Expense");
-                        }
-                        //
-                        if (lobLines.indexOf("Animal Mortality") > -1) {
-                            lobLines.splice(lobLines.indexOf("Animal Mortality"), 1);
-                            lobLines.push("Animal Mortality");
-                        }
-
-                        if (lobLines.indexOf("Animal Mortality Under Cast Insurance (Domestic Birds/Fish)") > -1) {
-                            lobLines.splice(lobLines.indexOf("Animal Mortality Under Cast Insurance (Domestic Birds/Fish)"), 1);
-                            lobLines.push("Animal Mortality Under Cast Insurance (Domestic Birds/Fish)");
-                        }
-                        if (lobLines.indexOf("Animal Mortality Under Cast Insurance (Dogs w/ Breed Exceptions)") > -1) {
-                            lobLines.splice(lobLines.indexOf("Animal Mortality Under Cast Insurance (Dogs w/ Breed Exceptions)"), 1);
-                            lobLines.push("Animal Mortality Under Cast Insurance (Dogs w/ Breed Exceptions)");
-                        }
-                        if (lobLines.indexOf("Animal Mortality Under Cast Insurance (Reptiles (Non-Venomous))") > -1) {
-                            lobLines.splice(lobLines.indexOf("Animal Mortality Under Cast Insurance (Reptiles (Non-Venomous))"), 1);
-                            lobLines.push("Animal Mortality Under Cast Insurance (Reptiles (Non-Venomous))");
-                        }
-                        if (lobLines.indexOf("Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))") > -1) {
-                            lobLines.splice(lobLines.indexOf("Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))"), 1);
-                            lobLines.push("Animal Mortality Under Cast Insurance (Small Domestic Animals (Other))");
-                        }
-                        if (lobLines.indexOf("Animal Mortality Under Cast Insurance (Farm Animals)") > -1) {
-                            lobLines.splice(lobLines.indexOf("Animal Mortality Under Cast Insurance (Farm Animals)"), 1);
-                            lobLines.push("Animal Mortality Under Cast Insurance (Farm Animals)");
-                        }
-                        if (lobLines.indexOf("Animal Mortality Under Cast Insurance (Wild Cats (Caged))") > -1) {
-                            lobLines.splice(lobLines.indexOf("Animal Mortality Under Cast Insurance (Wild Cats (Caged))"), 1);
-                            lobLines.push("Animal Mortality Under Cast Insurance (Wild Cats (Caged))");
-                        }
-                        if (lobLines.indexOf("Animal Mortality Under Cast Insurance (All Others - Refer Only)") > -1) {
-                            lobLines.splice(lobLines.indexOf("Animal Mortality Under Cast Insurance (All Others - Refer Only)"), 1);
-                            lobLines.push("Animal Mortality Under Cast Insurance (All Others - Refer Only)");
-                        }
-
-                        if (lobLines.indexOf("Animal Mortality (Birds or Fish)") > -1) {
-                            lobLines.splice(lobLines.indexOf("Animal Mortality (Birds or Fish)"), 1);
-                            lobLines.push("Animal Mortality (Birds or Fish)");
-                        }
-                        if (lobLines.indexOf("Animal Mortality (Dogs w/ Breed Exceptions)") > -1) {
-                            lobLines.splice(lobLines.indexOf("Animal Mortality (Dogs w/ Breed Exceptions)"), 1);
-                            lobLines.push("Animal Mortality (Dogs w/ Breed Exceptions)");
-                        }
-                        if (lobLines.indexOf("Animal Mortality (Reptiles Non-Venomous)") > -1) {
-                            lobLines.splice(lobLines.indexOf("Animal Mortality (Reptiles Non-Venomous)"), 1);
-                            lobLines.push("Animal Mortality (Reptiles Non-Venomous)");
-                        }
-                        if (lobLines.indexOf("Animal Mortality (Small Domestic Animals - Other)") > -1) {
-                            lobLines.splice(lobLines.indexOf("Animal Mortality (Small Domestic Animals - Other)"), 1);
-                            lobLines.push("Animal Mortality (Small Domestic Animals - Other)");
-                        }
-                        if (lobLines.indexOf("Animal Mortality (Farm Animals)") > -1) {
-                            lobLines.splice(lobLines.indexOf("Animal Mortality (Farm Animals)"), 1);
-                            lobLines.push("Animal Mortality (Farm Animals)");
-                        }
-                        if (lobLines.indexOf("Animal Mortality (Wild Cats - Caged)") > -1) {
-                            lobLines.splice(lobLines.indexOf("Animal Mortality (Wild Cats - Caged)"), 1);
-                            lobLines.push("Animal Mortality (Wild Cats - Caged)");
-                        }
-                        if (lobLines.indexOf("Animal Mortality (All Others - Refer Only)") > -1) {
-                            lobLines.splice(lobLines.indexOf("Animal Mortality (All Others - Refer Only)"), 1);
-                            lobLines.push("Animal Mortality (All Others - Refer Only)");
-                        }
-
-
-                        if (lobLines.indexOf("Hired Auto Physical Damage") > -1) {
-                            lobLines.splice(lobLines.indexOf("Hired Auto Physical Damage"), 1);
-                            lobLines.push("Hired Auto Physical Damage");
-                        }
-                    }
-
-                    else if (responseJSON.coverages[i].coverageCode === "CPK" || responseJSON.coverages[i].coverageCode === "CGL") {
-                        if (lobLines.indexOf("General Aggregate Limit") > -1) {
-                            // alert("in")
-                            lobLines.splice(lobLines.indexOf("General Aggregate Limit"), 1);
-                            lobLines.push("General Aggregate Limit");
-                        }
-                        if (lobLines.indexOf("Products & Completed Operations Agg Limit") > -1) {
-                            lobLines.splice(lobLines.indexOf("Products & Completed Operations Agg Limit"), 1);
-                            lobLines.push("Products & Completed Operations Agg Limit");
-                        }
-                        if (lobLines.indexOf("Personal & Advertising Injury (Any One Person or Organization)") > -1) {
-                            lobLines.splice(lobLines.indexOf("Personal & Advertising Injury (Any One Person or Organization)"), 1);
-                            lobLines.push("Personal & Advertising Injury (Any One Person or Organization)");
-                        }
-                        if (lobLines.indexOf("Each Occurrence Limit") > -1) {
-                            lobLines.splice(lobLines.indexOf("Each Occurrence Limit"), 1);
-                            lobLines.push("Each Occurrence Limit");
-                        }
-                        if (lobLines.indexOf("Damage to Premises Rented to You Limit") > -1) {
-                            lobLines.splice(lobLines.indexOf("Damage to Premises Rented to You Limit"), 1);
-                            lobLines.push("Damage to Premises Rented to You Limit");
-                        }
-
-                        if (lobLines.indexOf("Increased Agg Limit") > -1) {
-                            lobLines.splice(lobLines.indexOf("Increased Agg Limit"), 1);
-                            lobLines.push("Increased Agg Limit");
-                        }
-                        if (lobLines.indexOf("General Liability Terrorism") > -1) {
-                            lobLines.splice(lobLines.indexOf("General Liability Terrorism"), 1);
-                            lobLines.push("General Liability Terrorism");
-                        }
-                        if (lobLines.indexOf("Blanket Additional Insured") > -1) {
-                            lobLines.splice(lobLines.indexOf("Blanket Additional Insured"), 1);
-                            lobLines.push("Blanket Additional Insured");
-                        }
-                        if (lobLines.indexOf("Waiver of Subrogation") > -1) {
-                            lobLines.splice(lobLines.indexOf("Waiver of Subrogation"), 1);
-                            lobLines.push("Waiver of Subrogation");
-                        }
-                        if (lobLines.indexOf("Medical Expense") > -1) {
-                            lobLines.splice(lobLines.indexOf("Medical Expense"), 1);
-                            lobLines.push("Medical Expense");
-                        }
-                        if (lobLines.indexOf("Miscellaneous Equipment Limit") > -1) {
-                            lobLines.splice(lobLines.indexOf("Miscellaneous Equipment Limit"), 1);
-                            lobLines.push("Miscellaneous Equipment Limit");
-                        }
-
-                        //PUSH IN FRONT
-
-                    }
-                    // alert(lobLines)
-
-                    lobLines.forEach(function (key, index) {
-                        var premiumForCoverageLine = "";
-                        if (responseJSON.coverages[i].premiums[key]) {
-                            premiumForCoverageLine = responseJSON.coverages[i].premiums[key];
-                        }
-                        else {
-                            premiumForCoverageLine = "";
-                        }
-
-                        limitDeductibleString = limitDeductibleString + "<div class='row lobRow " +
-                            responseJSON.coverages[i].productCode.replace(/ /g, "_") + " " +
-                            responseJSON.coverages[i].coverageCode + " " +
-                            responseJSON.coverages[i].coverageCode + "_LOBRow'";
-                        if (index % 2 == 0) {
-                            limitDeductibleString = limitDeductibleString + " style= 'background-color: rgba(38, 80, 159, 0.13)'";
-                        }
-                        limitDeductibleString = limitDeductibleString + ">" +
-                            "<div class='col-xs-6 coverageColumn' style='padding-left:20px'>";
-
-                        limitDeductibleString = limitDeductibleString + "<span>" + key + "</span>" +
-                            "</div>" +
-                            "<div class='col-xs-2 limitColumn'>";
-
-                        limitDeductibleString = limitDeductibleString + "<span class='limit'>" + formatMoney(responseJSON.coverages[i].limits[key]) + "</span>";
-                        limitDeductibleString = limitDeductibleString + "</div>";
-
-
-                        limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 premiumColumn'>" +
-                            "<span class='premium " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "PremiumLine' >" + formatMoney(premiumForCoverageLine) + "</span>" +
-                            "</div>";
-
-                        limitDeductibleString = limitDeductibleString + "<div class='col-xs-2 deductibleColumn'>" +
-                            "<span class='deductible " + responseJSON.coverages[i].productCode.replace(/ /g, '') + "DeductLine'>" + formatMoney(responseJSON.coverages[i].deductibles[key]) +
-                            "</span>";
-
-                        limitDeductibleString = limitDeductibleString + "</div>" +
-                            "</div>";
-                    });
-                    limitDeductibleString = limitDeductibleString + "<div class='row' style='border-top: 1px solid rgba(0, 0, 0, 0.19);'>" +
-                        "<div class='col-xs-6 ' >" +
-                        "<strong style='font-size:13px'>" + "</strong>" +
-                        "</div>" +
-                        "<div class='col-xs-2 ' >" +
-                        "<span'>" + "-" + "</span>" +
-                        "</div>" +
-                        "<div class='col-xs-2 ' >" +
-                        "<strong style='font-size:13px' class='" + responseJSON.coverages[i].productCode.replace(/ /g, '_') + " productTotalPremium" +
-                        "' id='" + responseJSON.coverages[i].productCode.replace(/ /g, '') + "PremiumTotal'>" + formatMoney(responseJSON.coverages[i].productTotalPremium) + "</strong>" +
-                        "</div>" +
-                        "<div class='col-xs-2 ' >" +
-                        "<span'>" + "-" + "</span>" +
-                        "</div>" +
-                        "</div>";
-                    limitDeductibleString = limitDeductibleString + "<span id='" + responseJSON.coverages[i].coverageCode + "_RateInfo' style='display:none'>" +
-                        responseJSON.coverages[i].rateInfo + "</span>";
-                    limitDeductibleString = limitDeductibleString + "<br>";
-
-
-                    lobLines.forEach(function (key, index) {
-                        for (var k = 0; k < responseJSON.coverages[i].lobDist[key].split(";").length; k++) {
-                            if (responseJSON.coverages[i].lobDist[key].split(";")[k].length > 0) {
-                                lobDistString = lobDistString + "<div class='row'";
-                                if (index % 2 == 0) {
-                                    lobDistString = lobDistString + " style= 'background-color: rgba(38, 80, 159, 0.13)'";
-                                }
-                                lobDistString = lobDistString + ">" +
-                                    "<div class='col-xs-4'>" +
-                                    "<span class='lineOfBusinessSpan'>" + responseJSON.coverages[i].lobDist[key].split(";")[k].split(",")[0] + "</span>" +
-                                    "</div>" +
-                                    "<div class='col-xs-3'>" +
-                                    "<span class='premiumSpan' id='" + responseJSON.coverages[i].coverageCode + "PremiumLOBTotal'>" + formatMoney(responseJSON.coverages[i].lobDist[key].split(";")[k].split(",")[1]) + "</span>" +
-                                    "</div>" +
-                                    "<div class='col-xs-3'>" +
-                                    "<span class='agentPercentSpan'>" + responseJSON.coverages[i].lobDist[key].split(";")[k].split(",")[3] + "</span>" +
-                                    "</div>" +
-                                    "</div>";
-                            }
-                        }
-                    });
-                }
-
-                $("#limitsDeductPremiumInsert").html(limitDeductibleString);
-                $("#premDistributionInsert").html(lobDistString);
-                $("#termsInsert").html(beginTerms + termsInsert);
-                $("#endorseInsert").html(endorseInsert);
-                var disclaimerInsert = "*TRIA is rejected as per form LMA 5091 U.S. Terrorism Risk Insurance Act 2002.  " +
-                    "TRIA can be afforded for an additional premium charge equal to 1% of the total premium indication.";
-                $("#disclaimerInsert").html(disclaimerInsert);
-
-                //$("#premDistributionInsert").html(lobDistString);
-
-                //Add NOAL to CPK if valid
-                //console.log("lENGTH = " + $('.NOAL01PremiumTotal').length)
-                if ($('#NOAL01PremiumTotal').length > 0) {
-                    var noalPrem = $('#NOAL01PremiumTotal').html();
-                    var cpkPrem = $('#BARCPKGCPremiumTotal').html();
-
-                    var v1 = noalPrem;
-                    v1 = v1.replace("$", "");
-                    v1 = v1.replace(/,/g, "");
-
-                    var v2 = cpkPrem;
-                    v2 = v2.replace("$", "");
-                    v2 = v2.replace(/,/g, "");
-
-                    $("#CPKPremiumLOBTotal").html(formatMoney(parseFloat(v1) + parseFloat(v2)));
-
-
-
-
-                }
-
-                $('.PIPCHOILimitsInput').maskMoney({
-                    prefix: '$',
-                    precision: "0"
-                });
-
-                //var tempLimit = parseInt($("#totalBudgetInput").val().replace(/\$|,/g, ''));
-                //console.log("LIMIT AMOUNT1 === " + tempLimit)
-                //if(riskChosen === "Film Projects With Cast (No Work Comp)"){
-                //    tempLimit = Math.ceil(tempLimit / 1000) * 1000;
-                //}
-                //console.log("LIMIT AMOUNT === " + tempLimit / 1000)
-
-                $('.PIPCHOILimitsInput').val($("#totalBudgetInput").val());
-                if (pipChoiceMisc.length > 0) {
-                    $(".MiscellaneousRentedEquipment").val(pipChoiceMisc);
-                }
-                if (pipChoiceExtra.length > 0) {
-                    $(".ExtraExpense").val(pipChoiceExtra);
-                }
-                if (pipChoiceProps.length > 0) {
-                    $(".PropsSetsWardrobe").val(pipChoiceProps);
-                }
-                if (pipChoiceThird.length > 0) {
-                    $(".ThirdPartyPropDamageLiab").val(pipChoiceThird);
-                }
-                if (pipChoiceNOHA.length > 0) {
-                    $(".HiredAutoPhysicalDamage").val(pipChoiceNOHA);
-                }
-                if (pipChoiceCast.length > 0) {
-                    $(".CastInsurance").val(pipChoiceCast);
-                }
-                if (pipChoiceCastEssential.length > 0) {
-                    $(".CastEssential").val(pipChoiceCastEssential);
-                }
-
-                $('.PIPCHOILimitsInput').trigger("keyup");
-                $('.CPKNOHALimitsInput').maskMoney({
-                    prefix: '$',
-                    precision: "0"
-                });
-                $('.CPKNOHALimitsInput').val($("#totalBudgetConfirm").val().split(".")[0]);
-
-                $('.CPKNOHALimitsInput').trigger("keyup");
-                getTaxInfo();
-                totalUpPremiumAndTax();
-                addOverflowTransitionClass();
-                $('#castInsuranceRequiredCheckBox').trigger('change');
-                ratePremiumsRunning = false;
-            });
-    }
-    else{
-        ratePremiumsRunning = false;
-    }
-}
-
-function buildReview() {
-    $("#reviewRiskType").html($("li.active").children("a.riskOptionLink").html().trim());
-    //alert($("#namedInsured").html());
-    $("#reviewNamedInsured").html($("#namedInsured").val());
-    $("#reviewMailingAddress").html($("#googleAutoAddress").val());
-    // console.log($("#cityMailing").val())
-    $("#reviewMailingCity").html($("#cityMailing").val());
-    $("#reviewMailingZipcode").html($("#zipCodeMailing").val());
-    $("#reviewMailingState").html($("#stateMailing").val());
-    $("#reviewPhoneNumber").html($("#phoneNumber").val());
-    $("#reviewEmail").html($("#namedInsuredEmail").val());
-    $("#reviewWebsite").html($("#website").val());
-
-    $("#reviewTotalBudget").html($("#totalBudgetConfirm").val());
-    $("#reviewPrincipalPhotographyDates").html($("#principalPhotographyDateStart").val() + " to " + $("#principalPhotographyDateEnd").val());
-    $("#reviewProposedEffective").html($("#proposedEffectiveDate").val());
-    $("#reviewProposedExpiration").html($("#proposedExpirationDate").val());
-    $("#reviewProposedTerm").html($("#proposedTermLength").val());
-    $("#reviewSubject").html($("#endorseInsert").html());
-
-
-    $("#reviewNameProduction").html($("#titleOfProduction").val());
-    $("#reviewNameProductionCompany").html($("#nameOfProductionCompany").val());
-    $("#reviewNamePrincipals").html($("#nameOfPrincipal").val());
-    $("#reviewNumberYearsExperience").html($("#numberOfYearsOfExperience").val());
-    $("#reviewPriorLosses").html($("#listOfPriorLosses").val());
-
-    $('#reviewLimitsDeducts').html("");
-    var riskCategory = getRiskCategoryChosen();
-    if (riskCategory == "Special Events") {
-        $("#reviewEventDays").html($("#howManyDaysIsTheEvent").val());
-        $("#reviewTotalAttendance").html($("#estimatedTotalAttendance").val());
-        $("#reviewLargestAttendees").html($("#largestNumberAttendees").val());
-
-        $(".specialEventsTableReview").css('display', "");
-        $(".filmProductionTableReview").css('display', "none");
-        $(".premiumReviewEvents").css('display', "");
-        $(".premiumReviewFilm").css('display', "none");
-        $(".totalBudgetReview").css('display', "none");
-        $(".photographyDatesReviewTable").css('display', "none");
-        $(".eventDaysReview").css('display', "");
-        $(".totalAttendanceReview").css('display', "");
-        $(".largestAttendeesReview").css('display', "");
-
-        // INDICATION RATING
-        specialEventsRateInfoCalculator()
-
-        var newHtmlString = "";
-        $("div#step-2 .showReviewTable").each(function () {
-            newHtmlString = newHtmlString + $(this).wrap('<p/>').parent().html();
-        });
-        $("div#step-3 .showReviewTable").each(function () {
-            newHtmlString = newHtmlString + $(this).wrap('<p/>').parent().html();
-        });
-        var newObject = $('<div/>').html(newHtmlString).contents();
-
-
-        $(newObject).find('.limitSelect').each(function () {
-            var text = $(this).children(':selected').text()
-            var htmlString = "<span class='limit'>" + text + "</span>"
-
-            $(this).replaceWith(htmlString);
-        });
-
-        // console.log($(newObject))
-        // console.log($(newObject).find('.limitInput'))
-
-
-        $(newObject).find('.limitInput').each(function () {
-            // console.log ($(this))
-            // console.log ($(this).val())
-            var elemID = $(this).attr('id');
-            var text = $('#' + elemID).val()
-            var htmlString = "<span class='limit'>" + text + "</span>"
-            $(this).replaceWith(htmlString);
-        });
-        // $(newObject).find('#limitMiscellaneous').each(function(){
-        //     // console.log ($(this))
-        //     // console.log ($(this).val())
-        //     var text = $(this).val()
-        //     var htmlString = "<span class='limit'>" + text + "</span>"
-        //
-        //     $(this).replaceWith(htmlString);
-        // });
-
-
-        $("#reviewLimitsDeductsSP").html(newObject);
-        var premString = "";
-        $('.premDistributionInsert').each(function () {
-            premString = premString + $(this).html();
-        });
-
-        var str = $("<div />").append($('#premDistributionInsert').clone()).html();
-        str = str + $("<div />").append($('.TaxHeaderRow').clone()[0]).html();
-        str = str + $("<div />").append($('#taxRows').clone()[0]).html();
-        // str = str + $("<div />").append($('.TotalPremiumRow').clone()[0]).html();
-        str = str + premString;
-        $("#reviewPremDistributionSP").html(str);
-        $("#reviewTerms").html($("#termsInsert").html());
-        //$("#reviewSubject").html($("#subjectInsert").html());
-        $("#reviewBrokerFee").html($("#brokerFeeInput").val());
-    }
-    else {
-        //FOR PIPCHOICE ONLY
-        var limitValueArray = [];
-        $("#limitsDeductPremiumInsert").find('.limitColumn').each(function () {
-            if ($(this).find('input').length) {
-                limitValueArray.push($(this).find('input').val());
-            }
-        });
-
-        var newHtmlString = "";
-        $(".showReviewTable").each(function () {
-            newHtmlString = newHtmlString + $(this).wrap('<p/>').parent().html();
-
-
-        });
-        var newObject = $('<div/>').html(newHtmlString).contents();
-        newObject.find('.limitColumn').each(function (index) {
-            if ($(this).find('input').length) {
-                $(this).html("<span class='limit'>" + limitValueArray[index] + "</span>");
-            }
-        });
-
-        $("#reviewLimitsDeducts").html(newObject);
-        var premString = "";
-        $('.premDistributionInsert').each(function () {
-            premString = premString + $(this).html();
-        });
-
-
-        var str = $("<div />").append($('#premDistributionInsert').clone()).html();
-        str = str + $("<div />").append($('.TaxHeaderRow').clone()[0]).html();
-        str = str + $("<div />").append($('#taxRows').clone()[0]).html();
-        str = str + $("<div />").append($('.TotalPremiumRow').clone()[0]).html();
-        str = str + premString;
-        $("#reviewPremDistribution").html(str);
-        $("#reviewTerms").html($("#termsInsert").html());
-        //$("#reviewSubject").html($("#subjectInsert").html());
-        $("#reviewBrokerFee").html($("#brokerFeeInput").val());
-    }
-    var reviewString = "";
-    var checkboxesReviewed = "";
-    var blankAnswer = "To Follow"
-
-    //RESET UWQUESTIONS
-    uwQuestionsMap = {};
-    uwQuestionsOrder = [];
-
-    $(".showReview").each(function () {
-        if ($(this).is(':visible')) {
-            //if ($(this).css("display") != "none") {
-            if ($(this).is("select")) {
-                // the input field is not a select
-                var answer = "";
-                if ($(this).find(":selected").text().length > 0) {
-                    answer = $(this).find(":selected").text()
-                }
-                else {
-                    answer = blankAnswer;
-                }
-                reviewString = reviewString + "<div class='row'>" +
-                    "<div class='col-xs-3 text-left'>" +
-                    "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
-                    "</div>" +
-                    "<div class='col-xs-9'>" +
-                    "<div class='reviewSpan uwReviewQuestion' id='review' data-originalID='" + $(this).attr('id') + "' >" + answer + "</div>" +
-                    "</div>" +
-                    "</div>";
-                reviewString = reviewString + "<br>";
-
-                //STORE IN UW QUESTIONS
-                uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
-                uwQuestionsOrder.push($(this).attr("data-reviewName"));
-
-            }
-            else if ($(this).is(':checkbox') && $(this).attr("data-reviewName")) {
-                // the input field is not a select
-                //alert($(this).attr("data-reviewName") + " - " + checkboxesReviewed + " - " +  checkboxesReviewed.indexOf($(this).attr("data-reviewName")));
-                if (checkboxesReviewed.indexOf($(this).attr("data-reviewName")) == -1) {
-                    var checkboxesCheckedString = "";
-
-                    var answer = "";
-
-
-                    reviewString = reviewString + "<div class='row'>" +
-                        "<div class='col-xs-3 text-left'>" +
-                        "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
-                        "</div>";
-
-                    $('input[data-reviewName="' + $(this).attr("data-reviewName") + '"]').each(function () {
-                        if ($(this).is(":checked")) {
-                            //alert($(this).val());
-                            checkboxesCheckedString = checkboxesCheckedString + $(this).val() + ", ";
-                        }
-                    });
-                    checkboxesCheckedString = checkboxesCheckedString.replace(/,\s*$/, "");
-
-                    if (checkboxesCheckedString.length > 0) {
-                        answer = checkboxesCheckedString;
-                    }
-                    else {
-                        //answer = blankAnswer;
-                        answer = "None";
-                    }
-
-                    reviewString = reviewString + "<div class='col-xs-9'>" +
-                        "<div class='reviewSpan'>" + answer + "</div>" +
-                        "</div>";
-
-                    reviewString = reviewString + "</div>";
-                    reviewString = reviewString + "<br>";
-                    checkboxesReviewed = checkboxesReviewed + $(this).attr("data-reviewName") + ";";
-
-
-                    //STORE IN UW QUESTIONS
-                    uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
-                    uwQuestionsOrder.push($(this).attr("data-reviewName"));
-                }
-                else {
-
-                }
-
-            }
-            else if ($(this).is(':radio') && $(this).attr("data-reviewName")) {
-                var answer = "";
-                if ($("input:radio[name='" + $(this).attr('name') + "']:checked").val().length > 0) {
-                    answer = $("input:radio[name='" + $(this).attr('name') + "']:checked").val();
-                }
-                else {
-                    answer = blankAnswer;
-                    //answer = "None";
-                }
-
-                reviewString = reviewString + "<div class='row'>" +
-                    "<div class='col-xs-3 text-left'>" +
-                    "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
-                    "</div>" +
-                    "<div class='col-xs-9'>" +
-                    "<div class='reviewSpan' >" + answer + "</div>" +
-                    "</div>" +
-                    "</div>";
-                reviewString = reviewString + "<br>";
-
-                //STORE IN UW QUESTIONS
-                uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
-                uwQuestionsOrder.push($(this).attr("data-reviewName"));
-            }
-            else if ($(this).attr("id") === "numberOfCastMembers") {
-                var answer = "";
-                $("#castMemberDetailContainer").find('.row').each(function () {
-                    if ($(this).css("display") != "none") {
-                        if ($(this).find(".castMemberName").val().trim().length > 0) {
-                            answer = answer + $(this).find(".castMemberName").val() + ",\t" + $(this).find(".castMemberAge").val() + ",\t" + $(this).find(".castMemberRole").val() + "\n"
-
-                        }
-                    }
-
-                });
-
-                if (answer === "") {
-                    answer = "To Follow";
-                }
-                reviewString = reviewString + "<div class='row'>" +
-                    "<div class='col-xs-3 text-left'>" +
-                    "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
-                    "</div>" +
-                    "<div class='col-xs-9'>" +
-                    "<div class='reviewSpan' style='white-space: pre-line'>" + $(this).val() + "</div>" +
-                    "</div>" +
-                    "</div>";
-
-                reviewString = reviewString + "<div class='row'>" +
-                    "<div class='col-xs-3 text-left'>" +
-                    "<label class='reviewLabel '>" + "Cast Members" + "</label><br>" +
-                    "</div>" +
-                    "<div class='col-xs-9'>" +
-                    "<div class='reviewSpan' style='white-space: pre-line'>" + answer + "</div>" +
-                    "</div>" +
-                    "</div>";
-                reviewString = reviewString + "<br>";
-
-                //STORE IN UW QUESTIONS
-                uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
-                uwQuestionsOrder.push($(this).attr("data-reviewName"));
-            }
-            else {
-                var answer = "";
-                if ($(this).val().length > 0) {
-                    answer = $(this).val()
-                }
-                else {
-                    answer = blankAnswer;
-                }
-
-                reviewString = reviewString + "<div class='row'>" +
-                    "<div class='col-xs-3 text-left'>" +
-                    "<label class='reviewLabel '>" + $(this).attr("data-reviewName") + "</label><br>" +
-                    "</div>" +
-                    "<div class='col-xs-9'>" +
-                    "<div class='reviewSpan' >" + answer + "</div>" +
-                    "</div>" +
-                    "</div>";
-                reviewString = reviewString + "<br>";
-
-                //STORE IN UW QUESTIONS
-                uwQuestionsMap[$(this).attr("data-reviewName")] = answer;
-                uwQuestionsOrder.push($(this).attr("data-reviewName"));
-            }
-
-            //console.log($(this).attr("data-reviewName"));
-        }
-
-
-    });
-    //alert("review String: " + reviewString);
-    $("#otherReviewInsert").html(reviewString);
-
-    //ATTACHED FILES
-    var filesInsert = "";
-    $(':file').each(function () {
-        var file = this.files[0];
-        if (file === undefined) {
-
-        }
-        else {
-            var ext = $(this).val().split('.').pop().toLowerCase();
-
-            //alert('Only .zip, .doc, .docx, .xlsx, .xls, .pdf are permitted');
-            var iconFilePath = "";
-            if (ext == "zip") {
-                iconFilePath = "zipIcon.png"
-            }
-            else if (ext == "doc") {
-                iconFilePath = "docIcon.png"
-            }
-            else if (ext == "docx") {
-                iconFilePath = "docxIcon.png"
-            }
-            else if (ext == "xls") {
-                iconFilePath = "xlsIcon.png"
-            }
-            else if (ext == "xlsx") {
-                iconFilePath = "xlsxIcon.png"
-            }
-            else if (ext == "pdf") {
-                iconFilePath = "pdfIcon.png"
-            }
-            else if (ext == "txt") {
-                iconFilePath = "txtIcon.png"
-            }
-            else {
-                iconFilePath = "fileIcon.png"
-            }
-
-            //console.log("Change: " + file);
-
-            var name = file.name;
-            var size = file.size;
-            var type = file.type;
-            filesInsert = filesInsert +
-                "<div class='row'>" +
-                "<div class='col-xs-12 text-left'>" +
-                "<div class='reviewSpan' id='review'><img src='/images/" + iconFilePath + "' height='16' width='16' style='margin-right:10px'/>" + name + "</div>" +
-                "</div>" +
-                "</div>";
-        }
-
-    });
-
-    $('#reviewAttachedFilesInsert').html(filesInsert);
-}
-
-function SubmissionBackup() {
-    var submission = this;
-    $(document).on('change', ":input[data-object='submission']", function () {
-        submission[$(this).attr('data-key')] = $(this).val();
-        // console.log(submission);
-    });
-    this.riskCategory = getRiskCategoryChosen(); //required
-    this.riskType = getRiskTypeChosen(); //required
-    this.brokerEmail = $('#userDetails-email').html().trim(); //required
-    this.proposedEffectiveDate;
-    this.proposedExpirationDate;
-    this.proposedTermLength;
-    this.totalBudget;
-    this.expectedPremium;
-
-
-    //INSURED INFO
-    this.namedInsured;
-    this.streetNameMailing;
-    this.cityMailing;
-    this.stateMailing;
-    this.zipCodeMailing;
-    this.producerID; //TVD
-    this.namedInsuredPhone;
-    this.namedInsuredEmail
-    this.FEINSSN
-    this.businessStructureID
-    this.NAIC; //NCCI
-    this.SIC;
-    this.attention; //Broker First and Last Name
-    this.contactID //user.aimContactID
-    this.website;
-
-
-    this.productsArray = [];
-    $(document).on('change', ":input[data-object='product']", function () {
-        submission.productsArray = []
-        $(":input[data-object='product']").each(function () {
-            if ($(this).is(":checked")) {
-                var prod = new Product($(this).attr('data-value'));
-
-                submission.productsArray.push(new Product($(this).attr('data-value')))
-            }
-        });
-        // console.log(submission)
-    });
-
-    this.readyForAIMDB = function () {
-
-    }
-}
-
-this.Product = function Product(productID) {
-    this.productID = productID;
-    this.productName;
-    this.coverageID;
-    this.Lob = function Lob() {
-        this.parentProductID
-        this.description;
-        this.limit;
-        this.deductible;
-        this.premium;
-    }
-    this.terms;
-    this.endorse;
-    this.companyID; //marketcompany
-    this.companyName;
-    this.companyNAIC;
-    this.grossCommission;
-    this.agentCommission;
-    this.totalProductPremium
-    this.statusID;
-
-    //Commercial General Liability	$450	15.0
-    //NOA Liability	$450	15.0
-    this.LobDistribSched;
-
-    //CGL	450	28.0	15.0
-    //NOAL	450	28.0	15.0
-    this.lobDistrib;
-
-    this.rateInfo;
-
-    this.taxState;
-    this.taxesPaidBy;
-    this.taxesPaidByID;
-    this.TaxLine = function TaxLine() {
-        this.taxDescription;
-        this.taxCode;
-        this.taxCalculatedAmount;
-        this.taxRate;
-    }
-
-
-    this.brokerFee;
-    this.webQuoteFee;
-    this.feeSchedule;
-    this.versionPremDist
-}
-
-function specialEventsRateInfoCalculator() {
-    var specialEventCGLRateInfo = ""
-
-    if (riskChosen === "Exhibitor" ||
-        riskChosen === "Concessionaires Non Food Sales" ||
-        riskChosen === "Concessionaires Food Sales" ||
-        riskChosen === "Attractions / Performers") {
-
-        specialEventCGLRateInfo = specialEventCGLRateInfo + "  Rate" + "\t" + riskClass + "\n";
-        specialEventCGLRateInfo = specialEventCGLRateInfo + "  Attendance" + "\t" + $("#estimatedTotalAttendance").val() + "\n";
-        specialEventCGLRateInfo = specialEventCGLRateInfo + "  Event Days" + "\t" + $("#howManyDaysIsTheEvent").val() + "\n";
-        specialEventCGLRateInfo = specialEventCGLRateInfo + "  Number of Exhibitors" + "\t" + numberOfExhibitors + "\n";
-        specialEventCGLRateInfo = specialEventCGLRateInfo + "  Rated Premium" + "\t" + totalPremium + "\n";
-
-    }
-    else if (getCGLBasePremium() != null){
-        specialEventCGLRateInfo = specialEventCGLRateInfo + "  Rate" + "\t" + rate + "\n";
-        specialEventCGLRateInfo = specialEventCGLRateInfo + "  Attendance" + "\t" + $("#estimatedTotalAttendance").val() + "\n";
-        specialEventCGLRateInfo = specialEventCGLRateInfo + "  Event Days" + "\t" + $("#howManyDaysIsTheEvent").val() + "\n";
-        specialEventCGLRateInfo = specialEventCGLRateInfo + "  Minimum Premium" + "\t" + getCGLMinimumPremium(minimumPremium) + "\n";
-        specialEventCGLRateInfo = specialEventCGLRateInfo + "  Rated Premium" + "\t" + getCGLBasePremium(ratedPremium) + "\n";
-    }
-    // ALCOHOL
-    if ($('input[name="willAlcoholBeServed"]:checked').val() == "Yes") {
-        specialEventCGLRateInfo = specialEventCGLRateInfo + "Liquor" + "\t" + "" + "\n";
-        specialEventCGLRateInfo = specialEventCGLRateInfo + "  Rate" + "\t" + liquorRate + " Rate per 1000" + "\n";
-        specialEventCGLRateInfo = specialEventCGLRateInfo + "  Minimum Premium" + "\t" + liquorMinimumPremium + "\n";
-        specialEventCGLRateInfo = specialEventCGLRateInfo + "  Rated Premium" + "\t" + liquorRatePremium + "\n";
-        specialEventCGLRateInfo = specialEventCGLRateInfo + "  State" + "\t" + $("#selectState :selected").text() + "\n";
-    }
-    // GENERAL AGGREGATE
-    if ($('.limitGeneralAggregate').find('option:selected').val() == "additional") {
-        specialEventCGLRateInfo = specialEventCGLRateInfo + "General Aggregate" + "\t" + "" + "\n";
-        specialEventCGLRateInfo = specialEventCGLRateInfo + "  Flat Rate" + "\t" + 250 + "\n";
-        specialEventCGLRateInfo = specialEventCGLRateInfo + "  Limit" + "\t" + 2000000 + "\n";
-    }
-    // PRODUCT
-    if ($('.limitProductAndCompletedOperations').find('option:selected').val() == "additional") {
-        specialEventCGLRateInfo = specialEventCGLRateInfo + "Products and Completed Operations" + "\t" + "" + "\n";
-        specialEventCGLRateInfo = specialEventCGLRateInfo + "  Flat Rate" + "\t" + 250 + "\n";
-        specialEventCGLRateInfo = specialEventCGLRateInfo + "  Limit" + "\t" + 2000000 + "\n";
-    }
-    // PREMISES DAMAGE
-    if ($('.limitPremisesDamage').find('option:selected').val() == "additional") {
-        if (termLenghtDays > 0 && termLenghtDays <= 90) {
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "Damages to Premises Rented to you" + "\t" + "" + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Flat Rate" + "\t" + 100 + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Limit" + "\t" + 1000000 + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Term Length" + "\t" + temptermLenghtDays + "\n";
-        }
-
-        else if (termLenghtDays > 91 && termLenghtDays <= 180) {
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "Damages to Premises Rented to you" + "\t" + "" + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Flat Rate" + "\t" + 250 + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Limit" + "\t" + 1000000 + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Term Lenght" + "\t" + temptermLenghtDays + "\n";
-        }
-
-        else if (termLenghtDays > 181) {
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "Damages to Premises Rented to you" + "\t" + "" + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Flat Rate" + "\t" + 450 + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Limit" + "\t" + 1000000 + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Term Lenght" + "\t" + temptermLenghtDays + "\n";
-        }
-    }
-    // MEDICAL
-    if ($('.limitMedicalExpenses').find('option:selected').val() == "additional") {
-        specialEventCGLRateInfo = specialEventCGLRateInfo + "Medical Expenses" + "\t" + "" + "\n";
-        specialEventCGLRateInfo = specialEventCGLRateInfo + "  Flat Rate" + "\t" + 250 + "\n";
-        specialEventCGLRateInfo = specialEventCGLRateInfo + "  Limit" + "\t" + 5000 + "\n";
-    }
-    // THIRD PARTY PROPERTY
-    if ($("#thirdPartyCheckbox").is(':checked')) {
-        if (eventDays > 0 && eventDays <= 30) {
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "Third Party Property Damage" + "\t" + "" + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Flat Rate" + "\t" + 420 + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Limit" + "\t" + 1000000 + "\n";
-        }
-        else if (eventDays > 30 && eventDays <= 60) {
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "Third Party Property Damage" + "\t" + "" + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Flat Rate" + "\t" + 820 + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Limit" + "\t" + 1000000 + "\n";
-        }
-        else if (eventDays > 60 && eventDays <= 90) {
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "Third Party Property Damage" + "\t" + "" + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Flat Rate" + "\t" + 1235 + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Limit" + "\t" + 1000000 + "\n";
-        }
-    }
-    // MISCELLANEOUS EQUIPMENT
-    if ($("#miscUsaCheckbox").is(':checked')) {
-        if (eventDays > 0 && eventDays <= 30) {
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "Miscellaneous Equipment" + "\t" + "" + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Rate" + "\t" + 0.50 + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Minimum Premium" + "\t" + 100 + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Rated Premium" + "\t" + limit + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Limit" + "\t" + $("#limitMiscellaneous").val() + "\n";
-        }
-        else if (eventDays > 30 && eventDays <= 90) {
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "Miscellaneous Equipment" + "\t" + "" + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Rate" + "\t" + 0.75 + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Minimum Premium" + "\t" + 250 + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Rated Premium" + "\t" + limit + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Limit" + "\t" + $("#limitMiscellaneous").val() + "\n";
-        }
-    }
-    if ($("#miscWorldCheckbox").is(':checked')) {
-        if (eventDays > 0 && eventDays <= 30) {
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "Miscellaneous Equipment" + "\t" + "" + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Rate" + "\t" + 0.63 + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Minimum Premium" + "\t" + 125 + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Rated Premium" + "\t" + limit + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Limit" + "\t" + $("#limitMiscellaneous").val() + "\n";
-        }
-        else if (eventDays > 30 && eventDays <= 90) {
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "Miscellaneous Equipment" + "\t" + "" + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Rate" + "\t" + 0.94 + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Minimum Premium" + "\t" + 313 + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Rated Premium" + "\t" + limit + "\n";
-            specialEventCGLRateInfo = specialEventCGLRateInfo + "  Limit" + "\t" + $("#limitMiscellaneous").val() + "\n";
-        }
-    }
-
-    return specialEventCGLRateInfo
-}
-
-function versionModeFillOutQuestions(){
-    //VERSION MODE FILL OUT FIELDS
-    //USING /test/jasmine/spec/utils/testHelper.js
-
-    var loadMap = origVersionQuestionAnswerMap
-
-    $("body").css("pointer-events", "none");
-
-
-    //STEP 1 ACTIONS
-    $('.card').eq(0).click();
-
-    $('#progressBarHeader').html("Loading Version")
-    $('.progress-bar').attr('aria-valuenow', "0").css("width", "0%");
-    $('#progressBarModal').modal('show');
-    $('.progress-bar').attr('aria-valuenow', "75").animate({
-        width: "75%"
-    }, 5000);
-    var value;
-    riskChosen = loadMap['riskChosen'];
-
-    $('a').each(function() {
-        if ($(this).html() === loadMap['riskChosen']) {
-
-            // alert("click " + $(this).html())
-            var domObject = $(this);
-            // console.log($(domObject).html())
-            $(domObject).trigger('click');
-        }
-    });
-
-    //DISABLE SWITCHING RISKTYPES
-    $(".drawer, .drawer a").css("pointer-events", "none");
-
-    //STEP 2 ACTIONS
-
-
-
-    if (loadMap['proposedEffectiveDate'].length > 0) {
-        selectDate($('#proposedEffectiveDate'), loadMap['proposedEffectiveDate'])
-    }
-    if (loadMap['proposedExpirationDate'].length > 0) {
-        selectDate($('#proposedExpirationDate'), loadMap['proposedExpirationDate'])
-    }
-    if (loadMap['proposedTermLength'].length > 0) {
-        $('#proposedTermLength').val(loadMap['proposedTermLength']);
-        //$("#proposedTermLength").trigger("change");
-    }
-    if (loadMap['totalBudgetConfirm'].length > 0) {
-        $('#totalBudgetConfirm').val(loadMap['totalBudgetConfirm']);
-        $("#totalBudgetConfirm").trigger("change");
-        getProductsForRisk();
-    }
-    // enableCoverageOptionsContainer()
-
-    //MAKE SURE DATEPICKERS ARE CLOSE
-    waitUntilThisIsTrue = undefined
-    thenDoThis = undefined
-    waitUntilThisIsTrue = function(){
-        return (Object.keys(outstandingCalls).length == 0
-        )
-    }
-    thenDoThis = function(){
-        $('.datepicker').datepicker('hide');
-    }
-    waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
-
-
-
-
-    //SELECT EPKG OR CPK OR BOTH
-    //WAIT FOR LOAD PRODUCTS
-    var waitUntilThisIsTrue = function(){
-        return (Object.keys(outstandingCalls).length == 0 &&
-            $('#EPKGcoverage').is(':visible')
-        )
-    }
-    var thenDoThis = function(){
-        if(loadMap['EPKGcoverage'] == true){
-            $('#EPKGcoverage').prop('checked', true)
-            $('#EPKGcoverage').trigger('change')
-
-        }
-    }
-    waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
-
-    waitUntilThisIsTrue = undefined
-    thenDoThis = undefined
-    waitUntilThisIsTrue = function(){
-        return (Object.keys(outstandingCalls).length == 0 &&
-            $('#CPKCGLcoverage').is(':visible')
-        )
-    }
-    thenDoThis = function(){
-        if(loadMap['EPKGcoverage'] == true){
-            $('#CPKCGLcoverage').prop('checked', true)
-            $('#CPKCGLcoverage').trigger('change')
-        }
-    }
-    waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
-
-
-    Object.keys(loadMap).forEach(function(key) {
-        waitUntilThisIsTrue = undefined
-        thenDoThis = undefined
-        waitUntilThisIsTrue = function(){
-            return (Object.keys(outstandingCalls).length == 0
-            )
-        }
-        thenDoThis = function(){
-            value = loadMap[key];
-            var domObject = $('#' + key);
-            if ($(domObject).css("display") != "none") {
-                $(domObject).css('display', '');
-            }
-
-            if ($(domObject).is("select")) {
-                $(domObject).val(value);
-                //console.log("SELECT TYPE = " + domObject);
-                // $(domObject).trigger("change");
-            }
-            else if ($(domObject).is(':checkbox')) {
-                //console.log("CHECKBOX TYPE = " + domObject);
-                if (value === true) {
-                    $(domObject).prop("checked", true);
-
-                }
-                else {
-                    $(domObject).prop("checked", false);
-                }
-                // $(domObject).trigger("change");
-
-            }
-            else if ($(domObject).is(':radio')) {
-                //console.log("RADIO TYPE = " + domObject);
-                if (value === true) {
-                    $(domObject).prop("checked", true);
-                }
-                else {
-                    //$(domObject).prop("checked", false);
-                }
-                // $(domObject).trigger("change");
-
-            }
-            else if ($(domObject).is(':file')) {
-                //console.log("RADIO TYPE = " + domObject);
-                // $(domObject).get(0).files.push(value);
-
-            }
-            else {
-                //console.log("ELSE TYPE = " + domObject);
-                $(domObject).val(value);
-                // $(domObject).trigger("change");
-
-            }
-        }
-        waitUntilThisThenDoThis(waitUntilThisIsTrue, thenDoThis);
-    });
-
-    ratePremiums()
-    $('.progress-bar').attr('aria-valuenow', "100").css("width", "100%");
-    $('#progressBarModal').modal('hide');
-
-
-    $("body").css("pointer-events", "");
-
-}
-
-function selectDate(dateInputElem, mmddYYYY){
-    //OPEN DATE PICKER
-    $(dateInputElem).click();
-    $(dateInputElem).focus();
-    $(dateInputElem).datepicker('show');
-
-
-
-    //CLICK ON DATE
-    var d = new Date();
-    var month = mmddYYYY.split('/')[0];
-    var day = mmddYYYY.split('/')[1];
-    var year = mmddYYYY.split('/')[2];
-    d.setMonth(parseInt(month-1))
-    d.setDate(parseInt(day))
-    d.setYear(parseInt(year))
-
-    $(dateInputElem).datepicker('setDate', d);
-    $(dateInputElem).datepicker('hide');
-}
-
-function testEmail(){
-    $.ajax({
-        method: "POST",
-        url: "/async/emailTest",
-        data: {
-
-        },
-        cache: false,
-        contentType: false,
-        processData: false
-    }).done(function (msg) {
-        alert(msg)
-    });
-}
-
-*/

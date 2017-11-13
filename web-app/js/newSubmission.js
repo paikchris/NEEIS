@@ -3953,7 +3953,7 @@ function testEmail(){
 function testPdf(){
     $.ajax({
         method: "POST",
-        url: "/async/testPdf",
+        url: "/async/pdfTest",
         data: {
 
         },

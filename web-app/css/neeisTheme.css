@@ -25,12 +25,17 @@ nav#squarespaceNavBar.navbar.navbar-squarespace.navbar-fixed-top{
     font-size: 17px;
 }
 .badge-notify{
-    /*background:red;*/
     position: relative;
     font-size: 9px;
     top: -15px;
     left: -12px;
 }
+
+.badge-notify-new{
+    background:rgb(209, 0, 0);
+}
+
+
 a#squarespaceBrandText{
     font-size: 21px;
     font-weight: 500;
@@ -77,9 +82,15 @@ a#squarespaceBrandText{
     line-height: 1em;
     font-weight: 400;
 }
-.dropdown-menu>li{
-    margin-top: 8px;
-    margin-bottom: 8px;
+.dropdown-menu>li.notificationLI{
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding: 6px 0;
+}
+.dropdown-menu>li.divider{
+    margin-top: 0px;
+    margin-bottom: 0px;
 }
 .btn-sqspcLogin{
     background-color: transparent;
@@ -262,6 +273,14 @@ button.close span{
     top:0px;
     right:0px;
 }
+button.minimize {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    padding: 0px 6px;
+    height: 15px;
+    font-size: 6px;
+}
 
 /*INPUTS*/
 input.pulse{
@@ -288,7 +307,8 @@ input.input-xs{
     left:       0;
     height:     100%;
     width:      100%;
-    background-color: rgba(19, 25, 34, 0.75);
+
+    background-color: rgba(76, 124, 142, 0.67);
     /*background-color: rgba( 255, 255, 255, .8 );*/
     /*url(/images/loading.gif)*/
     /*50% 50%*/
@@ -321,6 +341,19 @@ input.input-xs{
     -webkit-animation-delay: -1.0s;
     animation-delay: -1.0s;
 }
+.loadingModalText{
+    text-align: center;
+    position: relative;
+    left: 10px;
+    top: 120px;
+    font-size:12px;
+    font-weight: 500;
+}
+.loadingModalText2{
+    color: white;
+    font-weight: 500;
+}
+
 @-webkit-keyframes sk-bounce {
     0%, 100% { -webkit-transform: scale(0.0) }
     50% { -webkit-transform: scale(1.0) }

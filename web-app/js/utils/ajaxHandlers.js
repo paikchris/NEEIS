@@ -3,7 +3,7 @@ var outstandingCalls = {}
 $(document).ready(function () {
     $.ajaxSetup({
         tryCount : 0,
-        retryLimit : 3,
+        retryLimit : 0,
         beforeSend: function(xhr, settings){
             settings.callID = generateAjaxID();
         },

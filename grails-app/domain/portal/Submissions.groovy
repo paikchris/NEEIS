@@ -15,6 +15,8 @@ class Submissions {
     String uwQuestionMap
     String uwQuestionsOrder
     String submitGroupID
+    String operationType
+    String userInputMap
 
 
 
@@ -33,5 +35,11 @@ class Submissions {
         uwQuestionsOrder(nullable: true)
         uwQuestionsOrder(maxSize: 8000)
         submitGroupID(nullable: true)
+        operationType(nullable:true)
+        userInputMap{nullable:true}
+    }
+
+    static mapping = {
+        userInputMap type: 'text'
     }
 }

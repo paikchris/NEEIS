@@ -53,15 +53,15 @@ class Products {
     String rateCode
     String uwQuestions
     String requiredQuestions
+    String additionalOptionsArray
 
     static constraints = {
         productID unique:true, maxSize: 8
         productName maxSize: 55
-        coverage maxSize: 6
+        coverage nullable: true, maxSize: 6
         lobDist nullable:true, maxSize: 240
         flatPremium nullable:true, scale: 2, maxSize:32
-        rate nullable:true
-        rate (scale: 4, maxSize:32)
+        rate nullable:true, scale: 4, maxSize:32
         rateBasis nullable:true
         minPremium nullable:true
 
@@ -88,6 +88,8 @@ class Products {
         uwQuestions nullable: true
         requiredQuestions nullable: true
 
+        additionalOptionsArray nullable:true
+
     }
 
     static mapping = {
@@ -102,6 +104,7 @@ class Products {
         rateCode defaultValue: 'NONE'
         uwQuestions type:'text'
         requiredQuestions type:'text'
+        additionalOptionsArray type:'text'
     }
 
     def getDisplayName(column){

@@ -7,7 +7,7 @@ var skipListID = {
     proposedTermLength:""
 }
 
-var notString = "#proposedTermLength"
+var notString = "#proposedTermLength, .TestHelperTestFilled, :disabled"
 
 var monthNames = [
     "January", "February", "March",
@@ -16,77 +16,120 @@ var monthNames = [
     "November", "December"
 ];
 
-function autoFillAll(){
-    try {
-        var htmlElementArray = $("input:visible:not('" + notString + "'), select:visible ").toArray()
-        var count = 0;
-        autoFillInputCallback(htmlElementArray, count)
-
-
-    }
-    catch(e){
-        console.log ("Error: " + e)
-    }
-    // $('input:visible').each(function(){
-    //
-    // });
-
-}
-
 function autoFillAllElse(){
-    try {
-        var htmlElementArray = $("input:visible:not('#proposedTermLength'):not('input:disabled'), select:visible ").toArray()
+        var htmlElementArray = $("input:visible, select:visible").not(notString).toArray()
         var count = 0;
-        autoFillInputCallback(htmlElementArray, count)
 
 
-    }
-    catch(e){
-        console.log ("Error: " + e)
-    }
-    // $('input:visible').each(function(){
-    //
-    // });
+        autoFillInputCallback(htmlElementArray)
+
 
 }
 
-function autoFillInputCallback(htmlElementArray, count){
-    if(count < htmlElementArray.length){
-        var htmlElement = htmlElementArray[count];
-        var okToType = false;
+function autoFillInputCallback(htmlElementArray){
 
+    if(htmlElementArray.length > 0){
+        var htmlElement = htmlElementArray[0];
+        var okToType = false;
         var string = chance.string({length: 10});
-        if($(htmlElement).is('input:text') ) {
-            if($(htmlElement).hasClass('datepicker')){
-                if($(htmlElement).attr('id') === "proposedEffectiveDate"){
+
+        console.log(htmlElement)
+        //Mark Filled
+        $(htmlElement).addClass('TestHelperTestFilled')
+
+        if($(htmlElement).hasClass('maskMoney')){
+            var money = chance.integer({min: 0, max: 200000});
+            $(htmlElement).maskMoney('mask', money);
+            $(htmlElement).trigger('change')
+
+            htmlElementArray.shift()
+            autoFillInputCallback(htmlElementArray)
+        }
+        //TESTING ONLY
+        else if($(htmlElement).attr('id') == 'operationsDropdown'){
+            var numOptions = $(htmlElement).find('option').length - 1;
+            var randomSelected = chance.integer({min: 0, max: numOptions});
+
+            // $(htmlElement).find('option:selected').removeAttr('selected');
+            // $(htmlElement).find('option').eq(randomSelected).attr('selected', 'selected');
+            var valueOfOption = $(htmlElement).find('option').eq(randomSelected).val()
+            console.log(valueOfOption)
+            $(htmlElement).val(valueOfOption)
+
+            $(htmlElement).trigger('change')
+
+            // $(htmlElement).val('O12')
+            // $(htmlElement).trigger('change')
+
+            htmlElementArray.shift()
+            autoFillInputCallback(htmlElementArray)
+        }
+        else if($(htmlElement).attr('id') == 'CGL_CoverageCheckbox'){
+            $(htmlElement).prop('checked', true)
+            $(htmlElement).trigger('change')
+
+            htmlElementArray.shift()
+            autoFillInputCallback(htmlElementArray)
+        }
+        else if($(htmlElement).attr('id') == 'EPKG_CoverageCheckbox'){
+            $(htmlElement).prop('checked', false)
+            $(htmlElement).trigger('change')
+
+            htmlElementArray.shift()
+            autoFillInputCallback(htmlElementArray)
+
+        }
+        else if ($(htmlElement).is('input:text') && $(htmlElement).val().trim().length === 0) {
+            if ($(htmlElement).hasClass('datepicker')) {
+                if ($(htmlElement).attr('id') === "proposedEffectiveDate") {
                     var dateString = autoGetTodaysDate();
-                    autoFillType(dateString, htmlElement, htmlElementArray, count)
+                    $(htmlElement).val(dateString)
+                    $(htmlElement).attr('placeholder', '')
+                    $(htmlElement).trigger('change')
+
+
+                    htmlElementArray.shift()
+                    autoFillInputCallback(htmlElementArray)
                 }
-                else if($(htmlElement).attr('id') === "proposedExpirationDate"){
+                else if ($(htmlElement).attr('id') === "proposedExpirationDate") {
                     var dateString = autoGetMonthFutureDate();
-                    autoFillType(dateString, htmlElement, htmlElementArray, count)
+                    console.log(dateString)
+                    $(htmlElement).val(dateString)
+                    $(htmlElement).attr('placeholder', '')
+                    $(htmlElement).trigger('change')
+
+                    htmlElementArray.shift()
+                    autoFillInputCallback(htmlElementArray)
+
                 }
-                else{
+                else {
                     var dateString = autoGetTodaysDate();
-                    autoFillType(dateString, htmlElement, htmlElementArray, count)
+                    $(htmlElement).val(dateString)
+
+                    htmlElementArray.shift()
+                    autoFillInputCallback(htmlElementArray)
+
                 }
             }
-            else if($(htmlElement).hasClass('currencyInput')){
+            else if ($(htmlElement).hasClass('currencyInput')) {
                 var money = chance.integer({min: 0, max: 200000});
-                autoFillType(money+"", htmlElement, htmlElementArray, count)
+                autoFillType(money + "", htmlElement, htmlElementArray)
             }
-            else if($(htmlElement).hasClass('phoneNumberMask')){
-                autoFillType(chance.phone({ formatted: false }), htmlElement, htmlElementArray, count)
+            else if ($(htmlElement).hasClass('phoneNumberMask')) {
+                autoFillType(chance.phone({formatted: false}), htmlElement, htmlElementArray)
             }
-            else if($(htmlElement).attr('id') == "zipCodeMailing"){
-                autoFillType(chance.zip(), htmlElement, htmlElementArray, count)
+            else if ($(htmlElement).attr('id') == "zipCodeMailing") {
+                autoFillType(chance.zip(), htmlElement, htmlElementArray)
             }
-            else{
-                autoFillType(chance.word(), htmlElement, htmlElementArray, count)
+            else if ($(htmlElement).attr('id') == "numericInputOnly") {
+                autoFillType(chance.zip(), htmlElement, htmlElementArray)
+            }
+            else {
+                autoFillType(chance.word(), htmlElement, htmlElementArray)
             }
         }
-        else if($(htmlElement).is('select') && $(htmlElement).val() === 'invalid'){
-            var numOptions = $(htmlElement).find('option').length -1;
+        else if ($(htmlElement).is('select') && $(htmlElement).val() === 'invalid') {
+            var numOptions = $(htmlElement).find('option').length - 1;
             var randomSelected = chance.integer({min: 0, max: numOptions});
 
             $(htmlElement).find('option:selected').removeAttr('selected');
@@ -95,49 +138,52 @@ function autoFillInputCallback(htmlElementArray, count){
 
             $(htmlElement).trigger('change');
             $(htmlElement).focus();
-            count++;
-            autoFillInputCallback(htmlElementArray, count);
+
+            //Pop this element from the array, shift pops first element from array
+            htmlElementArray.shift()
+            autoFillInputCallback(htmlElementArray)
         }
-        else if($(htmlElement).is('input:radio') ){
+        else if ($(htmlElement).is('input:radio')) {
             var groupName = $(htmlElement).attr('name');
-            var numRadioButtons = $("input:radio[name='" + groupName + "']").length -1
+            var numRadioButtons = $("input:radio[name='" + groupName + "']").length - 1
             var randomSelected = chance.integer({min: 0, max: numRadioButtons});
 
             $("input:radio[name='" + groupName + "']").eq(randomSelected).prop("checked", true);
             // $("input:radio[name='" + groupName + "']").val(randomSelected);
 
             $(htmlElement).trigger('change');
-            count++;
-            autoFillInputCallback(htmlElementArray, count);
+
+            //Pop this element from the array, shift pops first element from array
+            htmlElementArray.shift()
+            autoFillInputCallback(htmlElementArray)
         }
-        else if($(htmlElement).is('input:checkbox') ){
+        else if ($(htmlElement).is('input:checkbox')) {
             $(htmlElement).prop("checked", chance.bool());
 
             $(htmlElement).trigger('change');
-            count++;
-            autoFillInputCallback(htmlElementArray, count);
+
+            //Pop this element from the array, shift pops first element from array
+            htmlElementArray.shift()
+            autoFillInputCallback(htmlElementArray)
         }
-        else if($(htmlElement).attr('type') == "number" ){
+        else if ($(htmlElement).attr('type') == "number") {
             var integerString = chance.integer({min: 0, max: 100}) + "";
-            autoFillType(integerString, htmlElement, htmlElementArray, count)
+            autoFillType(integerString, htmlElement, htmlElementArray)
         }
-        else if($(htmlElement).attr('type') == "email" ){
-            autoFillType(chance.email(), htmlElement, htmlElementArray, count)
+        else if ($(htmlElement).attr('type') == "email") {
+            autoFillType(chance.email(), htmlElement, htmlElementArray)
         }
         else {
-
-            count++
-            autoFillInputCallback(htmlElementArray, count)
+            //Pop this element from the array, shift pops first element from array
+            htmlElementArray.shift()
+            autoFillInputCallback(htmlElementArray)
         }
+
+
+
+
     }
     else{
-        //check for new visible inputs
-        var newArray = $("input:visible:not('" + notString + "'), select:visible ").toArray();
-        var diff = $(htmlElementArray).not(newArray).get();
-
-        // console.log("NEW VISIBLES: " + diff);
-
-
     }
 }
 
@@ -164,6 +210,10 @@ function autoGetMonthFutureDate(){
     var day = d.getDate();
     var year = d.getFullYear();
 
+    if(month > 12){
+        month = 1
+        year = year + 1
+    }
     if (day < 10) { day = '0' + day; }
     if (month < 10) { month = '0' + month; }
 
@@ -557,7 +607,7 @@ function typeThisThenExpectThat(typeThis, typeElement, check, done){
     }).autotype(typeThis, {delay: 1});
 }
 
-function autoFillType(typeThis, typeElement, htmlElementArray, count){
+function autoFillType(typeThis, typeElement, htmlElementArray){
     $(typeElement).click();
     $(typeElement).focus();
     $(typeElement).val("");
@@ -565,8 +615,10 @@ function autoFillType(typeThis, typeElement, htmlElementArray, count){
     try{
         $(typeElement).bind('autotyped', function(){
             $(typeElement).trigger('change');
-            count++;
-            autoFillInputCallback(htmlElementArray, count);
+
+            //Pop this element from the array, shift pops first element from array
+            htmlElementArray.shift()
+            autoFillInputCallback(htmlElementArray)
         }).autotype(typeThis, {delay: 1});
     }
     catch(e){

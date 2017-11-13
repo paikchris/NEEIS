@@ -1,71 +1,101 @@
 package portal
 
-import grails.test.mixin.TestMixin
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import grails.test.mixin.support.GrailsUnitTestMixin
 import spock.lang.Specification
-import sun.security.krb5.internal.AuthContext
-
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 
-/**
- * See the API for {@link grails.test.mixin.support.GrailsUnitTestMixin} for usage instructions
- */
-//@TestMixin(GrailsUnitTestMixin)
 @TestFor(AuthController)
+@Mock([User])
 class AuthControllerSpec extends Specification {
 
-    Logger log = LoggerFactory.getLogger(AuthControllerSpec)
+    void "TESTING VALID LOGIN " (){
 
-
-
-    def setup() {
-        //AuthController aController = new AuthController()
-        log.info "******* IN THE SETUP() *******"
-    }
-
-    def cleanup() {
-    }
-
-    void "test existing user Aim/Online"() {
+        setup:
+        user.save()
+        controller.params.email = "carolinnem@outlook.com";
+        controller.params.password = "password";
 
         when:
-        controller.registerUser()
-        controller.email  = "andee@neeis.com"
+        request.method = 'POST';
+        controller.login();
 
         then:
-        log.info "******* EXISTING USER AIM/WEB *******"
-        controller.userExistsInAIM == true
-        controller.registerError == "User with that email already exists" //in the Aim
+        response.redirectUrl != null;
+        response.redirectedUrl == "/main/newSubmission";
+
+        where:
+        user = new User(firstName:"Carolinne",
+                        lastName: "Mesquita",
+                        email: "carolinnem@outlook.com",
+                        password: "password",
+                        userRole: "Underwriter");
 
     }
 
-    void "test existing non-user Aim/Online"() {
+    void "TESTING INVALID LOGIN " (){
+
+        setup:
+        user.save()
+        controller.params.email = "carolinnem@neeis.com";
+        controller.params.password = "password";
 
         when:
-        controller.registerUser()
-        controller.email  = "carolinne@neeis.com"
+        request.method = 'POST';
+        controller.login();
 
         then:
-        controller.userExistsInAIM == false
-        controller.u != null
-        controller.registerError != "User with that email already exists"
+        response.redirectUrl != null;
+        response.redirectedUrl == "/auth/index";
+
+        where:
+        user = new User();
 
     }
 
-    void "test existing non-user Online"() {
+    void "TESTING LOGOUT" (){
 
         when:
-        controller.registerUser()
-        controller.email  = "pheonix@hrh.com"
+        controller.logout();
 
         then:
-        controller.userExistsInAIM == false
-        controller.u != null
-        controller.registerError != "User with that email already exists"
+        response.redirectUrl == "/";
+    }
 
+    void "TESTING CHECK EXISTING EMAIL" (){ // not working
+        setup:
+        user.save()
+        controller.params.email = "carolinnem@outlook.com";
+
+        when:
+        request.method = 'POST';
+        controller.checkEmail();
+
+        then:
+        response.text == "Error:User with that email already exists.";
+
+        where:
+        user = new User(firstName:"Carolinne",
+                lastName: "Mesquita",
+                email: "carolinnem@outlook.com",
+                password: "password",
+                userRole: "Underwriter");
+    }
+
+    void "TESTING CHECK NON-EXISTING EMAIL" (){ // not working
+        setup:
+        user.save()
+        controller.params.email = "carolinnem@neeis.com";
+
+        when:
+        request.method = 'POST';
+        controller.checkEmail();
+
+        then:
+        response.text == "OK:Email/Username is available";
+
+        where:
+        user = new User();
     }
 }
 

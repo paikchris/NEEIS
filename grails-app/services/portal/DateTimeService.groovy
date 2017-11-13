@@ -13,16 +13,12 @@ class DateTimeService {
     def grailsApplication = Holders.grailsApplication
 
     ZoneId neeisTimeZone = ZoneId.of(grailsApplication.config.grails.neeisTimeZone)
-    DateTimeFormatter standardDateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd h:mm:ss a")
+    DateTimeFormatter standardDateTime = DateTimeFormatter.ofPattern("MM/dd/yyyy h:mm:ss a")
     ZonedDateTime neeisDateTime
 
-//    DateTimeService(){
-//
-//    }
 
     def getNeeisLocalDateTime(){
         neeisDateTime = ZonedDateTime.of(LocalDateTime.now(), neeisTimeZone )
-
 
         return neeisDateTime.format(standardDateTime)
     }

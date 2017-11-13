@@ -20,6 +20,8 @@ switch ("${System.getProperty('grails.env')}") {
         break;
 }
 
+//grails.project.fork.run=[maxMemory:1024, minMemory:64, debug:false, maxPerm:456, jvmArgs: '-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/universe/Neeis/logs']
+
 grails.project.fork = [
     // configure settings for compilation JVM, note that if you alter the Groovy version forked compilation is required
     //  compile: [maxMemory: 256, minMemory: 64, debug: false, maxPerm: 256, daemon:true],
@@ -27,7 +29,8 @@ grails.project.fork = [
     // configure settings for the test-app JVM, uses the daemon by default
     test: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, daemon:true],
     // configure settings for the run-app JVM
-    run: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, forkReserve:false],
+//    run: [maxMemory: 1600, minMemory: 1000, debug: false, maxPerm: 700, forkReserve:false],
+        run: false,
     // configure settings for the run-war JVM
     war: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, forkReserve:false],
     // configure settings for the Console UI JVM
@@ -78,6 +81,11 @@ grails.project.dependency.resolution = {
 
         //SPOCK PLUGIN DEPENDECY
         test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
+//        test "org.grails.plugins:hibernate4:5.0.0.RC1"
+        test 'mysql:mysql-connector-java:5.1.29'
+
+        test 'cglib:cglib-nodep:2.2'       // For mocking classes
+        test 'org.objenesis:objenesis:1.2' // For mocking final classes
     }
 
     plugins {
@@ -106,5 +114,8 @@ grails.project.dependency.resolution = {
         test(":spock:0.7") {
             exclude "spock-grails-support"
         }
+        test ":hibernate4:4.3.10"
+
+
     }
 }

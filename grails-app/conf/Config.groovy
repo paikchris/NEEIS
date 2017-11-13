@@ -117,8 +117,8 @@ grails {
     mail {
         host = "smtp.gmail.com"
         port = 465
-        username = "johnkimsinbox@gmail.com"
-        password = "Perseverence12"
+        username = "noreplyneeis@gmail.com"
+        password = "Perseverence!2"
         props = ["mail.smtp.auth":"true",
                  "mail.smtp.socketFactory.port":"465",
                  "mail.smtp.socketFactory.class":"javax.net.ssl.SSLSocketFactory",
@@ -139,7 +139,6 @@ grails {
         // escapes all not-encoded output at final stage of outputting
         // filteringCodecForContentType.'text/html' = 'html'
     }
-
 
 }
 

@@ -1,11 +1,11 @@
-
 function capitalizeFirstLetters(originalString){
     var nameString = originalString;
-    //nameString = $(this).val().charAt(0).toUpperCase() + nameString.slice(1);
+
     var words = [];
 
-    if(nameString.split(" ").length>0){
-        words = nameString.split(" ");
+    //SPLIT STRING BY ANY WHITESPACE
+    if(nameString.split(/\s+/g).length>0){
+        words = nameString.split(/\s+/g);
     }
     else{
         words.push(nameString);
@@ -17,12 +17,20 @@ function capitalizeFirstLetters(originalString){
         originalWord = words[i];
         lowerWord = words[i].toLowerCase();
         lowerWord = lowerWord.trim();
-        //console.log(lowerWord)
-        if (originalWord.slice(1, 2) == originalWord.slice(1, 2).toUpperCase() || originalWord.slice(2, 3) == originalWord.slice(2, 3).toUpperCase()) {
-            //console.log(lowerWord.slice(1,2) + "-" + lowerWord)
+
+        //TEST IF THE SECOND OR THIRD LETTER IS CAPITALIZED, MIGHT BE A ALL CAPS WORD OR NAME LIKE 'McPherson'
+        if (lowerWord.length > 1 && originalWord.slice(1, 2) == originalWord.slice(1, 2).toUpperCase()  ) {
+
+            //DON'T CAPITALIZE
+            capitalizedWord = originalWord.trim();
+        }
+        else if( lowerWord.length > 2 && originalWord.slice(2, 3) == originalWord.slice(2, 3).toUpperCase() ){
+            //DON'T CAPITALIZE
             capitalizedWord = originalWord.trim();
         }
         else {
+
+            //CAPITALIZE FIRST LETTER
             capitalizedWord = lowerWord.slice(0, 1).toUpperCase() + lowerWord.slice(1);
         }
 
@@ -31,7 +39,7 @@ function capitalizeFirstLetters(originalString){
             output += " ";
         }
     } //for
-    output[output.length - 1] = '';
+    // output[output.length - 1] = '';
 
     return output
 }
@@ -87,6 +95,10 @@ function formatTaxAndFee(value) {
     }
 }
 
+function removeAllNonNumbersFromString(string){
+    return string.replace(/\D/g,'');
+}
+
 function getIntValueOfMoney(moneyStringWithSignsAndCommas){
     var returnVal
 
@@ -110,6 +122,29 @@ function getIntValueOfMoney(moneyStringWithSignsAndCommas){
         else{
             returnVal = parseInt(moneyStringWithSignsAndCommas)
         }
+    }
+
+    return returnVal
+}
+
+function getFloatValueOfMoney(moneyStringWithSignsAndCommas){
+    var returnVal
+
+    //CHECK IF STRING
+    if(typeof moneyStringWithSignsAndCommas === "string"){
+        //IF STRING IS NOT A NUMBER
+        if(isNaN( moneyStringWithSignsAndCommas.replace(/\$|,/g, '') )){
+            returnVal = "Error"
+        }
+        //IF STRING IS A NUMBER
+        else{
+            returnVal = parseFloat(moneyStringWithSignsAndCommas.replace(/\$|,/g, ''))
+        }
+        returnVal = parseFloat(moneyStringWithSignsAndCommas.replace(/\$|,/g, ''))
+    }
+    //CHECK IF NUMBER
+    else if(typeof moneyStringWithSignsAndCommas === "number"){
+        returnVal = parseFloat(moneyStringWithSignsAndCommas)
     }
 
     return returnVal
@@ -149,3 +184,32 @@ function replaceAllSpacesWith(originalString, charToReplaceSpace){
     //REPLACES A SINGLE OR MULTIPEL WHITESPACE WITH A CHAR OR STRING
     return originalString.replace(/\s+/g, charToReplaceSpace)
 }
+
+function removeTrailingComma(string){
+    return string.replace(/,\s*$/, "");
+}
+
+function isStringMoney(str){
+    var origString = str.trim()
+
+    //DOES THE STRING HAVE A DOLLAR SIGN
+    if( origString.charAt(0) === '$' ){
+        //IF STRING HAS LETTERS, RETURN FALSE
+        if (origString.match(/[a-z]/i)) {
+            return false
+        }
+        //IF INT VALUE OF MONEY STRING IS A NUMBER
+        else if( isNaN(getIntValueOfMoney(origString)) === false ){
+            return true
+        }
+    }
+    else{
+        return false
+    }
+}
+
+function filterArrayForDuplicates(arrArg) {
+    return arrArg.filter(function(elem, pos,arr) {
+        return arr.indexOf(elem) == pos;
+    });
+};
