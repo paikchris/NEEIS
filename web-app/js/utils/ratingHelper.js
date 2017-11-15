@@ -19,7 +19,7 @@ function calculatePackageTotalPremium(packageID, selectedLOBIDArray){
     for(var i=0;i<selectedLOBIDArray.length;i++){
         var lobID = selectedLOBIDArray[i]
         var lobInfoMap = getLOBObjectFromPackageMap(packageID, lobID)
-        var lobRateID = lobInfoMap.rateID
+        var lobRateID = getRateIDForPackageLOB(packageID, lobID)
         var lobRateObject = getRateObjectByID(lobRateID)
         var lobRatingBasisID = lobRateObject.rateBasis
         var lobRatingBasisObject = getRatingBasisObjectByID(lobRatingBasisID)
@@ -43,6 +43,7 @@ function calculateTotalCoveragePremium(productObject, rateMap, ratingBasisMap, i
             for(var i=0;i<limitRateArray.length;i++){
                 var limDescription = limitRateArray[i].limitDescription
                 var userInputValue = getLimitValueFromLimitDescription(ifLOB_PackageID, limDescription)
+
 
                 premium = calculateLimitPremium(rateMap, limDescription, userInputValue)
             }
@@ -159,14 +160,20 @@ function calculateLimitPremium(rateMap, limitDescString, userInputLimit){
             var limitDescription = thisLimitRateMap.limitDescription
             var limitRateValue = parseFloat(thisLimitRateMap.rateValue)
             var limitMinPremium = getFloatValueOfMoney(thisLimitRateMap.minPremium)
-            var userInputFloatValue = getFloatValueOfMoney(userInputLimit)
 
-            premium = userInputFloatValue * limitRateValue
+            if(userInputLimit){
+                var userInputFloatValue = getFloatValueOfMoney(userInputLimit)
 
+                premium = userInputFloatValue * limitRateValue
 
-            if(premium < limitMinPremium){
+                if(premium < limitMinPremium){
+                    premium = limitMinPremium
+                }
+            }
+            else{
                 premium = limitMinPremium
             }
+
 
             return premium
         }

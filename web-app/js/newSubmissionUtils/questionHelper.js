@@ -318,12 +318,13 @@ function getQuestionHTML(qID, options){
             var thisRadioOptionText = radioOptionValTextMap[thisRadioOptionValue]
 
             inputElement = $(
-                "<label class='radioHorizontalLayout questionOptionLabel'>" +
+                "<label class='radio-inline questionOptionLabel'>" +
                 "   <input type='" + inputType + "' class='" + inputClass + "' " +
                 "       data-reviewName='" + htmlDataReviewName + "' " +
                 "       name='" + qID + "_RadioGroup' " +
                 "       value='" + thisRadioOptionValue + "'" +
-                "       id='" + qID + "_" + thisRadioOptionValue + "'/> " + thisRadioOptionText +
+                "       id='" + qID + "_" + thisRadioOptionValue + "'" +
+                "       style='margin-top: -5px;'/> " + thisRadioOptionText +
                 "</label>"
             )
 

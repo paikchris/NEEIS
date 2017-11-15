@@ -1240,36 +1240,36 @@ function updateAdditionalOptions(){
             var productID = getProductIDForCoverage(covID)
             var productObject = getProductObjectFromProductID(productID)
 
-            if(productObject.additionalOptionsArray !== null && productObject.additionalOptionsArray !== undefined){
-                var additionalOptionsArray = JSON.parse(productObject.additionalOptionsArray)
+            if(productObject){
+                if(productObject.additionalOptionsArray !== null && productObject.additionalOptionsArray !== undefined  ){
+                    var additionalOptionsArray = JSON.parse(productObject.additionalOptionsArray)
 
-
-                for(var j=0;j<additionalOptionsArray.length;j++){
-                    var additionalOptionID = additionalOptionsArray[j]
-                    $('#' + covID + '_CoverageOptionContainer').find('.hiddenContainer').html()
-                    if(additionalOptionID === "BAI"){
-                        additionalOptionsHTML = additionalOptionsHTML + BAIOptionHTML()
-                    }
-                    if(additionalOptionID === "WOS"){
-                        additionalOptionsHTML = additionalOptionsHTML + WOSOptionHTML()
-                    }
-                    if(additionalOptionID === "EAI"){
-                        additionalOptionsHTML = additionalOptionsHTML + EAIOptionHTML()
-                    }
-                    if(additionalOptionID === "MED"){
-                        additionalOptionsHTML = additionalOptionsHTML + MEDOptionHTML()
-                    }
-                    if(additionalOptionID === "INCAGG"){
-                        additionalOptionsHTML = additionalOptionsHTML + INCAGGOptionHTML()
-                    }
-                    if(additionalOptionID === "CIVAUTH"){
-                        additionalOptionsHTML = additionalOptionsHTML + CIVAUTHOptionHTML()
-                    }
-                    if(additionalOptionID === "ANIMAL"){
-                        additionalOptionsHTML = additionalOptionsHTML + ANIMALOptionHTML()
+                    for(var j=0;j<additionalOptionsArray.length;j++){
+                        var additionalOptionID = additionalOptionsArray[j]
+                        $('#' + covID + '_CoverageOptionContainer').find('.hiddenContainer').html()
+                        if(additionalOptionID === "BAI"){
+                            additionalOptionsHTML = additionalOptionsHTML + BAIOptionHTML()
+                        }
+                        if(additionalOptionID === "WOS"){
+                            additionalOptionsHTML = additionalOptionsHTML + WOSOptionHTML()
+                        }
+                        if(additionalOptionID === "EAI"){
+                            additionalOptionsHTML = additionalOptionsHTML + EAIOptionHTML()
+                        }
+                        if(additionalOptionID === "MED"){
+                            additionalOptionsHTML = additionalOptionsHTML + MEDOptionHTML()
+                        }
+                        if(additionalOptionID === "INCAGG"){
+                            additionalOptionsHTML = additionalOptionsHTML + INCAGGOptionHTML()
+                        }
+                        if(additionalOptionID === "CIVAUTH"){
+                            additionalOptionsHTML = additionalOptionsHTML + CIVAUTHOptionHTML()
+                        }
+                        if(additionalOptionID === "ANIMAL"){
+                            additionalOptionsHTML = additionalOptionsHTML + ANIMALOptionHTML()
+                        }
                     }
                 }
-
             }
         }
 
@@ -1751,7 +1751,8 @@ function updatePackageRequiredRatingQuestions(){
                 for(var j=0;j<packageMapForThisPackage.length;j++){
                     if(selectedLOBArrayForPackage.indexOf(packageMapForThisPackage[j].covID) > -1 ){
                         var lobID = packageMapForThisPackage[j].covID
-                        var rateID = packageMapForThisPackage[j].rateID
+                        // var rateID = packageMapForThisPackage[j].rateID
+                        var rateID = getRateIDForPackageLOB(covID, lobID)
 
                         if(rateID !== undefined && rateID !== null){
                             var rateObject = getRateObjectByID(rateID)
@@ -1985,7 +1986,7 @@ function isAllProductsDeterminedForCoveragesChosen(){
 
     for(var i=0;i<covSelectedArray.length; i++){
         var covID = covSelectedArray[i]
-        if( getProductIDForCoverage(covID) === undefined || getProductIDForCoverage(covID) === null){
+        if( getProductIDForCoverage(covID) === undefined || getProductIDForCoverage(covID) === null || getProductIDForCoverage(covID).trim().length === 0){
             return false
         }
     }
@@ -2283,7 +2284,7 @@ function getLimitRowsHTML(limitArray, productID, covID){
             for(var j=0;j<selectedLOBArray.length;j++){
                 var lobID = selectedLOBArray[j]
                 var lobInfoMap = getLOBObjectFromPackageMap(covID, lobID)
-                var rateID_LOB = lobInfoMap.rateID
+                var rateID_LOB = getRateIDForPackageLOB(covID, lobID)
                 var rateBasis_LOB = getRateObjectByID(rateID_LOB).rateBasis
                 if(rateBasis_LOB === 'LIMIT'){
                     rateBasis_LOBHasLimitRate = true
@@ -2316,7 +2317,7 @@ function getLimitRowsHTML(limitArray, productID, covID){
                 for (var j=0; j < selectedLOBArray.length; j++) {
                     var lobID = selectedLOBArray[j]
                     var lobInfoMap = getLOBObjectFromPackageMap(covID, lobID)
-                    var rateID_LOB = lobInfoMap.rateID
+                    var rateID_LOB = getRateIDForPackageLOB(covID, lobID)
                     var rateBasis_LOB = getRateObjectByID(rateID_LOB).rateBasis
                     if (rateBasis_LOB === 'LIMIT') {
                         var rateObject = getRateObjectByID(rateID_LOB)
@@ -2701,8 +2702,8 @@ function buildPackagePremiumRows(packageID){
     var lobIDArray = getLOBSSelectedInPackageArray(packageID)
     for(var i=0;i<lobIDArray.length;i++){
         var lobID = lobIDArray[i]
-        var lobObject = getLOBObjectFromPackageMap(packageID, lobID)
-        var rateID = lobObject.rateID
+        // var rateID = lobObject.rateID
+        var rateID = getRateIDForPackageLOB(packageID, lobID)
 
         premiumLineHTML = premiumLineHTML + getPremiumLineHTML(rateID, lobID, packageID)
 
@@ -3151,7 +3152,8 @@ function getProductIDForCoverage(covID){
             return thisCoverageConditionArray[0].productID
         }
         //IF COVERAGE CONDITION IS 'IF'
-        else if(thisCoverageConditionArray[0].logicCondition === 'IF'){
+        else{
+        // else if(thisCoverageConditionArray[0].logicCondition === 'IF'){
             //ITERATE THROUGH CONDITIONS, WILL ACCEPT FIRST CONDITION THAT'S VALID
             for(var i=0; i<thisCoverageConditionArray.length; i++){
                 if( evaluateLogicConditionRow(thisCoverageConditionArray[i]) === false ){
@@ -3206,19 +3208,23 @@ function evaluateLogicConditionRow(logicConditionRowMap){
             //IF THIS LOGIC CONDITION IS TRUE
             if( evaluateCondition(conditionOperator, conditionBasisValue, actualBasisValue) ){
                 //CHECK FOR SUB LOGIC CONDITIONS
+
                 var subLogicArray = jsonStringToObject(logicConditionRowMap.subLogic)
 
-                for(var i=0;i<subLogicArray.length;i++){
-                    var subLogicConditionRowMap = jsonStringToObject(subLogicArray[i])
-                    var subLogicProductID = subLogicConditionRowMap.productID
+                if(subLogicArray){
+                    for(var i=0;i<subLogicArray.length;i++){
+                        var subLogicConditionRowMap = jsonStringToObject(subLogicArray[i])
+                        var subLogicProductID = subLogicConditionRowMap.productID
 
-                    if( evaluateLogicConditionRow(subLogicConditionRowMap) ){
-                        return subLogicProductID
-                    }
-                    else{
-                        continue
+                        if( evaluateLogicConditionRow(subLogicConditionRowMap) ){
+                            return subLogicProductID
+                        }
+                        else{
+                            continue
+                        }
                     }
                 }
+
 
                 return productID
             }
@@ -3273,6 +3279,13 @@ function getActualBasisValue(conditionBasis){
             var conditionBasisInput = $('div.requiredQuestion.' + conditionBasisInputID)
             var actualBasisValue = $(conditionBasisInput).find("input[type='" + questionObject.inputType + "']:checked").val()
 
+            if(actualBasisValue){
+
+            }
+            else{
+                actualBasisValue = ""
+            }
+
             return formatBasisValue(actualBasisValue)
         }
         else{
@@ -3285,6 +3298,25 @@ function getActualBasisValue(conditionBasis){
 
             return formatBasisValue(actualBasisValue)
         }
+    }
+    else if( questionObject.inputType === 'radio' ){
+        var conditionBasisInput = $('div.requiredQuestion.' + conditionBasisInputID)
+        var actualBasisValue = $(conditionBasisInput).find("input[type='" + questionObject.inputType + "']:checked").val()
+
+        if(actualBasisValue){
+
+        }
+        else{
+            actualBasisValue = ""
+        }
+
+        return formatBasisValue(actualBasisValue)
+    }
+    else if( questionObject.inputType === 'checkbox' ){
+        var conditionBasisInput = $('div.requiredQuestion.' + conditionBasisInputID)
+        var actualBasisValue = $(conditionBasisInput).find("input[type='" + questionObject.inputType + "']:checked").val()
+
+        return formatBasisValue(actualBasisValue)
     }
     else{
         return undefined
@@ -3322,6 +3354,24 @@ function getRequiredQuestionsForProductLogicConditions(coverageProductMap){
                 var requiredQuestion = getConditionBasisObject(conditionBasisID).questionID
 
                 requiredQuestionsArray.push(requiredQuestion)
+
+                //CHECK FOR SUBLOGIC REQUIRED QUESTIONS
+                if(logicConditionRow.subLogic){
+                    var subLogicArray = logicConditionRow.subLogic
+
+                    for(var k=0;k<subLogicArray.length;k++){
+                        var subLogicRow = subLogicArray[k]
+                        var subLogicCondition = subLogicRow.logicCondition
+
+                        if(subLogicCondition !== 'ALWAYS'){
+                            var subLogicConditionBasisID = subLogicRow.conditionBasis
+                            var subLogicRequiredQuestion = getConditionBasisObject(subLogicConditionBasisID).questionID
+
+                            requiredQuestionsArray.push(subLogicRequiredQuestion)
+                        }
+                    }
+                }
+
             }
 
         }
@@ -3330,6 +3380,81 @@ function getRequiredQuestionsForProductLogicConditions(coverageProductMap){
     }
 
     return requiredQuestionsMap
+}
+
+//RATE LOGIC CONDITION FUNCTIONS
+function getRateIDForPackageLOB(packageID, lobID){
+    var lobObject = getLOBObjectFromPackageMap(packageID, lobID)
+    var thisCoverageConditionArray = jsonStringToObject(lobObject.rateConditions)
+
+    if(thisCoverageConditionArray != null){
+
+        //IF COVERAGE CONDITION IS 'ALWAYS'
+        if(thisCoverageConditionArray[0].logicCondition === 'ALWAYS'){
+            return thisCoverageConditionArray[0].rateID
+        }
+        //IF COVERAGE CONDITION IS 'IF'
+        // else if(thisCoverageConditionArray[0].logicCondition === 'IF'){
+        else{
+            //ITERATE THROUGH CONDITIONS, WILL ACCEPT FIRST CONDITION THAT'S VALID
+            for(var i=0; i<thisCoverageConditionArray.length; i++){
+                if( evaluateLogicConditionRow_Rate(thisCoverageConditionArray[i]) === false ){
+                    continue
+                }
+                else{
+                    return evaluateLogicConditionRow_Rate(thisCoverageConditionArray[i])
+
+                }
+            }
+        }
+
+    }
+}
+function evaluateLogicConditionRow_Rate(logicConditionRowMap){
+    var rowLogicCondition = logicConditionRowMap.logicCondition
+    var rateID = logicConditionRowMap.rateID
+
+    if(rowLogicCondition === "ALWAYS"){
+        return rateID
+    }
+    else{
+        var conditionOperator = logicConditionRowMap.conditionOperator
+        var conditionBasis = logicConditionRowMap.conditionBasis
+        var conditionBasisValue = formatBasisValue(logicConditionRowMap.conditionBasisValue)
+
+        //GET ACTUAL BASIS VALUE
+        var actualBasisValue = getActualBasisValue(conditionBasis)
+
+        if(actualBasisValue !== undefined && actualBasisValue !== null ){
+            //IF THIS LOGIC CONDITION IS TRUE
+            if( evaluateCondition(conditionOperator, conditionBasisValue, actualBasisValue) ){
+                //CHECK FOR SUB LOGIC CONDITIONS
+                var subLogicArray = jsonStringToObject(logicConditionRowMap.subLogic)
+
+                for(var i=0;i<subLogicArray.length;i++){
+                    var subLogicConditionRowMap = jsonStringToObject(subLogicArray[i])
+                    var subLogicRateID = subLogicConditionRowMap.rateID
+
+                    if( evaluateLogicConditionRow_Rate(subLogicConditionRowMap) ){
+                        return subLogicRateID
+                    }
+                    else{
+                        continue
+                    }
+                }
+
+                return rateID
+            }
+            else{
+                return false
+            }
+        }
+        else{
+            return false
+        }
+    }
+
+    return false
 }
 
 

@@ -122,7 +122,7 @@ environments {
     localDev {
         dataSource {
             dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate', ''
-            url = "jdbc:mysql://104.236.23.128/neeisPortal?useUnicode=yes&characterEncoding=UTF-8"
+            url = "jdbc:mysql://localhost/neeisPortal?useUnicode=yes&characterEncoding=UTF-8"
             username = "root"
             password = "Perseverence!2"
             properties {
@@ -133,7 +133,7 @@ environments {
         }
         dataSource_aim{
             dbCreate = "update"
-            url = "jdbc:sqlserver://47.180.31.157:1433;databaseName=Training"
+            url = "jdbc:sqlserver://localhost:1433;databaseName=Training"
             driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
             username = "web"
             password = "jakePoos521"

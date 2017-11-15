@@ -488,7 +488,7 @@ class AdminController {
         def renderMessage = "Success"
 
         try{
-            def basisID = params.ratingBasisID
+            def basisID = params.ratingBasisID.toUpperCase()
             def description = params.ratingBasisDescription
 
             RatingBasis rateRecord = new RatingBasis(
