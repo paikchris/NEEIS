@@ -6,6 +6,11 @@
 # web application files
 /web-app/WEB-INF/classes
 
+#Generated files outside of grails
+.asscache  
+.classpath  
+.project
+
 # default HSQL database files for production mode
 
 # general HSQL database files
