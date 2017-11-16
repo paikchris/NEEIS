@@ -135,7 +135,7 @@ environments {
             dbCreate = "update"
             url = "jdbc:sqlserver://localhost:1433;databaseName=Training"
             driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
-            username = "web"
+            username = "SA"
             password = "jakePoos521"
             logSql = true
             properties {

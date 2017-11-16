@@ -102,13 +102,17 @@ environments {
         grails.neeisEmailPassword = ""
     }
     localDev {
-        appDirectory = "/Users/paikchris/Development/IdeaProjects/Neeis/NeeisPortalGrails/"
+        appDirectory = "/universe/Neeis/"
         neeisTimeZone = "America/Los_Angeles"
 
         grails.appDirectory = appDirectory
         grails.syncLogPath = appDirectory + "logs/sync.log"
+        grails.serverURL = "http://localhost:8080"
         grails.logging.jul.usebridge = true
         grails.neeisTimeZone = neeisTimeZone
+
+        grails.neeisEmail = "johnkimsinbox@gmail.com"
+        neeisEmailPassword = "Perseverence12"
     }
 }
 

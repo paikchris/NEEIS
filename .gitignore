@@ -13,7 +13,7 @@
 # logs
 /stacktrace.log
 /test/reports
-/logs
+/logs/**
 
 # project release file
 /*.war
@@ -28,3 +28,6 @@
 
 # "temporary" build files
 /target
+
+#ATTACHMENTS
+/web-app/attachments/0*/
