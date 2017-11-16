@@ -13,6 +13,11 @@ switch ("${System.getProperty('grails.env')}") {
             grails.config.base.webXml = "file:${basedir}/src/templates/war/web_dev.xml"
         }
         break;
+    case "localDev":
+        if (new File("/${basedir}/src/templates/war/web_dev.xml").exists()) {
+            grails.config.base.webXml = "file:${basedir}/src/templates/war/web_dev.xml"
+        }
+        break;
     default:
         if (new File("/${basedir}/src/templates/war/web_prod.xml").exists()) {
             grails.config.base.webXml = "file:${basedir}/src/templates/war/web_prod.xml"
@@ -134,7 +139,7 @@ grails.project.dependency.resolution = {
 
         // plugins needed at runtime but not for compilation
         runtime ":hibernate4:4.3.10" // or ":hibernate:3.6.10.18"
-        runtime ":database-migration:1.4.0"
+//        runtime ":database-migration:1.4.0"
         runtime ":jquery:1.11.1"
 //        runtime ":mail:1.0.7"
 
