@@ -10,6 +10,8 @@
 .asscache  
 .classpath  
 .project
+*.iml
+.idea/
 
 # default HSQL database files for production mode
 
