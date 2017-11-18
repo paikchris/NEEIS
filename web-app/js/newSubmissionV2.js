@@ -1175,8 +1175,8 @@ function updateAdditionalOptions(){
             if(coveragePackageMap[covID]){
                 var packageCoveragesArray = coveragePackageMap[covID]
 
-                for(var i=0;i<packageCoveragesArray.length;i++){
-                    var packageCoverageMap = packageCoveragesArray[i]
+                for(var j=0;j<packageCoveragesArray.length;j++){
+                    var packageCoverageMap = packageCoveragesArray[j]
                     var packageCoverageID = packageCoverageMap.covID
                     var packageCoverageObject = getCoverageObject(packageCoverageID)
 
