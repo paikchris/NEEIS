@@ -1643,40 +1643,7 @@ function updateRequiredQuestions(){
         //INSERT INTO REQUIRED QUESTIONS CONTAINER
         $('#ratingBasisRequiredQuestionsContainer').html(finalHTML)
 
-        //CHECK HEIGHTS OF QUESTION CONTAINERS, IF HEIGHT IS DIFFERENT WILL MESS UP ALIGNMENT. APPLY LARGEST DIV HEIGHT IN ROW TO ALL CONTAINERS
-        var gridSizeCount = 0
-        var rowHeight = 0
-        var elementsInRow = []
-        $('#ratingBasisRequiredQuestionsContainer div.requiredQuestion').each(function(){
-            var thisGridSize = $(this).attr('data-gridsize')
-            var thisHeight = $(this).height()
 
-
-            // console.log(thisGridSize)
-            console.log(parseInt(gridSizeCount) + parseInt(thisGridSize))
-
-            if( (parseInt(gridSizeCount) + parseInt(thisGridSize) ) <= 12 ){
-                if(thisHeight > rowHeight){
-                    rowHeight = thisHeight
-                }
-
-                elementsInRow.push( $(this) )
-
-                gridSizeCount = parseInt(gridSizeCount) + parseInt(thisGridSize)
-            }
-            else{
-                console.log(elementsInRow)
-                //LOOP THROUGH THE ROWS IN THE ROW
-                for(var i=0;i<elementsInRow.length;i++){
-                    var questionElement = elementsInRow[i]
-                    console.log(rowHeight)
-                    $(questionElement).height(rowHeight)
-                }
-
-                gridSizeCount = thisGridSize
-                rowHeight = thisHeight
-            }
-        })
 
         //REINSERT PREVIOUSLY FILLED OUT
         var questionAnswersKeys = Object.keys(questionAnswers)
@@ -1720,6 +1687,41 @@ function updateRequiredQuestions(){
         //UPDATE RATING REQUIRED QUESTIONS
         updateRatingRequiredQuestion()
         updatePackageRequiredRatingQuestions()
+
+        //CHECK HEIGHTS OF QUESTION CONTAINERS, IF HEIGHT IS DIFFERENT WILL MESS UP ALIGNMENT. APPLY LARGEST DIV HEIGHT IN ROW TO ALL CONTAINERS
+        var gridSizeCount = 0
+        var rowHeight = 0
+        var elementsInRow = []
+        $('#ratingBasisRequiredQuestionsContainer div.requiredQuestion').each(function(){
+            var thisGridSize = $(this).attr('data-gridsize')
+            var thisHeight = $(this).height()
+
+
+            // console.log(thisGridSize)
+            console.log(parseInt(gridSizeCount) + parseInt(thisGridSize))
+
+            if( (parseInt(gridSizeCount) + parseInt(thisGridSize) ) <= 12 ){
+                if(thisHeight > rowHeight){
+                    rowHeight = thisHeight
+                }
+
+                elementsInRow.push( $(this) )
+
+                gridSizeCount = parseInt(gridSizeCount) + parseInt(thisGridSize)
+            }
+            else{
+                console.log(elementsInRow)
+                //LOOP THROUGH THE ROWS IN THE ROW
+                for(var i=0;i<elementsInRow.length;i++){
+                    var questionElement = elementsInRow[i]
+                    console.log(rowHeight)
+                    $(questionElement).height(rowHeight)
+                }
+
+                gridSizeCount = thisGridSize
+                rowHeight = thisHeight
+            }
+        })
 
         //REINSERT PREVIOUSLY FILLED OUT AGAIN FOR ADDITIONAL QUESTIONS ADDED
         var questionAnswersKeys = Object.keys(questionAnswers)
