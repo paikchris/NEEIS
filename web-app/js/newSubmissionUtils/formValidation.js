@@ -135,6 +135,32 @@ function validateThisInput(input){
             markClosestFormGroup_Success(input)
         }
     }
+    else if($(input).is(":radio[required]")){
+        var radioGroupName = $(input).attr('name')
+        var valueOfRadioGroup = $('input[required][type="radio"][name="' + radioGroupName + '"]:visible:checked').val()
+
+        if( valueOfRadioGroup === undefined || valueOfRadioGroup.trim().length === 0 ){
+            message = message + "Required Field (" + $(input).attr('id') + ") cannot be blank \n"
+            markClosestFormGroup_Error(input)
+            return message;
+        }
+        else{
+            markClosestFormGroup_Success(input)
+        }
+    }
+    else if($(input).is(":checkbox[required]")){
+        var checkboxGroupName = $(input).attr('name')
+        var valueOfCheckboxGroup = $('input[required][type="checkbox"][name="' + checkboxGroupName + '"]:visible:checked').val()
+
+        if( valueOfCheckboxGroup === undefined || valueOfCheckboxGroup.trim().length === 0 ){
+            message = message + "Required Field (" + $(input).attr('id') + ") cannot be blank \n"
+            markClosestFormGroup_Error(input)
+            return message;
+        }
+        else{
+            markClosestFormGroup_Success(input)
+        }
+    }
 
     //BY CLASS TYPE
     if($(input).hasClass('datepicker')){

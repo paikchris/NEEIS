@@ -1175,8 +1175,8 @@ function updateAdditionalOptions(){
             if(coveragePackageMap[covID]){
                 var packageCoveragesArray = coveragePackageMap[covID]
 
-                for(var i=0;i<packageCoveragesArray.length;i++){
-                    var packageCoverageMap = packageCoveragesArray[i]
+                for(var j=0;j<packageCoveragesArray.length;j++){
+                    var packageCoverageMap = packageCoveragesArray[j]
                     var packageCoverageID = packageCoverageMap.covID
                     var packageCoverageObject = getCoverageObject(packageCoverageID)
 
@@ -1223,13 +1223,16 @@ function updateAdditionalOptions(){
                 }
 
                 //FORMAT LOB ADD ON SECTION
-                addOnPackageHTML = "" +
-                    "<div class='row' style='margin-top:10px;'>" +
-                    "   <div class='col-xs-12'>" +
-                    "       <span style='margin-left: 22px; font-size: 11px; font-weight: 500;'>Add On Coverages</span>" +
-                    "   </div>" +
-                    "</div>" +
-                    addOnPackageHTML
+                if(addOnPackageHTML.trim().length > 0){
+                    addOnPackageHTML = "" +
+                        "<div class='row' style='margin-top:10px;'>" +
+                        "   <div class='col-xs-12'>" +
+                        "       <span style='margin-left: 22px; font-size: 11px; font-weight: 500;'>Add On Coverages</span>" +
+                        "   </div>" +
+                        "</div>" +
+                        addOnPackageHTML
+                }
+
 
 
             }
@@ -1733,6 +1736,8 @@ function updateRequiredQuestions(){
         }
         initializeGlobalListeners()
     }
+
+    validate()
 
 }
 function updatePackageRequiredRatingQuestions(){
@@ -3415,6 +3420,9 @@ function evaluateLogicConditionRow_Rate(logicConditionRowMap){
     var rateID = logicConditionRowMap.rateID
 
     if(rowLogicCondition === "ALWAYS"){
+        return rateID
+    }
+    else if(rowLogicCondition === "ELSE"){
         return rateID
     }
     else{

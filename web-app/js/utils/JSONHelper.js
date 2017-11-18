@@ -21,7 +21,7 @@ function jsonStringToObject(stringJSON){
             var map = jsonArray[i]
 
             try{
-                returnJSON.push( jsonToObject(JSON.stringify(map)) )
+                returnJSON.push(map)
             }
             catch(e){
                 returnJSON.push( map)
@@ -39,7 +39,7 @@ function jsonStringToObject(stringJSON){
             var value = jsonMap[ keysArray[j] ]
 
             try{
-                returnJSON[property] = jsonToObject(value)
+                returnJSON[property] = value
             }
             catch(e){
                 returnJSON[property] = value
