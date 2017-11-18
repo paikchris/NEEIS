@@ -721,6 +721,14 @@ function getNewSubmissionRequiredQuestion(qID){
         }
 
         var stringHTML = getQuestionHTML(qID, options)
+
+        if(options.required === true){
+            var tempElement = $(stringHTML).attr('required', 'true')
+
+            stringHTML = $(tempElement).html()
+
+        }
+
         return stringHTML
     }
 }
