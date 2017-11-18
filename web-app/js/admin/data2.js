@@ -947,6 +947,9 @@ function fillCoveragesAllowedContainer(){
                                 for(var s=0;s<sublogicArray.length;s++){
                                     var subConditionMap = sublogicArray[s]
                                     var sublogicRow = $(logicRowTemplate).clone()
+                                    var sublogicProductSelect = $(sublogicRow).find('.productsForCoverageSelect')
+
+                                    $(sublogicProductSelect).html(optionsHtmlString)
 
                                     $(sublogicRow).find('.rowConditionDropdown').val(subConditionMap.logicCondition)
                                     $(sublogicRow).find('.productConditionBasis').val(subConditionMap.conditionBasis)
