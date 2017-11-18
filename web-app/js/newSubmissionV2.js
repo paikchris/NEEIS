@@ -3417,6 +3417,9 @@ function evaluateLogicConditionRow_Rate(logicConditionRowMap){
     if(rowLogicCondition === "ALWAYS"){
         return rateID
     }
+    else if(rowLogicCondition === "ELSE"){
+        return rateID
+    }
     else{
         var conditionOperator = logicConditionRowMap.conditionOperator
         var conditionBasis = logicConditionRowMap.conditionBasis
