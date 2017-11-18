@@ -2208,6 +2208,9 @@ function checkFormatOfAllRows(thisRow){
             if( $(thisRow).children('.subLogicConditionRow').length > 0 ){
                 $(thisMainLogicContainer).find('.productsForCoverageSelect').css('display', 'none')
             }
+            else{
+                $(thisMainLogicContainer).find('.productsForCoverageSelect').css('display', '')
+            }
         })
 
 
