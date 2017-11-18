@@ -40,6 +40,10 @@ label.questionText {
     font-weight: 400;
     margin-bottom:0px;
 }
+div.logicConditionRowsContainer > div.logicConditionRow{
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
 div.logicConditionRow div[class*="col-xs-"]{
     padding-left: 3px;
     padding-right: 3px;
