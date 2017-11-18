@@ -947,6 +947,9 @@ function fillCoveragesAllowedContainer(){
                                 for(var s=0;s<sublogicArray.length;s++){
                                     var subConditionMap = sublogicArray[s]
                                     var sublogicRow = $(logicRowTemplate).clone()
+                                    var sublogicProductSelect = $(sublogicRow).find('.productsForCoverageSelect')
+
+                                    $(sublogicProductSelect).html(optionsHtmlString)
 
                                     $(sublogicRow).find('.rowConditionDropdown').val(subConditionMap.logicCondition)
                                     $(sublogicRow).find('.productConditionBasis').val(subConditionMap.conditionBasis)
@@ -2207,6 +2210,9 @@ function checkFormatOfAllRows(thisRow){
             //CHECK IF THIS ROW HAS SUBLOGIC, IF YES, HIDE THE RATE/PRODUCT DROPDOWN in MainLogicRow
             if( $(thisRow).children('.subLogicConditionRow').length > 0 ){
                 $(thisMainLogicContainer).find('.productsForCoverageSelect').css('display', 'none')
+            }
+            else{
+                $(thisMainLogicContainer).find('.productsForCoverageSelect').css('display', '')
             }
         })
 

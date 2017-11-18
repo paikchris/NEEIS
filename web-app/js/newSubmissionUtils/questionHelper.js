@@ -324,7 +324,7 @@ function getQuestionHTML(qID, options){
                 "       name='" + qID + "_RadioGroup' " +
                 "       value='" + thisRadioOptionValue + "'" +
                 "       id='" + qID + "_" + thisRadioOptionValue + "'" +
-                "       style='margin-top: -5px;'/> " + thisRadioOptionText +
+                "       style='height:auto;'/> " + thisRadioOptionText +
                 "</label>"
             )
 
