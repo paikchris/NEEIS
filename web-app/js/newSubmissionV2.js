@@ -1223,13 +1223,16 @@ function updateAdditionalOptions(){
                 }
 
                 //FORMAT LOB ADD ON SECTION
-                addOnPackageHTML = "" +
-                    "<div class='row' style='margin-top:10px;'>" +
-                    "   <div class='col-xs-12'>" +
-                    "       <span style='margin-left: 22px; font-size: 11px; font-weight: 500;'>Add On Coverages</span>" +
-                    "   </div>" +
-                    "</div>" +
-                    addOnPackageHTML
+                if(addOnPackageHTML.trim().length > 0){
+                    addOnPackageHTML = "" +
+                        "<div class='row' style='margin-top:10px;'>" +
+                        "   <div class='col-xs-12'>" +
+                        "       <span style='margin-left: 22px; font-size: 11px; font-weight: 500;'>Add On Coverages</span>" +
+                        "   </div>" +
+                        "</div>" +
+                        addOnPackageHTML
+                }
+
 
 
             }
