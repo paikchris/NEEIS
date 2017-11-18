@@ -1737,6 +1737,8 @@ function updateRequiredQuestions(){
         initializeGlobalListeners()
     }
 
+    validate()
+
 }
 function updatePackageRequiredRatingQuestions(){
     var covSelectedArray = getCoveragesSelectedArray()
