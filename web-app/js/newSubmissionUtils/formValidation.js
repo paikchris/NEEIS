@@ -263,17 +263,6 @@ function validateThisInput(input){
             markClosestFormGroup_Success(input)
         }
     }
-    else if($(input).attr('id') === "totalBudgetConfirm"){
-
-        if($(input).val() === "$0" || $(input).val() === "0" ){
-            message = message + "Please Enter Budget \n"
-            markClosestFormGroup_Error(input)
-            return message;
-        }
-        else{
-            markClosestFormGroup_Success(input)
-        }
-    }
 
     return message
 }

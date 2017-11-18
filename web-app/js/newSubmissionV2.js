@@ -884,7 +884,7 @@ function getPackageOptionContainerRowHTML(covID, packageCoveragesArray){
         checkboxLabelText + " " +
         "</label> " +
         "</div> " +
-        "<div class='coverageQuestionsContainer hiddenContainer' style='display:none'> "
+        "<div class='coverageQuestionsContainer hiddenContainer' style='display:none;margin-bottom:10px'> "
 
     coverageRowHTML = coverageRowHTML +
         "</div> " +
@@ -1225,7 +1225,7 @@ function updateAdditionalOptions(){
                 //FORMAT LOB ADD ON SECTION
                 if(addOnPackageHTML.trim().length > 0){
                     addOnPackageHTML = "" +
-                        "<div class='row' style='margin-top:10px;'>" +
+                        "<div class='row' style=' margin-top: 0px; margin-bottom: 3px;'>" +
                         "   <div class='col-xs-12'>" +
                         "       <span style='margin-left: 22px; font-size: 11px; font-weight: 500;'>Add On Coverages</span>" +
                         "   </div>" +
