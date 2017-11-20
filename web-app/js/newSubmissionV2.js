@@ -3901,10 +3901,13 @@ function buildTermsStringForAllProducts(){
         var productID = productsArray[i]
         var productObject = getProductObjectFromProductID(productID)
 
-        var termsString = productObject.terms.trim()
-        finalTermsString = finalTermsString + productObject.coverage + " - " + productID + "\n\n"
-        finalTermsString = finalTermsString + termsString
-        finalTermsString = finalTermsString + "\n\n\n\n"
+        if(productObject.terms){
+            var termsString = productObject.terms.trim()
+            finalTermsString = finalTermsString + productObject.coverage + " - " + productID + "\n\n"
+            finalTermsString = finalTermsString + termsString
+            finalTermsString = finalTermsString + "\n\n\n\n"
+        }
+
     }
 
     return finalTermsString
