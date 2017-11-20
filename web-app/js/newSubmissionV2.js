@@ -2035,6 +2035,7 @@ function getLimDeductCovContainerHTML(covID){
         "   id='" + covID + "_CoverageLimDeductContainer' " +
         "   data-covid='" + covID + "' " +
         "   data-productid='" + getProductIDForCoverage(covID) + "' " +
+        "   style='margin-bottom: 20px; margin-top: 20px;'" +
         ">" +
         "</div>"
 
