@@ -943,28 +943,41 @@ function coverageCheckboxChangeAction(checkbox){
     }
 }
 function packageCoverageCheckboxChangeAction(checkbox){
-    //MUST REWRITE THIS FUNCTIONS LATER FOR PACKAGE LOBS SPECIFICALLY
-    // // clearRequiredQuestions()
-    // updateRequiredQuestions()
-    //
-    // updateAdditionalOptions()
-    updateRequiredQuestions()
-    //IF THIS COVERAGE IS ALREADY CHECKED IN A PACKAGE OR ELSEWHERE, UNCHECK TO AVOID DUPLICATES
-    removeDuplicateCoveragesAndPackageLOBS(checkbox)
+    var isValid = true
 
-    // updateRequiredQuestions()
+    //FIRST CHECK IF THIS IS A PACKAGE ADD ON COVERAGE, ADD ON COVERAGES MUST HAVE A PRIMARY LOB SELECTED FIRST
+    var packageContainerForCheckboxes = $(checkbox).closest('.coverageQuestionsContainer')
+    var packagePrimaryLOBCheckboxes = $(packageContainerForCheckboxes).find('.packageCoverageCheckbox:not(.packageAddOnCheckbox):checked')
+    var packageAddOnLOBCheckboxes = $(packageContainerForCheckboxes).find('.packageAddOnCheckbox:checked')
 
-    if(isReadyToShowLimitAndDeducts()){
-        fillLimitDeductContainer()
-        showLimitDeductContainer()
-
-        //PREMIUM ONLY DISPLAYS IF LIMITS AND DEDUCTS SHOW CORRECTLY
-        if(isReadyToRatePremiums()){
-            calculatePremiumsAndFillContainer()
-            showPremiumRateContainer()
+    if( $(packageAddOnLOBCheckboxes).length > 0 ){
+        if( $(packagePrimaryLOBCheckboxes).length === 0 ){
+            alert("Please select a primary coverage first")
+            isValid = false;
+            $(packageAddOnLOBCheckboxes).prop('checked', false)
+            $(packageAddOnLOBCheckboxes).trigger('change')
         }
-        else{
+    }
 
+    if(isValid){
+        updateRequiredQuestions()
+        //IF THIS COVERAGE IS ALREADY CHECKED IN A PACKAGE OR ELSEWHERE, UNCHECK TO AVOID DUPLICATES
+        removeDuplicateCoveragesAndPackageLOBS(checkbox)
+
+        // updateRequiredQuestions()
+
+        if(isReadyToShowLimitAndDeducts()){
+            fillLimitDeductContainer()
+            showLimitDeductContainer()
+
+            //PREMIUM ONLY DISPLAYS IF LIMITS AND DEDUCTS SHOW CORRECTLY
+            if(isReadyToRatePremiums()){
+                calculatePremiumsAndFillContainer()
+                showPremiumRateContainer()
+            }
+            else{
+
+            }
         }
     }
 }
@@ -1022,63 +1035,6 @@ function removeDuplicateCoveragesAndPackageLOBS(checkbox){
         }
 
     }
-}
-function getCoveragesSelectedArrayBACKUP(){
-    //THIS IS THE ORIGINAL GET COVERAGES SELECTED FUNCTION, WHERE THERE WERE NO SEPERATE PACKAGE CHECKBOXES
-    var covArray = []
-    var operationObject = getCurrentOperationTypeObject()
-    $('#coverageOptionsContainer .coverageCheckbox:checked').each(function () {
-        covArray.push($(this).data('covid'))
-    })
-
-    //CHECK FOR PACKAGES, IF PACKAGE MAP IS NULL CREATE EMPTY ARRAY FOR NOW TO AVOID ERROR
-    if(operationObject.coveragePackageMap === null){
-        operationObject.coveragePackageMap = []
-    }
-    var coveragePackageMap = jsonStringToObject(operationObject.coveragePackageMap)
-    var packagesArray = Object.keys(coveragePackageMap)
-
-    //LOOP THROUGH AVAILABLE PACKAGES FOR OPERATION
-    for(var i=0;i<packagesArray.length;i++){
-        var packageID = packagesArray[i]
-        var coveragesInPackageArray = jsonStringToObject(coveragePackageMap[packageID])
-
-        //LOOP THROUGH COVERAGES IN THIS PACKAGE AND CHECK IF THEY WERE SELECTED
-        var numCovSelectedInPackage = 0
-        var coveragesToRemove = []
-        for(var c=0;c<coveragesInPackageArray.length;c++){
-            var covID = coveragesInPackageArray[c].covID
-
-            if( covArray.indexOf(covID) > -1 ){
-                numCovSelectedInPackage++
-                coveragesToRemove.push(covID)
-            }
-        }
-
-        //IF 2 OR MORE OF THE PACKAGE COVERAGES ARE SELECTED
-        if(numCovSelectedInPackage >= 2){
-            //REMOVE PACKAGE COVERAGES FROM ARRAY
-            var adjustedCovArray = []
-            var found
-            for (var i = 0; i < covArray.length; i++) {
-                found = false;
-                // find covArray[i] in coveragesToRemove
-                for (var j = 0; j < coveragesToRemove.length; j++) {
-                    if (covArray[i] == coveragesToRemove[j]) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    adjustedCovArray.push(covArray[i]);
-                }
-            }
-            covArray = adjustedCovArray
-            covArray.push(packageID)
-        }
-    }
-
-    return covArray
 }
 function getCoveragesSelectedArray(){
     var covArray = []
@@ -1206,7 +1162,7 @@ function updateAdditionalOptions(){
                                 "<div class='row'>" +
                                 "   <div class='col-xs-12'>" +
                                 "       <label class='checkboxVerticalLayout' style='margin-left:20px; font-size:11px'>" +
-                                "           <input type='checkbox' class='packageCoverageCheckbox packageAddOnCheckbox " + packageCoverageID + "_packageCoverageCheckbox' " +
+                                "           <input type='checkbox' class='packageCoverageCheckbox " + packageCoverageID + "_packageCoverageCheckbox' " +
                                 "               data-covid='" + packageCoverageID + "' " +
                                 "               data-requiredflag='" + packageCoverageMap.requiredFlag + "' "
 
@@ -2049,13 +2005,22 @@ function isRatingRequiredQuestionsExist(){
 
 //LIMITS DEDUCTIBLES FUNCTIONS
 function showLimitDeductContainer(){
- $('#limitsDeductiblesContainer').css('display', '')
+    $('#limitsDeductiblesContainer').css('display', '')
+    hideLimitDeductQuestionsNotAnsweredContainer()
 }
 function hideLimitDeductContainer(){
     $('#limitsDeductiblesContainer').css('display', 'none')
+    showLimitDeductQuestionsNotAnsweredContainer()
 }
 function clearLimitDeductContainer(){
     $('#limitsDeductiblesContainer').empty()
+}
+function showLimitDeductQuestionsNotAnsweredContainer(){
+    $('#limitsDeductNotAnsweredContainer').css('display', '')
+}
+function hideLimitDeductQuestionsNotAnsweredContainer(){
+    $('#limitsDeductNotAnsweredContainer').css('display', 'none')
+
 }
 function fillLimitDeductContainer(){
     buildLimitDeductibleContainersForEachCoverage()
@@ -2092,6 +2057,7 @@ function getLimDeductCovContainerHTML(covID){
         "   id='" + covID + "_CoverageLimDeductContainer' " +
         "   data-covid='" + covID + "' " +
         "   data-productid='" + getProductIDForCoverage(covID) + "' " +
+        "   style='margin-bottom: 20px; margin-top: 20px;'" +
         ">" +
         "</div>"
 
