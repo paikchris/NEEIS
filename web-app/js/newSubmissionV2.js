@@ -2005,13 +2005,22 @@ function isRatingRequiredQuestionsExist(){
 
 //LIMITS DEDUCTIBLES FUNCTIONS
 function showLimitDeductContainer(){
- $('#limitsDeductiblesContainer').css('display', '')
+    $('#limitsDeductiblesContainer').css('display', '')
+    hideLimitDeductQuestionsNotAnsweredContainer()
 }
 function hideLimitDeductContainer(){
     $('#limitsDeductiblesContainer').css('display', 'none')
+    showLimitDeductQuestionsNotAnsweredContainer()
 }
 function clearLimitDeductContainer(){
     $('#limitsDeductiblesContainer').empty()
+}
+function showLimitDeductQuestionsNotAnsweredContainer(){
+    $('#limitsDeductNotAnsweredContainer').css('display', '')
+}
+function hideLimitDeductQuestionsNotAnsweredContainer(){
+    $('#limitsDeductNotAnsweredContainer').css('display', 'none')
+
 }
 function fillLimitDeductContainer(){
     buildLimitDeductibleContainersForEachCoverage()

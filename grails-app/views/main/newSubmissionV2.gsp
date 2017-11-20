@@ -389,6 +389,13 @@
                                 </div>
 
                             </div>
+                            <div class="well" id="limitsDeductNotAnsweredContainer" style="display:">
+                                <div class="row ">
+                                    <div class="col-xs-12">
+                                        <label style="color: rgb(157, 0, 0);">Please select coverages and complete all questions to continue</label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         %{--RATING SECTION--}%
                         <div class="col-xs-12">
