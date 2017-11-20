@@ -145,7 +145,7 @@ class PdfService {
 
             def quoteID = it
             def folderPath = attachmentsDir + "/${quoteID}/"
-            def fileName = "Indication ${submissionMap.versionLetter}.pdf7"
+            def fileName = "Indication ${submissionMap.versionLetter}.pdf"
             def fullPath = folderPath + fileName
 
             //CREATE FOLDER FOR QUOTE

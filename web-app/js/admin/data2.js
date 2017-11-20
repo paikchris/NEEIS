@@ -3457,14 +3457,16 @@ function fillRateDetails(rateID){
     //FILL RATING BASIS DEFAULT QUESTIONS
     if(rateObject.rateBasis){
         var ratingBasisMap = getRatingBasisObjectByID(rateObject.rateBasis)
-        var ratingBasisDefaultRequiredQuestionsArray = jsonStringToObject(ratingBasisMap.requiredQuestions)
-        var defaultRequiredQuestionsContainer = $('#ratingBasisRequiredQuestionsContainer')
+        if(ratingBasisMap.requiredQuestions){
+            var ratingBasisDefaultRequiredQuestionsArray = jsonStringToObject(ratingBasisMap.requiredQuestions)
+            var defaultRequiredQuestionsContainer = $('#ratingBasisRequiredQuestionsContainer')
 
-        for(var i=0;i<ratingBasisDefaultRequiredQuestionsArray.length; i++){
-            var questionHTML = getRequiredQuestionHTML(ratingBasisDefaultRequiredQuestionsArray[i])
-            $(defaultRequiredQuestionsContainer).append($(questionHTML))
-            //ADD SAVE LISTENER TO CLOSE BUTTON
-            $(requiredQuestionsContainer).find('button.close').addClass('onChangeSaveRate')
+            for(var i=0;i<ratingBasisDefaultRequiredQuestionsArray.length; i++){
+                var questionHTML = getRequiredQuestionHTML(ratingBasisDefaultRequiredQuestionsArray[i])
+                $(defaultRequiredQuestionsContainer).append($(questionHTML))
+                //ADD SAVE LISTENER TO CLOSE BUTTON
+                $(requiredQuestionsContainer).find('button.close').addClass('onChangeSaveRate')
+            }
         }
     }
 
