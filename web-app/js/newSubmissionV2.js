@@ -1023,63 +1023,6 @@ function removeDuplicateCoveragesAndPackageLOBS(checkbox){
 
     }
 }
-function getCoveragesSelectedArrayBACKUP(){
-    //THIS IS THE ORIGINAL GET COVERAGES SELECTED FUNCTION, WHERE THERE WERE NO SEPERATE PACKAGE CHECKBOXES
-    var covArray = []
-    var operationObject = getCurrentOperationTypeObject()
-    $('#coverageOptionsContainer .coverageCheckbox:checked').each(function () {
-        covArray.push($(this).data('covid'))
-    })
-
-    //CHECK FOR PACKAGES, IF PACKAGE MAP IS NULL CREATE EMPTY ARRAY FOR NOW TO AVOID ERROR
-    if(operationObject.coveragePackageMap === null){
-        operationObject.coveragePackageMap = []
-    }
-    var coveragePackageMap = jsonStringToObject(operationObject.coveragePackageMap)
-    var packagesArray = Object.keys(coveragePackageMap)
-
-    //LOOP THROUGH AVAILABLE PACKAGES FOR OPERATION
-    for(var i=0;i<packagesArray.length;i++){
-        var packageID = packagesArray[i]
-        var coveragesInPackageArray = jsonStringToObject(coveragePackageMap[packageID])
-
-        //LOOP THROUGH COVERAGES IN THIS PACKAGE AND CHECK IF THEY WERE SELECTED
-        var numCovSelectedInPackage = 0
-        var coveragesToRemove = []
-        for(var c=0;c<coveragesInPackageArray.length;c++){
-            var covID = coveragesInPackageArray[c].covID
-
-            if( covArray.indexOf(covID) > -1 ){
-                numCovSelectedInPackage++
-                coveragesToRemove.push(covID)
-            }
-        }
-
-        //IF 2 OR MORE OF THE PACKAGE COVERAGES ARE SELECTED
-        if(numCovSelectedInPackage >= 2){
-            //REMOVE PACKAGE COVERAGES FROM ARRAY
-            var adjustedCovArray = []
-            var found
-            for (var i = 0; i < covArray.length; i++) {
-                found = false;
-                // find covArray[i] in coveragesToRemove
-                for (var j = 0; j < coveragesToRemove.length; j++) {
-                    if (covArray[i] == coveragesToRemove[j]) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    adjustedCovArray.push(covArray[i]);
-                }
-            }
-            covArray = adjustedCovArray
-            covArray.push(packageID)
-        }
-    }
-
-    return covArray
-}
 function getCoveragesSelectedArray(){
     var covArray = []
     var operationObject = getCurrentOperationTypeObject()
