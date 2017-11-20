@@ -40,6 +40,7 @@ function Submission(){
     this.uwQuestionForIndicationArray = function() { return buildUWQuestionsForIndication() }
 
 
+
     //OPERATION
     this.operationID = function(){ return getSelectedOperationID() }
     this.operationName = function(){ return $("#operationsDropdown option:selected").text().trim()}
