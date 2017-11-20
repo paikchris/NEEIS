@@ -943,28 +943,41 @@ function coverageCheckboxChangeAction(checkbox){
     }
 }
 function packageCoverageCheckboxChangeAction(checkbox){
-    //MUST REWRITE THIS FUNCTIONS LATER FOR PACKAGE LOBS SPECIFICALLY
-    // // clearRequiredQuestions()
-    // updateRequiredQuestions()
-    //
-    // updateAdditionalOptions()
-    updateRequiredQuestions()
-    //IF THIS COVERAGE IS ALREADY CHECKED IN A PACKAGE OR ELSEWHERE, UNCHECK TO AVOID DUPLICATES
-    removeDuplicateCoveragesAndPackageLOBS(checkbox)
+    var isValid = true
 
-    // updateRequiredQuestions()
+    //FIRST CHECK IF THIS IS A PACKAGE ADD ON COVERAGE, ADD ON COVERAGES MUST HAVE A PRIMARY LOB SELECTED FIRST
+    var packageContainerForCheckboxes = $(checkbox).closest('.coverageQuestionsContainer')
+    var packagePrimaryLOBCheckboxes = $(packageContainerForCheckboxes).find('.packageCoverageCheckbox:not(.packageAddOnCheckbox):checked')
+    var packageAddOnLOBCheckboxes = $(packageContainerForCheckboxes).find('.packageAddOnCheckbox:checked')
 
-    if(isReadyToShowLimitAndDeducts()){
-        fillLimitDeductContainer()
-        showLimitDeductContainer()
-
-        //PREMIUM ONLY DISPLAYS IF LIMITS AND DEDUCTS SHOW CORRECTLY
-        if(isReadyToRatePremiums()){
-            calculatePremiumsAndFillContainer()
-            showPremiumRateContainer()
+    if( $(packageAddOnLOBCheckboxes).length > 0 ){
+        if( $(packagePrimaryLOBCheckboxes).length === 0 ){
+            alert("Please select a primary coverage first")
+            isValid = false;
+            $(packageAddOnLOBCheckboxes).prop('checked', false)
+            $(packageAddOnLOBCheckboxes).trigger('change')
         }
-        else{
+    }
 
+    if(isValid){
+        updateRequiredQuestions()
+        //IF THIS COVERAGE IS ALREADY CHECKED IN A PACKAGE OR ELSEWHERE, UNCHECK TO AVOID DUPLICATES
+        removeDuplicateCoveragesAndPackageLOBS(checkbox)
+
+        // updateRequiredQuestions()
+
+        if(isReadyToShowLimitAndDeducts()){
+            fillLimitDeductContainer()
+            showLimitDeductContainer()
+
+            //PREMIUM ONLY DISPLAYS IF LIMITS AND DEDUCTS SHOW CORRECTLY
+            if(isReadyToRatePremiums()){
+                calculatePremiumsAndFillContainer()
+                showPremiumRateContainer()
+            }
+            else{
+
+            }
         }
     }
 }
@@ -1149,7 +1162,7 @@ function updateAdditionalOptions(){
                                 "<div class='row'>" +
                                 "   <div class='col-xs-12'>" +
                                 "       <label class='checkboxVerticalLayout' style='margin-left:20px; font-size:11px'>" +
-                                "           <input type='checkbox' class='packageCoverageCheckbox packageAddOnCheckbox " + packageCoverageID + "_packageCoverageCheckbox' " +
+                                "           <input type='checkbox' class='packageCoverageCheckbox " + packageCoverageID + "_packageCoverageCheckbox' " +
                                 "               data-covid='" + packageCoverageID + "' " +
                                 "               data-requiredflag='" + packageCoverageMap.requiredFlag + "' "
 
