@@ -727,6 +727,8 @@ function buildCoveragePackageMap(){
             packageOptionMap.addOnFlag = getAddOnFlagForPackageCoverageOption(packageID, covID)
             packageOptionMap.limitArray  = buildLimitArrayForPackageLOB(packageID, covID)
             packageOptionMap.deductArray = buildDeductArrayForPackageLOB(packageID, covID)
+            packageOptionMap.formArray = buildFormArrayForPackageLOB(packageID, covID)
+
 
             coveragesInPackageArray.push(packageOptionMap)
         })
@@ -828,6 +830,25 @@ function buildDeductArrayForPackageLOB(packageID, covID){
     })
 
     return deductArray
+}
+function buildFormArrayForPackageLOB(packageID, covID){
+    var packageContainer = $('#' + packageID + '_checkbox').closest('.packageContainer')
+    var packageLOBID = covID
+    var packageLOBContainer = $('.' + packageLOBID + '_RateForPackageOptionRow')
+    var formsContainer = $(packageLOBContainer).find('.packageLOBFormsContainer')
+    var formArray = []
+
+    $(formsContainer).find('.formCheckboxOperationPage').each(function(){
+        if($(this).is(":checked")){
+            var formID = $(this).attr('data-formid')
+
+            formArray.push(formID)
+        }
+
+    })
+
+
+    return formArray
 }
 
 //COVERAGES ALLOWED CONTAINER
@@ -1277,6 +1298,7 @@ function fillAllPackageRates(){
                 var thisLOBRequiredFlag = thisLOBMap.requiredFlag
                 var thisLOBAddOnFlag = thisLOBMap.addOnFlag
                 var thisLOBRateConditions = thisLOBMap.rateConditions
+                var thisLOBFormArray = thisLOBMap.formArray
 
                 var thisLOBPackageOptionRow = $('#' + packageID + '_CoverageQuestionsContainer ' + '.' + thisLOBCovID + '_RateForPackageOptionRow')
 
@@ -1298,9 +1320,14 @@ function fillAllPackageRates(){
                 if(thisLOBRateConditions){
                     fillPackageLOBRateConditions(thisLOBPackageOptionRow, thisLOBRateConditions)
                 }
+                if(thisLOBFormArray){
+                    fillFormsInPackageLOB(thisLOBPackageOptionRow, thisLOBFormArray)
+                }
+
             }
 
             fillLimitsAndDeductsInPackage(packageContainer)
+
         }
 
 
@@ -1419,6 +1446,20 @@ function fillPackageLOBRateConditions(lobInfoContainer, lobRateConditionArray){
     checkFormatOfAllRows( $(rateConditionsContainer) )
     formatConditionBasisInputs()
 }
+function fillFormsInPackageLOB(lobInfoContainer, formArray){
+    var formsContainer = $(lobInfoContainer).find('.packageLOBFormsContainer')
+    var lobID = $(lobInfoContainer).attr('data-covid')
+
+    //CLEAR ALL FORM CHECKBOXES FIRST
+    $(formsContainer).find('.formCheckboxOperationPage').prop('checked', false)
+
+    for(var i=0; i<formArray.length; i++){
+        var formID = formArray[i]
+
+        $(formsContainer).find('.' + formID + '_OperationPageFormCheckbox').prop('checked', true)
+    }
+
+}
 function packageDetails_hidePackageLOBDetails(hideButton){
     var lobContainer = $(hideButton).closest('.rateForPackageOptionRow')
 
@@ -1505,6 +1546,7 @@ function ratesInCoverageRowHTML(packageID, packageOptionID){
         "   </div>" +
             packageLOBRateLogicContainerHTML(packageID, packageOptionID) +
             getLimitsAndDeductsForPackage(packageOptionID) +
+            getFormsForPackageLOB(packageID, packageOptionID) +
         "</div>"
 
 
@@ -1720,6 +1762,33 @@ function getLimitsAndDeductsForPackage(packageOptionID){
 
     return htmlString
 
+}
+function getFormsForPackageLOB(packageID, packageOptionID){
+    var htmlString = "" +
+        "<div class='row " + packageID + "_" + packageOptionID + "_PackageLOBFormsContainer packageLOBFormsContainer' " +
+        "   style='background: rgba(103, 108, 105, 0.28); border-radius:6px; margin-top:20px; padding:10px; " +
+        "   height: 200px; overflow-y: scroll; display:none'" +
+        "   data-packageid='" + packageID + "'" +
+        "   data-packagelobID='" + packageOptionID + "'> " +
+        "   <h4>Forms</h4>"
+
+    for(var i=0;i<forms.length;i++){
+        var formObject = forms[i]
+        htmlString = htmlString +
+            "   <div class='col-xs-12'>" +
+            "       <label class='checkBoxLabel' style='font-weight:400'>" +
+            "           <input type='checkbox' class='formCheckboxOperationPage onChangeSaveOperation " +
+                            formObject.formID + "_OperationPageFormCheckbox' " +
+            "               data-formid='" + formObject.formID + "'" +
+            "               data-formname='" + formObject.formName + "'> " + formObject.formID + " - " + formObject.formName + "" +
+            "       </label>" +
+            "   </div>"
+    }
+
+    htmlString = htmlString +
+        "</div>"
+
+    return htmlString
 }
 function ratesLOBDropdownHTML(){
     var htmlString = "" +
