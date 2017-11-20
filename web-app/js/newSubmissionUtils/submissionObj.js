@@ -38,6 +38,7 @@ function Submission(){
     this.requiredQuestionsMap = function(){ return buildRequiredQuestionAndAnswerMap() }
     this.uwQuestionsMap = function() { return buildUWQuestionAndAnswerMap() }
     this.uwQuestionForIndicationArray = function() { return buildUWQuestionsForIndication() }
+    
 
 
     //OPERATION
