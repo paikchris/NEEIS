@@ -73,7 +73,7 @@ function Submission(){
     this.getObject = function() {
         var n = {}
 
-        for(var i=0; i < Object.keys(this).length; i++){ 
+        for(var i=0; i < Object.keys(this).length; i++){
             var propertyName = Object.keys(this)[i]
 
             if(propertyName === 'getObject'){
