@@ -1330,8 +1330,6 @@ function fillAllPackageRates(){
 
         }
 
-
-
     })
 }
 function fillLimitsAndDeductsInPackage(packageContainer){
