@@ -1,0 +1,62 @@
+{
+  "EPKG": [
+    {
+      "conditionBasis": "WORKCOMP",
+      "conditionBasisValue": "Yes",
+      "conditionOperator": "EQUAL",
+      "logicCondition": "IF",
+      "productID": "",
+      "subLogic": [
+        {
+          "conditionBasis": "POLICYLENGTH",
+          "conditionBasisValue": "",
+          "conditionOperator": "LESSEQUAL",
+          "logicCondition": "IF",
+          "productID": "EPKG04",
+          "subLogic": []
+        },
+        {
+          "conditionBasis": "POLICYLENGTH",
+          "conditionBasisValue": "",
+          "conditionOperator": "LESSEQUAL",
+          "logicCondition": "IF",
+          "productID": "EPKG04",
+          "subLogic": [
+            {
+              "conditionBasis": "POLICYLENGTH",
+              "conditionBasisValue": "",
+              "conditionOperator": "LESSEQUAL",
+              "logicCondition": "IF",
+              "productID": "EPKG04",
+              "subLogic": []
+            }
+          ]
+        }
+
+      ]
+    },
+    {
+      "conditionBasis": "WORKCOMP",
+      "conditionBasisValue": "$0",
+      "conditionOperator": "EQUAL",
+      "logicCondition": "IF",
+      "productID": "",
+      "subLogic": [
+        {
+          "conditionBasis": "POLICYLENGTH",
+          "conditionBasisValue": "$60",
+          "conditionOperator": "LESSEQUAL",
+          "logicCondition": "IF",
+          "productID": "EPKG04"
+        },
+        {
+          "conditionBasis": "POLICYLENGTH",
+          "conditionBasisValue": "$365",
+          "conditionOperator": "EQUAL",
+          "logicCondition": "IF",
+          "productID": "EPKG04"
+        }
+      ]
+    }
+  ]
+}
