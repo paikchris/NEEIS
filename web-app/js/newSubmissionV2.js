@@ -3106,13 +3106,6 @@ function buildTaxRows(taxMap){
 }
 
 //PRODUCT FUNCTIONS
-function getConditionBasisInputFromConditionBasisID(productConditionBasisID){
-    for(var i=0;i<productConditions.length;i++){
-        if(productConditions[i].conditionID === productConditionBasisID){
-            return productConditions[i].questionID
-        }
-    }
-}
 function getProductIDForCoverage(covID){
     var operationMap = getCurrentOperationTypeObject()
     var coverageProductMap = jsonStringToObject(operationMap.coverageProductMap)
@@ -3122,18 +3115,18 @@ function getProductIDForCoverage(covID){
 
         //IF COVERAGE CONDITION IS 'ALWAYS'
         if(thisCoverageConditionArray[0].logicCondition === 'ALWAYS'){
-            return thisCoverageConditionArray[0].productID
+            return thisCoverageConditionArray[0].outputID
         }
         //IF COVERAGE CONDITION IS 'IF'
         else{
         // else if(thisCoverageConditionArray[0].logicCondition === 'IF'){
             //ITERATE THROUGH CONDITIONS, WILL ACCEPT FIRST CONDITION THAT'S VALID
             for(var i=0; i<thisCoverageConditionArray.length; i++){
-                if( evaluateLogicConditionRow(thisCoverageConditionArray[i]) === false ){
+                if( evaluateLogicConditionRowVersion2(thisCoverageConditionArray[i]) === false ){
                     continue
                 }
                 else{
-                    return evaluateLogicConditionRow(thisCoverageConditionArray[i])
+                    return evaluateLogicConditionRowVersion2(thisCoverageConditionArray[i])
 
                 }
             }
@@ -3154,207 +3147,6 @@ function getLOBObjectFromPackageMap(packageID, lobID){
     }
 }
 
-//LOGIC CONDITION FUNCTIONS
-function getConditionBasisObject(conditionBasisID){
-    for(var i=0; i < conditionBasisArray.length; i++ ){
-        if(conditionBasisArray[i].conditionID === conditionBasisID){
-            return conditionBasisArray[i]
-        }
-    }
-}
-function evaluateLogicConditionRow(logicConditionRowMap){
-    var rowLogicCondition = logicConditionRowMap.logicCondition
-    var productID = logicConditionRowMap.productID
-
-    if(rowLogicCondition === "ALWAYS"){
-        return productID
-    }
-    else{
-        var conditionOperator = logicConditionRowMap.conditionOperator
-        var conditionBasis = logicConditionRowMap.conditionBasis
-        var conditionBasisValue = formatBasisValue(logicConditionRowMap.conditionBasisValue)
-
-        //GET ACTUAL BASIS VALUE
-        var actualBasisValue = getActualBasisValue(conditionBasis)
-
-        if(actualBasisValue !== undefined && actualBasisValue !== null ){
-            //IF THIS LOGIC CONDITION IS TRUE
-            if( evaluateCondition(conditionOperator, conditionBasisValue, actualBasisValue) ){
-                //CHECK FOR SUB LOGIC CONDITIONS
-
-                var subLogicArray = jsonStringToObject(logicConditionRowMap.subLogic)
-
-                if(subLogicArray){
-                    for(var i=0;i<subLogicArray.length;i++){
-                        var subLogicConditionRowMap = jsonStringToObject(subLogicArray[i])
-                        var subLogicProductID = subLogicConditionRowMap.productID
-
-                        if( evaluateLogicConditionRow(subLogicConditionRowMap) ){
-                            return subLogicProductID
-                        }
-                        else{
-                            continue
-                        }
-                    }
-                }
-
-
-                return productID
-            }
-            else{
-                return false
-            }
-        }
-        else{
-            return false
-        }
-    }
-
-    return false
-}
-function evaluateCondition(conditionOperator, conditionBasisValue, actualBasisValue){
-    //WHAT IS THE OPERATOR (<,>,<=,>=, etc), AND IS CONDITION TRUE
-    if(conditionOperator === 'LESSTHAN'){
-        if(actualBasisValue < conditionBasisValue){
-            return true
-        }
-    }
-    else if(conditionOperator === 'LESSEQUAL'){
-        if(actualBasisValue <= conditionBasisValue){
-            return true
-        }
-    }
-    else if(conditionOperator === 'GREATERTHAN'){
-        if(actualBasisValue > conditionBasisValue){
-            return true
-        }
-    }
-    else if(conditionOperator === 'GREATEREQUAL'){
-        if(actualBasisValue >= conditionBasisValue){
-            return true
-        }
-    }
-    else if(conditionOperator === 'EQUAL'){
-        if(actualBasisValue === conditionBasisValue){
-            return true
-        }
-    }
-
-    return false
-}
-function getActualBasisValue(conditionBasis){
-    var conditionBasisInputID = getConditionBasisInputFromConditionBasisID(conditionBasis)
-    var questionObject = getQuestionObjectForID(conditionBasisInputID)
-
-    //CHECK IF QUESTION EXISTS ON PAGE, IF NOT RETURN UNDEFINED
-    if( $('#step-2 #' + conditionBasisInputID).length > 0){
-        if( questionObject.inputType === 'radio' || questionObject.inputType === 'checkbox' ){
-            var conditionBasisInput = $('div.requiredQuestion.' + conditionBasisInputID)
-            var actualBasisValue = $(conditionBasisInput).find("input[type='" + questionObject.inputType + "']:checked").val()
-
-            if(actualBasisValue){
-
-            }
-            else{
-                actualBasisValue = ""
-            }
-
-            return formatBasisValue(actualBasisValue)
-        }
-        else{
-            var conditionBasisInput = $('#' + conditionBasisInputID)
-            var actualBasisValue = $(conditionBasisInput).val()
-
-            if(conditionBasis === "POLICYLENGTH"){
-                actualBasisValue = removeAllNonNumbersFromString(actualBasisValue)
-            }
-
-            return formatBasisValue(actualBasisValue)
-        }
-    }
-    else if( questionObject.inputType === 'radio' ){
-        var conditionBasisInput = $('div.requiredQuestion.' + conditionBasisInputID)
-        var actualBasisValue = $(conditionBasisInput).find("input[type='" + questionObject.inputType + "']:checked").val()
-
-        if(actualBasisValue){
-
-        }
-        else{
-            actualBasisValue = ""
-        }
-
-        return formatBasisValue(actualBasisValue)
-    }
-    else if( questionObject.inputType === 'checkbox' ){
-        var conditionBasisInput = $('div.requiredQuestion.' + conditionBasisInputID)
-        var actualBasisValue = $(conditionBasisInput).find("input[type='" + questionObject.inputType + "']:checked").val()
-
-        return formatBasisValue(actualBasisValue)
-    }
-    else{
-        return undefined
-    }
-
-}
-function formatBasisValue(conditionBasisValue){
-    //IF CONDITION BASIS IS MONEY
-    if( isStringMoney(conditionBasisValue)){
-        return getFloatValueOfMoney(conditionBasisValue)
-    }
-    //IF CONDITION BASIS IS A NUMBER
-    else if( isNaN(conditionBasisValue) === false ){
-        return getFloatValueOfMoney(conditionBasisValue)
-    }
-    else{
-        return conditionBasisValue
-    }
-}
-function getRequiredQuestionsForProductLogicConditions(coverageProductMap){
-    var coverageProductMapKeys = Object.keys(coverageProductMap)
-    var requiredQuestionsMap = {}
-
-    for(var i=0; i<coverageProductMapKeys.length; i++){
-        var covID = coverageProductMapKeys[i]
-        var logicConditionRows = coverageProductMap[covID]
-        var requiredQuestionsArray = []
-
-        for(var j=0; j<logicConditionRows.length; j++){
-            var logicConditionRow = logicConditionRows[j]
-            var logicCondition = logicConditionRow.logicCondition
-
-            if(logicCondition !== 'ALWAYS'){
-                var conditionBasisID = logicConditionRow.conditionBasis
-                var requiredQuestion = getConditionBasisObject(conditionBasisID).questionID
-
-                requiredQuestionsArray.push(requiredQuestion)
-
-                //CHECK FOR SUBLOGIC REQUIRED QUESTIONS
-                if(logicConditionRow.subLogic){
-                    var subLogicArray = logicConditionRow.subLogic
-
-                    for(var k=0;k<subLogicArray.length;k++){
-                        var subLogicRow = subLogicArray[k]
-                        var subLogicCondition = subLogicRow.logicCondition
-
-                        if(subLogicCondition !== 'ALWAYS'){
-                            var subLogicConditionBasisID = subLogicRow.conditionBasis
-                            var subLogicRequiredQuestion = getConditionBasisObject(subLogicConditionBasisID).questionID
-
-                            requiredQuestionsArray.push(subLogicRequiredQuestion)
-                        }
-                    }
-                }
-
-            }
-
-        }
-
-        requiredQuestionsMap[covID] = requiredQuestionsArray
-    }
-
-    return requiredQuestionsMap
-}
-
 //RATE LOGIC CONDITION FUNCTIONS
 function getRateIDForPackageLOB(packageID, lobID){
     var lobObject = getLOBObjectFromPackageMap(packageID, lobID)
@@ -3364,73 +3156,24 @@ function getRateIDForPackageLOB(packageID, lobID){
 
         //IF COVERAGE CONDITION IS 'ALWAYS'
         if(thisCoverageConditionArray[0].logicCondition === 'ALWAYS'){
-            return thisCoverageConditionArray[0].rateID
+            return thisCoverageConditionArray[0].outputID
         }
         //IF COVERAGE CONDITION IS 'IF'
         // else if(thisCoverageConditionArray[0].logicCondition === 'IF'){
         else{
             //ITERATE THROUGH CONDITIONS, WILL ACCEPT FIRST CONDITION THAT'S VALID
             for(var i=0; i<thisCoverageConditionArray.length; i++){
-                if( evaluateLogicConditionRow_Rate(thisCoverageConditionArray[i]) === false ){
+                if( evaluateLogicConditionRowVersion2(thisCoverageConditionArray[i]) === false ){
                     continue
                 }
                 else{
-                    return evaluateLogicConditionRow_Rate(thisCoverageConditionArray[i])
+                    return evaluateLogicConditionRowVersion2(thisCoverageConditionArray[i])
 
                 }
             }
         }
 
     }
-}
-function evaluateLogicConditionRow_Rate(logicConditionRowMap){
-    var rowLogicCondition = logicConditionRowMap.logicCondition
-    var rateID = logicConditionRowMap.rateID
-
-    if(rowLogicCondition === "ALWAYS"){
-        return rateID
-    }
-    else if(rowLogicCondition === "ELSE"){
-        return rateID
-    }
-    else{
-        var conditionOperator = logicConditionRowMap.conditionOperator
-        var conditionBasis = logicConditionRowMap.conditionBasis
-        var conditionBasisValue = formatBasisValue(logicConditionRowMap.conditionBasisValue)
-
-        //GET ACTUAL BASIS VALUE
-        var actualBasisValue = getActualBasisValue(conditionBasis)
-
-        if(actualBasisValue !== undefined && actualBasisValue !== null ){
-            //IF THIS LOGIC CONDITION IS TRUE
-            if( evaluateCondition(conditionOperator, conditionBasisValue, actualBasisValue) ){
-                //CHECK FOR SUB LOGIC CONDITIONS
-                var subLogicArray = jsonStringToObject(logicConditionRowMap.subLogic)
-
-                for(var i=0;i<subLogicArray.length;i++){
-                    var subLogicConditionRowMap = jsonStringToObject(subLogicArray[i])
-                    var subLogicRateID = subLogicConditionRowMap.rateID
-
-                    if( evaluateLogicConditionRow_Rate(subLogicConditionRowMap) ){
-                        return subLogicRateID
-                    }
-                    else{
-                        continue
-                    }
-                }
-
-                return rateID
-            }
-            else{
-                return false
-            }
-        }
-        else{
-            return false
-        }
-    }
-
-    return false
 }
 
 

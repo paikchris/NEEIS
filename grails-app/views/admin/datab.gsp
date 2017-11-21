@@ -4,6 +4,7 @@
     <meta name="layout" content="main">
     <link rel="stylesheet" href="${resource(dir: 'css', file: 'datab.css')}" type="text/css">
     <script src="${resource(dir: 'js/admin/', file: "data2.js?ts=" + new Date().getTime())}"></script>
+    <script src="${resource(dir: 'js/utils/', file: "logicConditionHelper.js?ts=" + new Date().getTime())}"></script>
     <script src="${resource(dir: 'js/utils/', file: "ratingHelper.js?ts=" + new Date().getTime())}"></script>
     <script src="${resource(dir: 'js/utils/', file: "stringUtils.js?ts=" + new Date().getTime())}"></script>
     <script src="${resource(dir: 'js/vendor/', file: "numeral.min.js")}"></script>
@@ -268,7 +269,7 @@
                                                 </g:each>
                                             </div>
 
-                                            <div class="row ratesInCoverageContainer" id="${coverage.coverageCode}_RatesInCoverageContainer" style="margin-top:40px;">
+                                            <div class="row allLOBDetailContainer" id="${coverage.coverageCode}_AllLOBDetailContainer" style="margin-top:40px;">
 
                                             </div>
                                         </div>

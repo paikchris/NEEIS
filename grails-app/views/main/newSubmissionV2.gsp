@@ -52,6 +52,8 @@
     <script src="${resource(dir: 'js', file: "/vendor/numeral.min.js?ts=" + new Date().getTime())}" async></script>
     <script src="${resource(dir: 'js', file: 'jquery.maskMoney.min.js')}" async></script>
     <script src="${resource(dir: 'js', file: "newSubmissionV2.js?ts=" + new Date().getTime())}" async></script>
+    <script src="${resource(dir: 'js', file: "/utils/logicConditionHelper.js?ts=" + new Date().getTime())}" async></script>
+
 
 
     <g:if test="${user.admin == "true"}">

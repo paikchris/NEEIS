@@ -528,9 +528,6 @@ function doneLoadingShowPage(){
     pageLoading = false
 }
 
-
-
-
 ////////////////////SYNC FUNCTIONS///////////////////
 function checkSyncWithDMU(button){
     addLoadingSpinnerToButton_left(button)
@@ -582,9 +579,6 @@ function setFooterStatusSaveError(){
     $('#footerStatus').html('SAVE ERROR')
 }
 
-
-
-
 ///////////////////NAVIGATION FUNCTIONS///////////////////
 function editProductsButtonAction(button){
     $('#productsNavTab').click()
@@ -599,9 +593,9 @@ function editRatingBasisButtonAction(button){
 
 
 
+//////////////////////////////////////OPERATIONS PAGE FUNCTIONS//////////////////////////////////////
 
-
-///////////////////OPERATIONS PAGE FUNCTIONS///////////////////
+//OPERATION DROPDOWNS
 function operationCategorySelectAction(input){
     if($(input).val() === "invalid"){
         hideOperationTypeDropdown()
@@ -669,6 +663,13 @@ function fillOperationTypeDropdown(){
 
 
 }
+function resetOperationTypeDropdown(){
+    //RESET OPTION
+    $('#operationsDropdown').val('invalid')
+    $('#operationsDropdown').trigger('change')
+}
+
+//OPERATION DETAILS
 function showOperationDetails(){
     $('#operationDetailsContainer').css('display', '')
     $('#saveOperationButton').css('display', '')
@@ -701,11 +702,7 @@ function fillOperationDetails(){
 
 
 }
-function resetOperationTypeDropdown(){
-    //RESET OPTION
-    $('#operationsDropdown').val('invalid')
-    $('#operationsDropdown').trigger('change')
-}
+
 
 //PACKAGES
 function buildCoveragePackageMap(){
@@ -748,7 +745,7 @@ function buildPackageLOBRateConditionMapForLOB(packageID, lobID){
 function buildLimitArrayForPackageLOB(packageID, covID){
     var packageContainer = $('#' + packageID + '_checkbox').closest('.packageContainer')
     var packageLOBID = covID
-    var packageLOBContainer = $(packageContainer).find('.' + packageLOBID + '_RateForPackageOptionRow')
+    var packageLOBContainer = $(packageContainer).find('.' + packageLOBID + '_LOBDetailContainerRow')
     var container = $(packageLOBContainer).find('.packageDetails_limitsContainer')
     var limitArray = []
 
@@ -770,7 +767,7 @@ function buildLimitArrayForPackageLOB(packageID, covID){
 function buildDeductArrayForPackageLOB(packageID, covID){
     var packageContainer = $('#' + packageID + '_checkbox').closest('.packageContainer')
     var packageLOBID = covID
-    var packageLOBContainer = $('.' + packageLOBID + '_RateForPackageOptionRow')
+    var packageLOBContainer = $('.' + packageLOBID + '_LOBDetailContainerRow')
     var container = $(packageLOBContainer).find('.packageDetails_deductsContainer')
     var deductArray = []
 
@@ -791,7 +788,7 @@ function buildDeductArrayForPackageLOB(packageID, covID){
 function buildFormArrayForPackageLOB(packageID, covID){
     var packageContainer = $('#' + packageID + '_checkbox').closest('.packageContainer')
     var packageLOBID = covID
-    var packageLOBContainer = $('.' + packageLOBID + '_RateForPackageOptionRow')
+    var packageLOBContainer = $('.' + packageLOBID + '_LOBDetailContainerRow')
     var formsContainer = $(packageLOBContainer).find('.packageLOBFormsContainer')
     var formArray = []
 
@@ -930,75 +927,10 @@ function fillCoveragesAllowedContainer(){
 
     initializeGlobalListeners()
 }
-
 function clearCoveragesAllowedContainer(){
     $('#operationDetailsContainer').html($(operationsDetailContainer).html())
     $('#coveragesAllowedContainer').html($(operationsCoveragesAllowedContainer).html())
 
-}
-function buildOperationCoverageProductMap2(){
-    //COVERAGE PRODUCTS
-    var coverageProductMap = {}
-    $('#coveragesAllowedContainer').find('.coverageCheckbox:checked').each(function(){
-        var productConditionArray = []
-        var covID = $(this).attr('data-covid')
-        var productMap = {}
-
-        if($('#' + covID + 'radio_Always').is(':checked')){
-
-            productMap.condition = 'Always'
-            productMap.productID = $('#' + covID + '_radioGroupContainer_Always').find('.conditionOutputSelect').val()
-
-            productConditionArray.push(productMap)
-        }
-        else if($('#' + covID + 'radio_When').is(':checked')){
-            $('#' + covID + '_radioGroupContainer_When').find('.productConditionsRow').each(function(){
-                var productMap = {}
-                productMap.condition = 'When'
-                productMap.productID = $(this).find('.conditionOutputSelect').val()
-                productMap.conditionBasis = $(this).find('.conditionBasis').val()
-                productMap.conditionOperator = $(this).find('.conditionOperator').val()
-
-                //HAS TO BE A NUMBER
-                var basisValue = $(this).find('.conditionBasisValue').val().trim();
-                if(isNaN(basisValue.replace(/\$|,/g, ''))){
-                    productMap.basisValue = basisValue
-                }
-                else{
-                    productMap.basisValue = basisValue.replace(/[^0-9.]/g, "")
-                }
-
-                productConditionArray.push(productMap)
-            })
-        }
-        coverageProductMap[covID] = productConditionArray
-
-    })
-
-    //RATING BASIS
-    return coverageProductMap
-}
-function buildRatingBasisMap(){
-    var ratingBasisMap = {}
-
-
-    $('#coveragesAllowedContainer').find('.coverageCheckbox:checked').each(function(){
-        var covID = $(this).attr('data-covid')
-        var productMap = {}
-        var requiredQuestionsArray = []
-        productMap.ratingBasis = $('#' + covID + '_RatingBasis').val()
-
-        //LOOP THROUGH QUESTIONS AND ADD THEM TO ARRAY
-        $('#' + covID + '_RatingBasis_RequiredQuestionsContainer .requiredQuestion').each(function(){
-
-            requiredQuestionsArray.push($(this).attr('data-questionid'))
-        })
-        productMap.requiredQuestions = requiredQuestionsArray
-        ratingBasisMap[covID] = productMap
-    })
-
-
-    return ratingBasisMap
 }
 function buildUWQuestionsMap(){
     var underwriterQuestionsMap = {}
@@ -1119,7 +1051,7 @@ function fillAllPackageRates(){
                 var thisLOBRateConditions = thisLOBMap.rateConditions
                 var thisLOBFormArray = thisLOBMap.formArray
 
-                var thisLOBPackageOptionRow = $('#' + packageID + '_CoverageQuestionsContainer ' + '.' + thisLOBCovID + '_RateForPackageOptionRow')
+                var thisLOBPackageOptionRow = $('#' + packageID + '_CoverageQuestionsContainer ' + '.' + thisLOBCovID + '_LOBDetailContainerRow')
 
                 if(thisLOBRequiredFlag === 'Y'){
                     $(thisLOBPackageOptionRow).find('.lobPackageRequiredCheckbox').prop('checked', true)
@@ -1153,7 +1085,7 @@ function fillAllPackageRates(){
     })
 }
 function fillLimitsAndDeductsInPackage(packageContainer){
-    $(packageContainer).find('.rateForPackageOptionRow .packageDetails_limitsContainer').each(function(){
+    $(packageContainer).find('.lobDetailContainerRow .packageDetails_limitsContainer').each(function(){
         var packageID = $(packageContainer).attr('data-covid')
         var packageLOBID = $(this).attr('data-covid')
         var coveragePackageMapForThisPackage = jsonStringToObject(getCurrentOperationTypeObject().coveragePackageMap)[packageID]
@@ -1186,7 +1118,7 @@ function fillLimitsAndDeductsInPackage(packageContainer){
         $(limitContainer).html(limitHTML)
     })
 
-    $(packageContainer).find('.rateForPackageOptionRow .packageDetails_deductsContainer').each(function(){
+    $(packageContainer).find('.lobDetailContainerRow .packageDetails_deductsContainer').each(function(){
         var packageID = $(packageContainer).attr('data-covid')
         var packageLOBID = $(this).attr('data-covid')
         var coveragePackageMapForThisPackage = jsonStringToObject(getCurrentOperationTypeObject().coveragePackageMap)[packageID]
@@ -1219,51 +1151,6 @@ function fillLimitsAndDeductsInPackage(packageContainer){
         $(deductContainer).html(deductHTML)
     })
 }
-function fillPackageLOBRateConditions(lobInfoContainer, lobRateConditionArray){
-    var rateConditionsContainer = $(lobInfoContainer).find('.logicConditionRowsContainer')
-    var lobID = $(lobInfoContainer).attr('data-covid')
-    $(rateConditionsContainer).html("")
-
-    for(var i=0; i<lobRateConditionArray.length; i++){
-        var conditionMap = lobRateConditionArray[i]
-        var logicRow = $(packageLOBRateLogicBlankRowHTML(lobID))
-
-        $(logicRow).find('.rowConditionDropdown').val(conditionMap.logicCondition)
-        $(logicRow).find('.conditionBasis').val(conditionMap.conditionBasis)
-        $(logicRow).find('.conditionOperator').val(conditionMap.conditionOperator)
-        $(logicRow).find('.conditionBasisValue').val(conditionMap.conditionBasisValue)
-        $(logicRow).find('.conditionOutputSelect').val(conditionMap.rateID)
-
-        //BUILD SUB LOGIC CONDITION ROWS
-        var sublogicArray = jsonStringToObject(conditionMap.subLogic)
-        if(sublogicArray !== undefined && sublogicArray.length > 0){
-            addSubLogicConditionRowClick( $(logicRow).find('.addSubLogicConditionRow') )
-            var sublogicContainer = $(logicRow).find('.subLogicConditionRow')
-            $(sublogicContainer).find('.logicConditionRow').remove()
-
-            for(var s=0;s<sublogicArray.length;s++){
-                var subConditionMap = sublogicArray[s]
-                var sublogicRow = $(packageLOBRateLogicBlankRowHTML(lobID))
-
-                $(sublogicRow).find('.rowConditionDropdown').val(subConditionMap.logicCondition)
-                $(sublogicRow).find('.conditionBasis').val(subConditionMap.conditionBasis)
-                $(sublogicRow).find('.conditionOperator').val(subConditionMap.conditionOperator)
-                $(sublogicRow).find('.conditionBasisValue').val(subConditionMap.conditionBasisValue)
-                $(sublogicRow).find('.conditionOutputSelect').val(subConditionMap.rateID)
-
-                $(sublogicContainer).append($(sublogicRow))
-                $(sublogicRow).find('.rowConditionDropdown').trigger('change')
-            }
-        }
-
-        $(rateConditionsContainer).append($(logicRow))
-
-        $(logicRow).find('.rowConditionDropdown').trigger('change')
-    }
-
-    checkFormatOfAllRows( $(rateConditionsContainer) )
-    formatConditionBasisInputs()
-}
 function fillFormsInPackageLOB(lobInfoContainer, formArray){
     var formsContainer = $(lobInfoContainer).find('.packageLOBFormsContainer')
     var lobID = $(lobInfoContainer).attr('data-covid')
@@ -1279,7 +1166,7 @@ function fillFormsInPackageLOB(lobInfoContainer, formArray){
 
 }
 function packageDetails_hidePackageLOBDetails(hideButton){
-    var lobContainer = $(hideButton).closest('.rateForPackageOptionRow')
+    var lobContainer = $(hideButton).closest('.lobDetailContainerRow')
 
     //HIDE ROWS EXCEPT THE HEADER ROW
     $(lobContainer).children().not('.packageLOBDetailHeaderRow').css('display', 'none')
@@ -1291,7 +1178,7 @@ function packageDetails_hidePackageLOBDetails(hideButton){
     $(hideButton).siblings('.packageDetails_showPackageLOBDetailButton').css('display', '')
 }
 function packageDetails_showPackageLOBDetails(showButton){
-    var lobContainer = $(showButton).closest('.rateForPackageOptionRow')
+    var lobContainer = $(showButton).closest('.lobDetailContainerRow')
 
     //SHOW ROWS
     $(lobContainer).children().not('.packageLOBDetailHeaderRow').css('display', '')
@@ -1303,19 +1190,19 @@ function packageDetails_showPackageLOBDetails(showButton){
     $(showButton).siblings('.packageDetails_hidePackageLOBDetailButton').css('display', '')
 }
 function updateRatesInPackageContainer(covID){
-    var ratesInCoverageContainer = $('#' + covID +  '_RatesInCoverageContainer')
+    var allLOBDetailContainer = $('#' + covID +  '_AllLOBDetailContainer')
     var packageCoverageOptionsArray = getPackageCoverageOptions(covID)
 
 
-    var packageOptionsRateDisplayHTML = ""
+    var allLOBDetailRowsHTML = ""
     for(var i=0;i<packageCoverageOptionsArray.length;i++){
         var packageOptionID = packageCoverageOptionsArray[i]
 
-        packageOptionsRateDisplayHTML = packageOptionsRateDisplayHTML +
-            ratesInCoverageRowHTML(covID, packageOptionID)
+        allLOBDetailRowsHTML = allLOBDetailRowsHTML +
+            lobDetailContainerRowHTML(covID, packageOptionID)
     }
 
-    $(ratesInCoverageContainer).html(packageOptionsRateDisplayHTML)
+    $(allLOBDetailContainer).html(allLOBDetailRowsHTML)
 
 }
 function getPackageCoverageOptions(packageID){
@@ -1330,9 +1217,9 @@ function getPackageCoverageOptions(packageID){
 
     return packageCoverageOptionsArray
 }
-function ratesInCoverageRowHTML(packageID, packageOptionID){
+function lobDetailContainerRowHTML(packageID, packageOptionID){
     var htmlString = "" +
-        "<div class='col-xs-12 rateForPackageOptionRow " + packageOptionID + "_RateForPackageOptionRow' " +
+        "<div class='col-xs-12 lobDetailContainerRow " + packageOptionID + "_LOBDetailContainerRow' " +
         "       style='background: rgba(123, 194, 255, 0.37); margin-bottom: 20px; padding: 20px; border-radius: 4px;' " +
         "       data-covid='" + packageOptionID + "'>" +
         "   <div class='row packageLOBDetailHeaderRow' style='margin-top: 0px; margin-bottom: 0px;'>" +
@@ -1386,84 +1273,11 @@ function packageLOBRateLogicContainerHTML(packageID, packageLOBID){
         "       </div>" +
         "      <div class='row logicConditionRowsContainer rowContainer' " +
         "          id='" + packageID + "_" + packageLOBID + "_PackageLOBRate_LogicConditionRowsContainer'>" +
-                   packageLOBRateLogicBlankRowHTML(packageLOBID) +
+            blankLogicRowHTML(packageLOBID, 'RATE') +
         "      </div>" +
         "   </div>" +
         "</div>"
 
-
-    return htmlString
-}
-function packageLOBRateLogicBlankRowHTML(packageLOBID){
-    var htmlString = "" +
-        "   <div class='col-xs-12 packageRate logicConditionRow'>" +
-        "       <div class='row mainLogicContainer' style='margin-left: -5px;'>" +
-        "           <div class='col-xs-1' style=''>" +
-        "               <select class='form-control rowConditionDropdown onChangeSaveOperation'>" +
-        "                   <option class='alwaysOption' value='ALWAYS'>ALWAYS</option>" +
-        "                   <option class='ifOption' value='IF'>IF</option>" +
-        "                   <option class='ifElseOption' value='IFELSE' >IF ELSE</option>" +
-        "                   <option class='elseOption' value='ELSE' >ELSE</option>" +
-        "               </select>" +
-        "           </div>" +
-        "           <div class='col-xs-1' style='visibility:hidden'>" +
-        "               <select class='form-control conditionBasis onChangeSaveOperation'>"
-
-    for(var i=0;i<conditionBasis.length;i++){
-        htmlString = htmlString +
-            "               <option value='" + conditionBasis[i].conditionID + "'>" + conditionBasis[i].description + "</option>"
-    }
-
-    htmlString = htmlString +
-        "               </select>" +
-        "           </div>" +
-        "           <div class='col-xs-1' style='visibility:hidden'>" +
-        "               <select class='form-control conditionOperator onChangeSaveOperation'>"
-
-    for(var i=0;i<conditionOperators.length;i++){
-        htmlString = htmlString +
-            "               <option value='" + conditionOperators[i].conditionID + "'>" + conditionOperators[i].description + "</option>"
-    }
-
-    htmlString = htmlString +
-        "               </select>" +
-        "           </div>" +
-        "           <div class='col-xs-2' style='visibility:hidden'>" +
-        "               <div class='form-group'>" +
-        "                   <input class='form-control conditionBasisValue maskMoney onChangeSaveOperation' type='text' data-precision='0' data-prefix='$'>" +
-        "               </div>" +
-        "           </div>" +
-        "           <div class='col-xs-4'>" +
-        "               <select class='form-control conditionOutputSelect onChangeSaveOperation " + packageLOBID + "_RateForCoverageSelect'" +
-        "                   data-covid='" + packageLOBID + "'>"
-
-    for(var i=0;i<rates.length;i++){
-        htmlString = htmlString +
-            "               <option value='" + rates[i].rateID + "'>" + rates[i].description + "</option>"
-    }
-
-    htmlString = htmlString +
-        "               </select>" +
-        "           </div>" +
-        "           <div class='col-xs-3 buttonColumn' style='visibility:hidden'>" +
-        "               <button class='btn btn-sm btn-primary pull-left addLogicConditionRow' style='margin-left:10px;'>" +
-        "                   <span>Add Row</span>" +
-        "               </button>" +
-        "               <button class='btn btn-sm pull-left addSubLogicConditionRow'>" +
-        "                   <span>Add Sub Logic</span>" +
-        "               </button>" +
-        "               <button class='btn btn-xs btn-success pull-left moveLogicRowDownButton onChangeSaveOperation' style='border-radius:20px; margin-left:10px;font-size:10px;'>" +
-        "                   <i class='fa fa-arrow-down' aria-hidden='true'></i>" +
-        "               </button>" +
-        "               <button class='btn btn-xs btn-success pull-left moveLogicRowUpButton onChangeSaveOperation' style='border-radius:20px;  font-size:10px;'>" +
-        "                   <i class='fa fa-arrow-up' aria-hidden='true'></i>" +
-        "               </button>" +
-        "               <button class='btn btn-sm btn-danger pull-right removeLogicConditionRow onChangeSaveOperation' style='display:none'>" +
-        "                   <span>Remove</span>" +
-        "               </button>" +
-        "           </div>" +
-        "       </div>" +
-        "   </div>"
 
     return htmlString
 }
@@ -1608,30 +1422,10 @@ function getFormsForPackageLOB(packageID, packageOptionID){
 
     return htmlString
 }
-function ratesLOBDropdownHTML(){
-    var htmlString = "" +
-        "<select class='lobRateDropdown onChangeSaveOperation'>"
-
-    for(var i=0;i<rates.length;i++){
-        var rateMap = rates[i]
-        var rateID = rateMap.rateID
-        var rateDescription = rateMap.description
-
-        htmlString = htmlString + "" +
-            "<option value='" + rateID + "'>" +
-                rateDescription +
-            "</option>"
-    }
-
-    htmlString = htmlString +
-        "</select>"
-
-    return htmlString
-}
 function getRequiredFlagForPackageCoverageOption(packageID, packageOptionID){
     var packageContainer = $('#' + packageID + '_PackageCoverageOptionsContainer').closest('.packageContainer')
 
-    var requiredCheckboxElement = $(packageContainer).find('.' + packageOptionID + '_RateForPackageOptionRow').find('input.lobPackageRequiredCheckbox')
+    var requiredCheckboxElement = $(packageContainer).find('.' + packageOptionID + '_LOBDetailContainerRow').find('input.lobPackageRequiredCheckbox')
 
     var requiredFlag = "N"
     if( $(requiredCheckboxElement).is(':checked') ){
@@ -1646,7 +1440,7 @@ function getRequiredFlagForPackageCoverageOption(packageID, packageOptionID){
 function getAddOnFlagForPackageCoverageOption(packageID, packageLOBID){
     var packageContainer = $('#' + packageID + '_PackageCoverageOptionsContainer').closest('.packageContainer')
 
-    var addOnCheckboxElement = $(packageContainer).find('.' + packageLOBID + '_RateForPackageOptionRow').find('input.lobPackageAddOnOnlyCheckbox')
+    var addOnCheckboxElement = $(packageContainer).find('.' + packageLOBID + '_LOBDetailContainerRow').find('input.lobPackageAddOnOnlyCheckbox')
 
     var requiredFlag = "N"
     if( $(addOnCheckboxElement).is(':checked') ){
@@ -1670,99 +1464,6 @@ function packageDetails_addNewDeductRow(addButton){
 }
 function packageDetails_removeLimDedRow(removeButton){
     $(removeButton).closest('.packageLimDeductRow').remove()
-}
-
-//RATING BASIS
-function ratingBasisDropdownChangeAction(dropdown){
-    var selectedRatingBasis = $(dropdown).val()
-    var thisCovID = $(dropdown).attr('data-covid')
-
-}
-
-//OPERATIONS PAGE, PRODUCT CONDITIONS
-function addProductConditionsRow(btnClicked){
-    //SET THE PRODUCT CONDITIONS ROW HTML
-    var insertElement = $(btnClicked).closest('.productConditionsRow').clone()
-
-    //CLEAR THE CLONED ROW
-    $(insertElement).find('.conditionBasisValue').val('')
-
-    $(insertElement).find('.removeProductConditionRow').css('display', '')
-
-    $(btnClicked).closest('.productConditionsContainer').append($(insertElement))
-
-    formatConditionBasisInputs()
-
-    initializeGlobalListeners()
-
-    $(btnClicked).closest('.productConditionsContainer').find('.conditionBasis').trigger('change')
-}
-function removeProductConditionRow(btnClicked){
-    $(btnClicked).closest('.productConditionsRow').remove();
-}
-function resetThisProductConditionRow(productConditionRow){
-    // var row = $(productConditionRow)
-    var prodSelect = $(productConditionRow).find('.conditionOutputSelect')
-    $(prodSelect).val($(prodSelect).first().val())
-
-    var condBasis = $(productConditionRow).find('.conditionBasis')
-    $(condBasis).val($(condBasis).first().val())
-
-    var condOperator = $(productConditionRow).find('.conditionOperator')
-    $(condOperator).val($(condOperator).first().val())
-
-    var basisValue = $(productConditionRow).find('.conditionBasisValue')
-    $(basisValue).val('')
-
-    $('.removeProductConditionRow').css('display', 'none')
-
-
-}
-function moveProductConditionUp(upButton){
-    var container = $(upButton).closest('.productConditionsContainer')
-    var thisRow = $(upButton).closest('.productConditionsRow')
-    var thisRowIndex = $(thisRow).index()
-
-    if(thisRowIndex === 0){
-
-    }
-    else{
-        $(container).find('.productConditionsRow').eq(thisRowIndex-1).before($(thisRow))
-    }
-
-    showHideAddRemoveConditionButtons(thisRow)
-
-}
-function moveProductConditionDown(downButton){
-    var container = $(downButton).closest('.productConditionsContainer')
-    var thisRow = $(downButton).closest('.productConditionsRow')
-    var thisRowIndex = $(thisRow).index()
-    var lastIndex = $(container).find('.productConditionsRow').length
-
-    if(thisRowIndex === lastIndex){
-
-    }
-    else{
-        $(container).find('.productConditionsRow').eq(thisRowIndex+1).after($(thisRow))
-
-    }
-
-    showHideAddRemoveConditionButtons(thisRow)
-
-}
-function showHideAddRemoveConditionButtons(thisRow){
-    var container = $(thisRow).closest('.productConditionsContainer')
-
-    $(container).find('.productConditionsRow').each(function(index){
-        if(index === 0){
-            $(this).find('.addProductConditionRow').css('display', '')
-            $(this).find('.removeProductConditionRow').css('display', 'none')
-        }
-        else{
-            $(this).find('.addProductConditionRow').css('display', '')
-            $(this).find('.removeProductConditionRow').css('display', '')
-        }
-    })
 }
 
 //PRODUCT CONDITIONS V2
@@ -1798,40 +1499,6 @@ function showAllConditionalInputs(thisRow){
     //SHOW  ALL
     $(thisRow).children().css('visibility', '')
 
-}
-function productConditionBasisDropdownChange(dropdown){
-    var thisConditionRow = $(dropdown).closest('.mainLogicContainer')
-    var productConditionValue = $(dropdown).val()
-
-
-    if(productConditionValue === 'GPC'){
-        setConditionInputToMoney(thisConditionRow)
-    }
-    else if(productConditionValue === 'BTL' ){
-        setConditionInputToMoney(thisConditionRow)
-    }
-    else if(productConditionValue === 'SQFT' ){
-        setConditionInputToText(thisConditionRow)
-    }
-    else if(productConditionValue === 'CAST' ){
-        setConditionInputToText(thisConditionRow)
-    }
-    else if(productConditionValue === 'STATE' ){
-        setConditionInputToStateDropdown(thisConditionRow)
-    }
-    else if(productConditionValue === 'COVID' ){
-        setConditionInputToCoverageDropdown(thisConditionRow)
-    }
-    else if(productConditionValue === 'POLICYLENGTH'){
-        setConditionInputToNumber(thisConditionRow)
-    }
-    else if(productConditionValue === 'DICEVSFEATURE'){
-        setConditionInputToText(thisConditionRow)
-    }
-
-    $(thisConditionRow).find('.conditionBasisValue').addClass('onChangeSaveOperation')
-
-    formatConditionBasisInputs()
 }
 function moneyInputHTML(){
     var htmlString =
@@ -2154,152 +1821,6 @@ function buildOperationCoverageProductMap(){
     return coverageProductMap
 }
 
-//LOGIC CONDITION FUNCTIONS
-function fillPackageLOBRateConditionsVersion2(lobInfoContainer, lobRateConditionArray){
-    var rateConditionsContainer = $(lobInfoContainer).find('.logicConditionRowsContainer')
-    var lobID = $(lobInfoContainer).attr('data-covid')
-    $(rateConditionsContainer).html("")
-
-    fillLogicRowContainerWithLogicArray(lobRateConditionArray, rateConditionsContainer, lobID, "RATE")
-
-
-    checkFormatOfAllRows( $(rateConditionsContainer) )
-    formatConditionBasisInputs()
-}
-function buildLogicArrayForLogicContainer(logicConditionRowsContainer){
-    var logicArray = []
-
-    $(logicConditionRowsContainer).children('.logicConditionRow').each(function(){
-        var mainLogicContainer = $(this).children('.mainLogicContainer')
-        var subLogicContainer = $(this).children('.subLogicConditionRow')
-
-        var thisRowLogicMap = {}
-        if($(mainLogicContainer).length > 0){
-            thisRowLogicMap.logicCondition = $(mainLogicContainer).find('.rowConditionDropdown').val()
-            thisRowLogicMap.conditionBasis = $(mainLogicContainer).find('.conditionBasis').val()
-            thisRowLogicMap.conditionOperator = $(mainLogicContainer).find('.conditionOperator').val()
-            thisRowLogicMap.conditionBasisValue = $(mainLogicContainer).find('.conditionBasisValue').val()
-            thisRowLogicMap.outputID = $(mainLogicContainer).find('.conditionOutputSelect').val()
-        }
-
-        //IF SUB LOGIC EXISTS
-        var subConditionArray = []
-        if( $(subLogicContainer).length > 0 ){
-            subConditionArray = buildLogicArrayForLogicContainer(subLogicContainer)
-        }
-
-        thisRowLogicMap.subLogic = subConditionArray
-
-        logicArray.push(thisRowLogicMap)
-    })
-
-    return logicArray
-}
-function fillLogicRowContainerWithLogicArray(logicArray, logicRowsContainer, COVID, RATE_OR_PRODUCT){
-    for(var i=0;i<logicArray.length; i++){
-        var logicRow
-        if(RATE_OR_PRODUCT === "RATE"){
-            logicRow = $(packageLOBRateLogicBlankRowHTML(COVID))
-        }
-        else if(RATE_OR_PRODUCT === "PRODUCT"){
-            logicRow = $(logicRowTemplate).clone()
-        }
-
-        var thisConditionMap = jsonStringToObject(logicArray[i])
-        var conditionBasis = thisConditionMap.conditionBasis
-        var conditionBasisValue = thisConditionMap.conditionBasisValue
-        var conditionOperator = thisConditionMap.conditionOperator
-        var logicCondition = thisConditionMap.logicCondition
-        var outputID
-        //TEMP
-        if(thisConditionMap.outputID){
-            outputID = thisConditionMap.outputID
-        }
-        else if( thisConditionMap.rateID){
-            outputID = thisConditionMap.rateID
-        }
-        else if( thisConditionMap.productID){
-            outputID = thisConditionMap.productID
-        }
-
-        $(logicRow).find('.rowConditionDropdown').val(logicCondition)
-        rowConditionDropdownChange($(logicRow).find('.rowConditionDropdown'))
-        $(logicRow).find('.conditionBasis').val(conditionBasis)
-        logicConditionBasisDropdownChange($(logicRow).find('.conditionBasis'))
-
-        $(logicRow).find('.conditionOperator').val(conditionOperator)
-        $(logicRow).find('.conditionBasisValue').val(conditionBasisValue)
-        $(logicRow).find('.conditionOutputSelect').val(outputID)
-
-
-        //BUILD SUB LOGIC CONDITION ROWS
-        var sublogicArray = jsonStringToObject(thisConditionMap.subLogic)
-        if(sublogicArray !== undefined && sublogicArray.length > 0){
-            addSubLogicConditionRowClick( $(logicRow).find('.addSubLogicConditionRow') )
-            var sublogicContainer = $(logicRow).find('.subLogicConditionRow')
-            $(sublogicContainer).find('.logicConditionRow').remove()
-
-            fillLogicRowContainerWithLogicArray(sublogicArray, sublogicContainer, COVID, RATE_OR_PRODUCT)
-        }
-
-        $(logicRowsContainer).append($(logicRow))
-    }
-}
-function logicConditionBasisDropdownChange(dropdown){
-    var thisConditionRow = $(dropdown).closest('.mainLogicContainer')
-    var productConditionValue = $(dropdown).val()
-
-
-    if(productConditionValue === 'GPC'){
-        setConditionInputToMoney(thisConditionRow)
-    }
-    else if(productConditionValue === 'BTL' ){
-        setConditionInputToMoney(thisConditionRow)
-    }
-    else if(productConditionValue === 'SQFT' ){
-        setConditionInputToText(thisConditionRow)
-    }
-    else if(productConditionValue === 'CAST' ){
-        setConditionInputToText(thisConditionRow)
-    }
-    else if(productConditionValue === 'STATE' ){
-        setConditionInputToStateDropdown(thisConditionRow)
-    }
-    else if(productConditionValue === 'COVID' ){
-        setConditionInputToCoverageDropdown(thisConditionRow)
-    }
-    else if(productConditionValue === 'POLICYLENGTH'){
-        setConditionInputToNumber(thisConditionRow)
-    }
-    else if(productConditionValue === 'DICEVSFEATURE'){
-        setConditionInputToText(thisConditionRow)
-    }
-
-    $(thisConditionRow).find('.conditionBasisValue').addClass('onChangeSaveOperation')
-
-    formatConditionBasisInputs()
-}
-function formatConditionBasisInputs(){
-    $('.logicConditionRowsContainer').each(function(){
-        var productConditionBasisDropdown = $(this).find('.conditionBasis')
-        var productConditionBasisID = $(productConditionBasisDropdown).val()
-        var conditionValueInput = $(this).find('.conditionBasisValue')
-
-        if(productConditionBasisID === 'GPC' || productConditionBasisID === 'BTL'){
-            $(conditionValueInput).addClass('maskMoney')
-            maskMoneyThisInput($(conditionValueInput) )
-        }
-        else{
-            $(conditionValueInput).removeClass('maskMoney')
-            $(conditionValueInput).maskMoney('destroy')
-            $(conditionValueInput).attr("placeholder", "")
-        }
-
-        numericInputOnlyInit()
-    })
-
-
-}
 
 //CONDITION REQUIRED QUESTIONS
 function insertRequiredConditionQuestionButton(button){
@@ -2320,21 +1841,6 @@ function insertRequiredConditionQuestionButton(button){
 }
 function operationsPage_insertRequiredConditionQuestion(covID, questionID){
     var requiredQuestionsContainer = $('#' + covID + '_RequiredQuestions')
-    var requiredConditionQuestion = getRequiredQuestionHTML(questionID)
-
-
-    //MAKE SURE NOT TO INSERT THE SAME QUESTION TWICE
-    if( $(requiredQuestionsContainer).find('input#' + questionID).length === 0 ){
-        $(requiredQuestionsContainer).append(requiredConditionQuestion)
-        //ADD SAVE LISTENER TO CLOSE BUTTON
-        $(requiredQuestionsContainer).find('button.close').addClass('onChangeSaveOperation')
-    }
-    else{
-        alert("Question is already included")
-    }
-}
-function operationsPage_insertRequiredConditionQuestionV2(covID, questionID){
-    var requiredQuestionsContainer = $('#' + covID + '_RequiredQuestionsAll')
     var requiredConditionQuestion = getRequiredQuestionHTML(questionID)
 
 
@@ -2451,18 +1957,6 @@ function buildRequiredQuestionsMap(){
 }
 
 //UNDERWRITER QUESTION SECTION
-function operationsPage_InsertUWQuestionButton(button){
-    var covID = $(button).data('covid')
-    var questionText = $('#' + covID + '_UWQuestionTypeahead').val()
-    var questionID = getQuestionIDFromText(questionText)
-
-    //INSERT QUESTION
-    operationsPage_insertOperationUWQuestion(covID, questionID)
-
-    //CLEAR QUESTION INPUT BOX
-    $('#' + covID + '_UWQuestionTypeahead').typeahead('val', '')
-
-}
 function operationsPage_insertOperationUWQuestion(covID, questionID){
     //GET QUESTION CATEGORY
     var questionCategory = getQuestionCategoryFromID(questionID)
