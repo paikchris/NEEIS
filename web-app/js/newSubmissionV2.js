@@ -3111,28 +3111,7 @@ function getProductIDForCoverage(covID){
     var coverageProductMap = jsonStringToObject(operationMap.coverageProductMap)
     var thisCoverageConditionArray = jsonStringToObject(coverageProductMap[covID])
 
-    if(thisCoverageConditionArray != null){
-
-        //IF COVERAGE CONDITION IS 'ALWAYS'
-        if(thisCoverageConditionArray[0].logicCondition === 'ALWAYS'){
-            return thisCoverageConditionArray[0].outputID
-        }
-        //IF COVERAGE CONDITION IS 'IF'
-        else{
-        // else if(thisCoverageConditionArray[0].logicCondition === 'IF'){
-            //ITERATE THROUGH CONDITIONS, WILL ACCEPT FIRST CONDITION THAT'S VALID
-            for(var i=0; i<thisCoverageConditionArray.length; i++){
-                if( evaluateLogicConditionRowVersion2(thisCoverageConditionArray[i]) === false ){
-                    continue
-                }
-                else{
-                    return evaluateLogicConditionRowVersion2(thisCoverageConditionArray[i])
-
-                }
-            }
-        }
-
-    }
+    return evaluateLogicConditionArray(thisCoverageConditionArray)
 }
 
 //PACKAGE LOB FUNCTIONS
@@ -3152,28 +3131,7 @@ function getRateIDForPackageLOB(packageID, lobID){
     var lobObject = getLOBObjectFromPackageMap(packageID, lobID)
     var thisCoverageConditionArray = jsonStringToObject(lobObject.rateConditions)
 
-    if(thisCoverageConditionArray != null){
-
-        //IF COVERAGE CONDITION IS 'ALWAYS'
-        if(thisCoverageConditionArray[0].logicCondition === 'ALWAYS'){
-            return thisCoverageConditionArray[0].outputID
-        }
-        //IF COVERAGE CONDITION IS 'IF'
-        // else if(thisCoverageConditionArray[0].logicCondition === 'IF'){
-        else{
-            //ITERATE THROUGH CONDITIONS, WILL ACCEPT FIRST CONDITION THAT'S VALID
-            for(var i=0; i<thisCoverageConditionArray.length; i++){
-                if( evaluateLogicConditionRowVersion2(thisCoverageConditionArray[i]) === false ){
-                    continue
-                }
-                else{
-                    return evaluateLogicConditionRowVersion2(thisCoverageConditionArray[i])
-
-                }
-            }
-        }
-
-    }
+    return evaluateLogicConditionArray(thisCoverageConditionArray)
 }
 
 
