@@ -241,17 +241,66 @@ function getConditionBasisObject(conditionBasisID){
         }
     }
 }
-function evaluateLogicConditionRowVersion2(logicConditionRowMap){
-    var rowLogicCondition = logicConditionRowMap.logicCondition
-    var outputID = logicConditionRowMap.outputID
+function evaluateLogicConditionArray(logicConditionArray){
+    var outputID
+
+    if(logicConditionArray !== null && logicConditionArray !== undefined){
+        //IF COVERAGE CONDITION IS 'ALWAYS'
+        if(logicConditionArray[0].logicCondition === 'ALWAYS'){
+            if(logicConditionArray[0].outputID){
+                outputID = logicConditionArray[0].outputID
+            }
+            else if(logicConditionArray[0].productID){
+                outputID = logicConditionArray[0].productID
+            }
+            else if(logicConditionArray[0].rateID){
+                outputID = logicConditionArray[0].rateID
+            }
+
+            return outputID
+
+        }
+        //IF COVERAGE CONDITION IS 'IF'
+        else{
+            // else if(logicConditionArray[0].logicCondition === 'IF'){
+            //ITERATE THROUGH CONDITIONS, WILL ACCEPT FIRST CONDITION THAT'S VALID
+            for(var i=0; i<logicConditionArray.length; i++){
+                if( evaluateLogicConditionRow(logicConditionArray[i]) === false ){
+                    continue
+                }
+                else{
+                    return evaluateLogicConditionRow(logicConditionArray[i])
+
+                }
+            }
+        }
+
+    }
+}
+function evaluateLogicConditionRow(logicConditionRow){
+    var rowLogicCondition = logicConditionRow.logicCondition
+    var outputID
+
+
+    if(logicConditionRow.outputID){
+        outputID = logicConditionRow.outputID
+    }
+    else if(logicConditionRow.productID){
+        outputID = logicConditionRow.productID
+    }
+    else if(logicConditionRow.rateID){
+        outputID = logicConditionRow.rateID
+    }
+
+
 
     if(rowLogicCondition === "ALWAYS"){
         return outputID
     }
     else{
-        var conditionOperator = logicConditionRowMap.conditionOperator
-        var conditionBasis = logicConditionRowMap.conditionBasis
-        var conditionBasisValue = formatBasisValue(logicConditionRowMap.conditionBasisValue)
+        var conditionOperator = logicConditionRow.conditionOperator
+        var conditionBasis = logicConditionRow.conditionBasis
+        var conditionBasisValue = formatBasisValue(logicConditionRow.conditionBasisValue)
 
         //GET ACTUAL BASIS VALUE
         var actualBasisValue = getActualBasisValue(conditionBasis)
@@ -261,7 +310,7 @@ function evaluateLogicConditionRowVersion2(logicConditionRowMap){
             if( evaluateCondition(conditionOperator, conditionBasisValue, actualBasisValue) ){
                 //CHECK FOR SUB LOGIC CONDITIONS
 
-                var subLogicArray = jsonStringToObject(logicConditionRowMap.subLogic)
+                var subLogicArray = jsonStringToObject(logicConditionRow.subLogic)
 
                 //IF SUBLOGIC ROWS EXIST
                 if(subLogicArray !== null && subLogicArray !== undefined && subLogicArray.length > 0){
@@ -269,7 +318,17 @@ function evaluateLogicConditionRowVersion2(logicConditionRowMap){
                         var subLogicConditionRowMap = jsonStringToObject(subLogicArray[i])
                         var subLogicOutputID = subLogicConditionRowMap.outputID
 
-                        if( evaluateLogicConditionRowVersion2(subLogicConditionRowMap) ){
+                        if(subLogicConditionRowMap.outputID){
+                            subLogicOutputID = subLogicConditionRowMap.outputID
+                        }
+                        else if(subLogicConditionRowMap.productID){
+                            subLogicOutputID = subLogicConditionRowMap.productID
+                        }
+                        else if(subLogicConditionRowMap.rateID){
+                            subLogicOutputID = subLogicConditionRowMap.rateID
+                        }
+
+                        if( evaluateLogicConditionRow(subLogicConditionRowMap) ){
                             return subLogicOutputID
                         }
                         else{
