@@ -275,12 +275,12 @@
 			<li>
 				<a href="./../main/index.gsp"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span> Dashboard</a>
 			</li>
-			<g:if test="${user.admin == "true"}">
+			%{--<g:if test="${user.admin == "true"}">--}%
 				<li>
 					%{--<a href="./../main/newSubmission.gsp"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New Policy</a>--}%
 					<a href="./../main/newSubmissionV2.gsp"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New Policy</a>
 				</li>
-			</g:if>
+			%{--</g:if>--}%
 			<li>
 				<a href="./../main/submissions.gsp"><span class="glyphicon glyphicon-file" aria-hidden="true"></span> My Submissions</a>
 			</li>
