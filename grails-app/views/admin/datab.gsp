@@ -1247,12 +1247,12 @@
                                                             <h6>Rate</h6>
                                                         </div>
                                                     </div>
-                                                    <div class="col-xs-1">
+                                                    <div class="col-xs-2">
                                                         <div class="form-group">
                                                             <h6>Max Limit Allowed</h6>
                                                         </div>
                                                     </div>
-                                                    <div class="col-xs-6">
+                                                    <div class="col-xs-5">
                                                         <h6>Limit Description (Must Match Exactly)</h6>
                                                     </div>
                                                     <div class="col-xs-1">

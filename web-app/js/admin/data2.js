@@ -2992,13 +2992,13 @@ function getLimitRateRowHTML(limitRateRowMap){
         "               value='" + (limitRateRowMap && limitRateRowMap.rateValue ? limitRateRowMap.rateValue : "") + "'  type='text'> " +
         "       </div> " +
         "   </div> " +
-        "   <div class='col-xs-1'> " +
+        "   <div class='col-xs-2'> " +
         "       <div class='form-group'> " +
         "           <input class='form-control ratesPage_LimitMaxValueInput onChangeSaveRate maskMoney' data-precision='0' data-prefix='$' " +
         "               value='" + (limitRateRowMap && limitRateRowMap.maxLimit ? limitRateRowMap.maxLimit : "") + "'  type='text'> " +
         "       </div> " +
         "   </div> " +
-        "   <div class='col-xs-6'> " +
+        "   <div class='col-xs-5'> " +
         "       <div class='form-group'> " +
         "           <input class='form-control ratesPage_LimitDescriptionInput onChangeSaveRate' " +
         "               value='" + (limitRateRowMap && limitRateRowMap.limitDescription ? limitRateRowMap.limitDescription : "") + "' type='text'> " +
@@ -3006,7 +3006,7 @@ function getLimitRateRowHTML(limitRateRowMap){
         "   </div> " +
         "   <div class='col-xs-1'> " +
         "       <div class='form-group'> " +
-        "           <input class='form-control ratesPage_LimitMinPremiumInput onChangeSaveRate' " +
+        "           <input class='form-control ratesPage_LimitMinPremiumInput onChangeSaveRate maskMoney' data-precision='0' data-prefix='$'" +
         "               value='" + (limitRateRowMap && limitRateRowMap.minPremium ? limitRateRowMap.minPremium : "") + "' type='text'> " +
         "       </div> " +
         "   </div>" +
@@ -3032,19 +3032,19 @@ function limitRateAddButtonAction(addButton){
         "           <input class='form-control ratesPage_LimitRateValueInput onChangeSaveRate'  type='text'> " +
         "       </div> " +
         "   </div> " +
-        "   <div class='col-xs-1'> " +
+        "   <div class='col-xs-2'> " +
         "       <div class='form-group'> " +
         "           <input class='form-control ratesPage_LimitMaxValueInput onChangeSaveRate maskMoney' type='text' data-precision='0' data-prefix='$'> " +
         "       </div> " +
         "   </div> " +
-        "   <div class='col-xs-6'> " +
+        "   <div class='col-xs-5'> " +
         "       <div class='form-group'> " +
         "           <input class='form-control ratesPage_LimitDescriptionInput onChangeSaveRate' type='text'> " +
         "       </div> " +
         "   </div> " +
         "   <div class='col-xs-1'> " +
         "       <div class='form-group'> " +
-        "           <input class='form-control ratesPage_LimitMinPremiumInput onChangeSaveRate'  type='text'> " +
+        "           <input class='form-control ratesPage_LimitMinPremiumInput onChangeSaveRate maskMoney'  type='text' data-precision='0' data-prefix='$'> " +
         "       </div> " +
         "   </div>" +
         "   <div class='col-xs-2'> " +
