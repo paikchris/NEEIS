@@ -42,7 +42,7 @@ function calculateTotalCoveragePremium(productObject, rateMap, ratingBasisMap, i
 
             for(var i=0;i<limitRateArray.length;i++){
                 var limDescription = limitRateArray[i].limitDescription
-                var userInputValue = getLimitValueFromLimitDescription(ifLOB_PackageID, limDescription)
+                var userInputValue = getLimitValueFromLimitDescription(ifLOB_PackageID, limitRateArray[i])
 
 
                 premium = calculateLimitPremium(rateMap, limDescription, userInputValue)
