@@ -1149,7 +1149,7 @@
 
                     %{--RATING BASIS DETAILS --}%
                     <div class="row" id="ratesDetailsContainer">
-                        <div class="col-xs-6" id="ratesPageLeftColumn">
+                        <div class="col-xs-12" id="ratesPageLeftColumn">
                             <div class="row">
                                 <div class="col-xs-12">
                                     <label class="control-label">Rate Details</label>
