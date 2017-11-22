@@ -2986,10 +2986,16 @@ function showFlatRatingContainer(){
 function getLimitRateRowHTML(limitRateRowMap){
     var limitRateRowHTML =
         "<div class='col-xs-12 limitRatingRow' > " +
-        "   <div class='col-xs-2'> " +
+        "   <div class='col-xs-1'> " +
         "       <div class='form-group'> " +
         "           <input class='form-control ratesPage_LimitRateValueInput onChangeSaveRate' " +
         "               value='" + (limitRateRowMap && limitRateRowMap.rateValue ? limitRateRowMap.rateValue : "") + "'  type='text'> " +
+        "       </div> " +
+        "   </div> " +
+        "   <div class='col-xs-1'> " +
+        "       <div class='form-group'> " +
+        "           <input class='form-control ratesPage_LimitMaxValueInput onChangeSaveRate maskMoney' data-precision='0' data-prefix='$' " +
+        "               value='" + (limitRateRowMap && limitRateRowMap.maxLimit ? limitRateRowMap.maxLimit : "") + "'  type='text'> " +
         "       </div> " +
         "   </div> " +
         "   <div class='col-xs-6'> " +
@@ -2998,7 +3004,7 @@ function getLimitRateRowHTML(limitRateRowMap){
         "               value='" + (limitRateRowMap && limitRateRowMap.limitDescription ? limitRateRowMap.limitDescription : "") + "' type='text'> " +
         "       </div> " +
         "   </div> " +
-        "   <div class='col-xs-2'> " +
+        "   <div class='col-xs-1'> " +
         "       <div class='form-group'> " +
         "           <input class='form-control ratesPage_LimitMinPremiumInput onChangeSaveRate' " +
         "               value='" + (limitRateRowMap && limitRateRowMap.minPremium ? limitRateRowMap.minPremium : "") + "' type='text'> " +
@@ -3021,9 +3027,14 @@ function limitRateAddButtonAction(addButton){
 
     var limitRateRowHTML =
         "<div class='col-xs-12 limitRatingRow' > " +
-        "   <div class='col-xs-2'> " +
+        "   <div class='col-xs-1'> " +
         "       <div class='form-group'> " +
         "           <input class='form-control ratesPage_LimitRateValueInput onChangeSaveRate'  type='text'> " +
+        "       </div> " +
+        "   </div> " +
+        "   <div class='col-xs-1'> " +
+        "       <div class='form-group'> " +
+        "           <input class='form-control ratesPage_LimitMaxValueInput onChangeSaveRate maskMoney' type='text' data-precision='0' data-prefix='$'> " +
         "       </div> " +
         "   </div> " +
         "   <div class='col-xs-6'> " +
@@ -3031,7 +3042,7 @@ function limitRateAddButtonAction(addButton){
         "           <input class='form-control ratesPage_LimitDescriptionInput onChangeSaveRate' type='text'> " +
         "       </div> " +
         "   </div> " +
-        "   <div class='col-xs-2'> " +
+        "   <div class='col-xs-1'> " +
         "       <div class='form-group'> " +
         "           <input class='form-control ratesPage_LimitMinPremiumInput onChangeSaveRate'  type='text'> " +
         "       </div> " +
@@ -3067,6 +3078,7 @@ function ratesPage_buildLimitRateArray(){
         var thisLimitRowMap = {}
         thisLimitRowMap.limitDescription = $(this).find('.ratesPage_LimitDescriptionInput').val()
         thisLimitRowMap.rateValue = $(this).find('.ratesPage_LimitRateValueInput').val()
+        thisLimitRowMap.maxLimit = $(this).find('.ratesPage_LimitMaxValueInput').val()
         thisLimitRowMap.minPremium = $(this).find('.ratesPage_LimitMinPremiumInput').val()
         limitRateArray.push(thisLimitRowMap)
     })
@@ -5056,8 +5068,6 @@ function validateRatePage(){
         valid = false
     }
 
-    console.log(valid)
-    console.log(ratingBasisID)
     if(ratingBasisID){
         if(ratingBasisID === 'LIMIT'){
             $('.limitRatingRow .ratesPage_LimitRateValueInput').each(function() {

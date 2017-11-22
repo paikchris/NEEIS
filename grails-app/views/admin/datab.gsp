@@ -1242,15 +1242,20 @@
                                             %{--LIMIT RATING STYLE CONTAINER--}%
                                             <div id="ratePage_LimitRateValuesContainer" style="display:none">
                                                 <div class="row col-xs-12">
-                                                    <div class="col-xs-2">
+                                                    <div class="col-xs-1">
                                                         <div class="form-group">
                                                             <h6>Rate</h6>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-1">
+                                                        <div class="form-group">
+                                                            <h6>Max Limit Allowed</h6>
                                                         </div>
                                                     </div>
                                                     <div class="col-xs-6">
                                                         <h6>Limit Description (Must Match Exactly)</h6>
                                                     </div>
-                                                    <div class="col-xs-2">
+                                                    <div class="col-xs-1">
                                                         <div class="form-group">
                                                             <h6>Min Premium</h6>
                                                         </div>
