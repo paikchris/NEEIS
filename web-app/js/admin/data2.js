@@ -2245,14 +2245,15 @@ function clearProductDetails(){
 function updateProductForms(){
     var productID = getCurrentSelectedProductID()
     var productMap = getProductObjectByID(productID)
-    var formIDArray = jsonStringToObject(productMap.formIDS)
-    var formsContainer = $('#productPageFormsContainer')
 
+    if(productMap.formIDS){
+        var formIDArray = jsonStringToObject(productMap.formIDS)
+        var formsContainer = $('#productPageFormsContainer')
 
-
-    for(var i=0; i<formIDArray.length; i++){
-        var formID = formIDArray[i]
-        $('#' + formID + '_ProductPageFormCheckbox').prop('checked', true)
+        for(var i=0; i<formIDArray.length; i++){
+            var formID = formIDArray[i]
+            $('#' + formID + '_ProductPageFormCheckbox').prop('checked', true)
+        }
     }
 }
 function clearProductForms(){
