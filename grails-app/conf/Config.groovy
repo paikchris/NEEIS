@@ -113,6 +113,9 @@ environments {
 
         grails.neeisEmail = "johnkimsinbox@gmail.com"
         neeisEmailPassword = "Perseverence12"
+
+        disable.auto.recompile=false
+        grails.gsp.enable.reload=true
     }
 }
 

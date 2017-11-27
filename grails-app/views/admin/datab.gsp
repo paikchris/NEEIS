@@ -1252,7 +1252,7 @@
                                                             <h6>Max Limit Allowed</h6>
                                                         </div>
                                                     </div>
-                                                    <div class="col-xs-5">
+                                                    <div class="col-xs-4">
                                                         <h6>Limit Description (Must Match Exactly)</h6>
                                                     </div>
                                                     <div class="col-xs-1">
@@ -1287,6 +1287,75 @@
                                                             </button>
                                                         </div>
                                                     </div>
+                                                </div>
+                                                <div class="row" id="ratesPage_limitEffectsLogicContainer">
+                                                    <div class="col-xs-12" id="limitLogicEffectHeaderRow">
+                                                        <div class="col-xs-1">
+                                                            <div class="form-group">
+                                                                <h6>Rate</h6>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-2">
+                                                            <div class="form-group">
+                                                                <h6>Max Limit Allowed</h6>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-4">
+                                                            <h6>Limit Description (Must Match Exactly)</h6>
+                                                        </div>
+                                                        <div class="col-xs-1">
+                                                            <div class="form-group">
+                                                                <h6>Min Premium</h6>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div id="limitEffectsLogicRowsContainer">
+                                                        <div class="col-xs-12 limitEffectLogicRow">
+                                                            <div class="col-xs-2">
+                                                                <div class="form-group">
+                                                                    <select class="form-control ratesPage_logicCondition onChangeSaveRate" >
+                                                                        <option>IF</option>
+                                                                        <option>ALWAYS</option>
+                                                                        <option>IF ELSE</option>
+                                                                        <option>IF s</option>
+                                                                        <option>IF a</option>
+
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xs-2">
+                                                                <div class="form-group">
+                                                                    <select class="form-control ratesPage_logicBasis onChangeSaveRate">
+                                                                        <option value="LIMITAMOUNT">Limit Amount</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xs-2">
+                                                                <div class="form-group">
+                                                                    <input class="form-control ratesPage_logicBasisAmount onChangeSaveRate"  type="text">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xs-2">
+                                                                <div class="form-group">
+                                                                    <input class="form-control ratesPage_logicOperator onChangeSaveRate"  type="text">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xs-2">
+                                                                <div class="form-group">
+                                                                    <input class="form-control ratesPage_logicOutputID onChangeSaveRate"  type="text">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xs-2">
+                                                                <button type="button" class="btn btn-xs btn-success ratesPage_LimitLogicAddButton" style="font-size:9px; margin-top: 6px;">
+                                                                    <i class="fa fa-plus" aria-hidden="true"></i>
+                                                                </button>
+                                                                <button type="button" class="btn btn-xs btn-danger ratesPage_LimitLogicRemoveButton" style="font-size:9px; margin-top: 6px;">
+                                                                    <i class="fa fa-minus" aria-hidden="true"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
                                                 </div>
                                             </div>
 
