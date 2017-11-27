@@ -1149,7 +1149,7 @@
 
                     %{--RATING BASIS DETAILS --}%
                     <div class="row" id="ratesDetailsContainer">
-                        <div class="col-xs-6" id="ratesPageLeftColumn">
+                        <div class="col-xs-12" id="ratesPageLeftColumn">
                             <div class="row">
                                 <div class="col-xs-12">
                                     <label class="control-label">Rate Details</label>
@@ -1242,15 +1242,20 @@
                                             %{--LIMIT RATING STYLE CONTAINER--}%
                                             <div id="ratePage_LimitRateValuesContainer" style="display:none">
                                                 <div class="row col-xs-12">
-                                                    <div class="col-xs-2">
+                                                    <div class="col-xs-1">
                                                         <div class="form-group">
                                                             <h6>Rate</h6>
                                                         </div>
                                                     </div>
-                                                    <div class="col-xs-6">
+                                                    <div class="col-xs-2">
+                                                        <div class="form-group">
+                                                            <h6>Max Limit Allowed</h6>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-4">
                                                         <h6>Limit Description (Must Match Exactly)</h6>
                                                     </div>
-                                                    <div class="col-xs-2">
+                                                    <div class="col-xs-1">
                                                         <div class="form-group">
                                                             <h6>Min Premium</h6>
                                                         </div>
@@ -1258,17 +1263,22 @@
                                                 </div>
                                                 <div class="row" id="ratesPage_limitRatingRowsContainer">
                                                     <div class="col-xs-12 limitRatingRow" >
-                                                        <div class="col-xs-2">
+                                                        <div class="col-xs-1">
                                                             <div class="form-group">
                                                                 <input class="form-control ratesPage_LimitRateValueInput onChangeSaveRate"  type="text">
                                                             </div>
                                                         </div>
-                                                        <div class="col-xs-6">
+                                                        <div class="col-xs-2">
+                                                            <div class="form-group">
+                                                                <input class="form-control ratesPage_LimitMaxValueInput onChangeSaveRate"  type="text">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-4">
                                                             <div class="form-group">
                                                                 <input class="form-control ratesPage_LimitDescriptionInput onChangeSaveRate" type="text">
                                                             </div>
                                                         </div>
-                                                        <div class="col-xs-2">
+                                                        <div class="col-xs-1">
                                                             <div class="form-group">
                                                                 <input class="form-control ratesPage_LimitMinPremiumInput onChangeSaveRate"  type="text">
                                                             </div>
@@ -1282,6 +1292,13 @@
                                                             </button>
                                                         </div>
                                                     </div>
+                                                </div>
+                                                <div class="row" id="ratesPage_limitEffectsLogicContainer">
+                                                    <div class="col-xs-12" id="limitLogicEffectHeaderRow">
+                                                    </div>
+                                                    <div class="col-xs-12" id="limitLogicInitContainer">
+                                                    </div>
+
                                                 </div>
                                             </div>
 

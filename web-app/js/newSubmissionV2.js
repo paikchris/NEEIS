@@ -960,15 +960,31 @@ function packageCoverageCheckboxChangeAction(checkbox){
     }
 
     if(isValid){
+        //IF THERE ARE LIMIT INPUT VALUES, REMEMBER THE VALUES AND REFILL
+        var limitInputValues = {}
+        $('div.limitColumn input.limitValue').each(function(){
+            var thisLimitInputValue = $(this).val()
+            var thisLimitInputDescription = $(this).attr('data-limitdescription')
+            limitInputValues[thisLimitInputDescription] = thisLimitInputValue
+        })
+
         updateRequiredQuestions()
         //IF THIS COVERAGE IS ALREADY CHECKED IN A PACKAGE OR ELSEWHERE, UNCHECK TO AVOID DUPLICATES
         removeDuplicateCoveragesAndPackageLOBS(checkbox)
 
-        // updateRequiredQuestions()
+
 
         if(isReadyToShowLimitAndDeducts()){
             fillLimitDeductContainer()
             showLimitDeductContainer()
+
+            // REFILL LIMIT INPUT VALUES
+            $('div.limitColumn input.limitValue').each(function(){
+                var thisLimitInputDescription = $(this).attr('data-limitdescription')
+                var thisLimitInputValue = limitInputValues[thisLimitInputDescription]
+
+                $(this).val(thisLimitInputValue)
+            })
 
             //PREMIUM ONLY DISPLAYS IF LIMITS AND DEDUCTS SHOW CORRECTLY
             if(isReadyToRatePremiums()){
@@ -2386,15 +2402,17 @@ function buildCoverageAndProductSelectedMap(){
 
     return coveragesAndProductsSelectedMap
 }
-function getLimitValueFromLimitDescription(covID, limitDescription){
+function getLimitValueFromLimitDescription(covID, limitRateMap){
+    var limitDescription = limitRateMap.limitDescription
     var thisLimitValue = ""
     var limitContainer = $('#' + covID + '_LimDeductColumnsContainer .limitColumn')
+    var limitInputElement
 
     $(limitContainer).find('.limitRow').each(function(){
         var thisLimitDescription = $(this).data('limitdescription')
         if(thisLimitDescription === limitDescription){
-            var thisInputLimit = $(this).find('.limitValue')
-            thisLimitValue = $(thisInputLimit).val().trim()
+            limitInputElement = $(this).find('.limitValue')
+            thisLimitValue = $(limitInputElement).val().trim()
 
             //IF THIS LIMIT INPUT VALUE IS STILL BLANK ("") THEN REPLACE WITH ZERO
             if(thisLimitValue === ""){
@@ -2403,6 +2421,16 @@ function getLimitValueFromLimitDescription(covID, limitDescription){
             return thisLimitValue
         }
     })
+
+    //
+
+    //CHECK AGAINTS MAX LIMIT
+    if(getFloatValueOfMoney(thisLimitValue) > getFloatValueOfMoney(limitRateMap.maxLimit) ){
+        //CHANGE INPUT TO MAX VALUE
+        $(limitInputElement).val(limitRateMap.maxLimit)
+        thisLimitValue = limitRateMap.maxLimit
+        alert("Max Limit Allowed for " + limitDescription + "is "  + limitRateMap.maxLimit)
+    }
 
     if(thisLimitValue === ""){
         return undefined
@@ -2799,11 +2827,13 @@ function getPremiumLineHTML(rateID, covID, ifLOB_PackageID){
                 var userInputLimitValue = ""
                 var limitPremium = ""
                 if(ifLOB_PackageID){
-                    userInputLimitValue = getLimitValueFromLimitDescription(ifLOB_PackageID, thisLimitRateMap.limitDescription)
+                    userInputLimitValue = getLimitValueFromLimitDescription(ifLOB_PackageID, thisLimitRateMap)
                 }
                 else{
-                    userInputLimitValue = getLimitValueFromLimitDescription(covID, thisLimitRateMap.limitDescription)
+                    userInputLimitValue = getLimitValueFromLimitDescription(covID, thisLimitRateMap)
                 }
+
+
 
                 if(userInputLimitValue === undefined){
                     userInputLimitValue = "NOT FOUND"

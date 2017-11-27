@@ -231,6 +231,100 @@ function blankLogicRowHTML(COV_OR_LOB_ID, RATE_OR_PRODUCT){
     return htmlString
 }
 
+//LIMIT LOGIC
+function initLimitLogicContainer(element){
+    /*
+    INSERTS THE STARTING CONTAINER FOR LIMIT LOGIC
+     */
+
+    var htmlString = "" +
+        "<div class='row logicConditionRowsContainer rowContainer'>" +
+        blankLimitLogicRowHTML() +
+        "</div>"
+
+    
+    $(element).html(htmlString)
+}
+function limitLogicHeaderHTML(){
+    var headerRowHTML = "" +
+        "<div class='row' class='limitLogicHeaderRow'>" +
+        "   <div class='col-xs-1'>" +
+        "       <h6>Condition</h6>" +
+        "   </div>" +
+        "   <div class='col-xs-2'>" +
+        "       <h6></h6>" +
+        "   </div>" +
+        "   <div class='col-xs-1'>" +
+        "   </div>" +
+        "   <div class='col-xs-2'>" +
+        "       <h6></h6>" +
+        "   </div>" +
+        "   <div class='col-xs-2'>" +
+        "       <h6>Then</h6>" +
+        "   </div>" +
+        "</div>"
+
+    return headerRowHTML
+}
+function blankLimitLogicRowHTML(){
+    var htmlString = "" +
+        "<div class='col-xs-12 logicConditionRow limitEffectLogicRow '>" +
+        "   <div class='mainLogicContainer'>" +
+        "       <div class='col-xs-1'>" +
+        "           <div class='form-group'>" +
+        "               <select class='form-control ratesPage_logicCondition onChangeSaveRate' >" +
+        "                   <option>IF</option>" +
+        "                   <option>ALWAYS</option>" +
+        "                   <option>IF ELSE</option>" +
+        "               </select>" +
+        "           </div>" +
+        "       </div>" +
+        "       <div class='col-xs-2'>" +
+        "           <div class='form-group'>" +
+        "               <select class='form-control ratesPage_logicBasisConditionBasis onChangeSaveRate'>" +
+        "                   <option>Limit Description is</option>" +
+        "                   <option>Limit Value is</option>" +
+        "               </select>" +
+        "           </div>" +
+        "       </div>" +
+        "       <div class='col-xs-1'>" +
+        "           <div class='form-group'>" +
+        "               <select class='form-control ratesPage_logicBasisConditionBasis onChangeSaveRate'>" +
+        "                   <option>Test</option>" +
+        "               </select>" +
+        "           </div>" +
+        "       </div>" +
+        "       <div class='col-xs-2'>" +
+        "           <div class='form-group'>" +
+        "               <input class='form-control ratesPage_logicBasisConditionAmount onChangeSaveRate'  type='text'>" +
+        "           </div>" +
+        "       </div>" +
+        "       <div class='col-xs-2'>" +
+        "           <div class='form-group'>" +
+        "               <select class='form-control ratesPage_logicConditionThenBasis onChangeSaveRate' >" +
+        "                   <option>Deduct Value Changes To</option>" +
+        "               </select>" +
+        "           </div>" +
+        "       </div>" +
+        "       <div class='col-xs-2'>" +
+        "           <div class='form-group'>" +
+        "               <input class='form-control ratesPage_logicConditionThenBasisOutput onChangeSaveRate'  type='text'>" +
+        "           </div>" +
+        "       </div>" +
+        "       <div class='col-xs-2'>" +
+        "           <button type='button' class='btn btn-xs btn-success ratesPage_LimitLogicAddButton' style='font-size:9px; margin-top: 6px;'>" +
+        "               <i class='fa fa-plus' aria-hidden='true'></i>" +
+        "           </button>" +
+        "           <button type='button' class='btn btn-xs btn-danger ratesPage_LimitLogicRemoveButton' style='font-size:9px; margin-top: 6px;'>" +
+        "               <i class='fa fa-minus' aria-hidden='true'></i>" +
+        "           </button>" +
+        "       </div>" +
+        "   </div>" +
+        "</div>"
+
+    return htmlString
+
+}
 
 
 //NEW SUBMISSION PAGE
