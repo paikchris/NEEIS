@@ -2952,6 +2952,9 @@ function showLimitRateValueContainer(){
     //SHOW LIMIT RATE VALUE CONTAINER
     $('#ratePage_LimitRateValuesContainer').css('display', '')
 
+    //INITIALIZE LIMIT LOGIC CONTAINER
+    $('#limitLogicEffectHeaderRow').html(limitLogicHeaderHTML())
+    initLimitLogicContainer($('#limitLogicInitContainer'))
 }
 function showDefaultRateValueContainer(){
     //HIDE LIMIT RATE VALUE CONTAINER
