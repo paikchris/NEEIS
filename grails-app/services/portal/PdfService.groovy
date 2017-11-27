@@ -816,12 +816,28 @@ class PdfService {
         newLine()
 
     }
+
     def insertLimitDeductibleSection(submissionMap){
         submissionMap.coveragesAndProducts.each { k,v ->
             def covID = k
             def productMap = v
             def productID = productMap.productID
             def coverageName = submissionMap.premiumMap[covID].coverageName
+
+//            for (item in productID){
+//                if (productID.length > 45 && productID.charAt(46) == " "){
+//                    productID.charAt(46) == newLine()
+//                }
+//
+//                else if (productID.length > 45  && productID.charAt(46) != " "){
+//                    def pos = 0;
+//                    while(productID.length < 45) {
+//                        pos = productID.lastIndexOf(" ")
+//                    }
+//                    productID.charAt(pos) == newLine()
+//                }
+//            }
+
 
             insertLimDeductCoverageHeader(coverageName, "Limits", "Deductibles")
             newLine()
