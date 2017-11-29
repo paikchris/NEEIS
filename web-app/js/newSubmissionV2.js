@@ -196,7 +196,7 @@ function clickChangeListenerInit(){
 
 
     //WHEN THE STATE CHANGES IN STEP 3, UPDATE PREMIUMS FOR TAX
-    $(document).on('change', '#stateMailing', function () {
+    $(document).on('focusout', '#stateMailing', function () {
         stateChangeAction(this);
     });
 
