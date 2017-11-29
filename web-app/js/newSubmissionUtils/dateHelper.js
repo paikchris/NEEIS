@@ -387,14 +387,13 @@ function calculateProposedTermLength(){
         $('#proposedTermLength').val(days + " Day")
         pulseInputChange($('#proposedTermLength'))
     }
-    else if (days > 1) {
+    else if (days > 1 && days < 365) {
         $('#proposedTermLength').val(days + " Days")
         pulseInputChange($('#proposedTermLength'))
     }
     else if (days > 365) {
-        showAlert("Policy Term cannot exceed 1 year")
-        console.log("RESET DATE")
-
+        $('#alertMessageContent').html("Policy term cannot exceed 365 Days");
+        $('#alertMessageModal').modal('show');
         $('#proposedTermLength').val("");
     }
     else{
