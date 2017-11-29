@@ -274,7 +274,7 @@ class AuthController {
 
 
             log.info "Logged In"
-            redirect(controller:'main',action:'newSubmission')
+            redirect(controller:'main',action:'newSubmissionV2')
 
         }
         else{
