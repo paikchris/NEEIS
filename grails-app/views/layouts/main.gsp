@@ -150,9 +150,9 @@
 	<script src="${resource(dir: 'js/utils', file: 'ajaxHandlers.js')}" ></script>
 
 	<!-- Jquery Bootstrap Wizard Plugin-->
-	<link rel="stylesheet" href="${resource(dir: 'plugins/UI/bootstrap-wizard/css', file: 'smart_wizard.css')}" type="text/css">
-	<link rel="stylesheet" href="${resource(dir: 'plugins/UI/bootstrap-wizard/css', file: 'smart_wizard_theme_arrows.css')}" type="text/css">
-	<script src="${resource(dir: 'plugins/UI/bootstrap-wizard/js', file: 'jquery.smartWizard.min.js')}" ></script>
+	%{--<link rel="stylesheet" href="${resource(dir: 'plugins/UI/bootstrap-wizard/css', file: 'smart_wizard.css')}" type="text/css">--}%
+	%{--<link rel="stylesheet" href="${resource(dir: 'plugins/UI/bootstrap-wizard/css', file: 'smart_wizard_theme_arrows.css')}" type="text/css">--}%
+	%{--<script src="${resource(dir: 'plugins/UI/bootstrap-wizard/js', file: 'jquery.smartWizard.min.js')}" ></script>--}%
 
 	%{--GOOGLE ADDRESS HELPER--}%
 	<script src="${resource(dir: 'js', file: "/newSubmissionUtils/googleAddressHelper.js?ts=" + new Date().getTime())}" async></script>
