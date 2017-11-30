@@ -13,11 +13,6 @@ switch ("${System.getProperty('grails.env')}") {
             grails.config.base.webXml = "file:${basedir}/src/templates/war/web_dev.xml"
         }
         break;
-    case "localDev":
-        if (new File("/${basedir}/src/templates/war/web_dev.xml").exists()) {
-            grails.config.base.webXml = "file:${basedir}/src/templates/war/web_dev.xml"
-        }
-        break;
     default:
         if (new File("/${basedir}/src/templates/war/web_prod.xml").exists()) {
             grails.config.base.webXml = "file:${basedir}/src/templates/war/web_prod.xml"
@@ -25,51 +20,76 @@ switch ("${System.getProperty('grails.env')}") {
         break;
 }
 
+
+switch ("${System.getProperty('grails.env')}") {
+    case "development":
+        //BUILD VM BASED ON DEV SERVER (LOCAL VS DIGITAL OCEAN)
+        println "BUILD VM BASED ON DEV SERVER (LOCAL VS DIGITAL OCEAN"
+
+        def hostName = "localhost";
+        try {
+            hostName = InetAddress.getLocalHost().getHostName()
+            if(hostName == "localDevVagrant"){
+                println "SWITCHING ON LOCAL VAGRANT========="
+                grails.reload.enabled = true
+                grails.project.fork = [
+                        // configure settings for compilation JVM, note that if you alter the Groovy version forked compilation is required
+                        //  compile: [maxMemory: 256, minMemory: 64, debug: false, maxPerm: 256, daemon:true],
+
+                        // configure settings for the test-app JVM, uses the daemon by default
+                        test: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, daemon:true],
+                        // configure settings for the run-app JVM
+//                        run: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, forkReserve:false, jvmArgs: '-Xverify:none'],
+                        run: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, forkReserve:false],
+                        // configure settings for the run-war JVM
+                        war: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, forkReserve:false],
+                        // configure settings for the Console UI JVM
+                        console: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256]
+                ]
+            }
+            else{
+                grails.project.fork = [
+                        // configure settings for compilation JVM, note that if you alter the Groovy version forked compilation is required
+                        //  compile: [maxMemory: 256, minMemory: 64, debug: false, maxPerm: 256, daemon:true],
+
+                        // configure settings for the test-app JVM, uses the daemon by default
+                        test: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, daemon:true],
+                        // configure settings for the run-app JVM
+                        run: false,
+                        // configure settings for the run-war JVM
+                        war: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, forkReserve:false],
+                        // configure settings for the Console UI JVM
+                        console: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256]
+                ]
+            }
+        } catch (Exception e) {
+            println "ERROR CHECKING HOSTNAME (DATASOURCE.GROOVY)"
+        }
+
+        break;
+    default:
+        grails.project.fork = [
+                // configure settings for compilation JVM, note that if you alter the Groovy version forked compilation is required
+                //  compile: [maxMemory: 256, minMemory: 64, debug: false, maxPerm: 256, daemon:true],
+
+                // configure settings for the test-app JVM, uses the daemon by default
+                test: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, daemon:true],
+                // configure settings for the run-app JVM
+                run: false,
+                // configure settings for the run-war JVM
+                war: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, forkReserve:false],
+                // configure settings for the Console UI JVM
+                console: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256]
+        ]
+        break;
+}
+
 environments {
     development {
-        grails.project.fork = [
-                // configure settings for compilation JVM, note that if you alter the Groovy version forked compilation is required
-                //  compile: [maxMemory: 256, minMemory: 64, debug: false, maxPerm: 256, daemon:true],
 
-                // configure settings for the test-app JVM, uses the daemon by default
-                test: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, daemon:true],
-                // configure settings for the run-app JVM
-                run: false,
-                // configure settings for the run-war JVM
-                war: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, forkReserve:false],
-                // configure settings for the Console UI JVM
-                console: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256]
-        ]
     }
     production {
-        grails.project.fork = [
-                // configure settings for compilation JVM, note that if you alter the Groovy version forked compilation is required
-                //  compile: [maxMemory: 256, minMemory: 64, debug: false, maxPerm: 256, daemon:true],
 
-                // configure settings for the test-app JVM, uses the daemon by default
-                test: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, daemon:true],
-                // configure settings for the run-app JVM
-                run: false,
-                // configure settings for the run-war JVM
-                war: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, forkReserve:false],
-                // configure settings for the Console UI JVM
-                console: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256]
-        ]
-    }
-    localDev {
-        grails.project.fork = [
-                // configure settings for compilation JVM, note that if you alter the Groovy version forked compilation is required
-                //  compile: [maxMemory: 256, minMemory: 64, debug: false, maxPerm: 256, daemon:true],
-
-                // configure settings for the test-app JVM, uses the daemon by default
-                test: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, daemon:true],
-                // configure settings for the run-app JVM
-                run: false,
-                // configure settings for the run-war JVM
-                war: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, forkReserve:false],
-                // configure settings for the Console UI JVM
-                console: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256]
-        ]
     }
 }
 
@@ -103,23 +123,18 @@ grails.project.dependency.resolution = {
 
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes e.g.
-         runtime 'mysql:mysql-connector-java:5.1.29'
+        runtime 'mysql:mysql-connector-java:5.1.29'
         compile 'com.getsentry.raven:raven:7.8.3'
-//        compile 'com.getsentry.raven:raven-log4j:7.8.3'
-//
-//        compile 'com.getsentry.raven:raven-log4j':
-        // runtime 'org.postgresql:postgresql:9.3-1101-jdbc41'
+
         test "org.grails:grails-datastore-test-support:1.0.2-grails-2.4"
         runtime('org.codehaus.groovy.modules.http-builder:http-builder:0.5.1') {
             excludes 'xalan'
             excludes 'xml-apis'
             excludes 'groovy'
-
         }
 
         //SPOCK PLUGIN DEPENDECY
         test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
-//        test "org.grails.plugins:hibernate4:5.0.0.RC1"
         test 'mysql:mysql-connector-java:5.1.29'
 
         test 'cglib:cglib-nodep:2.2'       // For mocking classes

@@ -82,12 +82,31 @@ environments {
 
         grails.appDirectory = appDirectory
         grails.syncLogPath = appDirectory + "logs/sync.log"
-        grails.serverURL = "http://104.236.23.128:8080"
         grails.logging.jul.usebridge = true
         grails.neeisTimeZone = neeisTimeZone
 
         grails.neeisEmail = "johnkimsinbox@gmail.com"
         neeisEmailPassword = "Perseverence12"
+
+
+        //GET HOST NAME OF DEV ENVIRONMENT
+        def hostName = "localhost";
+        try {
+            hostName = InetAddress.getLocalHost().getHostName()
+
+            if(hostName == "localDevVagrant"){
+                disable.auto.recompile=false
+                grails.serverURL = "http://127.0.0.1:8080"
+            }
+            else{
+                grails.serverURL = "http://104.236.23.128:8080"
+            }
+        }
+        catch (Exception e) {
+            println "ERROR CHECKING HOSTNAME (CONFIG.GROOVY)"
+        }
+        println "SERVER URL = ${grails.serverURL}"
+
     }
     production {
         appDirectory = "/universe/Neeis/"
@@ -100,22 +119,6 @@ environments {
         grails.neeisTimeZone = neeisTimeZone
         grails.neeisEmail = ""
         grails.neeisEmailPassword = ""
-    }
-    localDev {
-        appDirectory = "/universe/Neeis/"
-        neeisTimeZone = "America/Los_Angeles"
-
-        grails.appDirectory = appDirectory
-        grails.syncLogPath = appDirectory + "logs/sync.log"
-        grails.serverURL = "http://localhost:8080"
-        grails.logging.jul.usebridge = true
-        grails.neeisTimeZone = neeisTimeZone
-
-        grails.neeisEmail = "johnkimsinbox@gmail.com"
-        neeisEmailPassword = "Perseverence12"
-
-        disable.auto.recompile=false
-        grails.gsp.enable.reload=true
     }
 }
 
