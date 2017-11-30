@@ -1,12 +1,11 @@
 
 //DATA PAGE
-
 function fillPackageLOBRateConditionsVersion2(lobInfoContainer, lobRateConditionArray){
     var rateConditionsContainer = $(lobInfoContainer).find('.logicConditionRowsContainer')
     var lobID = $(lobInfoContainer).attr('data-covid')
     $(rateConditionsContainer).html("")
 
-    fillLogicRowContainerWithLogicArray(lobRateConditionArray, rateConditionsContainer, lobID, "RATE")
+    fillLogicRowContainerWithLogicArray(lobRateConditionArray, rateConditionsContainer, lobID, "RATE", 'OPERATION')
 
 
     checkFormatOfAllRows( $(rateConditionsContainer) )
@@ -25,7 +24,7 @@ function buildLogicArrayForLogicContainer(logicConditionRowsContainer){
             thisRowLogicMap.conditionBasis = $(mainLogicContainer).find('.conditionBasis').val()
             thisRowLogicMap.conditionOperator = $(mainLogicContainer).find('.conditionOperator').val()
             thisRowLogicMap.conditionBasisValue = $(mainLogicContainer).find('.conditionBasisValue').val()
-            thisRowLogicMap.outputID = $(mainLogicContainer).find('.conditionOutputSelect').val()
+            thisRowLogicMap.outputID = $(mainLogicContainer).find('.conditionOutput').val()
         }
 
         //IF SUB LOGIC EXISTS
@@ -41,14 +40,14 @@ function buildLogicArrayForLogicContainer(logicConditionRowsContainer){
 
     return logicArray
 }
-function fillLogicRowContainerWithLogicArray(logicArray, logicRowsContainer, COVID, RATE_OR_PRODUCT){
+function fillLogicRowContainerWithLogicArray(logicArray, logicRowsContainer, COVID, CONDITIONOUTPUT_TYPE, PAGE_TAB_ID){
     for(var i=0;i<logicArray.length; i++){
         var logicRow
-        if(RATE_OR_PRODUCT === "RATE"){
-            logicRow = $(blankLogicRowHTML(COVID, RATE_OR_PRODUCT))
+        if(CONDITIONOUTPUT_TYPE === "RATE"){
+            logicRow = $(blankLogicRowHTML(COVID, CONDITIONOUTPUT_TYPE, PAGE_TAB_ID))
         }
-        else if(RATE_OR_PRODUCT === "PRODUCT"){
-            logicRow = $(blankLogicRowHTML(COVID, RATE_OR_PRODUCT))
+        else if(CONDITIONOUTPUT_TYPE === "PRODUCT"){
+            logicRow = $(blankLogicRowHTML(COVID, CONDITIONOUTPUT_TYPE, PAGE_TAB_ID))
         }
 
         var thisConditionMap = jsonStringToObject(logicArray[i])
@@ -75,7 +74,7 @@ function fillLogicRowContainerWithLogicArray(logicArray, logicRowsContainer, COV
 
         $(logicRow).find('.conditionOperator').val(conditionOperator)
         $(logicRow).find('.conditionBasisValue').val(conditionBasisValue)
-        $(logicRow).find('.conditionOutputSelect').val(outputID)
+        $(logicRow).find('.conditionOutput').val(outputID)
 
 
         //BUILD SUB LOGIC CONDITION ROWS
@@ -85,7 +84,7 @@ function fillLogicRowContainerWithLogicArray(logicArray, logicRowsContainer, COV
             var sublogicContainer = $(logicRow).find('.subLogicConditionRow')
             $(sublogicContainer).find('.logicConditionRow').remove()
 
-            fillLogicRowContainerWithLogicArray(sublogicArray, sublogicContainer, COVID, RATE_OR_PRODUCT)
+            fillLogicRowContainerWithLogicArray(sublogicArray, sublogicContainer, COVID, CONDITIONOUTPUT_TYPE, PAGE_TAB_ID)
         }
 
         $(logicRowsContainer).append($(logicRow))
@@ -146,12 +145,26 @@ function formatConditionBasisInputs(){
 
 
 }
-function blankLogicRowHTML(COV_OR_LOB_ID, RATE_OR_PRODUCT){
+function blankLogicRowHTML(COV_OR_LOB_ID, CONDITIONOUTPUT_TYPE, PAGE_TAB_ID){
+    /*
+    COV_OR_LOB_ID: The ID of the coverage or Package LOB this logic row will be inserted to
+    CONDITIONOUTPUT_TYPE: Condition Output Type (RATE, PRODUCT)
+    PAGE_TAB_ID: The page this logic row will be used in (OPERATION, RATE)
+     */
+
+    var onChangeClassString = ""
+    if(PAGE_TAB_ID === 'OPERATION'){
+        onChangeClassString = "onChangeSaveOperation"
+    }
+    else if(PAGE_TAB_ID === 'RATE'){
+        onChangeClassString = "onChangeSaveRate"
+    }
+
     var htmlString = "" +
-        "   <div class='col-xs-12 packageRate logicConditionRow'>" +
+        "   <div class='col-xs-12 logicConditionRow'>" +
         "       <div class='row mainLogicContainer' style='margin-left: -5px;'>" +
         "           <div class='col-xs-1' style=''>" +
-        "               <select class='form-control rowConditionDropdown onChangeSaveOperation'>" +
+        "               <select class='form-control rowConditionDropdown " + onChangeClassString + "'>" +
         "                   <option class='alwaysOption' value='ALWAYS'>ALWAYS</option>" +
         "                   <option class='ifOption' value='IF'>IF</option>" +
         "                   <option class='ifElseOption' value='IFELSE' >IF ELSE</option>" +
@@ -159,49 +172,36 @@ function blankLogicRowHTML(COV_OR_LOB_ID, RATE_OR_PRODUCT){
         "               </select>" +
         "           </div>" +
         "           <div class='col-xs-1' style='visibility:hidden'>" +
-        "               <select class='form-control conditionBasis onChangeSaveOperation'>"
-
-    for(var i=0;i<conditionBasis.length;i++){
-        htmlString = htmlString +
-            "               <option value='" + conditionBasis[i].conditionID + "'>" + conditionBasis[i].description + "</option>"
-    }
-
-    htmlString = htmlString +
-        "               </select>" +
+        getConditionBasisDropdownHTML(PAGE_TAB_ID) +
         "           </div>" +
         "           <div class='col-xs-1' style='visibility:hidden'>" +
-        "               <select class='form-control conditionOperator onChangeSaveOperation'>"
-
-    for(var i=0;i<conditionOperators.length;i++){
-        htmlString = htmlString +
-            "               <option value='" + conditionOperators[i].conditionID + "'>" + conditionOperators[i].description + "</option>"
-    }
-
-    htmlString = htmlString +
-        "               </select>" +
+        getConditionOperatorsDropdownHTML(PAGE_TAB_ID) +
         "           </div>" +
         "           <div class='col-xs-2' style='visibility:hidden'>" +
         "               <div class='form-group'>" +
-        "                   <input class='form-control conditionBasisValue maskMoney onChangeSaveOperation' type='text' data-precision='0' data-prefix='$'>" +
+        "                   <input class='form-control conditionBasisValue maskMoney " + onChangeClassString + "' type='text' data-precision='0' data-prefix='$'>" +
         "               </div>" +
         "           </div>" +
         "           <div class='col-xs-4'>" +
-        "               <select class='form-control conditionOutputSelect onChangeSaveOperation " + COV_OR_LOB_ID + "_RateForCoverageSelect'" +
-        "                   data-covid='" + COV_OR_LOB_ID + "'>"
+        "               <select class='form-control conditionOutput " + onChangeClassString + "'>"
 
-    if(RATE_OR_PRODUCT === 'RATE'){
+    if(CONDITIONOUTPUT_TYPE === 'RATE'){
         for(var i=0;i<rates.length;i++){
             htmlString = htmlString +
                 "               <option value='" + rates[i].rateID + "'>" + rates[i].rateID + " - " + rates[i].description + "</option>"
         }
     }
-    else if(RATE_OR_PRODUCT === 'PRODUCT'){
+    else if(CONDITIONOUTPUT_TYPE === 'PRODUCT'){
         for(var i=0;i<products.length;i++){
             if(products[i].coverage === COV_OR_LOB_ID ){
                 htmlString = htmlString +
                     "               <option value='" + products[i].productID + "'>" + products[i].productID + " - " + products[i].productName + "</option>"
             }
         }
+    }
+    else if(CONDITIONOUTPUT_TYPE === 'LIMIT'){
+        htmlString = htmlString +
+        "                   <option>Deduct Value Changes To</option>"
     }
 
 
@@ -215,13 +215,13 @@ function blankLogicRowHTML(COV_OR_LOB_ID, RATE_OR_PRODUCT){
         "               <button class='btn btn-sm pull-left addSubLogicConditionRow'>" +
         "                   <span>Add Sub Logic</span>" +
         "               </button>" +
-        "               <button class='btn btn-xs btn-success pull-left moveLogicRowDownButton onChangeSaveOperation' style='border-radius:20px; margin-left:10px;font-size:10px;'>" +
+        "               <button class='btn btn-xs btn-success pull-left moveLogicRowDownButton " + onChangeClassString + "' style='border-radius:20px; margin-left:10px;font-size:10px;'>" +
         "                   <i class='fa fa-arrow-down' aria-hidden='true'></i>" +
         "               </button>" +
-        "               <button class='btn btn-xs btn-success pull-left moveLogicRowUpButton onChangeSaveOperation' style='border-radius:20px;  font-size:10px;'>" +
+        "               <button class='btn btn-xs btn-success pull-left moveLogicRowUpButton " + onChangeClassString + "' style='border-radius:20px;  font-size:10px;'>" +
         "                   <i class='fa fa-arrow-up' aria-hidden='true'></i>" +
         "               </button>" +
-        "               <button class='btn btn-sm btn-danger pull-right removeLogicConditionRow onChangeSaveOperation' style='display:none'>" +
+        "               <button class='btn btn-sm btn-danger pull-right removeLogicConditionRow " + onChangeClassString + "' style='display:none'>" +
         "                   <span>Remove</span>" +
         "               </button>" +
         "           </div>" +
@@ -239,7 +239,7 @@ function initLimitLogicContainer(element){
 
     var htmlString = "" +
         "<div class='row logicConditionRowsContainer rowContainer'>" +
-        blankLimitLogicRowHTML() +
+        blankLogicRowHTML(false, 'LIMIT', 'RATE') +
         "</div>"
 
     
@@ -272,16 +272,15 @@ function blankLimitLogicRowHTML(){
         "   <div class='mainLogicContainer'>" +
         "       <div class='col-xs-1'>" +
         "           <div class='form-group'>" +
-        "               <select class='form-control ratesPage_logicCondition onChangeSaveRate' >" +
+        "               <select class='form-control rowConditionDropDown onChangeSaveRate' >" +
         "                   <option>IF</option>" +
-        "                   <option>ALWAYS</option>" +
         "                   <option>IF ELSE</option>" +
         "               </select>" +
         "           </div>" +
         "       </div>" +
         "       <div class='col-xs-2'>" +
         "           <div class='form-group'>" +
-        "               <select class='form-control ratesPage_logicBasisConditionBasis onChangeSaveRate'>" +
+        "               <select class='form-control conditionBasis onChangeSaveRate'>" +
         "                   <option>Limit Description is</option>" +
         "                   <option>Limit Value is</option>" +
         "               </select>" +
@@ -289,41 +288,102 @@ function blankLimitLogicRowHTML(){
         "       </div>" +
         "       <div class='col-xs-1'>" +
         "           <div class='form-group'>" +
-        "               <select class='form-control ratesPage_logicBasisConditionBasis onChangeSaveRate'>" +
-        "                   <option>Test</option>" +
+        "               <select class='form-control conditionOperator onChangeSaveRate'>" +
+        getConditionOperatorsDropdownHTML("OPERATION") +
         "               </select>" +
         "           </div>" +
         "       </div>" +
         "       <div class='col-xs-2'>" +
         "           <div class='form-group'>" +
-        "               <input class='form-control ratesPage_logicBasisConditionAmount onChangeSaveRate'  type='text'>" +
+        "               <input class='form-control conditionBasisValue onChangeSaveRate'  type='text'>" +
         "           </div>" +
         "       </div>" +
         "       <div class='col-xs-2'>" +
         "           <div class='form-group'>" +
-        "               <select class='form-control ratesPage_logicConditionThenBasis onChangeSaveRate' >" +
+        "               <select class='form-control conditionOutputBasis onChangeSaveRate' >" +
         "                   <option>Deduct Value Changes To</option>" +
         "               </select>" +
         "           </div>" +
         "       </div>" +
         "       <div class='col-xs-2'>" +
         "           <div class='form-group'>" +
-        "               <input class='form-control ratesPage_logicConditionThenBasisOutput onChangeSaveRate'  type='text'>" +
+        "               <input class='form-control conditionOutput onChangeSaveRate'  type='text'>" +
         "           </div>" +
         "       </div>" +
         "       <div class='col-xs-2'>" +
-        "           <button type='button' class='btn btn-xs btn-success ratesPage_LimitLogicAddButton' style='font-size:9px; margin-top: 6px;'>" +
-        "               <i class='fa fa-plus' aria-hidden='true'></i>" +
-        "           </button>" +
-        "           <button type='button' class='btn btn-xs btn-danger ratesPage_LimitLogicRemoveButton' style='font-size:9px; margin-top: 6px;'>" +
-        "               <i class='fa fa-minus' aria-hidden='true'></i>" +
-        "           </button>" +
+        "               <button class='btn btn-sm btn-primary pull-left addLogicConditionRow' style='margin-left:10px;'>" +
+        "                   <span>Add Row</span>" +
+        "               </button>" +
+        "               <button class='btn btn-sm pull-left addSubLogicConditionRow'>" +
+        "                   <span>Add Sub Logic</span>" +
+        "               </button>" +
+        "               <button class='btn btn-xs btn-success pull-left moveLogicRowDownButton onChangeSaveOperation' style='border-radius:20px; margin-left:10px;font-size:10px;'>" +
+        "                   <i class='fa fa-arrow-down' aria-hidden='true'></i>" +
+        "               </button>" +
+        "               <button class='btn btn-xs btn-success pull-left moveLogicRowUpButton onChangeSaveOperation' style='border-radius:20px;  font-size:10px;'>" +
+        "                   <i class='fa fa-arrow-up' aria-hidden='true'></i>" +
+        "               </button>" +
+        "               <button class='btn btn-sm btn-danger pull-right removeLogicConditionRow onChangeSaveOperation' style='display:none'>" +
+        "                   <span>Remove</span>" +
+        "               </button>" +
         "       </div>" +
         "   </div>" +
         "</div>"
 
     return htmlString
 
+}
+
+//UTIL
+function getConditionOperatorsDropdownHTML(PAGEID){
+    var pageClassString = ""
+    if(PAGEID === "OPERATION"){
+        pageClassString = "onChangeSaveOperation"
+    }
+    else if(PAGEID === "RATE"){
+        pageClassString = "onChangeSaveRate"
+    }
+
+    var htmlString = "" +
+        "<select class='form-control conditionOperator " + pageClassString + "'>"
+
+    for(var i=0;i<conditionOperators.length;i++){
+        htmlString = htmlString +
+            "   <option value='" + conditionOperators[i].conditionID + "'>" + conditionOperators[i].description + "</option>"
+    }
+
+    htmlString = htmlString +
+        "</select>"
+
+    return htmlString
+}
+function getConditionBasisDropdownHTML(PAGEID){
+    var pageClassString = ""
+    var conditionBasisType = ""
+    if(PAGEID === "OPERATION"){
+        pageClassString = "onChangeSaveOperation"
+        conditionBasisType = "basis"
+    }
+    else if(PAGEID === "RATE"){
+        pageClassString = "onChangeSaveRate"
+        conditionBasisType = "limitBasis"
+    }
+
+    var htmlString = "" +
+        "<select class='form-control conditionOperator " + pageClassString + "'>"
+
+    for(var i=0;i<conditionBasis.length;i++){
+        if(conditionBasis[i].type === conditionBasisType){
+            htmlString = htmlString +
+                "   <option value='" + conditionBasis[i].conditionID + "'>" + conditionBasis[i].description + "</option>"
+        }
+
+    }
+
+    htmlString = htmlString +
+        "</select>"
+
+    return htmlString
 }
 
 

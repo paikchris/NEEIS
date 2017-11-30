@@ -308,7 +308,7 @@
                                                             </div>
                                                         </div>
                                                         <div class="col-xs-4">
-                                                            <select class="form-control conditionOutputSelect onChangeSaveOperation
+                                                            <select class="form-control conditionOutput onChangeSaveOperation
                                                                     ${coverage.coverageCode}_ProductsForCoverageSelect"
                                                                     data-covid="${coverage.coverageCode}">
                                                                 <g:each var="product" in="${productResults.findAll{ it.coverage == coverage.coverageCode && it.activeFlag == 'Y'} }">
@@ -514,7 +514,7 @@
                                                             </div>
                                                         </div>
                                                         <div class="col-xs-4">
-                                                            <select class="form-control conditionOutputSelect ${coverage.coverageCode}_ProductsForCoverageSelect" data-covid="${coverage.coverageCode}">
+                                                            <select class="form-control conditionOutput ${coverage.coverageCode}_ProductsForCoverageSelect" data-covid="${coverage.coverageCode}">
                                                                 <g:each var="product" in="${productResults.findAll{ it.coverage == coverage.coverageCode && it.activeFlag == 'Y'} }">
                                                                     <option value="${product.productID}">(${product.productID}) ${product.productName}</option>
                                                                 </g:each>
