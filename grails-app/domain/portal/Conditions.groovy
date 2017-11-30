@@ -8,7 +8,7 @@ class Conditions {
 
     static constraints = {
         conditionID unique: true
-        type inList: ["basis", "operator"]
+        type inList: ["basis", "operator", "limitBasis"]
         description nullable: true
         questionID nullable: true
 

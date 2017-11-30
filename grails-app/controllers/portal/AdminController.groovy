@@ -125,7 +125,8 @@ class AdminController {
         String coverages = utilService.gormResultsToJSObject(coverageResults)
 
         //CONDITION BASIS
-        List <Conditions> conditionBasisResults = Conditions.findAllWhere(type: "basis")
+        List <Conditions> conditionBasisResults = Conditions.findAllByTypeInList(['basis', 'limitBasis'])
+        log.info conditionBasisResults.description
         String conditionBasis = utilService.gormResultsToJSObject(conditionBasisResults)
 
         //CONDITION OPERATORS
