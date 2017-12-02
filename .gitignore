@@ -38,3 +38,8 @@
 
 #ATTACHMENTS
 /web-app/attachments/0*/
+
+/vagrant/.vagrant/**
+/vagrant/vagrant.conf
+/vagrant/TrainingInsertStatements.sql
+/vagrant/TrainingInsertStatements2.sql
