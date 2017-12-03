@@ -75,24 +75,27 @@ echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
 source ~/.bashrc
 
 #SETUP SQL SERVER FROM A SQL DUMP BACKUP FROM AIMSQL
-
+cd /vagrant/files/
+yes | unzip sqlServerStatements.zip
 printf "CREATE DATABASE Training\nGO\nUSE Training\nGO\nCREATE USER [web] WITH PASSWORD = 'jakePoos521'\nGO\nGRANT ALTER To web\nGO\nGRANT CONTROL To web\nGO\n" > /home/vagrant/sqlServerInit.sql
 sqlcmd -S localhost -U SA -P 'jakePoos521' -i /home/vagrant/sqlServerInit.sql
 #AIMSQL -> SQL SERVER MANAGEMENT STUDIO -> TRAINING DB -> RIGHT CLICK -> TASKS -> GENERATE SCRIPTS -> TRAINING -> SELECT ALL OBJECTS -> sqlServerBackup.sql
 sqlcmd -S localhost -U SA -P 'jakePoos521' -i /vagrant/files/sqlServerBackup.sql
 # AIMSQL -> SQL SERVER MANAGEMENT STUDIO -> TRAINING DB -> RIGHT CLICK -> SSMS TOOLS -> GENERATE INSERT STATEMENTS -> LIMIT ROWS TO ABOUT 3000 -> TrainingInsertStatements.sql
-sqlcmd -S localhost -U SA -P 'jakePoos521' -i /vagrant/files/TrainingInsertStatements.sql
+sqlcmd -S localhost -U SA -P 'jakePoos521' -i /vagrant/files/TrainingInsertStatements2.sql
+rm /vagrant/files/TrainingInsertStatements.sql
+
 
 
 
 #CLONE NEEIS REPOSITORY
-cd /universe/
-rm -rf Neeis
-GITHUBUSER=$(sudo grep "GITHUBUSER" /vagrant/vagrant.conf | sed 's/^.*GITHUBUSER=//' | sed -e 's/^[ \t]*//')
-GITHUBPASSWORD=$(sudo grep "GITHUBPASSWORD" /vagrant/vagrant.conf | sed 's/^.*GITHUBPASSWORD=//' | sed -e 's/^[ \t]*//')
-echo $GITHUBUSER:$GITHUBPASSWORD
-git clone --verbose https://$GITHUBUSER:$GITHUBPASSWORD@github.com/paikchris/Neeis.git
-cd Neeis
-git checkout -B $GITHUBUSER-local
-git push -u origin $GITHUBUSER-local
+#cd /universe/
+#rm -rf Neeis
+#GITHUBUSER=$(sudo grep "GITHUBUSER" /vagrant/vagrant.conf | sed 's/^.*GITHUBUSER=//' | sed -e 's/^[ \t]*//')
+#GITHUBPASSWORD=$(sudo grep "GITHUBPASSWORD" /vagrant/vagrant.conf | sed 's/^.*GITHUBPASSWORD=//' | sed -e 's/^[ \t]*//')
+#echo $GITHUBUSER:$GITHUBPASSWORD
+#git clone --verbose https://$GITHUBUSER:$GITHUBPASSWORD@github.com/paikchris/Neeis.git
+#cd Neeis
+#git checkout -B $GITHUBUSER-local
+#git push -u origin $GITHUBUSER-local
 
