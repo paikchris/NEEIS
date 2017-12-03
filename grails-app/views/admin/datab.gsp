@@ -1294,7 +1294,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="row" id="ratesPage_limitEffectsLogicContainer">
-                                                    <div class="col-xs-12" id="limitLogicEffectHeaderRow">
+                                                    <div class="col-xs-12" id="limitLogicEffectHeaderRow" style="margin-top:40px">
                                                     </div>
                                                     <div class="col-xs-12" id="limitLogicInitContainer">
                                                     </div>

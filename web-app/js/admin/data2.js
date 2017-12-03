@@ -334,6 +334,10 @@ function initializeListeners(){
     $(document.body).on('click', '.ratesPage_LimitRateRemoveButton', function(e) {
         limitRateRemoveButtonAction(this)
     })
+    $(document.body).on('change', '.ratesPage_LimitDescriptionInput', function(e) {
+        ratePageLimitDescriptionChangeAction(this)
+    })
+
 
     //BRACKET RATING
     $(document.body).on('click', '.ratesPage_BracketRateAddButton', function(e) {
@@ -1474,6 +1478,9 @@ function rowConditionDropdownChange(dropdown){
     if(rowConditionValue === 'ALWAYS'){
         hideAllConditionalInputs(thisConditionRow)
     }
+    else if(rowConditionValue === 'NONE' ){
+        hideAllLogicRowInputs(thisConditionRow)
+    }
     else if(rowConditionValue === 'IF' ){
         showAllConditionalInputs(thisConditionRow)
     }
@@ -1483,22 +1490,6 @@ function rowConditionDropdownChange(dropdown){
     else if(rowConditionValue === 'ELSE' ){
         hideAllConditionalInputs(thisConditionRow)
     }
-}
-function hideAllConditionalInputs(thisRow){
-    //HIDE ALL
-    $(thisRow).children().css('visibility', 'hidden')
-
-    //SHOW PRODUCT SELECT
-    $(thisRow).find('.conditionOutput').closest('div').css('visibility', '')
-    $(thisRow).find('.rowConditionDropdown').closest('div').css('visibility', '')
-
-    //SHOW BUTTONS
-    $(thisRow).children('.buttonColumn').css('visibility', '')
-}
-function showAllConditionalInputs(thisRow){
-    //SHOW  ALL
-    $(thisRow).children().css('visibility', '')
-
 }
 function moneyInputHTML(){
     var htmlString =
@@ -2809,6 +2800,9 @@ function clearRateDetails(){
     //RESET LIMIT RATE ROWS
     $('#ratesPage_limitRatingRowsContainer').html(getLimitRateRowHTML())
 
+    //RESET LIMIT RATE LOGIC ROWS
+    clearLimitLogicContainer()
+
     //RESET BRACKET RATE ROWS
     $('#ratesPage_bracketRatingRowsContainer').html(getBracketRateRowHTML())
 
@@ -2828,18 +2822,37 @@ function fillRateDetails(rateID){
     $('#ratePage_RatingBasisDropdown').val(rateObject.rateBasis)
 
     if(rateObject.rateBasis === 'LIMIT'){
+        var limitLogicContainer = $('#limitLogicInitContainer')
         var limitRateArray = jsonStringToObject(rateObject.limitRateArray)
 
         var allLimitRateRowsHTML = ""
-
+        var allLimitLogicRowsHTML = ""
 
         for(var i=0;i<limitRateArray.length; i++){
             var thisLimitRateRowMap = jsonStringToObject( limitRateArray[i] )
-            console.log(thisLimitRateRowMap)
             allLimitRateRowsHTML = allLimitRateRowsHTML + getLimitRateRowHTML(thisLimitRateRowMap)
+
+            var limitDescription = thisLimitRateRowMap.limitDescription
+
+            //CHECK IF LIMIT LOGIC EXISTS
+            if(thisLimitRateRowMap.limitLogic){
+                //GET LIMIT LOGIC CONDITION ROW HTML FOR THIS LIMIT
+                var thisLimitLogicArray = jsonStringToObject(thisLimitRateRowMap.limitLogic)
+
+                //INSERT FRESH LOGIC CONDITION CONTAI
+                updateOrAddLimitLogicRowsContainerForLimit(limitDescription, i)
+
+                //UPDATE INSERTED LOGIC ROW TO CORRECT LOGIC
+                var thisLogicRowsContainer = $(limitLogicContainer).find('.logicConditionRowsContainer').eq(i)
+                $(thisLogicRowsContainer).find('.logicConditionRow').remove()
+                fillLogicRowContainerWithLogicArray(thisLimitLogicArray, thisLogicRowsContainer, false, 'LIMIT', 'RATE')
+            }
+
+
         }
 
         $('#ratesPage_limitRatingRowsContainer').html(allLimitRateRowsHTML)
+
         showLimitRateValueContainer()
     }
     else if(rateObject.rateBasis === 'BRACKET'){
@@ -2953,8 +2966,9 @@ function showLimitRateValueContainer(){
     $('#ratePage_LimitRateValuesContainer').css('display', '')
 
     //INITIALIZE LIMIT LOGIC CONTAINER
-    $('#limitLogicEffectHeaderRow').html(limitLogicHeaderHTML())
-    initLimitLogicContainer($('#limitLogicInitContainer'))
+    // $('#limitLogicEffectHeaderRow').html(limitLogicHeaderHTML())
+
+    // initLimitLogicContainer($('#limitLogicInitContainer'))
 }
 function showDefaultRateValueContainer(){
     //HIDE LIMIT RATE VALUE CONTAINER
@@ -3064,12 +3078,16 @@ function limitRateAddButtonAction(addButton){
     $(limitRateRowButtonClicked).after(limitRateRowHTML)
 
 }
-function limitRateRemoveButtonAction(addButton){
-    var limitRateRowButtonClicked= $(addButton).closest('.limitRatingRow')
+function limitRateRemoveButtonAction(removeButton){
+    var limitRateRowButtonClicked= $(removeButton).closest('.limitRatingRow')
 
     //MAKE SURE AT LEAST ONE ROW WILL REMAIN
     if( $('#ratesPage_limitRatingRowsContainer .limitRatingRow').length > 1){
         $(limitRateRowButtonClicked).remove()
+
+        //REMOVE LIMIT LOGIC ROWS FOR THIS LIMIT
+        var limitIndexPosition = $(removeButton).closest('.limitRatingRow').index()
+        removeLimitLogicRowByIndex(limitIndexPosition)
     }
 
 }
@@ -3084,10 +3102,26 @@ function ratesPage_buildLimitRateArray(){
         thisLimitRowMap.rateValue = $(this).find('.ratesPage_LimitRateValueInput').val()
         thisLimitRowMap.maxLimit = $(this).find('.ratesPage_LimitMaxValueInput').val()
         thisLimitRowMap.minPremium = $(this).find('.ratesPage_LimitMinPremiumInput').val()
+
+        //FIND CORRESPONDING LOGIC CONTAINER FOR THIS LIMIT IF IT EXISTS
+        var limitIndexPosition = $(this).closest('.limitRatingRow').index()
+        var logicConditionContainer = $('#limitLogicInitContainer').find('.logicConditionRowsContainer').eq(limitIndexPosition)
+        thisLimitRowMap.limitLogic = buildLogicArrayForLogicContainer(logicConditionContainer)
         limitRateArray.push(thisLimitRowMap)
     })
     return limitRateArray
 }
+function ratePageLimitDescriptionChangeAction(element){
+    if($(element).val().trim().length > 0 ){
+        var limitDescription = $(element).val().trim()
+        var limitIndexPosition = $(element).closest('.limitRatingRow').index()
+        updateOrAddLimitLogicRowsContainerForLimit(limitDescription, limitIndexPosition)
+    }
+}
+function clearLimitLogicContainer(){
+    $('#limitLogicInitContainer').html('')
+}
+
 
 //BRACKET RATING SECTION
 function getBracketRateRowHTML(bracketRateRowMap){

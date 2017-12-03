@@ -126,6 +126,7 @@ class AdminController {
 
         //CONDITION BASIS
         List <Conditions> conditionBasisResults = Conditions.findAllByTypeInList(['basis', 'limitBasis'])
+        log.info "CONDITION BASIS RESULTS"
         log.info conditionBasisResults.description
         String conditionBasis = utilService.gormResultsToJSObject(conditionBasisResults)
 
@@ -262,7 +263,7 @@ class AdminController {
         log.info "REFRESH CONDITION BASIS"
         log.info params
 
-        List <Conditions> conditionBasisResults = Conditions.findAllWhere(type: "basis")
+        List <Conditions> conditionBasisResults = Conditions.findAllByTypeInList(['basis', 'limitBasis'])
         String conditionBasis = utilService.gormResultsToJSObject(conditionBasisResults)
 
         render conditionBasis
