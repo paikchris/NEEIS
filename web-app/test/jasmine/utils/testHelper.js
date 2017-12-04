@@ -33,7 +33,6 @@ function autoFillInputCallback(htmlElementArray){
         var okToType = false;
         var string = chance.string({length: 10});
 
-        console.log(htmlElement)
         //Mark Filled
         $(htmlElement).addClass('TestHelperTestFilled')
 
@@ -50,16 +49,10 @@ function autoFillInputCallback(htmlElementArray){
             var numOptions = $(htmlElement).find('option').length - 1;
             var randomSelected = chance.integer({min: 0, max: numOptions});
 
-            // $(htmlElement).find('option:selected').removeAttr('selected');
-            // $(htmlElement).find('option').eq(randomSelected).attr('selected', 'selected');
             var valueOfOption = $(htmlElement).find('option').eq(randomSelected).val()
-            console.log(valueOfOption)
-            $(htmlElement).val(valueOfOption)
-
+            // $(htmlElement).val(valueOfOption)
+            $(htmlElement).val('FP0')
             $(htmlElement).trigger('change')
-
-            // $(htmlElement).val('O12')
-            // $(htmlElement).trigger('change')
 
             htmlElementArray.shift()
             autoFillInputCallback(htmlElementArray)

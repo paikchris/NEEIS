@@ -20,11 +20,19 @@ function buildLogicArrayForLogicContainer(logicConditionRowsContainer){
 
         var thisRowLogicMap = {}
         if($(mainLogicContainer).length > 0){
+            thisRowLogicMap.limitRateID = $('#ratePage_RatesDropdown').val()
             thisRowLogicMap.logicCondition = $(mainLogicContainer).find('.rowConditionDropdown').val()
             thisRowLogicMap.conditionBasis = $(mainLogicContainer).find('.conditionBasis').val()
             thisRowLogicMap.conditionOperator = $(mainLogicContainer).find('.conditionOperator').val()
             thisRowLogicMap.conditionBasisValue = $(mainLogicContainer).find('.conditionBasisValue').val()
             thisRowLogicMap.outputID = $(mainLogicContainer).find('.conditionOutput').val()
+
+            if($(mainLogicContainer).find('.deductDescription').length > 0 ){
+                thisRowLogicMap.outputValue = $(mainLogicContainer).find('.conditionOutputValue').val()
+                thisRowLogicMap.deductDescription = $(mainLogicContainer).find('.deductDescription').val()
+                thisRowLogicMap.limitDescription = $(mainLogicContainer).closest('.logicConditionRowsContainer').attr('data-limitdescription')
+
+            }
         }
 
         //IF SUB LOGIC EXISTS
@@ -49,6 +57,9 @@ function fillLogicRowContainerWithLogicArray(logicArray, logicRowsContainer, COV
         else if(CONDITIONOUTPUT_TYPE === "PRODUCT"){
             logicRow = $(blankLogicRowHTML(COVID, CONDITIONOUTPUT_TYPE, PAGE_TAB_ID))
         }
+        else if(CONDITIONOUTPUT_TYPE === "LIMIT"){
+            logicRow = $(blankLogicRowHTML(COVID, CONDITIONOUTPUT_TYPE, PAGE_TAB_ID))
+        }
 
         var thisConditionMap = jsonStringToObject(logicArray[i])
         var conditionBasis = thisConditionMap.conditionBasis
@@ -56,7 +67,8 @@ function fillLogicRowContainerWithLogicArray(logicArray, logicRowsContainer, COV
         var conditionOperator = thisConditionMap.conditionOperator
         var logicCondition = thisConditionMap.logicCondition
         var outputID
-        //TEMP
+
+        //TEMPORARY
         if(thisConditionMap.outputID){
             outputID = thisConditionMap.outputID
         }
@@ -66,6 +78,19 @@ function fillLogicRowContainerWithLogicArray(logicArray, logicRowsContainer, COV
         else if( thisConditionMap.productID){
             outputID = thisConditionMap.productID
         }
+
+        //IF LIMIT, THIS WILL HAVE OUTPUTVALUE AS WELL
+        var outputValue
+        var deductDescription
+        if(thisConditionMap.outputValue){
+            outputValue = thisConditionMap.outputValue
+            deductDescription = thisConditionMap.deductDescription
+            $(logicRow).find('.conditionOutputValue').val(outputValue)
+            $(logicRow).find('.deductDescription').val(deductDescription)
+
+        }
+
+
 
         $(logicRow).find('.rowConditionDropdown').val(logicCondition)
         rowConditionDropdownChange($(logicRow).find('.rowConditionDropdown'))
@@ -164,12 +189,9 @@ function blankLogicRowHTML(COV_OR_LOB_ID, CONDITIONOUTPUT_TYPE, PAGE_TAB_ID){
         "   <div class='col-xs-12 logicConditionRow'>" +
         "       <div class='row mainLogicContainer' style='margin-left: -5px;'>" +
         "           <div class='col-xs-1' style=''>" +
-        "               <select class='form-control rowConditionDropdown " + onChangeClassString + "'>" +
-        "                   <option class='alwaysOption' value='ALWAYS'>ALWAYS</option>" +
-        "                   <option class='ifOption' value='IF'>IF</option>" +
-        "                   <option class='ifElseOption' value='IFELSE' >IF ELSE</option>" +
-        "                   <option class='elseOption' value='ELSE' >ELSE</option>" +
-        "               </select>" +
+        getRowConditionDropdownHTML(PAGE_TAB_ID)
+
+    htmlString = htmlString +
         "           </div>" +
         "           <div class='col-xs-1' style='visibility:hidden'>" +
         getConditionBasisDropdownHTML(PAGE_TAB_ID) +
@@ -177,37 +199,68 @@ function blankLogicRowHTML(COV_OR_LOB_ID, CONDITIONOUTPUT_TYPE, PAGE_TAB_ID){
         "           <div class='col-xs-1' style='visibility:hidden'>" +
         getConditionOperatorsDropdownHTML(PAGE_TAB_ID) +
         "           </div>" +
-        "           <div class='col-xs-2' style='visibility:hidden'>" +
+        "           <div class='col-xs-1' style='visibility:hidden'>" +
         "               <div class='form-group'>" +
         "                   <input class='form-control conditionBasisValue maskMoney " + onChangeClassString + "' type='text' data-precision='0' data-prefix='$'>" +
         "               </div>" +
-        "           </div>" +
-        "           <div class='col-xs-4'>" +
-        "               <select class='form-control conditionOutput " + onChangeClassString + "'>"
+        "           </div>"
 
     if(CONDITIONOUTPUT_TYPE === 'RATE'){
+        htmlString = htmlString +
+            "           <div class='col-xs-4'>" +
+            "               <select class='form-control conditionOutput " + onChangeClassString + "'>"
+
         for(var i=0;i<rates.length;i++){
             htmlString = htmlString +
                 "               <option value='" + rates[i].rateID + "'>" + rates[i].rateID + " - " + rates[i].description + "</option>"
         }
+
+        htmlString = htmlString +
+            "               </select>" +
+            "           </div>"
+
     }
     else if(CONDITIONOUTPUT_TYPE === 'PRODUCT'){
+        htmlString = htmlString +
+            "           <div class='col-xs-4'>" +
+            "               <select class='form-control conditionOutput " + onChangeClassString + "'>"
+
         for(var i=0;i<products.length;i++){
             if(products[i].coverage === COV_OR_LOB_ID ){
                 htmlString = htmlString +
                     "               <option value='" + products[i].productID + "'>" + products[i].productID + " - " + products[i].productName + "</option>"
             }
         }
+
+        htmlString = htmlString +
+            "               </select>" +
+            "           </div>"
     }
     else if(CONDITIONOUTPUT_TYPE === 'LIMIT'){
         htmlString = htmlString +
-        "                   <option>Deduct Value Changes To</option>"
+            "           <div class='col-xs-2' style='visibility:hidden'>" +
+            "               <select class='form-control conditionOutput " + onChangeClassString + "'>"
+
+        htmlString = htmlString +
+        "                   <option value='DEDUCTCHANGES'>Deduct Value Changes To</option>"
+
+        htmlString = htmlString +
+            "               </select>" +
+            "           </div>"
+
+        htmlString = htmlString +
+            "           <div class='col-xs-2' style='visibility:hidden' >" +
+            "               <input class='form-control deductDescription " + onChangeClassString + "'>" +
+            "           </div>" +
+            "           <div class='col-xs-1' style='visibility:hidden' >" +
+            "               <input class='form-control conditionOutputValue " + onChangeClassString + "'>" +
+            "           </div>"
+
     }
 
 
     htmlString = htmlString +
-        "               </select>" +
-        "           </div>" +
+
         "           <div class='col-xs-3 buttonColumn' style='visibility:hidden'>" +
         "               <button class='btn btn-sm btn-primary pull-left addLogicConditionRow' style='margin-left:10px;'>" +
         "                   <span>Add Row</span>" +
@@ -245,9 +298,31 @@ function initLimitLogicContainer(element){
     
     $(element).html(htmlString)
 }
+function updateOrAddLimitLogicRowsContainerForLimit(limitDescription, limitIndexPosition){
+    var limitLogicContainer = $('#limitLogicInitContainer')
+
+    //FIND CONTAINER USING LIMIT INDEX POSITION
+    var logicConditionContainer = $(limitLogicContainer).find('.logicConditionRowsContainer').eq(limitIndexPosition)
+
+    if(logicConditionContainer.length !== 0){
+        $(logicConditionContainer).attr('data-limitdescription', limitDescription)
+        $(logicConditionContainer).find('.limitLogicHeader > span').html(limitDescription)
+    }
+    else{
+        var htmlString = "" +
+            "<div class='col-xs-12 row logicConditionRowsContainer rowContainer' data-limitdescription='" + limitDescription + "'>" +
+            "   <div class='limitLogicHeader'>" +
+            "       <span style='font-weight:500; padding-left: 11px;'>" + limitDescription + "</span>" +
+            "   </div>" +
+            blankLogicRowHTML(false, 'LIMIT', 'RATE') +
+            "</div>"
+        $(limitLogicContainer).append(htmlString)
+    }
+
+}
 function limitLogicHeaderHTML(){
     var headerRowHTML = "" +
-        "<div class='row' class='limitLogicHeaderRow'>" +
+        "<div class='col-xs-12 row' class='limitLogicHeaderRow'>" +
         "   <div class='col-xs-1'>" +
         "       <h6>Condition</h6>" +
         "   </div>" +
@@ -333,6 +408,15 @@ function blankLimitLogicRowHTML(){
     return htmlString
 
 }
+function removeLimitLogicRowByIndex(index){
+    var limitLogicContainer = $('#limitLogicInitContainer')
+
+    //FIND CONTAINER USING LIMIT INDEX POSITION
+    $(limitLogicContainer).find('.logicConditionRowsContainer').eq(index).remove()
+
+
+}
+
 
 //UTIL
 function getConditionOperatorsDropdownHTML(PAGEID){
@@ -370,7 +454,7 @@ function getConditionBasisDropdownHTML(PAGEID){
     }
 
     var htmlString = "" +
-        "<select class='form-control conditionOperator " + pageClassString + "'>"
+        "<select class='form-control conditionBasis " + pageClassString + "'>"
 
     for(var i=0;i<conditionBasis.length;i++){
         if(conditionBasis[i].type === conditionBasisType){
@@ -384,6 +468,246 @@ function getConditionBasisDropdownHTML(PAGEID){
         "</select>"
 
     return htmlString
+}
+function getRowConditionDropdownHTML(PAGEID){
+    var pageClassString = ""
+    if(PAGEID === "OPERATION"){
+        pageClassString = "onChangeSaveOperation"
+        var htmlString = "" +
+            "<select class='form-control rowConditionDropdown " + pageClassString + "'>" +
+            "   <option class='alwaysOption' value='ALWAYS'>ALWAYS</option>" +
+            "   <option class='ifOption' value='IF'>IF</option>" +
+            "   <option class='ifElseOption' value='IFELSE' >IF ELSE</option>" +
+            "   <option class='elseOption' value='ELSE' >ELSE</option>" +
+            "</select>"
+    }
+    else if(PAGEID === "RATE"){
+        pageClassString = "onChangeSaveRate"
+        var htmlString = "" +
+            "<select class='form-control rowConditionDropdown " + pageClassString + "'>" +
+            "   <option class='noneOption' value='NONE'>NONE</option>" +
+            "   <option class='ifOption' value='IF'>IF</option>" +
+            "   <option class='ifElseOption' value='IFELSE' >IF ELSE</option>" +
+            "   <option class='elseOption' value='ELSE' >ELSE</option>" +
+            "</select>"
+    }
+
+    return htmlString
+}
+
+function rowConditionDropdownChange(dropdown){
+    var thisConditionRow = $(dropdown).closest('.mainLogicContainer')
+    var rowConditionValue = $(dropdown).val()
+
+    if(rowConditionValue === 'ALWAYS'){
+        hideAllConditionalInputs(thisConditionRow)
+    }
+    else if(rowConditionValue === 'NONE' ){
+        hideAllLogicRowInputs(thisConditionRow)
+    }
+    else if(rowConditionValue === 'IF' ){
+        showAllConditionalInputs(thisConditionRow)
+    }
+    else if(rowConditionValue === 'IFELSE' ){
+        showAllConditionalInputs(thisConditionRow)
+    }
+    else if(rowConditionValue === 'ELSE' ){
+        hideAllConditionalInputs(thisConditionRow)
+    }
+}
+function hideAllConditionalInputs(thisRow){
+    //HIDE ALL
+    $(thisRow).children().css('visibility', 'hidden')
+
+    //SHOW PRODUCT SELECT
+    $(thisRow).find('.conditionOutput').closest('div').css('visibility', '')
+    $(thisRow).find('.rowConditionDropdown').closest('div').css('visibility', '')
+    $(thisRow).find('.deductDescription').closest('div').css('visibility', '')
+    $(thisRow).find('.conditionOutputValue').closest('div').css('visibility', '')
+
+
+    //SHOW BUTTONS
+    $(thisRow).children('.buttonColumn').css('visibility', '')
+}
+function hideAllLogicRowInputs(thisRow){
+    //HIDE ALL
+    $(thisRow).children().css('visibility', 'hidden')
+
+    $(thisRow).find('.rowConditionDropdown').closest('div').css('visibility', '')
+
+    //SHOW BUTTONS
+    $(thisRow).children('.buttonColumn').css('visibility', '')
+}
+function showAllConditionalInputs(thisRow){
+    //SHOW  ALL
+    $(thisRow).children().css('visibility', '')
+
+}
+
+function addSubLogicConditionRowClick(button){
+    var thisRow = $(button).closest('.logicConditionRow')
+    var thisRowConditionValue = $(thisRow).find('.rowConditionDropdown').val()
+
+
+    var newRow = $(thisRow).clone()
+    var newRowProductConditionBasisDropdown = $(newRow).find('.conditionBasis')
+    $(newRow).find('.rowConditionDropdown').val(thisRowConditionValue)
+
+    //DISABLE FURTHER SUB LOGIC
+    // $(newRow).find('.addSubLogicConditionRow').css('display','none')
+
+    var subLogicContainer
+    //IF SUB CONDITION ROW EXISTS
+    if( $(thisRow).children('.subLogicConditionRow').length > 0 ){
+        // subLogicContainer = $(thisRow).find('.subLogicConditionRow')
+    }
+    else{
+        subLogicContainer = $(
+            "<div class='row subLogicConditionRow rowContainer'>" +
+            "</div>"
+        )
+
+        $(thisRow).append($(subLogicContainer))
+        $(subLogicContainer).append($(newRow))
+        $(newRowProductConditionBasisDropdown).trigger('change')
+        checkFormatOfAllRows(thisRow)
+    }
+}
+function addLogicConditionRowClick(button){
+    var thisRow = $(button).closest('.logicConditionRow')
+    var thisRowConditionValue = $(thisRow).find('.rowConditionDropdown').val()
+
+
+    var newRow = $(thisRow).clone()
+    $(newRow).find('.subLogicConditionRow').remove()
+    var newRowProductConditionBasisDropdown = $(newRow).find('.conditionBasis')
+    $(newRow).find('.rowConditionDropdown').val(thisRowConditionValue)
+
+    $(thisRow).after($(newRow))
+    $(newRowProductConditionBasisDropdown).trigger('change')
+    checkFormatOfAllRows(thisRow)
+}
+function removeLogicConditionRowClick(button){
+    var container = $(button).closest('.rowContainer')
+    var thisRow = $(button).closest('.logicConditionRow')
+    $(thisRow).remove()
+
+    if( $(container).find('.logicConditionRow').length === 0 && $(container).hasClass('subLogicConditionRow') ){
+        $(container).remove()
+    }
+
+    checkFormatOfAllRows(thisRow)
+
+}
+function checkFormatOfAllRows(thisRow){
+    var logicContainer = $(thisRow).closest('.logicConditionRowsContainer')
+
+    //HIDING/SHOWING REMOVE BUTTONS
+    $(logicContainer).find('.logicConditionRow').each(function(index){
+        var thisLogicRow = $(this)
+        var addRowButton = $(this).find('.addLogicConditionRow')
+        var removeRowButton = $(this).find('.removeLogicConditionRow')
+
+        if(index === 0){
+            $(removeRowButton).css('display', 'none')
+        }
+        else{
+            $(removeRowButton).css('display', '')
+        }
+
+    })
+
+
+    //CHECKING ROW LOGIC VALUES
+    var previousRow = ''
+    var fullLogicOptionsHTML =
+        "<option class='alwaysOption' value='ALWAYS'>ALWAYS</option> " +
+        "<option class='ifOption' value='IF'>IF</option> " +
+        "<option class='ifElseOption' value='IFELSE' style='display:none'>IF ELSE</option> " +
+        "<option class='elseOption' value='ELSE' style='display:none'>ELSE</option>"
+    var firstLogicOptionsHTML =
+        "<option class='alwaysOption' value='ALWAYS'>ALWAYS</option> " +
+        "<option class='ifOption' value='IF'>IF</option> "
+    var firstLimitLogicOptionsHTML =
+        "<option class='noneOption' value='NONE'>NONE</option> " +
+        "<option class='ifOption' value='IF'>IF</option> "
+    var secondLogicOptionHTML =
+        "<option class='ifOption' value='IF'>IF</option> " +
+        "<option class='ifElseOption' value='IFELSE' style='display:none'>IF ELSE</option> " +
+        "<option class='elseOption' value='ELSE' style='display:none'>ELSE</option>"
+
+    $(logicContainer).parent().find('.rowContainer').each(function(index){
+        var thisRowContainer = $(this)
+
+        $(thisRowContainer).children('.logicConditionRow').each(function(count){
+            var thisRow = $(this)
+            var thisMainLogicContainer = $(thisRow).children('.mainLogicContainer')
+            var thisLogicConditionDropdown = $(thisMainLogicContainer).find('.rowConditionDropdown')
+            var thisLogicConditionValue = $(thisLogicConditionDropdown).val()
+
+
+            //IF FIRST ROW, REMOVE ALL OTHER OPTIONS EXCEPT 'ALWAYS', 'IF'
+            if(count == 0){
+                if($('.tab-pane.active').attr('id') === 'ratesPage'){
+                    $(thisLogicConditionDropdown).html(firstLimitLogicOptionsHTML)
+                    $(thisLogicConditionDropdown).val(thisLogicConditionValue)
+                }
+                else{
+                    $(thisLogicConditionDropdown).html(firstLogicOptionsHTML)
+                    $(thisLogicConditionDropdown).val(thisLogicConditionValue)
+                }
+
+            }
+            else if( count > 0){
+                $(thisLogicConditionDropdown).html(secondLogicOptionHTML)
+                $(thisLogicConditionDropdown).val(thisLogicConditionValue)
+            }
+
+
+            //CHECK IF THIS ROW HAS SUBLOGIC, IF YES, HIDE THE RATE/PRODUCT DROPDOWN in MainLogicRow
+            if( $(thisRow).children('.subLogicConditionRow').length > 0 ){
+                $(thisMainLogicContainer).find('.conditionOutput').css('display', 'none')
+            }
+            else{
+                $(thisMainLogicContainer).find('.conditionOutput').css('display', '')
+            }
+        })
+
+
+
+    })
+}
+function moveLogicRowUp(upButton){
+    var container = $(upButton).closest('.rowContainer')
+    var thisRow = $(upButton).closest('.logicConditionRow')
+    var thisRowIndex = $(thisRow).index()
+
+    if(thisRowIndex === 0){
+
+    }
+    else{
+        $(container).children('.logicConditionRow').eq(thisRowIndex-1).before($(thisRow))
+    }
+
+    checkFormatOfAllRows(thisRow)
+
+}
+function moveLogicRowDown(downButton){
+    var container = $(downButton).closest('.rowContainer')
+    var thisRow = $(downButton).closest('.logicConditionRow')
+    var thisRowIndex = $(thisRow).index()
+    var lastIndex = $(container).children('.logicConditionRow').length
+
+    if(thisRowIndex === lastIndex){
+
+    }
+    else{
+        $(container).children('.logicConditionRow').eq(thisRowIndex+1).after($(thisRow))
+
+    }
+
+    checkFormatOfAllRows(thisRow)
+
 }
 
 
@@ -414,6 +738,9 @@ function evaluateLogicConditionArray(logicConditionArray){
             return outputID
 
         }
+        else if(logicConditionArray[0].logicCondition === 'NONE'){
+
+        }
         //IF COVERAGE CONDITION IS 'IF'
         else{
             // else if(logicConditionArray[0].logicCondition === 'IF'){
@@ -435,9 +762,15 @@ function evaluateLogicConditionRow(logicConditionRow){
     var rowLogicCondition = logicConditionRow.logicCondition
     var outputID
 
-
     if(logicConditionRow.outputID){
         outputID = logicConditionRow.outputID
+
+        if(logicConditionRow.deductDescription){
+            //IF THIS OUTPUT WILL CHANGE A DEDUCT VALUE
+            outputID = {}
+            outputID.deductDescription = logicConditionRow.deductDescription
+            outputID.outputValue = logicConditionRow.outputValue
+        }
     }
     else if(logicConditionRow.productID){
         outputID = logicConditionRow.productID
@@ -447,9 +780,13 @@ function evaluateLogicConditionRow(logicConditionRow){
     }
 
 
-
     if(rowLogicCondition === "ALWAYS"){
         return outputID
+    }
+    else if(rowLogicCondition === "ELSE"){
+        return outputID
+    }
+    else if(rowLogicCondition === "NONE"){
     }
     else{
         var conditionOperator = logicConditionRow.conditionOperator
@@ -457,7 +794,7 @@ function evaluateLogicConditionRow(logicConditionRow){
         var conditionBasisValue = formatBasisValue(logicConditionRow.conditionBasisValue)
 
         //GET ACTUAL BASIS VALUE
-        var actualBasisValue = getActualBasisValue(conditionBasis)
+        var actualBasisValue = getActualBasisValue(logicConditionRow)
 
         if(actualBasisValue !== undefined && actualBasisValue !== null ){
             //IF THIS LOGIC CONDITION IS TRUE
@@ -535,13 +872,58 @@ function evaluateCondition(conditionOperator, conditionBasisValue, actualBasisVa
 
     return false
 }
-function getActualBasisValue(conditionBasis){
-    var conditionBasisInputID = getConditionBasisInputFromConditionBasisID(conditionBasis)
-    var questionObject = getQuestionObjectForID(conditionBasisInputID)
+function getActualBasisValue(logicConditionRow){
+    var conditionBasis = logicConditionRow.conditionBasis
 
-    //CHECK IF QUESTION EXISTS ON PAGE, IF NOT RETURN UNDEFINED
-    if( $('#step-2 #' + conditionBasisInputID).length > 0){
-        if( questionObject.inputType === 'radio' || questionObject.inputType === 'checkbox' ){
+    if(conditionBasis === "LIMITVALUEIS"){
+        var limitDescription = logicConditionRow.limitDescription
+        var limitRateID = logicConditionRow.limitRateID
+
+        //FIND THE LIMIT INPUT TO FIND THE VALUE
+        var actualValue = undefined
+        $('.limitValue').each(function(){
+            var thisLimitInputRateID = $(this).attr('data-rateid').trim()
+            var thisLimitDescription = $(this).attr('data-limitdescription').trim()
+            var thisLimitCovID = $(this).closest('.coverageLimDeductContainer').attr('data-covid').trim()
+
+            if(thisLimitDescription === limitDescription && thisLimitInputRateID === limitRateID ){
+                actualValue = formatBasisValue( $(this).val() )
+            }
+        })
+
+        return actualValue
+    }
+    else{
+        var conditionBasisInputID = getConditionBasisInputFromConditionBasisID(conditionBasis)
+        var questionObject = getQuestionObjectForID(conditionBasisInputID)
+
+        //CHECK IF QUESTION EXISTS ON PAGE, IF NOT RETURN UNDEFINED
+        if( $('#step-2 #' + conditionBasisInputID).length > 0){
+            if( questionObject.inputType === 'radio' || questionObject.inputType === 'checkbox' ){
+                var conditionBasisInput = $('div.requiredQuestion.' + conditionBasisInputID)
+                var actualBasisValue = $(conditionBasisInput).find("input[type='" + questionObject.inputType + "']:checked").val()
+
+                if(actualBasisValue){
+
+                }
+                else{
+                    actualBasisValue = ""
+                }
+
+                return formatBasisValue(actualBasisValue)
+            }
+            else{
+                var conditionBasisInput = $('#' + conditionBasisInputID)
+                var actualBasisValue = $(conditionBasisInput).val()
+
+                if(conditionBasis === "POLICYLENGTH"){
+                    actualBasisValue = removeAllNonNumbersFromString(actualBasisValue)
+                }
+
+                return formatBasisValue(actualBasisValue)
+            }
+        }
+        else if( questionObject.inputType === 'radio' ){
             var conditionBasisInput = $('div.requiredQuestion.' + conditionBasisInputID)
             var actualBasisValue = $(conditionBasisInput).find("input[type='" + questionObject.inputType + "']:checked").val()
 
@@ -554,39 +936,17 @@ function getActualBasisValue(conditionBasis){
 
             return formatBasisValue(actualBasisValue)
         }
-        else{
-            var conditionBasisInput = $('#' + conditionBasisInputID)
-            var actualBasisValue = $(conditionBasisInput).val()
-
-            if(conditionBasis === "POLICYLENGTH"){
-                actualBasisValue = removeAllNonNumbersFromString(actualBasisValue)
-            }
+        else if( questionObject.inputType === 'checkbox' ){
+            var conditionBasisInput = $('div.requiredQuestion.' + conditionBasisInputID)
+            var actualBasisValue = $(conditionBasisInput).find("input[type='" + questionObject.inputType + "']:checked").val()
 
             return formatBasisValue(actualBasisValue)
         }
-    }
-    else if( questionObject.inputType === 'radio' ){
-        var conditionBasisInput = $('div.requiredQuestion.' + conditionBasisInputID)
-        var actualBasisValue = $(conditionBasisInput).find("input[type='" + questionObject.inputType + "']:checked").val()
-
-        if(actualBasisValue){
-
-        }
         else{
-            actualBasisValue = ""
+            return undefined
         }
+    }
 
-        return formatBasisValue(actualBasisValue)
-    }
-    else if( questionObject.inputType === 'checkbox' ){
-        var conditionBasisInput = $('div.requiredQuestion.' + conditionBasisInputID)
-        var actualBasisValue = $(conditionBasisInput).find("input[type='" + questionObject.inputType + "']:checked").val()
-
-        return formatBasisValue(actualBasisValue)
-    }
-    else{
-        return undefined
-    }
 
 }
 function formatBasisValue(conditionBasisValue){

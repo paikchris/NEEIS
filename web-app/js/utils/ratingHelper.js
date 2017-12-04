@@ -699,8 +699,48 @@ function getTotalPremiumAndDetail(rateInfoMap, policyInfoMap, isPrimary){
     return { totalPremium:totalPremium, detail: rateCalcDetail, finalRateCalcDetail: finalRateCalcDetail }
 }
 
+function updateDeductiblesBasedOnLimitInputs(){
+    //LOOP THROUGH ALL COVERAGE LIMIT DEDUCT CONTAINERS
+    $('.coverageLimDeductContainer').each(function(){
+        var covID = $(this).attr('data-covid')
+        var coverageObject = getCoverageObject(covID)
 
+        //LOOP THROUGH LIMIT INPUTS IN THIS COVERAGE CONTAINER
+        $(this).find('input.limitValue').each(function(){
+            var limitDescription = $(this).attr('data-limitdescription')
+            var rateID = $(this).attr('data-rateid')
+            var rateObject = getRateObjectByID(rateID)
+            var limitRateArray = jsonStringToObject(rateObject.limitRateArray)
 
+            var limitLogicArray
+            for(var i=0;i<limitRateArray.length;i++){
+                if(limitRateArray[i].limitDescription === limitDescription){
+                    limitLogicArray = limitRateArray[i].limitLogic
+                }
+            }
+            var deductChangeMap = evaluateLogicConditionArray(limitLogicArray)
+            var deductDescription = deductChangeMap.deductDescription
+            var deductValue = deductChangeMap.outputValue
+
+            //CHANGE THE DEDUCTS
+            $(".deductValue[data-deductdescription='" + deductDescription + "']").html(deductValue)
+
+        })
+    })
+
+    var coveragesAndPackagesArray = getCoveragesAndPackagesSelectedArray()
+
+    for(var i=0;i<coveragesAndPackagesArray.length;i++){
+        var covID = coveragesAndPackagesArray[i]
+        var coverageObject = getCoverageObject(covID)
+        if(coverageObject.packageFlag === 'Y'){
+            var lobSelectedArray = getLOBSSelectedInPackageArray(covID)
+        }
+        else{
+
+        }
+    }
+}
 
 
 

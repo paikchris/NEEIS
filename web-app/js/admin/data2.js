@@ -334,6 +334,10 @@ function initializeListeners(){
     $(document.body).on('click', '.ratesPage_LimitRateRemoveButton', function(e) {
         limitRateRemoveButtonAction(this)
     })
+    $(document.body).on('change', '.ratesPage_LimitDescriptionInput', function(e) {
+        ratePageLimitDescriptionChangeAction(this)
+    })
+
 
     //BRACKET RATING
     $(document.body).on('click', '.ratesPage_BracketRateAddButton', function(e) {
@@ -1467,39 +1471,7 @@ function packageDetails_removeLimDedRow(removeButton){
 }
 
 //PRODUCT CONDITIONS V2
-function rowConditionDropdownChange(dropdown){
-    var thisConditionRow = $(dropdown).closest('.mainLogicContainer')
-    var rowConditionValue = $(dropdown).val()
 
-    if(rowConditionValue === 'ALWAYS'){
-        hideAllConditionalInputs(thisConditionRow)
-    }
-    else if(rowConditionValue === 'IF' ){
-        showAllConditionalInputs(thisConditionRow)
-    }
-    else if(rowConditionValue === 'IFELSE' ){
-        showAllConditionalInputs(thisConditionRow)
-    }
-    else if(rowConditionValue === 'ELSE' ){
-        hideAllConditionalInputs(thisConditionRow)
-    }
-}
-function hideAllConditionalInputs(thisRow){
-    //HIDE ALL
-    $(thisRow).children().css('visibility', 'hidden')
-
-    //SHOW PRODUCT SELECT
-    $(thisRow).find('.conditionOutput').closest('div').css('visibility', '')
-    $(thisRow).find('.rowConditionDropdown').closest('div').css('visibility', '')
-
-    //SHOW BUTTONS
-    $(thisRow).children('.buttonColumn').css('visibility', '')
-}
-function showAllConditionalInputs(thisRow){
-    //SHOW  ALL
-    $(thisRow).children().css('visibility', '')
-
-}
 function moneyInputHTML(){
     var htmlString =
         "<div class='form-group'> " +
@@ -1650,162 +1622,6 @@ function setConditionInputToCoverageDropdown(thisRow){
     $(thisRow).find('.conditionOperator').val("CONTAINS")
 }
 
-function addSubLogicConditionRowClick(button){
-    var thisRow = $(button).closest('.logicConditionRow')
-    var thisRowConditionValue = $(thisRow).find('.rowConditionDropdown').val()
-
-
-    var newRow = $(thisRow).clone()
-    var newRowProductConditionBasisDropdown = $(newRow).find('.conditionBasis')
-    $(newRow).find('.rowConditionDropdown').val(thisRowConditionValue)
-
-    //DISABLE FURTHER SUB LOGIC
-    // $(newRow).find('.addSubLogicConditionRow').css('display','none')
-
-    var subLogicContainer
-    //IF SUB CONDITION ROW EXISTS
-    if( $(thisRow).children('.subLogicConditionRow').length > 0 ){
-        // subLogicContainer = $(thisRow).find('.subLogicConditionRow')
-    }
-    else{
-        subLogicContainer = $(
-            "<div class='row subLogicConditionRow rowContainer'>" +
-            "</div>"
-        )
-
-        $(thisRow).append($(subLogicContainer))
-        $(subLogicContainer).append($(newRow))
-        $(newRowProductConditionBasisDropdown).trigger('change')
-        checkFormatOfAllRows(thisRow)
-    }
-}
-function addLogicConditionRowClick(button){
-    var thisRow = $(button).closest('.logicConditionRow')
-    var thisRowConditionValue = $(thisRow).find('.rowConditionDropdown').val()
-
-
-    var newRow = $(thisRow).clone()
-    $(newRow).find('.subLogicConditionRow').remove()
-    var newRowProductConditionBasisDropdown = $(newRow).find('.conditionBasis')
-    $(newRow).find('.rowConditionDropdown').val(thisRowConditionValue)
-
-    $(thisRow).after($(newRow))
-    $(newRowProductConditionBasisDropdown).trigger('change')
-    checkFormatOfAllRows(thisRow)
-}
-function removeLogicConditionRowClick(button){
-    var container = $(button).closest('.rowContainer')
-    var thisRow = $(button).closest('.logicConditionRow')
-    $(thisRow).remove()
-
-    if( $(container).find('.logicConditionRow').length === 0 && $(container).hasClass('subLogicConditionRow') ){
-        $(container).remove()
-    }
-
-    checkFormatOfAllRows(thisRow)
-
-}
-function checkFormatOfAllRows(thisRow){
-
-    var logicContainer = $(thisRow).closest('.logicConditionRowsContainer')
-
-    //HIDING/SHOWING REMOVE BUTTONS
-    $(logicContainer).find('.logicConditionRow').each(function(index){
-        var thisLogicRow = $(this)
-        var addRowButton = $(this).find('.addLogicConditionRow')
-        var removeRowButton = $(this).find('.removeLogicConditionRow')
-
-        if(index === 0){
-            $(removeRowButton).css('display', 'none')
-        }
-        else{
-            $(removeRowButton).css('display', '')
-        }
-
-    })
-
-
-    //CHECKING ROW LOGIC VALUES
-    var previousRow = ''
-    var fullLogicOptionsHTML =
-        "<option class='alwaysOption' value='ALWAYS'>ALWAYS</option> " +
-        "<option class='ifOption' value='IF'>IF</option> " +
-        "<option class='ifElseOption' value='IFELSE' style='display:none'>IF ELSE</option> " +
-        "<option class='elseOption' value='ELSE' style='display:none'>ELSE</option>"
-    var firstLogicOptionsHTML =
-        "<option class='alwaysOption' value='ALWAYS'>ALWAYS</option> " +
-        "<option class='ifOption' value='IF'>IF</option> "
-    var secondLogicOptionHTML =
-        "<option class='ifOption' value='IF'>IF</option> " +
-        "<option class='ifElseOption' value='IFELSE' style='display:none'>IF ELSE</option> " +
-        "<option class='elseOption' value='ELSE' style='display:none'>ELSE</option>"
-    
-    $(logicContainer).parent().find('.rowContainer').each(function(index){
-        var thisRowContainer = $(this)
-
-        $(thisRowContainer).children('.logicConditionRow').each(function(count){
-            var thisRow = $(this)
-            var thisMainLogicContainer = $(thisRow).children('.mainLogicContainer')
-            var thisLogicConditionDropdown = $(thisMainLogicContainer).find('.rowConditionDropdown')
-            var thisLogicConditionValue = $(thisLogicConditionDropdown).val()
-
-
-            //IF FIRST ROW, REMOVE ALL OTHER OPTIONS EXCEPT 'ALWAYS', 'IF'
-            if(count == 0){
-                $(thisLogicConditionDropdown).html(firstLogicOptionsHTML)
-                $(thisLogicConditionDropdown).val(thisLogicConditionValue)
-            }
-            else if( count > 0){
-                $(thisLogicConditionDropdown).html(secondLogicOptionHTML)
-                $(thisLogicConditionDropdown).val(thisLogicConditionValue)
-            }
-
-
-            //CHECK IF THIS ROW HAS SUBLOGIC, IF YES, HIDE THE RATE/PRODUCT DROPDOWN in MainLogicRow
-            if( $(thisRow).children('.subLogicConditionRow').length > 0 ){
-                $(thisMainLogicContainer).find('.conditionOutput').css('display', 'none')
-            }
-            else{
-                $(thisMainLogicContainer).find('.conditionOutput').css('display', '')
-            }
-        })
-
-
-
-    })
-}
-function moveLogicRowUp(upButton){
-    var container = $(upButton).closest('.rowContainer')
-    var thisRow = $(upButton).closest('.logicConditionRow')
-    var thisRowIndex = $(thisRow).index()
-
-    if(thisRowIndex === 0){
-
-    }
-    else{
-        $(container).children('.logicConditionRow').eq(thisRowIndex-1).before($(thisRow))
-    }
-
-    checkFormatOfAllRows(thisRow)
-
-}
-function moveLogicRowDown(downButton){
-    var container = $(downButton).closest('.rowContainer')
-    var thisRow = $(downButton).closest('.logicConditionRow')
-    var thisRowIndex = $(thisRow).index()
-    var lastIndex = $(container).children('.logicConditionRow').length
-
-    if(thisRowIndex === lastIndex){
-
-    }
-    else{
-        $(container).children('.logicConditionRow').eq(thisRowIndex+1).after($(thisRow))
-
-    }
-
-    checkFormatOfAllRows(thisRow)
-
-}
 function buildOperationCoverageProductMap(){
     //COVERAGE PRODUCTS
     var coverageProductMap = {}
@@ -2809,6 +2625,9 @@ function clearRateDetails(){
     //RESET LIMIT RATE ROWS
     $('#ratesPage_limitRatingRowsContainer').html(getLimitRateRowHTML())
 
+    //RESET LIMIT RATE LOGIC ROWS
+    clearLimitLogicContainer()
+
     //RESET BRACKET RATE ROWS
     $('#ratesPage_bracketRatingRowsContainer').html(getBracketRateRowHTML())
 
@@ -2828,18 +2647,37 @@ function fillRateDetails(rateID){
     $('#ratePage_RatingBasisDropdown').val(rateObject.rateBasis)
 
     if(rateObject.rateBasis === 'LIMIT'){
+        var limitLogicContainer = $('#limitLogicInitContainer')
         var limitRateArray = jsonStringToObject(rateObject.limitRateArray)
 
         var allLimitRateRowsHTML = ""
-
+        var allLimitLogicRowsHTML = ""
 
         for(var i=0;i<limitRateArray.length; i++){
             var thisLimitRateRowMap = jsonStringToObject( limitRateArray[i] )
-            console.log(thisLimitRateRowMap)
             allLimitRateRowsHTML = allLimitRateRowsHTML + getLimitRateRowHTML(thisLimitRateRowMap)
+
+            var limitDescription = thisLimitRateRowMap.limitDescription
+
+            //CHECK IF LIMIT LOGIC EXISTS
+            if(thisLimitRateRowMap.limitLogic){
+                //GET LIMIT LOGIC CONDITION ROW HTML FOR THIS LIMIT
+                var thisLimitLogicArray = jsonStringToObject(thisLimitRateRowMap.limitLogic)
+
+                //INSERT FRESH LOGIC CONDITION CONTAI
+                updateOrAddLimitLogicRowsContainerForLimit(limitDescription, i)
+
+                //UPDATE INSERTED LOGIC ROW TO CORRECT LOGIC
+                var thisLogicRowsContainer = $(limitLogicContainer).find('.logicConditionRowsContainer').eq(i)
+                $(thisLogicRowsContainer).find('.logicConditionRow').remove()
+                fillLogicRowContainerWithLogicArray(thisLimitLogicArray, thisLogicRowsContainer, false, 'LIMIT', 'RATE')
+            }
+
+
         }
 
         $('#ratesPage_limitRatingRowsContainer').html(allLimitRateRowsHTML)
+
         showLimitRateValueContainer()
     }
     else if(rateObject.rateBasis === 'BRACKET'){
@@ -2953,8 +2791,9 @@ function showLimitRateValueContainer(){
     $('#ratePage_LimitRateValuesContainer').css('display', '')
 
     //INITIALIZE LIMIT LOGIC CONTAINER
-    $('#limitLogicEffectHeaderRow').html(limitLogicHeaderHTML())
-    initLimitLogicContainer($('#limitLogicInitContainer'))
+    // $('#limitLogicEffectHeaderRow').html(limitLogicHeaderHTML())
+
+    // initLimitLogicContainer($('#limitLogicInitContainer'))
 }
 function showDefaultRateValueContainer(){
     //HIDE LIMIT RATE VALUE CONTAINER
@@ -3064,12 +2903,16 @@ function limitRateAddButtonAction(addButton){
     $(limitRateRowButtonClicked).after(limitRateRowHTML)
 
 }
-function limitRateRemoveButtonAction(addButton){
-    var limitRateRowButtonClicked= $(addButton).closest('.limitRatingRow')
+function limitRateRemoveButtonAction(removeButton){
+    var limitRateRowButtonClicked= $(removeButton).closest('.limitRatingRow')
 
     //MAKE SURE AT LEAST ONE ROW WILL REMAIN
     if( $('#ratesPage_limitRatingRowsContainer .limitRatingRow').length > 1){
         $(limitRateRowButtonClicked).remove()
+
+        //REMOVE LIMIT LOGIC ROWS FOR THIS LIMIT
+        var limitIndexPosition = $(removeButton).closest('.limitRatingRow').index()
+        removeLimitLogicRowByIndex(limitIndexPosition)
     }
 
 }
@@ -3084,10 +2927,27 @@ function ratesPage_buildLimitRateArray(){
         thisLimitRowMap.rateValue = $(this).find('.ratesPage_LimitRateValueInput').val()
         thisLimitRowMap.maxLimit = $(this).find('.ratesPage_LimitMaxValueInput').val()
         thisLimitRowMap.minPremium = $(this).find('.ratesPage_LimitMinPremiumInput').val()
+
+        //FIND CORRESPONDING LOGIC CONTAINER FOR THIS LIMIT IF IT EXISTS
+        var limitIndexPosition = $(this).closest('.limitRatingRow').index()
+        var logicConditionContainer = $('#limitLogicInitContainer').find('.logicConditionRowsContainer').eq(limitIndexPosition)
+        thisLimitRowMap.limitLogic = buildLogicArrayForLogicContainer(logicConditionContainer)
+        thisLimitRowMap.limitRateID = $('#ratePage_RatesDropdown').val()
         limitRateArray.push(thisLimitRowMap)
     })
     return limitRateArray
 }
+function ratePageLimitDescriptionChangeAction(element){
+    if($(element).val().trim().length > 0 ){
+        var limitDescription = $(element).val().trim()
+        var limitIndexPosition = $(element).closest('.limitRatingRow').index()
+        updateOrAddLimitLogicRowsContainerForLimit(limitDescription, limitIndexPosition)
+    }
+}
+function clearLimitLogicContainer(){
+    $('#limitLogicInitContainer').html('')
+}
+
 
 //BRACKET RATING SECTION
 function getBracketRateRowHTML(bracketRateRowMap){
@@ -4951,7 +4811,7 @@ function saveRate(saveRatebutton){
     dataMap.description = $('#rateDescriptionInput').val()
     dataMap.rateBasis = $('#ratePage_RatingBasisDropdown').val()
     if(dataMap.rateBasis === "LIMIT"){
-        dataMap.limitRateAray = JSON.stringify( ratesPage_buildLimitRateArray() )
+        dataMap.limitRateArray = JSON.stringify( ratesPage_buildLimitRateArray() )
     }
     else if(dataMap.rateBasis === "BRACKET"){
         dataMap.bracketRateArray = JSON.stringify( ratesPage_buildBracketRateArray() )
