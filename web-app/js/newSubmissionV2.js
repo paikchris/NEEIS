@@ -2041,6 +2041,7 @@ function hideLimitDeductQuestionsNotAnsweredContainer(){
 }
 function fillLimitDeductContainer(){
     buildLimitDeductibleContainersForEachCoverage()
+    updateDeductiblesBasedOnLimitInputs()
 }
 function buildLimitDeductibleContainersForEachCoverage(){
     var temporaryContainer = $("<div></div>")
