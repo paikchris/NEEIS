@@ -986,6 +986,8 @@ function packageCoverageCheckboxChangeAction(checkbox){
 
                 $(this).val(thisLimitInputValue)
             })
+            updateDeductiblesBasedOnLimitInputs()
+
 
             //PREMIUM ONLY DISPLAYS IF LIMITS AND DEDUCTS SHOW CORRECTLY
             if(isReadyToRatePremiums()){
@@ -2041,7 +2043,6 @@ function hideLimitDeductQuestionsNotAnsweredContainer(){
 }
 function fillLimitDeductContainer(){
     buildLimitDeductibleContainersForEachCoverage()
-    updateDeductiblesBasedOnLimitInputs()
 }
 function buildLimitDeductibleContainersForEachCoverage(){
     var temporaryContainer = $("<div></div>")
