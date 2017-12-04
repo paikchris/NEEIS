@@ -205,7 +205,8 @@ Vagrant.configure("2") do |config|
       mem = `wmic computersystem Get TotalPhysicalMemory`.split[1].to_i / 1024
     end
 
-    mem = mem / 1024 / 4
+    # mem = mem / 1024 / 4
+    mem = 4048
     vb.customize ["modifyvm", :id, "--memory", mem]
 
 
