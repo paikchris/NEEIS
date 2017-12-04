@@ -187,6 +187,7 @@ function clickChangeListenerInit(){
     $(document).on('change', 'div#limitsDeductiblesContainer input.limitValue', function () {
         //IF LIMIT INPUT CHANGES, RERATE PRODUCTS
         if(isReadyToRatePremiums()){
+            updateDeductiblesBasedOnLimitInputs()
             calculatePremiumsAndFillContainer()
             showPremiumRateContainer()
         }
@@ -2238,6 +2239,7 @@ function checkAdditionalOptionsForLimitChanges(productID, limitArray){
     }
 }
 
+
 function getLimitRowsHTML(limitArray, productID, covID){
     var limitRowsHTML = ""
     for(var i=0; i<limitArray.length; i++){
@@ -2284,6 +2286,7 @@ function getLimitRowsHTML(limitArray, productID, covID){
 
         //IF A LIMIT RATING BASIS EXISTS, GET LIST OF LIMITS THAT NEED TO BE INPUTS
         var limitDescriptionsThatNeedInputs = []
+        var limitDescriptionAndRateID = {}
         if(rateBasis_product === 'LIMIT' || rateBasis_LOBHasLimitRate) {
             //GET A LIST OF LIMIT DESCRIPTIONS NEEDING TO BE INPUTS
 
@@ -2296,6 +2299,7 @@ function getLimitRowsHTML(limitArray, productID, covID){
                     var thisLimMap = rate_limitArray[c]
                     var thisLimDesc = thisLimMap.limitDescription
                     limitDescriptionsThatNeedInputs.push(thisLimDesc.trim())
+                    limitDescriptionAndRateID[thisLimDesc.trim()] = rateCode_product
                 }
             }
 
@@ -2315,6 +2319,8 @@ function getLimitRowsHTML(limitArray, productID, covID){
                             var thisLimMap = rate_limitArray[c]
                             var thisLimDesc = thisLimMap.limitDescription
                             limitDescriptionsThatNeedInputs.push(thisLimDesc.trim())
+                            limitDescriptionAndRateID[thisLimDesc.trim()] = rateID_LOB
+
                         }
                     }
                 }
@@ -2330,6 +2336,7 @@ function getLimitRowsHTML(limitArray, productID, covID){
                 "   <div class='col-xs-4 form-group'>" +
                 "       <input class='limitValue maskMoney input-xs form-control " + productIDClassString + "_LimitRow_LimitValue ' " +
                 "           data-limitdescription='" + escapeDataAttributeValue(limitDescription) + "'" +
+                "           data-rateid='" + limitDescriptionAndRateID[limitDescription.trim()]  + "' " +
                 "           data-prefix='$'" +
                 "           data-precision='0'" +
                 "           required='true' " +

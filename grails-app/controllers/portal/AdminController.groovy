@@ -455,7 +455,7 @@ class AdminController {
             rateRecord.rateBasis = params.rateBasis
 
             if(params.rateBasis == 'LIMIT'){
-                def limitRateArray = jsonSlurper.parseText(params.limitRateAray)
+                def limitRateArray = jsonSlurper.parseText(params.limitRateArray)
                 rateRecord.limitRateArray = jsonOutput.toJson(limitRateArray)
             }
             else if(params.rateBasis == 'BRACKET'){

@@ -1641,162 +1641,6 @@ function setConditionInputToCoverageDropdown(thisRow){
     $(thisRow).find('.conditionOperator').val("CONTAINS")
 }
 
-function addSubLogicConditionRowClick(button){
-    var thisRow = $(button).closest('.logicConditionRow')
-    var thisRowConditionValue = $(thisRow).find('.rowConditionDropdown').val()
-
-
-    var newRow = $(thisRow).clone()
-    var newRowProductConditionBasisDropdown = $(newRow).find('.conditionBasis')
-    $(newRow).find('.rowConditionDropdown').val(thisRowConditionValue)
-
-    //DISABLE FURTHER SUB LOGIC
-    // $(newRow).find('.addSubLogicConditionRow').css('display','none')
-
-    var subLogicContainer
-    //IF SUB CONDITION ROW EXISTS
-    if( $(thisRow).children('.subLogicConditionRow').length > 0 ){
-        // subLogicContainer = $(thisRow).find('.subLogicConditionRow')
-    }
-    else{
-        subLogicContainer = $(
-            "<div class='row subLogicConditionRow rowContainer'>" +
-            "</div>"
-        )
-
-        $(thisRow).append($(subLogicContainer))
-        $(subLogicContainer).append($(newRow))
-        $(newRowProductConditionBasisDropdown).trigger('change')
-        checkFormatOfAllRows(thisRow)
-    }
-}
-function addLogicConditionRowClick(button){
-    var thisRow = $(button).closest('.logicConditionRow')
-    var thisRowConditionValue = $(thisRow).find('.rowConditionDropdown').val()
-
-
-    var newRow = $(thisRow).clone()
-    $(newRow).find('.subLogicConditionRow').remove()
-    var newRowProductConditionBasisDropdown = $(newRow).find('.conditionBasis')
-    $(newRow).find('.rowConditionDropdown').val(thisRowConditionValue)
-
-    $(thisRow).after($(newRow))
-    $(newRowProductConditionBasisDropdown).trigger('change')
-    checkFormatOfAllRows(thisRow)
-}
-function removeLogicConditionRowClick(button){
-    var container = $(button).closest('.rowContainer')
-    var thisRow = $(button).closest('.logicConditionRow')
-    $(thisRow).remove()
-
-    if( $(container).find('.logicConditionRow').length === 0 && $(container).hasClass('subLogicConditionRow') ){
-        $(container).remove()
-    }
-
-    checkFormatOfAllRows(thisRow)
-
-}
-function checkFormatOfAllRows(thisRow){
-
-    var logicContainer = $(thisRow).closest('.logicConditionRowsContainer')
-
-    //HIDING/SHOWING REMOVE BUTTONS
-    $(logicContainer).find('.logicConditionRow').each(function(index){
-        var thisLogicRow = $(this)
-        var addRowButton = $(this).find('.addLogicConditionRow')
-        var removeRowButton = $(this).find('.removeLogicConditionRow')
-
-        if(index === 0){
-            $(removeRowButton).css('display', 'none')
-        }
-        else{
-            $(removeRowButton).css('display', '')
-        }
-
-    })
-
-
-    //CHECKING ROW LOGIC VALUES
-    var previousRow = ''
-    var fullLogicOptionsHTML =
-        "<option class='alwaysOption' value='ALWAYS'>ALWAYS</option> " +
-        "<option class='ifOption' value='IF'>IF</option> " +
-        "<option class='ifElseOption' value='IFELSE' style='display:none'>IF ELSE</option> " +
-        "<option class='elseOption' value='ELSE' style='display:none'>ELSE</option>"
-    var firstLogicOptionsHTML =
-        "<option class='alwaysOption' value='ALWAYS'>ALWAYS</option> " +
-        "<option class='ifOption' value='IF'>IF</option> "
-    var secondLogicOptionHTML =
-        "<option class='ifOption' value='IF'>IF</option> " +
-        "<option class='ifElseOption' value='IFELSE' style='display:none'>IF ELSE</option> " +
-        "<option class='elseOption' value='ELSE' style='display:none'>ELSE</option>"
-    
-    $(logicContainer).parent().find('.rowContainer').each(function(index){
-        var thisRowContainer = $(this)
-
-        $(thisRowContainer).children('.logicConditionRow').each(function(count){
-            var thisRow = $(this)
-            var thisMainLogicContainer = $(thisRow).children('.mainLogicContainer')
-            var thisLogicConditionDropdown = $(thisMainLogicContainer).find('.rowConditionDropdown')
-            var thisLogicConditionValue = $(thisLogicConditionDropdown).val()
-
-
-            //IF FIRST ROW, REMOVE ALL OTHER OPTIONS EXCEPT 'ALWAYS', 'IF'
-            if(count == 0){
-                $(thisLogicConditionDropdown).html(firstLogicOptionsHTML)
-                $(thisLogicConditionDropdown).val(thisLogicConditionValue)
-            }
-            else if( count > 0){
-                $(thisLogicConditionDropdown).html(secondLogicOptionHTML)
-                $(thisLogicConditionDropdown).val(thisLogicConditionValue)
-            }
-
-
-            //CHECK IF THIS ROW HAS SUBLOGIC, IF YES, HIDE THE RATE/PRODUCT DROPDOWN in MainLogicRow
-            if( $(thisRow).children('.subLogicConditionRow').length > 0 ){
-                $(thisMainLogicContainer).find('.conditionOutput').css('display', 'none')
-            }
-            else{
-                $(thisMainLogicContainer).find('.conditionOutput').css('display', '')
-            }
-        })
-
-
-
-    })
-}
-function moveLogicRowUp(upButton){
-    var container = $(upButton).closest('.rowContainer')
-    var thisRow = $(upButton).closest('.logicConditionRow')
-    var thisRowIndex = $(thisRow).index()
-
-    if(thisRowIndex === 0){
-
-    }
-    else{
-        $(container).children('.logicConditionRow').eq(thisRowIndex-1).before($(thisRow))
-    }
-
-    checkFormatOfAllRows(thisRow)
-
-}
-function moveLogicRowDown(downButton){
-    var container = $(downButton).closest('.rowContainer')
-    var thisRow = $(downButton).closest('.logicConditionRow')
-    var thisRowIndex = $(thisRow).index()
-    var lastIndex = $(container).children('.logicConditionRow').length
-
-    if(thisRowIndex === lastIndex){
-
-    }
-    else{
-        $(container).children('.logicConditionRow').eq(thisRowIndex+1).after($(thisRow))
-
-    }
-
-    checkFormatOfAllRows(thisRow)
-
-}
 function buildOperationCoverageProductMap(){
     //COVERAGE PRODUCTS
     var coverageProductMap = {}
@@ -3107,6 +2951,7 @@ function ratesPage_buildLimitRateArray(){
         var limitIndexPosition = $(this).closest('.limitRatingRow').index()
         var logicConditionContainer = $('#limitLogicInitContainer').find('.logicConditionRowsContainer').eq(limitIndexPosition)
         thisLimitRowMap.limitLogic = buildLogicArrayForLogicContainer(logicConditionContainer)
+        thisLimitRowMap.limitRateID = $('#ratePage_RatesDropdown').val()
         limitRateArray.push(thisLimitRowMap)
     })
     return limitRateArray
@@ -4985,7 +4830,7 @@ function saveRate(saveRatebutton){
     dataMap.description = $('#rateDescriptionInput').val()
     dataMap.rateBasis = $('#ratePage_RatingBasisDropdown').val()
     if(dataMap.rateBasis === "LIMIT"){
-        dataMap.limitRateAray = JSON.stringify( ratesPage_buildLimitRateArray() )
+        dataMap.limitRateArray = JSON.stringify( ratesPage_buildLimitRateArray() )
     }
     else if(dataMap.rateBasis === "BRACKET"){
         dataMap.bracketRateArray = JSON.stringify( ratesPage_buildBracketRateArray() )
