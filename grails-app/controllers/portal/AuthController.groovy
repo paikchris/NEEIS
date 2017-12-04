@@ -325,4 +325,8 @@ class AuthController {
         }
         render text: renderString;
     }
+
+    def getAppointed() {
+    }
+    
 }
