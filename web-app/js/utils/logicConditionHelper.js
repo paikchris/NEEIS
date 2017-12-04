@@ -495,6 +495,26 @@ function getRowConditionDropdownHTML(PAGEID){
     return htmlString
 }
 
+function rowConditionDropdownChange(dropdown){
+    var thisConditionRow = $(dropdown).closest('.mainLogicContainer')
+    var rowConditionValue = $(dropdown).val()
+
+    if(rowConditionValue === 'ALWAYS'){
+        hideAllConditionalInputs(thisConditionRow)
+    }
+    else if(rowConditionValue === 'NONE' ){
+        hideAllLogicRowInputs(thisConditionRow)
+    }
+    else if(rowConditionValue === 'IF' ){
+        showAllConditionalInputs(thisConditionRow)
+    }
+    else if(rowConditionValue === 'IFELSE' ){
+        showAllConditionalInputs(thisConditionRow)
+    }
+    else if(rowConditionValue === 'ELSE' ){
+        hideAllConditionalInputs(thisConditionRow)
+    }
+}
 function hideAllConditionalInputs(thisRow){
     //HIDE ALL
     $(thisRow).children().css('visibility', 'hidden')
@@ -502,6 +522,9 @@ function hideAllConditionalInputs(thisRow){
     //SHOW PRODUCT SELECT
     $(thisRow).find('.conditionOutput').closest('div').css('visibility', '')
     $(thisRow).find('.rowConditionDropdown').closest('div').css('visibility', '')
+    $(thisRow).find('.deductDescription').closest('div').css('visibility', '')
+    $(thisRow).find('.conditionOutputValue').closest('div').css('visibility', '')
+
 
     //SHOW BUTTONS
     $(thisRow).children('.buttonColumn').css('visibility', '')
@@ -739,7 +762,6 @@ function evaluateLogicConditionRow(logicConditionRow){
     var rowLogicCondition = logicConditionRow.logicCondition
     var outputID
 
-
     if(logicConditionRow.outputID){
         outputID = logicConditionRow.outputID
 
@@ -758,8 +780,10 @@ function evaluateLogicConditionRow(logicConditionRow){
     }
 
 
-
     if(rowLogicCondition === "ALWAYS"){
+        return outputID
+    }
+    else if(rowLogicCondition === "ELSE"){
         return outputID
     }
     else if(rowLogicCondition === "NONE"){

@@ -1471,26 +1471,7 @@ function packageDetails_removeLimDedRow(removeButton){
 }
 
 //PRODUCT CONDITIONS V2
-function rowConditionDropdownChange(dropdown){
-    var thisConditionRow = $(dropdown).closest('.mainLogicContainer')
-    var rowConditionValue = $(dropdown).val()
 
-    if(rowConditionValue === 'ALWAYS'){
-        hideAllConditionalInputs(thisConditionRow)
-    }
-    else if(rowConditionValue === 'NONE' ){
-        hideAllLogicRowInputs(thisConditionRow)
-    }
-    else if(rowConditionValue === 'IF' ){
-        showAllConditionalInputs(thisConditionRow)
-    }
-    else if(rowConditionValue === 'IFELSE' ){
-        showAllConditionalInputs(thisConditionRow)
-    }
-    else if(rowConditionValue === 'ELSE' ){
-        hideAllConditionalInputs(thisConditionRow)
-    }
-}
 function moneyInputHTML(){
     var htmlString =
         "<div class='form-group'> " +
