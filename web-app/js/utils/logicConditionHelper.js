@@ -954,6 +954,10 @@ function formatBasisValue(conditionBasisValue){
     if( isStringMoney(conditionBasisValue)){
         return getFloatValueOfMoney(conditionBasisValue)
     }
+    else if(conditionBasisValue.trim().length === 0){
+        //IF BLANK
+        return 0
+    }
     //IF CONDITION BASIS IS A NUMBER
     else if( isNaN(conditionBasisValue) === false ){
         return getFloatValueOfMoney(conditionBasisValue)
