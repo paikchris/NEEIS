@@ -881,7 +881,7 @@ function getActualBasisValue(logicConditionRow){
 
         //FIND THE LIMIT INPUT TO FIND THE VALUE
         var actualValue = undefined
-        $('.limitValue').each(function(){
+        $('input.limitValue').each(function(){
             var thisLimitInputRateID = $(this).attr('data-rateid').trim()
             var thisLimitDescription = $(this).attr('data-limitdescription').trim()
             var thisLimitCovID = $(this).closest('.coverageLimDeductContainer').attr('data-covid').trim()
