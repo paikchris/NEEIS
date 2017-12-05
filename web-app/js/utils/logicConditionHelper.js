@@ -784,7 +784,15 @@ function evaluateLogicConditionRow(logicConditionRow){
         return outputID
     }
     else if(rowLogicCondition === "ELSE"){
-        return outputID
+        var subLogicArray = jsonStringToObject(logicConditionRow.subLogic)
+
+        //IF SUBLOGIC ROWS EXIST
+        if(subLogicArray !== null && subLogicArray !== undefined && subLogicArray.length > 0){
+            return evaluateLogicConditionArray(subLogicArray)
+        }
+        else{
+            return outputID
+        }
     }
     else if(rowLogicCondition === "NONE"){
     }
