@@ -343,21 +343,21 @@
                         %{--ALL REQUIRED QUESTIONS SECTION--}%
                         <div class="col-xs-8 rightColumn">
                             <div class="row">
-                                <div class="col-xs-4 proposedEffectiveDate" style="">
+                                <div class="col-xs-4 proposedEffectiveDate" data-questionid="proposedEffectiveDate" style="">
                                     <div class="form-group requiredQuestion " style="">
                                         <label class="questionText">Proposed Effective</label>
                                         <input class="form-control defaultQuestion questionAnswer datepicker" type="text" data-reviewname="Proposed Effective Date"
                                                style="" data-questionid="proposedEffectiveDate" id="proposedEffectiveDate" placeholder="MM/DD/YYYY" required>
                                     </div>
                                 </div>
-                                <div class="col-xs-4 proposedExpirationDate requiredQuestion" >
+                                <div class="col-xs-4 proposedExpirationDate requiredQuestion" data-questionid="proposedExpirationDate">
                                     <div class="form-group " style="">
                                         <label class="questionText">Proposed Expiration</label>
                                         <input class="form-control defaultQuestion questionAnswer datepicker" type="text" data-reviewname="Proposed Expiration Date"
                                                style="" data-questionid="proposedExpirationDate" id="proposedExpirationDate" placeholder="MM/DD/YYYY" required>
                                     </div>
                                 </div>
-                                <div class="col-xs-4 proposedTermLength requiredQuestion" >
+                                <div class="col-xs-4 proposedTermLength requiredQuestion" data-questionid="proposedTermLength">
                                     <div class="form-group " style="">
                                         <label class="questionText">Term Length</label>
                                         <input class="form-control questionAnswer showReview " type="text" data-reviewname="Proposed Term Length"

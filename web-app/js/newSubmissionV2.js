@@ -1552,8 +1552,6 @@ function updateRequiredQuestions(){
         }
     })
 
-    //REMOVE ALL QUESTIONS
-    clearRequiredQuestions()
 
     //GET COVERAGES CHECKED
     var allCoveragesPackagesArray = getCoveragesAndPackagesSelectedArray()
@@ -1565,9 +1563,12 @@ function updateRequiredQuestions(){
 
         //CHECK FOR ANY MISSING QUESTIONS FOR PRODUCT CONDITION, PRODUCT REQUIRED QUESTIONS AND RATING REQUIRED QUESTIONS
         var coverageProductMap = jsonStringToObject(operationObject.coverageProductMap)
-        var additionalRequiredQuestionsMap = jsonStringToObject(getRequiredQuestionsForProductLogicConditions(coverageProductMap))
+        // var additionalRequiredQuestionsMap = jsonStringToObject(getRequiredQuestionsForProductLogicConditions(coverageProductMap))
+        var additionalRequiredQuestionsMap = jsonStringToObject(getRequiredQuestionsForCoveragesSelected(coverageProductMap))
         var productRequiredQuestionsArray = []
 
+        //REMOVE ALL QUESTIONS
+        clearRequiredQuestions()
 
         //COMBINE ALL REQUIRED QUESTIONS
         var requiredQuestionsForCoveragesCheckedArray = []

@@ -850,11 +850,17 @@
                                             </div>
                                         </div>
                                         <div class="row" id="productPage_limitsHeaderRow">
-                                            <div class="col-xs-3">
+                                            <div class="col-xs-2">
                                                 <h6>Limit</h6>
                                             </div>
-                                            <div class="col-xs-7">
+                                            <div class="col-xs-5">
                                                 <h6>Description</h6>
+                                            </div>
+                                            <div class="col-xs-1">
+                                                <h6>Flex</h6>
+                                            </div>
+                                            <div class="col-xs-2">
+                                                <h6>Max Limit</h6>
                                             </div>
                                         </div>
                                         <div id="productPage_limitsContainer">

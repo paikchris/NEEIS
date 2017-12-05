@@ -387,7 +387,7 @@ function calculateProposedTermLength(){
         $('#proposedTermLength').val(days + " Day")
         pulseInputChange($('#proposedTermLength'))
     }
-    else if (days > 1 && days < 365) {
+    else if (days > 1 && days <= 365) {
         $('#proposedTermLength').val(days + " Days")
         pulseInputChange($('#proposedTermLength'))
     }

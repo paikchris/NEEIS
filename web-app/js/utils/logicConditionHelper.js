@@ -806,7 +806,7 @@ function evaluateLogicConditionRow(logicConditionRow){
 
         if(actualBasisValue !== undefined && actualBasisValue !== null ){
             //IF THIS LOGIC CONDITION IS TRUE
-            if( evaluateCondition(conditionOperator, conditionBasisValue, actualBasisValue) ){
+            if( evaluateCondition(conditionBasis, conditionOperator, conditionBasisValue, actualBasisValue) ){
                 //CHECK FOR SUB LOGIC CONDITIONS
 
                 var subLogicArray = jsonStringToObject(logicConditionRow.subLogic)
@@ -850,7 +850,7 @@ function evaluateLogicConditionRow(logicConditionRow){
 
     return false
 }
-function evaluateCondition(conditionOperator, conditionBasisValue, actualBasisValue){
+function evaluateCondition(conditionBasis, conditionOperator, conditionBasisValue, actualBasisValue){
     //WHAT IS THE OPERATOR (<,>,<=,>=, etc), AND IS CONDITION TRUE
     if(conditionOperator === 'LESSTHAN'){
         if(actualBasisValue < conditionBasisValue){
@@ -974,50 +974,124 @@ function formatBasisValue(conditionBasisValue){
         return conditionBasisValue
     }
 }
-function getRequiredQuestionsForProductLogicConditions(coverageProductMap){
+function getRequiredQuestionsForCoveragesSelected(coverageProductMap){
+    //RETURN THE QUESTIONS NECESSARY TO EVALUATE CONDITION ARRAY
+
     var coverageProductMapKeys = Object.keys(coverageProductMap)
     var requiredQuestionsMap = {}
 
+
+    //LOOP THROUGH COVERAGES SELECTED
     for(var i=0; i<coverageProductMapKeys.length; i++){
         var covID = coverageProductMapKeys[i]
         var logicConditionRows = coverageProductMap[covID]
         var requiredQuestionsArray = []
 
-        for(var j=0; j<logicConditionRows.length; j++){
-            var logicConditionRow = logicConditionRows[j]
-            var logicCondition = logicConditionRow.logicCondition
-
-            if(logicCondition !== 'ALWAYS'){
-                var conditionBasisID = logicConditionRow.conditionBasis
-                var requiredQuestion = getConditionBasisObject(conditionBasisID).questionID
-
-                requiredQuestionsArray.push(requiredQuestion)
-
-                //CHECK FOR SUBLOGIC REQUIRED QUESTIONS
-                if(logicConditionRow.subLogic){
-                    var subLogicArray = logicConditionRow.subLogic
-
-                    for(var k=0;k<subLogicArray.length;k++){
-                        var subLogicRow = subLogicArray[k]
-                        var subLogicCondition = subLogicRow.logicCondition
-
-                        if(subLogicCondition !== 'ALWAYS'){
-                            var subLogicConditionBasisID = subLogicRow.conditionBasis
-                            var subLogicRequiredQuestion = getConditionBasisObject(subLogicConditionBasisID).questionID
-
-                            requiredQuestionsArray.push(subLogicRequiredQuestion)
-                        }
-                    }
-                }
-
-            }
-
-        }
+        requiredQuestionsArray = getRequiredQuestionsForLogicConditionArray(logicConditionRows)
 
         requiredQuestionsMap[covID] = requiredQuestionsArray
     }
 
     return requiredQuestionsMap
+}
+function getRequiredQuestionsForLogicConditionArray(logicConditionRows){
+    var logicQuestionsArray = []
+
+    for(var j=0; j<logicConditionRows.length; j++){
+        var logicConditionRow = logicConditionRows[j]
+        var logicCondition = logicConditionRow.logicCondition
+        var conditionOperator = logicConditionRow.conditionOperator
+        var conditionBasisValue = logicConditionRow.conditionBasisValue
+        var actualBasisValue = getActualBasisValue(logicConditionRow)
+        var conditionBasisID = logicConditionRow.conditionBasis
+        var requiredQuestion = getConditionBasisObject(conditionBasisID).questionID
+
+        logicQuestionsArray.push(requiredQuestion)
+
+        if(logicCondition === "IF" || logicCondition === "IFELSE"){
+            //IF CONDITION IS TRUE, CHECK SUBLOGIC FOR MORE QUESTIONS
+            //IF CONDITION IS NOT YET ANSWERED BREAK,
+            //IF CONDITION IS FALSE, GOTO NEXT LOGIC ROW
+
+            if( evaluateCondition(conditionBasis, conditionOperator, conditionBasisValue, actualBasisValue) ){
+                //CHECK FOR SUBLOGIC REQUIRED QUESTIONS
+                if(logicConditionRow.subLogic && logicConditionRow.subLogic.length > 0){
+                    var subLogicArray = logicConditionRow.subLogic
+
+                    var subLogicQuestionIDs = getRequiredQuestionsForLogicConditionArray(subLogicArray)
+                    logicQuestionsArray = logicQuestionsArray.concat(subLogicQuestionIDs)
+                }
+                break
+            }
+            else if($("div[data-questionid='" + requiredQuestion + "'").length === 0){
+                break
+            }
+            else{
+                continue
+            }
+        }
+        else if(logicCondition === "ALWAYS" || logicCondition === "ELSE"){
+            //CHECK FOR SUBLOGIC REQUIRED QUESTIONS
+            if(logicConditionRow.subLogic && logicConditionRow.subLogic.length > 0){
+                var subLogicArray = logicConditionRow.subLogic
+
+                var subLogicQuestionIDs = getRequiredQuestionsForLogicConditionArray(subLogicArray)
+                logicQuestionsArray = logicQuestionsArray.concat(subLogicQuestionIDs)
+            }
+        }
+
+
+
+        logicQuestionsArray.push(requiredQuestion)
+
+
+
+    }
+
+    return logicQuestionsArray
+}
+function getRequiredQuestionsForLogicConditionArrayBACKUP(logicConditionRows){
+    var logicQuestionsArray = []
+
+    for(var j=0; j<logicConditionRows.length; j++){
+        var logicConditionRow = logicConditionRows[j]
+        var logicCondition = logicConditionRow.logicCondition
+
+        if(logicCondition === 'IF' || logicCondition === 'IFELSE'){
+            var conditionBasisID = logicConditionRow.conditionBasis
+            var requiredQuestion = getConditionBasisObject(conditionBasisID).questionID
+
+            logicQuestionsArray.push(requiredQuestion)
+
+            //IF THIS CONDITION IS MET AND QUESTION IS ANSWERED, GET NEXT QUESTION IN SUBLOGIC IF THERE IS ONE
+            if(evaluateCondition(conditionBasis, logicConditionRow.conditionOperator, logicConditionRow.conditionBasisValue, getActualBasisValue(logicConditionRow))){
+
+                //CHECK FOR SUBLOGIC REQUIRED QUESTIONS
+                if(logicConditionRow.subLogic && logicConditionRow.subLogic.length > 0){
+                    var subLogicArray = logicConditionRow.subLogic
+
+                    var subLogicQuestionIDs = getRequiredQuestionsForLogicConditionArray(subLogicArray)
+                    logicQuestionsArray = logicQuestionsArray.concat(subLogicQuestionIDs)
+                }
+                break;
+            }
+            else{
+                return logicQuestionsArray
+            }
+        }
+        else{
+            //CHECK FOR SUBLOGIC REQUIRED QUESTIONS
+            if(logicConditionRow.subLogic && logicConditionRow.subLogic.length > 0){
+                var subLogicArray = logicConditionRow.subLogic
+
+                var subLogicQuestionIDs = getRequiredQuestionsForLogicConditionArray(subLogicArray)
+                logicQuestionsArray = logicQuestionsArray.concat(subLogicQuestionIDs)
+            }
+        }
+
+    }
+
+    return logicQuestionsArray
 }
 function getConditionBasisInputFromConditionBasisID(conditionBasisID){
     for(var i=0;i<productConditions.length;i++){
