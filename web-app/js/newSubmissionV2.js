@@ -2371,6 +2371,19 @@ function getLimitRowsHTML(limitArray, productID, covID){
                 "           value='" + limitValue + "'>" +
                 "   </div>"
         }
+        else if(limitValue.substring(0,2) === "{="){
+            //GET VALUE FROM QUESTION ID
+            var qID = limitValue.slice(2)
+            qID = qID.slice(0, -1)
+
+            var qAnswer = getAnswerForQuestionID(qID)
+
+            limitRowsHTML = limitRowsHTML +
+                "   <div class='col-xs-4'>" +
+                "       <span class='limitValue " + productIDClassString + "_LimitRow_LimitValue' " +
+                "           data-limitdescription='" + escapeDataAttributeValue(limitDescription) + "'>" + qAnswer + "</span>" +
+                "   </div>"
+        }
         else{
             limitRowsHTML = limitRowsHTML +
                 "   <div class='col-xs-4'>" +
