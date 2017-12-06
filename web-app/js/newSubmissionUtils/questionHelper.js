@@ -845,7 +845,7 @@ function getQuestionGroupContainer(questionGroupID){
     return questionGroupHTML
 }
 function getAnswerForQuestionID(questionID){
-    var questionContainer = $("div[data-questionid='" + questionID + "'")
+    var questionContainer = $("div[data-questionid='" + questionID + "']")
     var questionAnswer = ""
 
     $(questionContainer).find('input').each(function(){
