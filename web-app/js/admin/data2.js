@@ -2336,14 +2336,24 @@ function removeCoverageStringFromLimDeduct(limitDescription){
 }
 function getNewLimitRowHTML(limitAmount, limitDescription){
     var limitRowHTML = "<div class='row productPage_limitRow limDeductRow'> " +
-        "   <div class='col-xs-3'> " +
+        "   <div class='col-xs-2'> " +
         "       <div class='form-group'> " +
         "           <input class='form-control input-xs limitAmount onChangeSaveProduct' type='text' value='" + limitAmount + "' />" +
         "       </div> " +
         "   </div> " +
-        "   <div class='col-xs-7'>" +
+        "   <div class='col-xs-5'>" +
         "       <input class='form-control input-xs limitDescription onChangeSaveProduct' type='text' value='" + limitDescription + "' />" +
         "   </div>" +
+        "   <div class='col-xs-1'> " +
+        "       <label class='checkBoxLabel'>" +
+        "           <input type='checkbox' class='allowUserLimitChangeCheckbox onChangeSaveProduct' data-limitdescription='" + limitDescription + "'>" +
+        "       </label>" +
+        "   </div> " +
+        "   <div class='col-xs-2'> " +
+        "       <div class='form-group'> " +
+        "           <input class='form-control input-xs maxLimitAmount onChangeSaveProduct maskMoney' type='text' />" +
+        "       </div> " +
+        "   </div> " +
         "   <div class='col-xs-2'>" +
         "       <button type='button' class='btn btn-xs btn-success productPage_addLimitRowButton' style='font-size:9px'> " +
         "           <i class='fa fa-plus' aria-hidden='true'></i>" +
@@ -2400,9 +2410,17 @@ function buildLimitArray(){
     $(container).find('.productPage_limitRow').each(function(){
         var limitAmount = $(this).find('.limitAmount').val()
         var limitDescription = $(this).find('.limitDescription').val()
+        var limitFlexFlag = $(this).find('.limitFlexFlagCheckbox').is(':checked')
+        var maxLimit
+        if(limitFlexFlag){
+            maxLimit = $(this).find('.maxLimitAmount')
+        }
+
         var tempLimitObject = {
             limitAmount: limitAmount,
-            limitDescription: limitDescription
+            limitDescription: limitDescription,
+            limitFlexFlag: limitFlexFlag,
+            maxLimit: maxLimit
         }
 
         limitArray.push(tempLimitObject)

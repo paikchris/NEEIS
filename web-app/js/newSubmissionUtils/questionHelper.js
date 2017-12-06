@@ -784,7 +784,6 @@ function getNewSubmissionUWQuestion(qID, options){
         return stringHTML
     }
 }
-
 function getNewSubmissionHiddenUWQuestion(qID, options){
     if(getQuestionObjectByID(qID)) {
         //DEFAULT VALUES
@@ -844,6 +843,39 @@ function getQuestionGroupContainer(questionGroupID){
         "</div>"
 
     return questionGroupHTML
+}
+function getAnswerForQuestionID(questionID){
+    var questionContainer = $("div[data-questionid='" + questionID + "'")
+    var questionAnswer = ""
+
+    $(questionContainer).find('input').each(function(){
+        if($(this).attr('type') === 'radio'){
+            if($(this).is(':checked')){
+                questionAnswer = $(this).val()
+            }
+            else{
+
+            }
+        }
+        else if($(this).attr('type') === 'checkbox'){
+            if($(this).is(':checked')){
+                questionAnswer = questionAnswer + $(this).val() + ", "
+            }
+            else{
+
+            }
+        }
+        else{
+            questionAnswer = $(this).val()
+        }
+    })
+
+
+    if(questionAnswer.trim().length === 0){
+        questionAnswer = undefined
+    }
+
+    return questionAnswer
 }
 
 //OTHER STUFF
