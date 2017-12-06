@@ -828,7 +828,7 @@ function evaluateLogicConditionRow(logicConditionRow){
                         }
 
                         if( evaluateLogicConditionRow(subLogicConditionRowMap) ){
-                            return subLogicOutputID
+                            return evaluateLogicConditionRow(subLogicConditionRowMap)
                         }
                         else{
                             continue
@@ -851,6 +851,18 @@ function evaluateLogicConditionRow(logicConditionRow){
     return false
 }
 function evaluateCondition(conditionBasis, conditionOperator, conditionBasisValue, actualBasisValue){
+    //CONVERT VALUES TO RIGHT FORMAT
+    var conditionBasisObject = getConditionBasisObject(conditionBasis)
+    var format = conditionBasisObject.format
+    if(format === "number" ){
+        conditionBasisValue = parseFloat(conditionBasisValue)
+        actualBasisValue = parseFloat(actualBasisValue)
+    }
+    else if(format === "text"){
+        conditionBasisValue = conditionBasisValue + ""
+        actualBasisValue = actualBasisValue + ""
+    }
+
     //WHAT IS THE OPERATOR (<,>,<=,>=, etc), AND IS CONDITION TRUE
     if(conditionOperator === 'LESSTHAN'){
         if(actualBasisValue < conditionBasisValue){
@@ -979,17 +991,22 @@ function getRequiredQuestionsForCoveragesSelected(coverageProductMap){
 
     var coverageProductMapKeys = Object.keys(coverageProductMap)
     var requiredQuestionsMap = {}
-
+    var covPackagesSelected = getCoveragesAndPackagesSelectedArray()
 
     //LOOP THROUGH COVERAGES SELECTED
     for(var i=0; i<coverageProductMapKeys.length; i++){
         var covID = coverageProductMapKeys[i]
-        var logicConditionRows = coverageProductMap[covID]
-        var requiredQuestionsArray = []
 
-        requiredQuestionsArray = getRequiredQuestionsForLogicConditionArray(logicConditionRows)
+        //IF THIS COVERAGE OR PACKAGE IS SELECTED
+        if(covPackagesSelected.indexOf(covID) > -1){
+            var logicConditionRows = coverageProductMap[covID]
+            var requiredQuestionsArray = []
 
-        requiredQuestionsMap[covID] = requiredQuestionsArray
+            requiredQuestionsArray = getRequiredQuestionsForLogicConditionArray(logicConditionRows)
+
+            requiredQuestionsMap[covID] = requiredQuestionsArray
+        }
+
     }
 
     return requiredQuestionsMap
@@ -1001,17 +1018,19 @@ function getRequiredQuestionsForLogicConditionArray(logicConditionRows){
         var logicConditionRow = logicConditionRows[j]
         var logicCondition = logicConditionRow.logicCondition
         var conditionOperator = logicConditionRow.conditionOperator
+        var conditionBasis = logicConditionRow.conditionBasis
         var conditionBasisValue = logicConditionRow.conditionBasisValue
         var actualBasisValue = getActualBasisValue(logicConditionRow)
         var conditionBasisID = logicConditionRow.conditionBasis
         var requiredQuestion = getConditionBasisObject(conditionBasisID).questionID
 
-        logicQuestionsArray.push(requiredQuestion)
+
 
         if(logicCondition === "IF" || logicCondition === "IFELSE"){
             //IF CONDITION IS TRUE, CHECK SUBLOGIC FOR MORE QUESTIONS
             //IF CONDITION IS NOT YET ANSWERED BREAK,
             //IF CONDITION IS FALSE, GOTO NEXT LOGIC ROW
+            logicQuestionsArray.push(requiredQuestion)
 
             if( evaluateCondition(conditionBasis, conditionOperator, conditionBasisValue, actualBasisValue) ){
                 //CHECK FOR SUBLOGIC REQUIRED QUESTIONS
@@ -1023,7 +1042,8 @@ function getRequiredQuestionsForLogicConditionArray(logicConditionRows){
                 }
                 break
             }
-            else if($("div[data-questionid='" + requiredQuestion + "'").length === 0){
+            // else if($("div[data-questionid='" + requiredQuestion + "'").length === 0){
+            else if(getAnswerForQuestionID(requiredQuestion) === undefined || getAnswerForQuestionID(requiredQuestion).trim().length === 0){
                 break
             }
             else{

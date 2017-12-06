@@ -166,7 +166,7 @@ function clickChangeListenerInit(){
 
 
     //LISTEN TO REQUIRED QUESTIONS CHANGES
-    $(document).on('change', 'div.requiredQuestion input', function () {
+    $(document).on('change', 'div.requiredQuestion input, div.requiredQuestion select', function () {
         //THIS CHANGED INPUT MAY HAVE CHANGED PRODUCTS, UPDATE AND RECHECK ALL QUESTIONS
         updateRequiredQuestions()
         updateAdditionalOptions()
@@ -1539,7 +1539,7 @@ function updateRequiredQuestions(){
 
     //SAVE ANSWERS TO REFILL LATER FOR SAME QUESTIONS
     var questionAnswers = {}
-    $('.requiredQuestion input').each(function(){
+    $('div.requiredQuestion input, div.requiredQuestion select').each(function(){
         var elementID = $(this).attr('id')
         var value = $(this).val()
 
@@ -1549,6 +1549,15 @@ function updateRequiredQuestions(){
         }
         else{
             questionAnswers[elementID] = value
+        }
+    })
+
+    //REMEMBER QUESTION ORDER
+    var questionOrder = []
+    $('div.requiredQuestion').each(function(){
+        var qID = $(this).attr('data-questionid')
+        if(qID && qID.trim().length > 0){
+            questionOrder.push(qID)
         }
     })
 
@@ -1563,6 +1572,7 @@ function updateRequiredQuestions(){
 
         //CHECK FOR ANY MISSING QUESTIONS FOR PRODUCT CONDITION, PRODUCT REQUIRED QUESTIONS AND RATING REQUIRED QUESTIONS
         var coverageProductMap = jsonStringToObject(operationObject.coverageProductMap)
+
         // var additionalRequiredQuestionsMap = jsonStringToObject(getRequiredQuestionsForProductLogicConditions(coverageProductMap))
         var additionalRequiredQuestionsMap = jsonStringToObject(getRequiredQuestionsForCoveragesSelected(coverageProductMap))
         var productRequiredQuestionsArray = []
@@ -1603,10 +1613,25 @@ function updateRequiredQuestions(){
             }
         }
 
-        //SORT QUESTIONS BY WEIGHT
-        var requiredQuestionsForCoveragesCheckedArray_Sorted = []
-        requiredQuestionsForCoveragesCheckedArray_Sorted = requiredQuestionsForCoveragesCheckedArray_Filtered.sort(sortByWeightAscending)
 
+        var requiredQuestionsForCoveragesCheckedArray_Sorted = []
+
+        //SORT QUESTIONS BY WEIGHT
+        // requiredQuestionsForCoveragesCheckedArray_Sorted = requiredQuestionsForCoveragesCheckedArray_Filtered.sort(sortByWeightAscending)
+
+        //SORT QUESTIONS BY ORDER ADDED
+        for(var i=0;i<questionOrder.length;i++){
+            var qID = questionOrder[i]
+
+            //IF QUESTION ID EXISTED BEFORE
+            if(requiredQuestionsForCoveragesCheckedArray_Filtered.indexOf(qID) > -1){
+                requiredQuestionsForCoveragesCheckedArray_Sorted.push(qID)
+
+                var index = requiredQuestionsForCoveragesCheckedArray_Filtered.indexOf(qID)
+                requiredQuestionsForCoveragesCheckedArray_Filtered.splice(index,1)
+            }
+        }
+        requiredQuestionsForCoveragesCheckedArray_Sorted = requiredQuestionsForCoveragesCheckedArray_Sorted.concat(requiredQuestionsForCoveragesCheckedArray_Filtered)
 
         //BUILD HTML FOR REQUIRED QUESTIONS
         var finalHTML = ""

@@ -133,7 +133,7 @@ class MainController {
         String products = utilService.gormResultsToJSObject(productResults)
 
         //PRODUCT CONDITIONS
-        List <Conditions> productConditionResults = Conditions.findAllWhere(type: 'basis')
+        List <Conditions> productConditionResults = Conditions.findAllByTypeInList(['basis', 'limitBasis'])
         String productConditions = utilService.gormResultsToJSObject(productConditionResults)
 
         //OPERATIONS
