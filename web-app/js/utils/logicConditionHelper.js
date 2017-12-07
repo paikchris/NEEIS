@@ -633,8 +633,8 @@ function checkFormatOfAllRows(thisRow){
         "<option class='ifOption' value='IF'>IF</option> "
     var secondLogicOptionHTML =
         "<option class='ifOption' value='IF'>IF</option> " +
-        "<option class='ifElseOption' value='IFELSE' style='display:none'>IF ELSE</option> " +
-        "<option class='elseOption' value='ELSE' style='display:none'>ELSE</option>"
+        "<option class='ifElseOption' value='IFELSE' style='display:'>IF ELSE</option> " +
+        "<option class='elseOption' value='ELSE' style='display:'>ELSE</option>"
 
     $(logicContainer).parent().find('.rowContainer').each(function(index){
         var thisRowContainer = $(this)
@@ -1062,7 +1062,6 @@ function getRequiredQuestionsForLogicConditionArray(logicConditionRows){
 
 
 
-        logicQuestionsArray.push(requiredQuestion)
 
 
 
@@ -1120,3 +1119,4 @@ function getConditionBasisInputFromConditionBasisID(conditionBasisID){
         }
     }
 }
+

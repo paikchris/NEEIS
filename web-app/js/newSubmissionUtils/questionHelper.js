@@ -733,6 +733,67 @@ function getNewSubmissionRequiredQuestion(qID){
         return stringHTML
     }
 }
+function getNewSubmissionRequiredRateQuestion(qID){
+    var questionObject = getQuestionObjectByID(qID)
+
+    if(questionObject) {
+        var gridsize = "4"
+        var options = {
+            gridColumns: gridsize,
+            containerClass: "requiredQuestion rateQuestion " + qID + "",
+            containerDataAttr: "data-questionid='" + qID + "' " +
+            "data-weight='" + questionObject.weight + "' " +
+            "data-inputtype='" + questionObject.inputType  + "'" +
+            "data-gridsize='" + gridsize  + "'",
+            closeButton: false,
+            required: true,
+            questionText: questionObject.questionText + " (R)"
+        }
+
+        var stringHTML = getQuestionHTML(qID, options)
+
+        if(options.required === true){
+            var tempElement = $(stringHTML)
+            $(tempElement).find('input').attr('required', 'true')
+
+            stringHTML = $(tempElement)[0].outerHTML
+
+        }
+
+        return stringHTML
+    }
+}
+function getNewSubmissionRequiredPackageRateQuestion(qID){
+    var questionObject = getQuestionObjectByID(qID)
+
+    if(questionObject) {
+        var gridsize = "4"
+        var options = {
+            gridColumns: gridsize,
+            containerClass: "requiredQuestion packageRateQuestion " + qID + "",
+            containerDataAttr: "data-questionid='" + qID + "' " +
+            "data-weight='" + questionObject.weight + "' " +
+            "data-inputtype='" + questionObject.inputType  + "'" +
+            "data-gridsize='" + gridsize  + "'",
+            closeButton: false,
+            required: true,
+            questionText: questionObject.questionText + " (PR)"
+        }
+
+        var stringHTML = getQuestionHTML(qID, options)
+
+        if(options.required === true){
+            var tempElement = $(stringHTML)
+            $(tempElement).find('input').attr('required', 'true')
+
+            stringHTML = $(tempElement)[0].outerHTML
+
+        }
+
+        return stringHTML
+    }
+}
+
 function getNewSubmissionUWQuestion(qID, options){
     var questionObject = getQuestionObjectByID(qID)
 

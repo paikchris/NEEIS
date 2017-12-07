@@ -1493,47 +1493,39 @@ function additionalOptionChange(){
 
 }
 
+//STEP 2 QUESTION FUNCTIONS
+function getCoverageQuestionSectionHTML(covID){
+    var htmlString = "" +
+        "<div class='row col-xs-12 questionsForCoverageSection " + covID + "_questionsForCoverageSection' " +
+        "   data-covid='" + covID + "'" +
+        "   style='display:none'" +
+        "   >" +
+        "   <div class='row col-xs-12 " + covID + "_productLogicQuestions' " +
+        "       data-covid='" + covID + "'" +
+        "   >" +
+        "   <div class='col-xs-12 header'>" +
+        "       <span>" + covID + "</span>" +
+        "   </div>" +
+        "   </div>" +
+        "   <div class='row col-xs-12 " + covID + "_ratingLogicQuestions' " +
+        "       data-covid='" + covID + "'" +
+        "       style='display:none'" +
+        "   >" +
+        "   <div class='col-xs-12 header'>" +
+        "       <span>" + covID + " Rating </span>" +
+        "   </div>" +
+        "   </div>" +
+        "</div>"
+
+    return htmlString
+}
+
 //PRODUCT CONDITION AND RATING BASIS REQUIRED QUESTIONS SECTION
 function clearRequiredQuestions(){
     $('#ratingBasisRequiredQuestionsContainer').empty()
+    $('#productConditionBasisRequiredQuestionsContainer').empty()
 }
-function updateRatingRequiredQuestion(){
-    var covSelectedArray = getCoveragesSelectedArray()
-    for(var i=0;i<covSelectedArray.length; i++){
-        var covID = covSelectedArray[i]
-        var productID = getProductIDForCoverage(covID)
 
-        if( getProductIDForCoverage(covID) ){
-
-            //GET RATING BASIS REQUIRED QUESTIONS
-            if(getProductObjectFromProductID(productID) !== undefined){
-                var productObject = getProductObjectFromProductID(productID)
-
-                if(productObject.rateCode !== undefined && productObject.rateCode !== null){
-                    var rateID = productObject.rateCode
-                    var rateObject = getRateObjectByID(rateID)
-                    var ratingBasisID = rateObject.rateBasis
-                    var ratingBasisObject = getRatingBasisObjectByID(ratingBasisID)
-                    var ratingBasisQuestionID = ratingBasisObject.basisQuestionID
-
-                    //IF RATING BASIS QUESTION ID EXISTS
-                    if(ratingBasisQuestionID !== undefined && ratingBasisQuestionID !== null && ratingBasisQuestionID.trim().length !== 0){
-                        //CHECK TO MAKE SURE NOT TO INSERT A DUPLICATE QUESTION
-                        if($('#' + ratingBasisQuestionID).length === 0){
-                            var questionHTML = ""
-                            // questionHTML = "<div class='row'>"
-                            questionHTML = questionHTML + getNewSubmissionRequiredQuestion(questionID)
-                            // questionHTML = questionHTML + "</div>"
-                            $('#ratingBasisRequiredQuestionsContainer').append(questionHTML)
-                        }
-                    }
-                }
-
-            }
-        }
-    }
-
-}
 function updateRequiredQuestions(){
     var operationsObject = getCurrentOperationTypeObject()
 
@@ -1582,6 +1574,7 @@ function updateRequiredQuestions(){
 
         //COMBINE ALL REQUIRED QUESTIONS
         var requiredQuestionsForCoveragesCheckedArray = []
+        var questionToCovIDMap = {}
         for(var i=0;i<allCoveragesPackagesArray.length; i++){
             var thisCovID = allCoveragesPackagesArray[i]
             var thisCovRequiredQuestionsArray = jsonStringToObject( operationProductConditionRequirdQuestionsMap[thisCovID].requiredQuestions )
@@ -1594,6 +1587,7 @@ function updateRequiredQuestions(){
                 //IF THIS QUESTION DOESN'T ALREADY EXIST, ADD IT
                 if(requiredQuestionsForCoveragesCheckedArray.indexOf(thisCovRequiredQuestionsArray[j])){
                     requiredQuestionsForCoveragesCheckedArray.push(thisCovRequiredQuestionsArray[j])
+                    questionToCovIDMap[thisCovRequiredQuestionsArray[j]] = thisCovID
                 }
             }
         }
@@ -1633,16 +1627,27 @@ function updateRequiredQuestions(){
         }
         requiredQuestionsForCoveragesCheckedArray_Sorted = requiredQuestionsForCoveragesCheckedArray_Sorted.concat(requiredQuestionsForCoveragesCheckedArray_Filtered)
 
+        //BUILD CONTAINERS FOR COVERAGES AND QUESTIONS (PRODUCT CONDITION CONTAINER)
+        for(var i=0;i<allCoveragesPackagesArray.length;i++){
+            var cID = allCoveragesPackagesArray[i]
+            $('#productConditionBasisRequiredQuestionsContainer').append(getCoverageQuestionSectionHTML(cID))
+        }
+
         //BUILD HTML FOR REQUIRED QUESTIONS
         var finalHTML = ""
         // finalHTML = finalHTML + "<div class='row'>"
         for(var i=0;i<requiredQuestionsForCoveragesCheckedArray_Sorted.length;i++){
-            finalHTML = finalHTML + getNewSubmissionRequiredQuestion(requiredQuestionsForCoveragesCheckedArray_Sorted[i])
+            var qID = requiredQuestionsForCoveragesCheckedArray_Sorted[i]
+            var covID = questionToCovIDMap[qID]
+            // finalHTML = finalHTML + getNewSubmissionRequiredQuestion(qID)
+
+            $('#productConditionBasisRequiredQuestionsContainer .' + covID + '_productLogicQuestions').append(getNewSubmissionRequiredQuestion(qID))
+            $('#productConditionBasisRequiredQuestionsContainer .' + covID + '_questionsForCoverageSection').css('display', '')
         }
         // finalHTML = finalHTML + "</div>"
 
         //INSERT INTO REQUIRED QUESTIONS CONTAINER
-        $('#ratingBasisRequiredQuestionsContainer').html(finalHTML)
+        // $('#productConditionBasisRequiredQuestionsContainer').html(finalHTML)
 
 
 
@@ -1667,9 +1672,6 @@ function updateRequiredQuestions(){
         }
         initializeGlobalListeners()
 
-        //LOOP THROUGH COVERAGES CHOSEN, IF PRODUCT IS DETERMINED, ADD ANY PRODUCT SPECIFIC REQUIRED QUESTIONS
-        updateWithProductRequiredQuestions()
-
         //REINSERT PREVIOUSLY FILLED OUT AGAIN FOR ADDITIONAL QUESTIONS ADDED
         var questionAnswersKeys = Object.keys(questionAnswers)
         for(var i=0;i<questionAnswersKeys.length; i++){
@@ -1693,7 +1695,7 @@ function updateRequiredQuestions(){
         var gridSizeCount = 0
         var rowHeight = 0
         var elementsInRow = []
-        $('#ratingBasisRequiredQuestionsContainer div.requiredQuestion').each(function(){
+        $('#productConditionBasisRequiredQuestionsContainer div.requiredQuestion').each(function(){
             var thisGridSize = $(this).attr('data-gridsize')
             var thisHeight = $(this).height()
 
@@ -1743,6 +1745,45 @@ function updateRequiredQuestions(){
     validate()
 
 }
+function updateRatingRequiredQuestion(){
+    var covSelectedArray = getCoveragesSelectedArray()
+    for(var i=0;i<covSelectedArray.length; i++){
+        var covID = covSelectedArray[i]
+        var productID = getProductIDForCoverage(covID)
+
+        if( getProductIDForCoverage(covID) ){
+
+            //GET RATING BASIS REQUIRED QUESTIONS
+            if(getProductObjectFromProductID(productID) !== undefined){
+                var productObject = getProductObjectFromProductID(productID)
+
+                if(productObject.rateCode !== undefined && productObject.rateCode !== null){
+                    var rateID = productObject.rateCode
+                    var rateObject = getRateObjectByID(rateID)
+                    var ratingBasisID = rateObject.rateBasis
+                    var ratingBasisObject = getRatingBasisObjectByID(ratingBasisID)
+                    var ratingBasisQuestionID = ratingBasisObject.basisQuestionID
+
+                    //IF RATING BASIS QUESTION ID EXISTS
+                    if(ratingBasisQuestionID !== undefined && ratingBasisQuestionID !== null && ratingBasisQuestionID.trim().length !== 0){
+                        //CHECK TO MAKE SURE NOT TO INSERT A DUPLICATE QUESTION
+                        if($('#' + ratingBasisQuestionID).length === 0){
+                            var questionHTML = ""
+                            // questionHTML = "<div class='row'>"
+                            questionHTML = questionHTML + getNewSubmissionRequiredRateQuestion(ratingBasisQuestionID)
+                            // questionHTML = questionHTML + "</div>"
+
+                            $('#productConditionBasisRequiredQuestionsContainer .' + covID + '_ratingLogicQuestions').append(getNewSubmissionRequiredRateQuestion(ratingBasisQuestionID))
+                            $('#productConditionBasisRequiredQuestionsContainer .' + covID + '_ratingLogicQuestions').css('display', '')
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+
+}
 function updatePackageRequiredRatingQuestions(){
     var covSelectedArray = getCoveragesSelectedArray()
     var coveragePackageMap = JSON.parse(getCurrentOperationTypeObject().coveragePackageMap)
@@ -1775,9 +1816,12 @@ function updatePackageRequiredRatingQuestions(){
                                 if($('#' + ratingBasisQuestionID).length === 0){
                                     var questionHTML = ""
                                     // questionHTML = "<div class='row'>"
-                                    questionHTML = questionHTML + getNewSubmissionRequiredQuestion(ratingBasisQuestionID)
+                                    questionHTML = questionHTML + getNewSubmissionRequiredPackageRateQuestion(ratingBasisQuestionID)
                                     // questionHTML = questionHTML + "</div>"
-                                    $('#ratingBasisRequiredQuestionsContainer').append(questionHTML)
+                                    // $('#ratingBasisRequiredQuestionsContainer').append(questionHTML)
+                                    $('#productConditionBasisRequiredQuestionsContainer .' + covID + '_ratingLogicQuestions').append(getNewSubmissionRequiredPackageRateQuestion(ratingBasisQuestionID))
+                                    $('#productConditionBasisRequiredQuestionsContainer .' + covID + '_ratingLogicQuestions').css('display', '')
+
                                 }
                             }
                         }
@@ -1788,45 +1832,6 @@ function updatePackageRequiredRatingQuestions(){
 
         }
     }
-}
-function updateWithProductRequiredQuestions(){
-    var covSelectedArray = getCoveragesSelectedArray()
-    for(var i=0;i<covSelectedArray.length; i++){
-        var covID = covSelectedArray[i]
-        var productID = getProductIDForCoverage(covID)
-
-        if( getProductIDForCoverage(covID) ){
-
-            //GET PRODUCT REQUIRED QUESTIONS AND RATING BASIS REQUIRED QUESTIONS
-            if(getProductObjectFromProductID(productID).requiredQuestions){
-                var productObject = getProductObjectFromProductID(productID)
-                var productRequiredQuestionsArray = jsonStringToObject( productObject.requiredQuestions )
-                // var rateID = productObject.rateCode
-                // var rateObject = getRateObjectByID(rateID)
-                // var ratingBasisID = rateObject.rateBasis
-                // var ratingBasisObject = getRatingBasisObjectByID(ratingBasisID)
-                // var ratingBasisQuestionID = ratingBasisObject.basisQuestionID
-                //
-                // //ADD RATING BASIS QUESTION ID TO REQUIRED QUESTIONS ARRAY
-                // productRequiredQuestionsArray.push(ratingBasisQuestionID)
-
-                //LOOP THROUGH PRODUCTS REQUIRED QUESTIONS ARRAY
-                for(var j=0; j<productRequiredQuestionsArray.length; j++){
-                    var questionID = productRequiredQuestionsArray[j]
-
-                    //CHECK TO MAKE SURE NOT TO INSERT A DUPLICATE QUESTION
-                    if($('#' + questionID).length === 0){
-                        var questionHTML = ""
-                        // questionHTML = "<div class='row'>"
-                        questionHTML = questionHTML + getNewSubmissionRequiredQuestion(questionID)
-                        // questionHTML = questionHTML + "</div>"
-                        $('#ratingBasisRequiredQuestionsContainer').append(questionHTML)
-                    }
-                }
-            }
-        }
-    }
-
 }
 function sortByWeightDescending(a, b){
     return (getQuestionObjectByID(b).weight) > (getQuestionObjectByID(a).weight) ? 1 : -1;
