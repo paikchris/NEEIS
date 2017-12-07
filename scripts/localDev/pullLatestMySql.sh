@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 ssh -t root@104.236.23.128 '/universe/AdminScripts/mysql_nightly_backup.sh'
+sleep 2
 
 sudo scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@104.236.23.128:/universe/AdminScripts/backup_mysql_nightly.sql /home/vagrant/
 chmod 755 /home/vagrant/backup_mysql_nightly.sql

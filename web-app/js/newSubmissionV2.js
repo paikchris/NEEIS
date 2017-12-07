@@ -164,6 +164,26 @@ function clickChangeListenerInit(){
         }
     });
 
+    $(document).on('change', '.additionalOption', function () {
+        if(isReadyToShowLimitAndDeducts()){
+            fillLimitDeductContainer()
+            showLimitDeductContainer()
+
+            //PREMIUM ONLY DISPLAYS IF LIMITS AND DEDUCTS SHOW CORRECTLY
+            if(isReadyToRatePremiums()){
+                calculatePremiumsAndFillContainer()
+                showPremiumRateContainer()
+            }
+            else{
+
+            }
+        }
+    });
+
+
+
+
+
 
     //LISTEN TO REQUIRED QUESTIONS CHANGES
     $(document).on('change', 'div.requiredQuestion input, div.requiredQuestion select', function () {
@@ -1142,6 +1162,7 @@ function updateAdditionalOptions(){
         var coverageRowHTML = ""
         var addOnPackageHTML = ""
         var additionalOptionsHTML = ""
+        var availableProducts = ""
 
         //PACKAGE COVERAGES CHECKBOXES
         if(operationsObject.coveragePackageMap){
@@ -1156,7 +1177,7 @@ function updateAdditionalOptions(){
                     var packageCoverageObject = getCoverageObject(packageCoverageID)
 
                     if(packageCoverageMap !== null && packageCoverageMap !== undefined){
-                        //IF THIS LOB IS A ADD ON
+                        //IF THIS LOB IS A ADD ON, (MUST HAVE A LOB CHOSEN ALREADY)
                         if(packageCoverageMap.addOnFlag === "Y"){
                             addOnPackageHTML = addOnPackageHTML + "" +
                                 "<div class='row'>" +
@@ -1166,9 +1187,6 @@ function updateAdditionalOptions(){
                                 "               data-covid='" + packageCoverageID + "' " +
                                 "               data-requiredflag='" + packageCoverageMap.requiredFlag + "' "
 
-                            if(packageCoverageMap.requiredFlag === 'Y'){
-                                coverageRowHTML = coverageRowHTML + " checked='true' disabled='disabled'"
-                            }
                             addOnPackageHTML = addOnPackageHTML +
                                 "           > " + packageCoverageObject.coverageName +
                                 "        </label>" +
@@ -1197,6 +1215,17 @@ function updateAdditionalOptions(){
                     }
                 }
 
+                //ADD COVERAGE SECTION HEADER
+                if(coverageRowHTML.trim().length > 0){
+                    coverageRowHTML = "" +
+                        "<div class='row' style=' margin-top: 0px; margin-bottom: 3px;'>" +
+                        "   <div class='col-xs-12'>" +
+                        "       <span style='margin-left: 22px; font-size: 11px; font-weight: 500;'>Coverages</span>" +
+                        "   </div>" +
+                        "</div>" +
+                        coverageRowHTML
+                }
+
                 //FORMAT LOB ADD ON SECTION
                 if(addOnPackageHTML.trim().length > 0){
                     addOnPackageHTML = "" +
@@ -1208,12 +1237,10 @@ function updateAdditionalOptions(){
                         addOnPackageHTML
                 }
 
-
-
             }
         }
 
-        //ADDITIONAL OPTION CHECKBOXES
+        //ADDITIONAL PRODUCT OPTION CHECKBOXES
         if(getProductIDForCoverage(covID) !== null && getProductIDForCoverage(covID) !== undefined){
             var productID = getProductIDForCoverage(covID)
             var productObject = getProductObjectFromProductID(productID)
@@ -1221,6 +1248,18 @@ function updateAdditionalOptions(){
             if(productObject){
                 if(productObject.additionalOptionsArray !== null && productObject.additionalOptionsArray !== undefined  ){
                     var additionalOptionsArray = JSON.parse(productObject.additionalOptionsArray)
+
+                    //ADD PRODUCT OPTIONS HEADER
+                    if(additionalOptionsArray.length > 0){
+                        additionalOptionsHTML = "" +
+                            "<div class='row' style=' margin-top: 0px; margin-bottom: 3px;'>" +
+                            "   <div class='col-xs-12'>" +
+                            "       <span style='margin-left: 22px; font-size: 11px; font-weight: 500;'>Additional Options</span>" +
+                            "   </div>" +
+                            "</div>" +
+                            additionalOptionsHTML
+                    }
+
 
                     for(var j=0;j<additionalOptionsArray.length;j++){
                         var additionalOptionID = additionalOptionsArray[j]
@@ -1251,7 +1290,8 @@ function updateAdditionalOptions(){
             }
         }
 
-        $('#' + covID + '_CoverageOptionContainer').find('.hiddenContainer').html(additionalOptionsHTML + coverageRowHTML + addOnPackageHTML)
+
+        $('#' + covID + '_CoverageOptionContainer').find('.hiddenContainer').html(coverageRowHTML + addOnPackageHTML + additionalOptionsHTML  )
 
     }
 
@@ -1492,6 +1532,22 @@ function additionalOptionChange(){
     }
 
 }
+function getAllProductsFromLogicArray(logicArray){
+    var outputIDArray = []
+    for(var i=0;i<logicArray.length;i++){
+        var thisLogicRow = logicArray[i]
+        if(thisLogicRow.subLogic.length === 0){
+            outputIDArray.push(thisLogicRow.outputID)
+        }
+        else{
+            var subLogicOutputIDArray = getAllProductsFromLogicArray(thisLogicRow.subLogic)
+            outputIDArray = outputIDArray.concat(subLogicOutputIDArray)
+        }
+    }
+
+    return outputIDArray
+}
+
 
 //STEP 2 QUESTION FUNCTIONS
 function getCoverageQuestionSectionHTML(covID){
@@ -2651,9 +2707,19 @@ function clearPremiumRateContainer(){
     $('#premiumDetailContainer').empty()
 }
 function calculatePremiumsAndFillContainer(){
+    selectProductsInCoverageOptionDropdowns()
     buildPremiumLinesForEachCoverage()
 }
+function selectProductsInCoverageOptionDropdowns(){
+    var covSelectedArray = getCoveragesSelectedArray()
 
+    for(var i=0;i<covSelectedArray.length; i++){
+        var covID = covSelectedArray[i]
+        var productDropdownElement = $('#' + covID + '_ProductAvailableDropdown')
+        $(productDropdownElement).val(getProductIDForCoverage(covID))
+
+    }
+}
 function buildPremiumLinesForEachCoverage(){
     var premiumLinesContainer = $('#premiumLinesContainer')
     var premiumLinesHTML = ""
