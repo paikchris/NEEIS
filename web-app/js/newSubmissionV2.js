@@ -1717,29 +1717,32 @@ function updateRequiredQuestions(){
         }
 
         //ADD SHOW HIDE LOGIC QUESTIONS
-        var showHideMap = jsonStringToObject( getCurrentOperationTypeObject().coverageShowMap )
-        var showHideMapKeys = Object.keys(showHideMap)
+        if(getCurrentOperationTypeObject().coverageShowMap){
+            var showHideMap = jsonStringToObject( getCurrentOperationTypeObject().coverageShowMap )
+            var showHideMapKeys = Object.keys(showHideMap)
 
-        for(var i=0;i<showHideMapKeys.length;i++){
-            var thisCovID = showHideMapKeys[i]
-            var thisCovShowHideArray = showHideMap[thisCovID].showMap
-            var coverageShowHideQuestions = getRequiredQuestionsForLogicConditionArray(thisCovShowHideArray)
+            for(var i=0;i<showHideMapKeys.length;i++){
+                var thisCovID = showHideMapKeys[i]
+                var thisCovShowHideArray = showHideMap[thisCovID].showMap
+                var coverageShowHideQuestions = getRequiredQuestionsForLogicConditionArray(thisCovShowHideArray)
 
-            requiredQuestionsForCoveragesCheckedArray = requiredQuestionsForCoveragesCheckedArray.concat(coverageShowHideQuestions)
-            //CHECK IF LOB SHOW MAP EXISTS, IF IT DOES LOOP THROUGH AND GET QUESTIONS FOR IT
-            if(showHideMap[thisCovID].lobShowMap){
-                var lobShowHideMap = showHideMap[thisCovID].lobShowMap
-                var lobShowHideMapKeys = Object.keys(lobShowHideMap)
+                requiredQuestionsForCoveragesCheckedArray = requiredQuestionsForCoveragesCheckedArray.concat(coverageShowHideQuestions)
+                //CHECK IF LOB SHOW MAP EXISTS, IF IT DOES LOOP THROUGH AND GET QUESTIONS FOR IT
+                if(showHideMap[thisCovID].lobShowMap){
+                    var lobShowHideMap = showHideMap[thisCovID].lobShowMap
+                    var lobShowHideMapKeys = Object.keys(lobShowHideMap)
 
-                for(var j=0;j<lobShowHideMapKeys.length;j++){
-                    var thisLobID = lobShowHideMapKeys[j]
-                    var thisLOBShowHideLogicArray = lobShowHideMap[thisLobID]
+                    for(var j=0;j<lobShowHideMapKeys.length;j++){
+                        var thisLobID = lobShowHideMapKeys[j]
+                        var thisLOBShowHideLogicArray = lobShowHideMap[thisLobID]
 
-                    var lobShowHideQuestions = getRequiredQuestionsForLogicConditionArray(thisLOBShowHideLogicArray)
-                    requiredQuestionsForCoveragesCheckedArray = requiredQuestionsForCoveragesCheckedArray.concat(lobShowHideQuestions)
+                        var lobShowHideQuestions = getRequiredQuestionsForLogicConditionArray(thisLOBShowHideLogicArray)
+                        requiredQuestionsForCoveragesCheckedArray = requiredQuestionsForCoveragesCheckedArray.concat(lobShowHideQuestions)
+                    }
                 }
             }
         }
+
 
 
 
