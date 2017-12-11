@@ -12,6 +12,7 @@ class Operations {
     String operationID
     String description
     String coverages
+    String coverageShowMap
     String coveragePackageMap
     String coverageProductMap
     String underwriterQuestionsMap
@@ -25,6 +26,7 @@ class Operations {
         operationID unique:true, maxSize: 3
         description nullable: true, maxSize: 55
         coverages nullable:true
+        coverageShowMap nullable:true
         coveragePackageMap nullable:true
         coverageProductMap nullable: true
         underwriterQuestionsMap nullable: true
@@ -36,6 +38,7 @@ class Operations {
     }
 
     static mapping = {
+        coverageShowMap type:'text'
         coveragePackageMap type:'text'
         coverageProductMap type: 'text'
         underwriterQuestionsMap type:'text'

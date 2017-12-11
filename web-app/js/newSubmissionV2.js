@@ -164,21 +164,6 @@ function clickChangeListenerInit(){
         }
     });
 
-    $(document).on('change', '.additionalOption', function () {
-        if(isReadyToShowLimitAndDeducts()){
-            fillLimitDeductContainer()
-            showLimitDeductContainer()
-
-            //PREMIUM ONLY DISPLAYS IF LIMITS AND DEDUCTS SHOW CORRECTLY
-            if(isReadyToRatePremiums()){
-                calculatePremiumsAndFillContainer()
-                showPremiumRateContainer()
-            }
-            else{
-
-            }
-        }
-    });
 
 
 
@@ -188,8 +173,12 @@ function clickChangeListenerInit(){
     //LISTEN TO REQUIRED QUESTIONS CHANGES
     $(document).on('change', 'div.requiredQuestion input, div.requiredQuestion select', function () {
         //THIS CHANGED INPUT MAY HAVE CHANGED PRODUCTS, UPDATE AND RECHECK ALL QUESTIONS
+
+        //CHECK IF ANY CHECKBOXES SHOULD BE HIDDEN
+
         updateRequiredQuestions()
         updateAdditionalOptions()
+        checkCoverageShowHideLogicAndShowHideCovCheckboxes()
 
         if(isReadyToShowLimitAndDeducts()){
             fillLimitDeductContainer()
@@ -772,6 +761,8 @@ function operationDropdownChange(input){
     }
     else{
         buildCoveragesAvailableSection()
+        //CHECK IF ANY CHECKBOXES SHOULD BE HIDDEN
+        checkCoverageShowHideLogicAndShowHideCovCheckboxes()
         showCoveragesAvailableSection()
         updateRequiredQuestions()
     }
@@ -811,11 +802,12 @@ function buildCoveragesAvailableSection(){
         }
 
         var coverageProductMapKeys = Object.keys(coverageProductMap)
-        var finalHTML = ""
+        var packageHTML = ""
 
         //BUILD PACKAGE CHECKBOXES FIRST
-        finalHTML = finalHTML + getPackageCheckboxesForCoveragesSectionHTML()
+        packageHTML = packageHTML + getPackageCheckboxesForCoveragesSectionHTML()
 
+        var coverageHTML = ""
         //BUILD OTHER COVERAGE CHECKBOXES
         if(coverageProductMapKeys.length > 0){
             var nonPackageCoverageCount = 0
@@ -826,27 +818,20 @@ function buildCoveragesAvailableSection(){
 
 
                 if(coverageObject.packageFlag === 'Y' && coveragePackageMap[covID]){
-
-                    // var coveragesInPackageArray = jsonStringToObject(coveragePackageMap[covID])
-                    //
-                    // //ALLOW CHECKBOX FOR PACKAGE IF NO COVERAGES ARE IN THE PACKAGE
-                    // if(coveragesInPackageArray.length === 0 ){
-                    //     finalHTML = finalHTML + getCoverageOptionContainerRowHTML(covID)
-                    // }
                 }
                 else{
                     nonPackageCoverageCount++
-                    finalHTML = finalHTML + getCoverageOptionContainerRowHTML(covID)
+                    coverageHTML = coverageHTML + getCoverageOptionContainerRowHTML(covID)
                 }
 
             }
 
             //GIVE COVERAGE SECTION HEADER IF THERE ARE COVERAGES
             if(nonPackageCoverageCount > 0){
-                finalHTML = "<label>Coverages</label>" + finalHTML
+                coverageHTML = "<label>Coverages</label>" + coverageHTML
             }
 
-            $('#coverageOptionsContainer').html(finalHTML)
+            $('#coverageOptionsContainer').html(packageHTML + coverageHTML)
         }
         else{
             clearCoveragesAvailableSection()
@@ -857,6 +842,84 @@ function buildCoveragesAvailableSection(){
     else{
         clearCoveragesAvailableSection()
         $('#coverageOptionsContainer').html("No Coverages Available")
+    }
+
+
+}
+function checkCoverageShowHideLogicAndShowHideCovCheckboxes(){
+    var operationsObject = getCurrentOperationTypeObject()
+
+    try{
+        if(operationsObject.coverageShowMap){
+            var operationShowHideMap = jsonStringToObject(operationsObject.coverageShowMap)
+            var operationShowHideMapKeys = Object.keys(operationShowHideMap)
+
+            //LOOP THROUGH OPERATION SHOW HIDE MAP
+            for(var i=0;i<operationShowHideMapKeys.length;i++){
+                var covID = operationShowHideMapKeys[i]
+                var thisCovShowHideArray = operationShowHideMap[covID].showMap
+
+                //EVALUATE SHOW HIDE ARRAY TO SEE IF SHOWN OR HIDDEN
+                var showHideValue = evaluateLogicConditionArray(thisCovShowHideArray)
+                if(showHideValue){
+                }
+                else{
+                    showHideValue = "SHOW"
+                }
+
+                //SHOW OR HIDE THE CHECKBOX
+                var coverageCheckboxElement = $('#' + covID + '_CoverageCheckbox')
+                var coverageCheckboxContainer = $('#' + covID + '_CoverageOptionContainer')
+                if(showHideValue === "SHOW"){
+                    $(coverageCheckboxContainer).closest().css('display', '')
+
+                }
+                else{
+                    $(coverageCheckboxContainer).css('display', 'none')
+                    $(coverageCheckboxElement).prop('checked', false)
+                }
+
+
+
+                //CHECK IF LOBSHOWMAP EXISTS
+                if(operationShowHideMap[covID].lobShowMap){
+                    var thisLOBShowHideMap = operationShowHideMap[covID].lobShowMap
+                    var thisLOBShowHideMapKeys = Object.keys(thisLOBShowHideMap)
+
+                    //LOOP THROUGH THE LOBS IN THE MAP
+                    for(var j=0;j<thisLOBShowHideMapKeys.length;j++){
+                        var lobID = thisLOBShowHideMapKeys[j]
+                        var thisLOBShowHideArray = thisLOBShowHideMap[lobID]
+
+
+                        //EVALUATE SHOW HIDE ARRAY TO SEE IF LOB IS SHOWN OR HIDDEN
+                        var lobShowHideValue = evaluateLogicConditionArray(thisLOBShowHideArray)
+                        if(lobShowHideValue){
+                        }
+                        else{
+                            lobShowHideValue = "SHOW"
+                        }
+
+                        //SHOW OR HDE THE LOB CHECKBOX
+                        var lobCheckboxElement = $('#' + covID + '_CoverageOptionContainer').find('.' + lobID + '_packageCoverageCheckbox')
+                        var lobCheckboxContainer = $(lobCheckboxElement).parent('label')
+                        if(lobShowHideValue === "SHOW"){
+                            $(lobCheckboxContainer).css('display', '')
+
+                        }
+                        else{
+                            $(lobCheckboxContainer).css('display', 'none')
+                            $(lobCheckboxElement).prop('checked', false)
+                        }
+                    }
+                }
+
+
+            }
+        }
+    }
+    catch(e){
+        alert("error")
     }
 }
 function getPackageCheckboxesForCoveragesSectionHTML(){
@@ -948,6 +1011,9 @@ function coverageCheckboxChangeAction(checkbox){
 
     //IF THIS COVERAGE IS ALREADY CHECKED IN A PACKAGE OR ELSEWHERE, UNCHECK TO AVOID DUPLICATES
     removeDuplicateCoveragesAndPackageLOBS(checkbox)
+
+    //IF AT LEAST TWO COVERAGES ARE CHECKED THAT ARE IN A PACKAGE, ASK IF THEY WANT TO PACKAGE
+
 
     if(isReadyToShowLimitAndDeducts()){
         fillLimitDeductContainer()
@@ -1623,6 +1689,7 @@ function updateRequiredQuestions(){
 
         // var additionalRequiredQuestionsMap = jsonStringToObject(getRequiredQuestionsForProductLogicConditions(coverageProductMap))
         var additionalRequiredQuestionsMap = jsonStringToObject(getRequiredQuestionsForCoveragesSelected(coverageProductMap))
+        var showHideQu
         var productRequiredQuestionsArray = []
 
         //REMOVE ALL QUESTIONS
@@ -1631,6 +1698,7 @@ function updateRequiredQuestions(){
         //COMBINE ALL REQUIRED QUESTIONS
         var requiredQuestionsForCoveragesCheckedArray = []
         var questionToCovIDMap = {}
+
         for(var i=0;i<allCoveragesPackagesArray.length; i++){
             var thisCovID = allCoveragesPackagesArray[i]
             var thisCovRequiredQuestionsArray = jsonStringToObject( operationProductConditionRequirdQuestionsMap[thisCovID].requiredQuestions )
@@ -1644,6 +1712,31 @@ function updateRequiredQuestions(){
                 if(requiredQuestionsForCoveragesCheckedArray.indexOf(thisCovRequiredQuestionsArray[j])){
                     requiredQuestionsForCoveragesCheckedArray.push(thisCovRequiredQuestionsArray[j])
                     questionToCovIDMap[thisCovRequiredQuestionsArray[j]] = thisCovID
+                }
+            }
+        }
+
+        //ADD SHOW HIDE LOGIC QUESTIONS
+        var showHideMap = jsonStringToObject( getCurrentOperationTypeObject().coverageShowMap )
+        var showHideMapKeys = Object.keys(showHideMap)
+
+        for(var i=0;i<showHideMapKeys.length;i++){
+            var thisCovID = showHideMapKeys[i]
+            var thisCovShowHideArray = showHideMap[thisCovID].showMap
+            var coverageShowHideQuestions = getRequiredQuestionsForLogicConditionArray(thisCovShowHideArray)
+
+            requiredQuestionsForCoveragesCheckedArray = requiredQuestionsForCoveragesCheckedArray.concat(coverageShowHideQuestions)
+            //CHECK IF LOB SHOW MAP EXISTS, IF IT DOES LOOP THROUGH AND GET QUESTIONS FOR IT
+            if(showHideMap[thisCovID].lobShowMap){
+                var lobShowHideMap = showHideMap[thisCovID].lobShowMap
+                var lobShowHideMapKeys = Object.keys(lobShowHideMap)
+
+                for(var j=0;j<lobShowHideMapKeys.length;j++){
+                    var thisLobID = lobShowHideMapKeys[j]
+                    var thisLOBShowHideLogicArray = lobShowHideMap[thisLobID]
+
+                    var lobShowHideQuestions = getRequiredQuestionsForLogicConditionArray(thisLOBShowHideLogicArray)
+                    requiredQuestionsForCoveragesCheckedArray = requiredQuestionsForCoveragesCheckedArray.concat(lobShowHideQuestions)
                 }
             }
         }
@@ -1684,6 +1777,7 @@ function updateRequiredQuestions(){
         requiredQuestionsForCoveragesCheckedArray_Sorted = requiredQuestionsForCoveragesCheckedArray_Sorted.concat(requiredQuestionsForCoveragesCheckedArray_Filtered)
 
         //BUILD CONTAINERS FOR COVERAGES AND QUESTIONS (PRODUCT CONDITION CONTAINER)
+        $('#productConditionBasisRequiredQuestionsContainer').append(getCoverageQuestionSectionHTML("DEFAULT"))
         for(var i=0;i<allCoveragesPackagesArray.length;i++){
             var cID = allCoveragesPackagesArray[i]
             $('#productConditionBasisRequiredQuestionsContainer').append(getCoverageQuestionSectionHTML(cID))
@@ -1697,8 +1791,17 @@ function updateRequiredQuestions(){
             var covID = questionToCovIDMap[qID]
             // finalHTML = finalHTML + getNewSubmissionRequiredQuestion(qID)
 
-            $('#productConditionBasisRequiredQuestionsContainer .' + covID + '_productLogicQuestions').append(getNewSubmissionRequiredQuestion(qID))
-            $('#productConditionBasisRequiredQuestionsContainer .' + covID + '_questionsForCoverageSection').css('display', '')
+            //IF THIS QUESTION HAS COVERAGE QUESTION CONTAINER
+            if(covID){
+                $('#productConditionBasisRequiredQuestionsContainer .' + covID + '_productLogicQuestions').append(getNewSubmissionRequiredQuestion(qID))
+                $('#productConditionBasisRequiredQuestionsContainer .' + covID + '_questionsForCoverageSection').css('display', '')
+            }
+            else{
+                covID = "DEFAULT"
+                $('#productConditionBasisRequiredQuestionsContainer .' + covID + '_productLogicQuestions').append(getNewSubmissionRequiredQuestion(qID))
+                $('#productConditionBasisRequiredQuestionsContainer .' + covID + '_questionsForCoverageSection').css('display', '')
+            }
+
         }
         // finalHTML = finalHTML + "</div>"
 
@@ -1799,6 +1902,52 @@ function updateRequiredQuestions(){
     }
 
     validate()
+
+}
+function updateShowHideLogicRequiredQuestions(){
+    var showHideMap = jsonStringToObject( getCurrentOperationTypeObject().coverageShowMap )
+    var showHideMapKeys = Object.keys(showHideMap)
+
+    for(var i=0;i<showHideMapKeys.length;i++){
+
+    }
+
+    var covSelectedArray = getCoveragesSelectedArray()
+    for(var i=0;i<covSelectedArray.length; i++){
+        var covID = covSelectedArray[i]
+        var productID = getProductIDForCoverage(covID)
+
+        if( getProductIDForCoverage(covID) ){
+
+            //GET RATING BASIS REQUIRED QUESTIONS
+            if(getProductObjectFromProductID(productID) !== undefined){
+                var productObject = getProductObjectFromProductID(productID)
+
+                if(productObject.rateCode !== undefined && productObject.rateCode !== null){
+                    var rateID = productObject.rateCode
+                    var rateObject = getRateObjectByID(rateID)
+                    var ratingBasisID = rateObject.rateBasis
+                    var ratingBasisObject = getRatingBasisObjectByID(ratingBasisID)
+                    var ratingBasisQuestionID = ratingBasisObject.basisQuestionID
+
+                    //IF RATING BASIS QUESTION ID EXISTS
+                    if(ratingBasisQuestionID !== undefined && ratingBasisQuestionID !== null && ratingBasisQuestionID.trim().length !== 0){
+                        //CHECK TO MAKE SURE NOT TO INSERT A DUPLICATE QUESTION
+                        if($('#' + ratingBasisQuestionID).length === 0){
+                            var questionHTML = ""
+                            // questionHTML = "<div class='row'>"
+                            questionHTML = questionHTML + getNewSubmissionRequiredRateQuestion(ratingBasisQuestionID)
+                            // questionHTML = questionHTML + "</div>"
+
+                            $('#productConditionBasisRequiredQuestionsContainer .' + covID + '_ratingLogicQuestions').append(getNewSubmissionRequiredRateQuestion(ratingBasisQuestionID))
+                            $('#productConditionBasisRequiredQuestionsContainer .' + covID + '_ratingLogicQuestions').css('display', '')
+                        }
+                    }
+                }
+
+            }
+        }
+    }
 
 }
 function updateRatingRequiredQuestion(){

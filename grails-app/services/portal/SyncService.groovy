@@ -714,6 +714,7 @@ class SyncService {
             def description = params.operationDescription
             def activeFlag = params.activeFlag
             def bindingAuthority = params.bindingAuthority
+            def coverageShowMap = jsonSlurper.parseText(params.coverageShowMap)
             def coveragePackageMap = jsonSlurper.parseText(params.coveragePackageMap)
             def coverageProductMap = jsonSlurper.parseText(params.coverageProductMap)
             def uwQuestionsMap = jsonSlurper.parseText(params.uwQuestionsMap)
@@ -728,6 +729,7 @@ class SyncService {
             operationRecord.description = description
             operationRecord.activeFlag = activeFlag
             operationRecord.bindingAuthority = bindingAuthority
+            operationRecord.coverageShowMap = jsonOutput.toJson(coverageShowMap)
             operationRecord.coveragePackageMap = jsonOutput.toJson(coveragePackageMap)
             operationRecord.coverageProductMap = jsonOutput.toJson(coverageProductMap)
             operationRecord.underwriterQuestionsMap = jsonOutput.toJson(uwQuestionsMap)

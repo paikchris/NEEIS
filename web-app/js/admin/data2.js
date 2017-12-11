@@ -837,13 +837,28 @@ function fillCoveragesAllowedContainer(){
                 var tempCoveragesAllowedArray = Object.keys(tempCoverageProductMap)
 
 
+
                 //IF THIS CHECKBOX IS IN THE COVERAGES ALLOWED MAP CHECK IT, UNLESS COVERAGE IS INACTIVE
                 if (tempCoveragesAllowedArray.indexOf(thisCovID) > -1) {
                     $(this).prop('checked', true)
                     $(this).trigger('change')
                     hideCoverageDetailContainer(thisCovID)
 
+                    //FILL SHOW HIDE LOGIC
+                    if(tempOperationsMap.coverageShowMap){
+                        var tempCoverageShowMap = jsonStringToObject(tempOperationsMap.coverageShowMap)
+                        if(tempCoverageShowMap[thisCovID]){
+                            var tempArrayOfShowConditions = tempCoverageShowMap[thisCovID].showMap
 
+                            var showHideLogicContainer = $('#' + thisCovID + '_ShowLogicConditionRowsContainer')
+                            $(showHideLogicContainer).find('.logicConditionRow').remove()
+
+                            //BUILD LOGIC CONDITION ROWS
+                            fillLogicRowContainerWithLogicArray(tempArrayOfShowConditions, showHideLogicContainer,thisCovID, "SHOWHIDE", 'OPERATION')
+
+                            checkFormatOfAllRows( $(showHideLogicContainer) )
+                        }
+                    }
 
                     //IF THIS COVERAGE IS A PACKAGE
                     if(coverageObject.packageFlag === 'Y'){
@@ -1080,7 +1095,26 @@ function fillAllPackageRates(){
                     fillFormsInPackageLOB(thisLOBPackageOptionRow, thisLOBFormArray)
                 }
 
+                //FILL SHOW HIDE LOGIC
+                if(operationObject.coverageShowMap){
+                    var tempCoverageShowMap = jsonStringToObject(operationObject.coverageShowMap)
+                    var tempLOBCoverageShowMap = tempCoverageShowMap[packageID].lobShowMap
+                    if(tempLOBCoverageShowMap[thisLOBCovID]){
+                        var tempArrayOfShowConditions = tempLOBCoverageShowMap[thisLOBCovID]
+
+                        var showHideLogicContainer = $('#' + packageID + "_" + thisLOBCovID + '_PackageLOBShowLogicConditionRowsContainer')
+                        $(showHideLogicContainer).find('.logicConditionRow').remove()
+
+                        //BUILD LOGIC CONDITION ROWS
+                        fillLogicRowContainerWithLogicArray(tempArrayOfShowConditions, showHideLogicContainer,thisLOBCovID, "SHOWHIDE", 'OPERATION')
+
+                        checkFormatOfAllRows( $(showHideLogicContainer) )
+                    }
+                }
+
             }
+
+
 
             fillLimitsAndDeductsInPackage(packageContainer)
 
@@ -1253,12 +1287,32 @@ function lobDetailContainerRowHTML(packageID, packageOptionID){
         "           </label>" +
         "       </div>" +
         "   </div>" +
+            packageLOBShowWhenLogicContainerHTML(packageID, packageOptionID) +
             packageLOBRateLogicContainerHTML(packageID, packageOptionID) +
             getLimitsAndDeductsForPackage(packageOptionID) +
             getFormsForPackageLOB(packageID, packageOptionID) +
         "</div>"
 
 
+
+    return htmlString
+}
+function packageLOBShowWhenLogicContainerHTML(packageID, packageOptionID){
+    var htmlString = "" +
+        "<div class='row' style='display:none; margin-top:30px; margin-bottom: 30px; background-color: rgba(103, 108, 105, 0.278431); border-top-left-radius: 6px; border-top-right-radius: 6px;" +
+        "   border-bottom-right-radius: 6px; border-bottom-left-radius: 6px; padding: 10px;'>" +
+        "   <div class='col-xs-12'>" +
+        "       <div class='row' style=''>" +
+        "           <div class='col-xs-5'>" +
+        "               <label>Show " + packageOptionID + " LOB When</label>" +
+        "           </div>" +
+        "       </div>" +
+        "      <div class='row logicConditionRowsContainer rowContainer packageLOBShowLogicContainer' " +
+        "          id='" + packageID + "_" + packageOptionID + "_PackageLOBShowLogicConditionRowsContainer'>" +
+        blankLogicRowHTML(packageOptionID, 'SHOWHIDE', 'OPERATION') +
+        "      </div>" +
+        "   </div>" +
+        "</div>"
 
     return htmlString
 }
@@ -1275,7 +1329,7 @@ function packageLOBRateLogicContainerHTML(packageID, packageLOBID){
         "               <label>RateID</label>" +
         "           </div>" +
         "       </div>" +
-        "      <div class='row logicConditionRowsContainer rowContainer' " +
+        "      <div class='row logicConditionRowsContainer rowContainer packageLOBRateLogicContainer' " +
         "          id='" + packageID + "_" + packageLOBID + "_PackageLOBRate_LogicConditionRowsContainer'>" +
             blankLogicRowHTML(packageLOBID, 'RATE', 'OPERATION') +
         "      </div>" +
@@ -1635,6 +1689,39 @@ function buildOperationCoverageProductMap(){
     })
 
     return coverageProductMap
+}
+function buildOperationCoverageShowMap(){
+    var coverageShowMap = {}
+
+    $('.coverageContainer').each(function(){
+        var covID = $(this).attr('data-covid')
+
+        if($('#' + covID + '_checkbox').is(':checked')){
+            var thisCovShowMap = {}
+
+            var covObject = getCoverageObject(covID)
+
+            var covShowLogicContainer = $('#' + covID + '_ShowLogicConditionRowsContainer')
+            thisCovShowMap.showMap = buildLogicArrayForLogicContainer(covShowLogicContainer)
+
+            //IF THIS IS A PACKAGE, CHECK FOR LOB SHOW HIDE LOGIC
+            if(covObject.packageFlag === 'Y'){
+                var LOBShowMap = {}
+                //LOOP THROUGH CHOSEN LOBS
+                $(this).find('.lobDetailContainerRow').each(function(){
+                    var lobID = $(this).attr('data-covid')
+                    var lobShowHideLogicContainer = $(this).find('.packageLOBShowLogicContainer')
+                    LOBShowMap[lobID] = buildLogicArrayForLogicContainer(lobShowHideLogicContainer)
+                })
+
+                thisCovShowMap.lobShowMap = LOBShowMap
+            }
+
+            coverageShowMap[covID] = thisCovShowMap
+        }
+    })
+
+    return coverageShowMap
 }
 
 
@@ -4183,6 +4270,7 @@ function saveOperation(){
             operationDescription: $('#operationPage_operationDescription').val(),
             activeFlag: $("input[name='operationActiveFlagRadioGroup']:checked").val(),
             bindingAuthority: $("input[name='operationBindingAuthorityRadioGroup']:checked").val(),
+            coverageShowMap: JSON.stringify(buildOperationCoverageShowMap()),
             coverageProductMap: JSON.stringify(buildOperationCoverageProductMap()),
             uwQuestionsMap: JSON.stringify(buildUWQuestionsMap()),
             requiredQuestionsMap: JSON.stringify(buildRequiredQuestionsMap()),
