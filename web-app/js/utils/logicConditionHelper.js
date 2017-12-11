@@ -1,15 +1,34 @@
+//INIT LOGIC CONTAINER
+function initLogicContainer(element){
+    /*
+    INSERTS THE STARTING CONTAINER FOR LIMIT LOGIC
+     */
+
+    var htmlString = "" +
+        "<div class='row logicConditionRowsContainer rowContainer'>" +
+        blankLogicRowHTML(false, 'LIMIT', 'RATE') +
+        "</div>"
+
+
+    $(element).html(htmlString)
+}
+
 
 //DATA PAGE
 function fillPackageLOBRateConditionsVersion2(lobInfoContainer, lobRateConditionArray){
-    var rateConditionsContainer = $(lobInfoContainer).find('.logicConditionRowsContainer')
+    var rateConditionsContainer = $(lobInfoContainer).find('.packageLOBRateLogicContainer')
     var lobID = $(lobInfoContainer).attr('data-covid')
-    $(rateConditionsContainer).html("")
 
-    fillLogicRowContainerWithLogicArray(lobRateConditionArray, rateConditionsContainer, lobID, "RATE", 'OPERATION')
+    if(lobRateConditionArray.length > 0){
+        $(rateConditionsContainer).html("")
+
+        fillLogicRowContainerWithLogicArray(lobRateConditionArray, rateConditionsContainer, lobID, "RATE", 'OPERATION')
 
 
-    checkFormatOfAllRows( $(rateConditionsContainer) )
-    formatConditionBasisInputs()
+        checkFormatOfAllRows( $(rateConditionsContainer) )
+        formatConditionBasisInputs()
+    }
+
 }
 function buildLogicArrayForLogicContainer(logicConditionRowsContainer){
     var logicArray = []
@@ -58,6 +77,9 @@ function fillLogicRowContainerWithLogicArray(logicArray, logicRowsContainer, COV
             logicRow = $(blankLogicRowHTML(COVID, CONDITIONOUTPUT_TYPE, PAGE_TAB_ID))
         }
         else if(CONDITIONOUTPUT_TYPE === "LIMIT"){
+            logicRow = $(blankLogicRowHTML(COVID, CONDITIONOUTPUT_TYPE, PAGE_TAB_ID))
+        }
+        else if(CONDITIONOUTPUT_TYPE === "SHOWHIDE"){
             logicRow = $(blankLogicRowHTML(COVID, CONDITIONOUTPUT_TYPE, PAGE_TAB_ID))
         }
 
@@ -257,7 +279,16 @@ function blankLogicRowHTML(COV_OR_LOB_ID, CONDITIONOUTPUT_TYPE, PAGE_TAB_ID){
             "           </div>"
 
     }
+    else if(CONDITIONOUTPUT_TYPE === 'SHOWHIDE'){
+        htmlString = htmlString +
+            "           <div class='col-xs-4'>" +
+            "               <select class='form-control conditionOutput " + onChangeClassString + "'>" +
+            "                   <option value='SHOW'>Show</option>" +
+            "                   <option value='HIDE'>Hide</option>" +
+            "               </select>" +
+            "           </div>"
 
+    }
 
     htmlString = htmlString +
 
@@ -937,7 +968,13 @@ function getActualBasisValue(logicConditionRow){
                 var actualBasisValue = $(conditionBasisInput).val()
 
                 if(conditionBasis === "POLICYLENGTH"){
-                    actualBasisValue = removeAllNonNumbersFromString(actualBasisValue)
+                    if(actualBasisValue && actualBasisValue.trim().length > 0){
+                        actualBasisValue = removeAllNonNumbersFromString(actualBasisValue)
+                    }
+                    else{
+                        actualBasisValue = undefined
+                        return actualBasisValue
+                    }
                 }
 
                 return formatBasisValue(actualBasisValue)

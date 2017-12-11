@@ -240,6 +240,68 @@
                                     </div>
                                     <div class="coverageQuestionsContainer hiddenContainer" id="${coverage.coverageCode}_CoverageQuestionsContainer" style="display:none">
 
+                                        %{--SHOW COVERAGE LOGIC--}%
+                                        <div class="col-xs-12 well coverageShowLogicWell">
+                                            <h5>Show ${coverage.coverageCode} When:</h5>
+                                            <div class="row logicConditionRowsContainer rowContainer" id="${coverage.coverageCode}_ShowLogicConditionRowsContainer">
+                                            <div class="col-xs-12 logicConditionRow">
+                                                <div class="row mainLogicContainer" style="margin-left: -5px;">
+                                                    <div class="col-xs-1" style="">
+                                                        <select class="form-control rowConditionDropdown onChangeSaveOperation">
+                                                            <option class="alwaysOption" value="ALWAYS">ALWAYS</option>
+                                                            <option class="ifOption" value="IF">IF</option>
+                                                            <option class="ifElseOption" value="IFELSE" >IF ELSE</option>
+                                                            <option class="elseOption" value="ELSE" >ELSE</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-xs-1" style="visibility:hidden">
+                                                        <select class="form-control conditionBasis onChangeSaveOperation">
+                                                            <g:each var="conditionBasis" in="${conditionBasisResults}">
+                                                                <option value="${conditionBasis.conditionID}">${conditionBasis.description}</option>
+                                                            </g:each>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-xs-1" style="visibility:hidden">
+                                                        <select class="form-control conditionOperator onChangeSaveOperation">
+                                                            <g:each var="conditionOperator" in="${conditionOperatorsResults}">
+                                                                <option value="${conditionOperator.conditionID}">${conditionOperator.description}</option>
+                                                            </g:each>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-xs-2" style="visibility:hidden">
+                                                        <div class="form-group">
+                                                            <input class="form-control conditionBasisValue maskMoney onChangeSaveOperation" type="text" data-precision="0" data-prefix="$">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-4">
+                                                        <select class="form-control conditionOutput onChangeSaveOperation">
+                                                            <option value="SHOW">Show</option>
+                                                            <option value="HIDE">Hide</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-xs-3 buttonColumn" style="visibility:hidden">
+                                                        <button class="btn btn-sm btn-primary pull-left addLogicConditionRow" style="margin-left:10px;">
+                                                            <span>Add Row</span>
+                                                        </button>
+                                                        <button class="btn btn-sm pull-left addSubLogicConditionRow">
+                                                            <span>Add Sub Logic</span>
+                                                        </button>
+                                                        <button class="btn btn-xs btn-success pull-left moveLogicRowDownButton onChangeSaveOperation" style="border-radius:20px; margin-left:10px;font-size:10px;">
+                                                            <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                                                        </button>
+                                                        <button class="btn btn-xs btn-success pull-left moveLogicRowUpButton onChangeSaveOperation" style="border-radius:20px;  font-size:10px;">
+                                                            <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                                                        </button>
+                                                        <button class="btn btn-sm btn-danger pull-right removeLogicConditionRow onChangeSaveOperation" style="display:none">
+                                                            <span>Remove</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        </div>
+
                                        %{--PACKAGE OPTIONS--}%
                                         <div class="col-xs-12 well">
                                             <h5>Coverages available in this Package:</h5>
@@ -425,7 +487,7 @@
                             <h5>Coverages:</h5>
                             %{--EACH COVERAGE OPTIONS--}%
                             <g:each var="coverage" in="${coverageResults.findAll{ it.packageFlag == 'N' && it.activeFlag == 'Y' } }">
-                                <div class="row coverageContainer checkboxAndHiddenDivContainer" style="margin-left: 0px; margin-right:0px;">
+                                <div class="row coverageContainer checkboxAndHiddenDivContainer" data-covid="${coverage.coverageCode}" style="margin-left: 0px; margin-right:0px;">
                                     <div class='col-xs-12 form-group checkboxContainer'>
                                         <g:if test="${coverage.activeFlag == 'N'}">
                                             <label class="checkBoxLabel" style="color:darkgrey">
@@ -479,6 +541,63 @@
                                             <label class="checkBoxLabel">
                                                 <input type="checkbox" class="monolineCheckbox onChangeSaveOperation" data-covid="${coverage.coverageCode}" id="${coverage.coverageCode}_monolineCheckbox"> Monoline Only
                                             </label>
+                                            <h5>Show ${coverage.coverageCode} When:</h5>
+                                            <div class="row logicConditionRowsContainer rowContainer" id="${coverage.coverageCode}_ShowLogicConditionRowsContainer">
+                                                <div class="col-xs-12 logicConditionRow">
+                                                    <div class="row mainLogicContainer" style="margin-left: -5px;">
+                                                        <div class="col-xs-1" style="">
+                                                            <select class="form-control rowConditionDropdown onChangeSaveOperation">
+                                                                <option class="alwaysOption" value="ALWAYS">ALWAYS</option>
+                                                                <option class="ifOption" value="IF">IF</option>
+                                                                <option class="ifElseOption" value="IFELSE" >IF ELSE</option>
+                                                                <option class="elseOption" value="ELSE" >ELSE</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-xs-1" style="visibility:hidden">
+                                                            <select class="form-control conditionBasis onChangeSaveOperation">
+                                                                <g:each var="conditionBasis" in="${conditionBasisResults}">
+                                                                    <option value="${conditionBasis.conditionID}">${conditionBasis.description}</option>
+                                                                </g:each>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-xs-1" style="visibility:hidden">
+                                                            <select class="form-control conditionOperator onChangeSaveOperation">
+                                                                <g:each var="conditionOperator" in="${conditionOperatorsResults}">
+                                                                    <option value="${conditionOperator.conditionID}">${conditionOperator.description}</option>
+                                                                </g:each>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-xs-2" style="visibility:hidden">
+                                                            <div class="form-group">
+                                                                <input class="form-control conditionBasisValue maskMoney onChangeSaveOperation" type="text" data-precision="0" data-prefix="$">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-4">
+                                                            <select class="form-control conditionOutput onChangeSaveOperation">
+                                                                <option value="SHOW">Show</option>
+                                                                <option value="HIDE">Hide</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-xs-3 buttonColumn" style="visibility:hidden">
+                                                            <button class="btn btn-sm btn-primary pull-left addLogicConditionRow" style="margin-left:10px;">
+                                                                <span>Add Row</span>
+                                                            </button>
+                                                            <button class="btn btn-sm pull-left addSubLogicConditionRow">
+                                                                <span>Add Sub Logic</span>
+                                                            </button>
+                                                            <button class="btn btn-xs btn-success pull-left moveLogicRowDownButton onChangeSaveOperation" style="border-radius:20px; margin-left:10px;font-size:10px;">
+                                                                <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                                                            </button>
+                                                            <button class="btn btn-xs btn-success pull-left moveLogicRowUpButton onChangeSaveOperation" style="border-radius:20px;  font-size:10px;">
+                                                                <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                                                            </button>
+                                                            <button class="btn btn-sm btn-danger pull-right removeLogicConditionRow onChangeSaveOperation" style="display:none">
+                                                                <span>Remove</span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                         %{--PRODUCT ALWAYS/WHEN CONDITION CONTAINER V2--}%
                                         <div class="col-xs-12 well">
