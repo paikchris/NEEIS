@@ -71,5 +71,6 @@
 <script src="${resource(dir: 'js', file: 'bootstrap.min.js')}"></script>
 <script src="${resource(dir: 'js', file: 'jquery.maskedinput.js')}"></script>
 <script src="${resource(dir: 'js', file: 'register.js')}"></script>
+<script src="${resource(dir: 'js', file: 'getAppointed.js')}"></script>
 </body>
 </html>

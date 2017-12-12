@@ -5,12 +5,15 @@ import groovyx.net.http.HTTPBuilder
 import static groovyx.net.http.ContentType.URLENC
 import portal.DAO.*
 
+
 class AuthController {
 
     def dataSource_aim
     AIMSQL aimDAO = new AIMSQL();
     def timeZone = TimeZone.getTimeZone('PST')
     def dateFormat = 'yyyy-MM-dd HH:mm:ss.SSS'
+    def mailService
+    def groovyPageRenderer
 
     def check(){
         log.info params
@@ -327,6 +330,22 @@ class AuthController {
     }
 
     def getAppointed() {
+    }
+
+    def sendGetAppointedEmail(mailService) {
+        log.info "begin auth#sendGetAppointedEmail"
+        log.info "params.email:${params.contactEmail}"
+        def content = groovyPageRenderer.render(view: '/emails/getAppointedEmail')
+        mailService.sendMail {
+            multipart true
+            to "${params.contactEmail}"
+            cc "travis@neeis.com" // REMOVE for development only
+            from "service@neeis.com"
+            subject "NEEIS Broker Appointment Application"
+            html(content)
+            attachBytes 'NEEIS_Broker_Contract.pdf','application/pdf', new File('./web-app/attachments/NEEIS_Broker_Contract.pdf').readBytes()
+        }
+        redirect(url: "https://www.neeisins.com")       
     }
     
 }
