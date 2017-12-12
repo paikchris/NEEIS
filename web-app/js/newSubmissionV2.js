@@ -871,7 +871,7 @@ function checkCoverageShowHideLogicAndShowHideCovCheckboxes(){
                 var coverageCheckboxElement = $('#' + covID + '_CoverageCheckbox')
                 var coverageCheckboxContainer = $('#' + covID + '_CoverageOptionContainer')
                 if(showHideValue === "SHOW"){
-                    $(coverageCheckboxContainer).closest().css('display', '')
+                    $(coverageCheckboxContainer).css('display', '')
 
                 }
                 else{
