@@ -67,6 +67,16 @@ $(document).ready(function () {
             event.preventDefault();
         }
     });
+
+    // for Get Appointed Page
+    $(document).on('click', '#getAppointedButton', function (event){
+        if(validateAppointmentForm()){
+            alert("Thanks!");
+        }
+        else{
+            event.preventDefault();
+        }
+    });
 });
 
 function markInputAsError(inputElem, helpBlockMessage){
@@ -79,13 +89,12 @@ function markInputAsError(inputElem, helpBlockMessage){
     $(inputElem).siblings(".glyphicon-remove").css('display','');
 }
 
-function markInputAsOk(inputElem, helpBlockMessage){
+function markInputAsOk(inputElem){
     $(inputElem).closest(".form-group").removeClass("has-error");
     $(inputElem).siblings(".help-block").html("");
     $(inputElem).siblings(".glyphicon-remove").css('display','none');
 
     $(inputElem).closest(".form-group").addClass("has-success");
-    $(inputElem).siblings(".help-block").html(helpBlockMessage);
     $(inputElem).siblings(".glyphicon-ok").css('display','');
 }
 
@@ -172,15 +181,40 @@ function validateRegisterForm(){
     return validForm;
 }
 
+function validateAppointmentForm(){
+    var validForm;
+    var inputFilled;
+
+    //CHECK ALL REQUIRED FIELDS ARE FILLED
+    $('.required').each(function(){
+        inputFilled = isInputFilled(this);
+        if(inputFilled == false) {
+            validForm = false;
+        }
+    });
+    if(validForm == false){
+        return validForm;
+    }
+
+    validForm = isEmailInputValid($('.emailInput'));
+    console.log ("email FIELDS: " + validForm)
+
+    // if($('.has-error').length > 0){
+    //     validForm =  false;
+    // }
+
+    return validForm;
+}
+
 function isInputFilled(inputElem){
     if($(inputElem).val().trim().length ==0){
         // $(inputElem).closest(".form-group").addClass("has-error");
-        markInputAsError(inputElem, "")
+        markInputAsError(inputElem, "Please complete field.")
         return false;
     }
     else{
         // $(inputElem).closest(".form-group").removeClass("has-error");
-        markInputAsOk(inputElem, "");
+        markInputAsOk(inputElem);
         return true;
     }
 }
@@ -188,14 +222,13 @@ function isInputFilled(inputElem){
 function isEmailInputValid(inputElem){
     var isValidEmail = false;
     if(validateEmail($(inputElem).val().trim()) == false){
-        // $(inputElem).closest(".form-group").addClass("has-error");
-        // $(inputElem).siblings(".help-block").html("Not a valid Email");
-        markInputAsError(inputElem, "Not a valid Email")
+        //sends parent because the '@' form field add-on affects the heirarchy         
+        markInputAsError($(inputElem).parent(), "Invalid email address.")
         isValidEmail =  false;
     }else{
         // $(inputElem).closest(".form-group").removeClass("has-error");
         // $(inputElem).siblings(".help-block").html("");
-        markInputAsOk(inputElem, "")
+        markInputAsOk($(inputElem).parent())
         isValidEmail =  true;
     }
 
