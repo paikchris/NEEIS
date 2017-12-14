@@ -2155,7 +2155,12 @@ function updateProductForms(){
 
         for(var i=0; i<formIDArray.length; i++){
             var formID = formIDArray[i]
-            $('#' + formID + '_ProductPageFormCheckbox').prop('checked', true)
+            try{
+                $('#' + formID + '_ProductPageFormCheckbox').prop('checked', true)
+            }
+            catch(e){
+                //SKIP FORMID
+            }
         }
     }
 }
