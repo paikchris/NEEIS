@@ -8,10 +8,15 @@
 	<body>
     <div class="container">
         <div class="row">
-            <div class="col-xs-12" style=" color: white;"><h1>REGISTER</h1></div>
+            <div class="col-xs-12" style=" color: white;"><h1>WELCOME TO OUR NEW SITE!</h1></div>
+        </div>
+        <div class="row">
+            <div class="lead text-center col-xs-8 col-xs-offset-2" style=" color: white;">
+                <p>If your agency is already appointed with us, simply create a new user account to get started. If you're not already doing business with New Empire, <a href="/auth/getAppointed">Get Appointed.</a></p>
+            </div>
         </div>
 
-        <div class="row" style="margin-top: 50px">
+        <div class="row">
             <div class="col-xs-3">
 
             </div>
@@ -22,10 +27,28 @@
                         <div class="alert alert-danger" role="alert">${registerError}</div>
                     </g:if>
                         <div class="alert alert-danger" role="alert" style="display:none"></div>
-                        %{--<g:form controller="auth" action="registerUser">--}%
+                        <g:form controller="auth" action="registerUser">
                             <div class="form-group has-feedback">
-                                <label for="email">Email address<span style="color:red; font-size:12px;">*</span></label>
-                                <g:textField type="email" class="form-control required emailInput" name="email" placeholder="Email" id="email"/>
+                                <label>Agency ID<span style="color:red; font-size:12px;">*</span></label>
+                                <g:textField type="text" class="form-control required" name="agencyID" placeholder="Agency ID" id="agencyID"/>
+                                <span class="glyphicon glyphicon-ok form-control-feedback" style="display:none"></span>
+                                <span class="glyphicon glyphicon-remove form-control-feedback" style="display:none"></span>
+                                <span class="help-block"></span>
+                                <span class="agencyName"></span>
+                            </div>
+                            <div class="form-group has-feedback">
+                                <label>Agency PIN<span style="color:red; font-size:12px;">*</span> </label>
+                                <g:passwordField type="password" class="form-control required" name="agencyPIN" placeholder="Agency PIN" id="agencyPIN"/>
+                                <span class="glyphicon glyphicon-ok form-control-feedback" style="display:none"></span>
+                                <span class="glyphicon glyphicon-remove form-control-feedback" style="display:none"></span>
+                                <span class="help-block"></span>
+                            </div>
+                            <div class="form-group has-feedback">
+                                <label for="email">Email Address<span style="color:red; font-size:12px;">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-addon">@</span>
+                                    <g:textField type="email" class="form-control required emailInput" name="email" placeholder="Email Address" id="email"/>
+                                </div>
                                 <span class="glyphicon glyphicon-ok form-control-feedback" style="display:none"></span>
                                 <span class="glyphicon glyphicon-remove form-control-feedback" style="display:none"></span>
                                 <span class="help-block"></span>
@@ -60,22 +83,8 @@
                                 <span class="help-block"></span>
                             </div>
                             <div class="form-group has-feedback">
-                                <label>Agency ID<span style="color:red; font-size:12px;">*</span></label>
-                                <g:textField type="text" class="form-control required" name="agencyID" placeholder="AgencyID" id="agencyID"/>
-                                <span class="glyphicon glyphicon-ok form-control-feedback" style="display:none"></span>
-                                <span class="glyphicon glyphicon-remove form-control-feedback" style="display:none"></span>
-                                <span class="help-block"></span>
-                            </div>
-                            <div class="form-group has-feedback">
-                                <label>Agency PIN<span style="color:red; font-size:12px;">*</span> </label>
-                                <g:passwordField type="password" class="form-control required" name="agencyPIN" placeholder="PIN" id="agencyPIN"/>
-                                <span class="glyphicon glyphicon-ok form-control-feedback" style="display:none"></span>
-                                <span class="glyphicon glyphicon-remove form-control-feedback" style="display:none"></span>
-                                <span class="help-block"></span>
-                            </div>
-                            <div class="form-group has-feedback">
-                                <label for="phoneNumber">Phone Number</label>
-                                <g:textField type="text" class="form-control phoneNumberMask" name="phoneNumber" placeholder="(xxx)xxx-xxxx" id="phoneNumber"/>
+                                <label for="phoneNumber">Phone Number<span style="color:red; font-size:12px;">*</span></label>
+                                <g:textField type="text" class="form-control phoneNumberMask required" name="phoneNumber" placeholder="(xxx)xxx-xxxx" id="phoneNumber"/>
                                 <span class="glyphicon glyphicon-ok form-control-feedback" style="display:none"></span>
                                 <span class="glyphicon glyphicon-remove form-control-feedback" style="display:none"></span>
                                 <span class="help-block"></span>
@@ -85,7 +94,7 @@
 
 
                             <button type="submit" class="btn btn-primary btn-lg btn-block" id="submitButton" >Register</button>
-                        %{--</g:form>--}%
+                        </g:form>
                     </div>
                 </div>
             </div>

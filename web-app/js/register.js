@@ -7,7 +7,6 @@ $(document).ready(function () {
 
     $(document.body).on('focusout', '#agencyID' ,function(){
         checkAgencyNameExists();
-        // alert(checkAgencyNameExists());
     });
     $(document.body).on('focusout', '#agencyPIN' ,function(){
         checkAgencyPIN()
@@ -89,12 +88,13 @@ function markInputAsError(inputElem, helpBlockMessage){
     $(inputElem).siblings(".glyphicon-remove").css('display','');
 }
 
-function markInputAsOk(inputElem){
+function markInputAsOk(inputElem, helpBlockMessage){
     $(inputElem).closest(".form-group").removeClass("has-error");
     $(inputElem).siblings(".help-block").html("");
     $(inputElem).siblings(".glyphicon-remove").css('display','none');
 
     $(inputElem).closest(".form-group").addClass("has-success");
+    $(inputElem).siblings(".help-block").html(helpBlockMessage);
     $(inputElem).siblings(".glyphicon-ok").css('display','');
 }
 

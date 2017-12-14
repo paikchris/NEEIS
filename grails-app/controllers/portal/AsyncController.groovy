@@ -32,7 +32,7 @@ class AsyncController {
     def jsonSerial
     def dataSource_aim
     def mailService
-    def beforeInterceptor = [action: this.&checkUser]
+    def beforeInterceptor = [action: this.&checkUser, except: ['checkAgencyID', 'checkAgencyPIN']]
     def grailsLinkGenerator
     def AIMDBService
 
@@ -4202,7 +4202,7 @@ class AsyncController {
         log.info "CHECKING AGENCY ID"
         log.info params
         Sql aimsql = new Sql(dataSource_aim)
-        def agencies =[];
+        def agencies = [];
 
         def string = "";
         aimsql.eachRow("SELECT     Name, ProducerID, StatusID, Prospect, AwardLvl, Address1, Address2, City, State, Zip, Prefix, Phone, Fax, Account_RepID, Tax_ID, Commission, CommissionLvl, \n" +
@@ -4248,10 +4248,9 @@ class AsyncController {
                 "FROM         Producer with (NOLOCK)\n" +
                 "WHERE         ProducerID='${params.agencyID}'\n" +
                 "ORDER BY Name") {
-            log.info "Result: " + it.ReferenceID
-            if(params.agencyPIN == ""+it.ReferenceID){
-                log.info "Match: "
-                string = it.ReferenceID
+            //ReferenceID is stored as an Integer in AIM, so conversion is necessary before equality check
+            if(params.agencyPIN == (String.valueOf(it.ReferenceID))){
+                string = it.ReferenceID;
             }
 
         }
