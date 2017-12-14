@@ -28,20 +28,25 @@
                     </g:if>
                         <div class="alert alert-danger" role="alert" style="display:none"></div>
                         <g:form controller="auth" action="registerUser">
-                            <div class="form-group has-feedback">
-                                <label>Agency ID<span style="color:red; font-size:12px;">*</span></label>
-                                <g:textField type="text" class="form-control required" name="agencyID" placeholder="Agency ID" id="agencyID"/>
-                                <span class="glyphicon glyphicon-ok form-control-feedback" style="display:none"></span>
-                                <span class="glyphicon glyphicon-remove form-control-feedback" style="display:none"></span>
-                                <span class="help-block"></span>
-                                <span class="agencyName"></span>
-                            </div>
-                            <div class="form-group has-feedback">
-                                <label>Agency PIN<span style="color:red; font-size:12px;">*</span> </label>
-                                <g:passwordField type="password" class="form-control required" name="agencyPIN" placeholder="Agency PIN" id="agencyPIN"/>
-                                <span class="glyphicon glyphicon-ok form-control-feedback" style="display:none"></span>
-                                <span class="glyphicon glyphicon-remove form-control-feedback" style="display:none"></span>
-                                <span class="help-block"></span>
+                            <div class="agencyIdAndPin" style="padding-bottom: 20px">
+                                <div class="form-group has-feedback">
+                                    <label>Agency ID<span style="color:red; font-size:12px;">*</span></label>
+                                    <g:textField type="text" class="form-control required" name="agencyID" placeholder="Agency ID" id="agencyID"/>
+                                    <span class="glyphicon glyphicon-ok form-control-feedback" style="display:none"></span>
+                                    <span class="glyphicon glyphicon-remove form-control-feedback" style="display:none"></span>
+                                    <span class="help-block"></span>
+                                    <span class="agencyName"></span>
+                                <div class="form-group has-feedback">
+                                    <label>Agency PIN<span style="color:red; font-size:12px;">*</span> </label>
+                                    <g:passwordField type="password" class="form-control required" name="agencyPIN" placeholder="Agency PIN" id="agencyPIN"/>
+                                    <span class="glyphicon glyphicon-ok form-control-feedback" style="display:none"></span>
+                                    <span class="glyphicon glyphicon-remove form-control-feedback" style="display:none"></span>
+                                    <span class="help-block"></span>
+                                </div>
+                                <div>
+                                    <!-- <a> tag, tabindex, and role="button" are needed for cross-browser functionality -->
+                                    <a tabindex="0" class="btn btn-sm btn-danger" role="button" data-toggle="popover" data-trigger="click" title="Need Agency ID or PIN?" data-content="Contact your agency administrator or New Empire underwriter to retrieve your Agency ID or Agency PIN.">Don't have your ID / PIN?</a>
+                                </div>
                             </div>
                             <div class="form-group has-feedback">
                                 <label for="email">Email Address<span style="color:red; font-size:12px;">*</span></label>

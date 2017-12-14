@@ -11,6 +11,9 @@ $(document).ready(function () {
     $(document.body).on('focusout', '#agencyPIN' ,function(){
         checkAgencyPIN()
     });
+    $(function () {
+  $('[data-toggle="popover"]').popover()
+});
 
 
     $(document).on('focusout', '.required', function (){
@@ -116,7 +119,7 @@ function checkAgencyNameExists(){
             else{
                 // $('#agencyID').closest(".form-group").addClass("has-error");
                 // $('#agencyID').siblings(".help-block").html("No Agency Found");
-                markInputAsError($('#agencyID'), "No Agency Found")
+                markInputAsError($('#agencyID'), "Agency Not Found")
 
             }
         });
