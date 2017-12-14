@@ -963,22 +963,24 @@ class PdfService {
         PDDocument document = PDDocument.load(file);
         PDDocumentCatalog pdCatalog = document.getDocumentCatalog();
         PDAcroForm pdAcroForm = pdCatalog.getAcroForm();
+        PDTextField textBox = new PDTextField(pdAcroForm);
         PDFMergerUtility ut = new PDFMergerUtility();
-        ut.addSource(file);
 
-        def additionalInsuredPath = org.codehaus.groovy.grails.web.context.ServletContextHolder.getServletContext().getRealPath("/attachments/temp/certificateAdditionalInsuredTemp.pdf")
-        File additonalInsuredFile = new File(additionalInsuredPath);
-        PDDocument additonalInsuredFileDocument = PDDocument.load(additonalInsuredFile);
-        ut.addSource(additonalInsuredFile);
+        //list of all inputs / values
+        for (PDField pdField : pdAcroForm.getFields()) {
+            def pdfValue = pdField.getValue()
+            def pdfName = pdField.getFullyQualifiedName()
+            def value = policyDataMapTest[pdfName]
+//                pdField.setDefaultAppearance("/Helv 0 Tf 0 g ");
 
-
-//        pdfEndorsements.each {
-////        SET UP A COUNT AND SEND ARRAY OF ENDORSEMENT NUMBERS TO REPLACE pdfBoxTest / REPEAT addSource(path+endorsementNumber+".pdf"
-//            def endorsementFolderPath = org.codehaus.groovy.grails.web.context.ServletContextHolder.getServletContext().getRealPath("/docs/" + it + ".pdf")
-//            log.info endorsementFolderPath
-//        }
-// Save the NEWLY created document
-//       Save merged pdf file
+            log.info pdField.getDefaultAppearance()
+            pdField.setValue(value)
+        }
+        for (PDField pdField : pdAcroForm.getFields()) {
+            log.info(pdField.getValue())
+            log.info(pdField.getFullyQualifiedName())
+            pdField.setReadOnly(true);
+        }
         def saveFolderPath = org.codehaus.groovy.grails.web.context.ServletContextHolder.getServletContext().getRealPath("/attachments/temp/")
         ut.setDestinationFileName(saveFolderPath + "/certificateTempSaved.pdf");
         ut.mergeDocuments();
