@@ -345,7 +345,11 @@ class AuthController {
             html(content)
             attachBytes 'NEEIS_Broker_Contract.pdf','application/pdf', new File('./web-app/attachments/NEEIS_Broker_Contract.pdf').readBytes()
         }
-        redirect(url: "https://www.neeisins.com")       
+        redirect(url: "/auth/appointmentRequestThanks");       
     }
+
+    def appointmentRequestThanks() {
+    }
+
     
 }
