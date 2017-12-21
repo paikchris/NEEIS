@@ -70,7 +70,7 @@ class AuthController {
         log.info("Total Memory:" + runtime.totalMemory() / mb);
 
         //Print Maximum available memory
-        log.info("Max Memory:" + runtime.maxMemory() / mb); 
+        log.info("Max Memory:" + runtime.maxMemory() / mb);
     }
     def register() {
         log.info("REGISTER PAGE");
@@ -133,7 +133,7 @@ class AuthController {
                 log.info "about to assign it.NameKeyPK..."
                 userReferenceID = it.NameKeyPK
                 }
-                log.info("finished email lookup loop");    
+                log.info("finished email lookup loop");
             }
 
             if(userExistsInAIM){
@@ -173,7 +173,7 @@ class AuthController {
                         "   NULL, NULL)"
                     log.info("ending aim execute. begin aim commit.")
                     aimsql.commit();
-                    log.info("ending aim commit");    
+                    log.info("ending aim commit");
                 }
             }
 
@@ -347,8 +347,6 @@ class AuthController {
     }
 
     def sendGetAppointedEmail(mailService) {
-        log.info "begin auth#sendGetAppointedEmail"
-        log.info "params.email:${params.contactEmail}"
         def content = groovyPageRenderer.render(view: '/emails/getAppointedEmail')
         mailService.sendMail {
             multipart true
@@ -359,11 +357,21 @@ class AuthController {
             html(content)
             attachBytes 'NEEIS_Broker_Contract.pdf','application/pdf', new File('./web-app/attachments/NEEIS_Broker_Contract.pdf').readBytes()
         }
-        redirect(url: "/auth/appointmentRequestThanks");       
+        mailService.sendMail {
+            to "travis.smith@mac.com" //remove for dev only
+            from "service@neeis.com"
+            subject "NEEIS Appointment Information Request Notification"
+            body "An email with appointment information has been sent to the following agency:\n\n" +
+                "Agency Name: ${params.agency}\n" +
+                "Agency Contact: ${params.agencyContact}\n" +
+                "Contact Email: ${params.contactEmail}\n\n" +
+                "Thank you."
+        }
+        redirect(url: "/auth/appointmentRequestThanks");
     }
 
     def appointmentRequestThanks() {
     }
 
-    
+
 }
