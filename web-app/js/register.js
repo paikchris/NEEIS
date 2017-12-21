@@ -2,7 +2,7 @@ $(document).ready(function () {
     $(document.body).on('focus', '.phoneNumberMask' ,function(){
         //this.value = this.value.replace(/(\d{3})\-?(\d{3})\-?(\d{4})/,'$1-$2-$3');
         //alert ("OK");
-        $(".phoneNumberMask").mask("(999)999-9999");
+        $(".phoneNumberMask").mask("(999)999-9999"); //check if mask has options so you can turn off placeholder on form
     });
 
     $(document.body).on('focusout', '#agencyID' ,function(){
@@ -11,12 +11,14 @@ $(document).ready(function () {
     $(document.body).on('focusout', '#agencyPIN' ,function(){
         checkAgencyPIN()
     });
+    //required to initialize bootstrap popover functionality
     $(function () {
-  $('[data-toggle="popover"]').popover()
-});
+        $('[data-toggle="popover"]').popover()
+    });
 
 
     $(document).on('focusout', '.required', function (){
+        console.log('exiting a required field');
         isInputFilled(this);
 
         //VALIDATE EMAILS
@@ -45,10 +47,9 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '#submitButton', function (event){
-        console.log(validateRegisterForm());
-        //alert("registering");
+        console.info("reg.js: validating register form...");
         if(validateRegisterForm()){
-            //alert("good form");
+            console.info("good form");
             $.ajax({
                 method: "POST",
                 url: "/auth/registerUser",
@@ -65,9 +66,9 @@ $(document).ready(function () {
                 });
         }
         else{
-            alert("Please complete all required fields")
-            event.preventDefault();
+            console.info("bad form...");
         }
+        event.preventDefault();
     });
 
     // for Get Appointed Page
@@ -151,20 +152,24 @@ function checkAgencyPIN(){
 }
 
 function validateEmail(email) {
+    console.log("begin #validateEmail");
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
 }
 
 function validateRegisterForm(){
+    console.log("begin #validateRegisterForm");
     var validForm = true;
 
 
     //CHECK ALL REQUIRED FIELDS ARE FILLED
     $('.required').each(function(){
+        console.log("call #isInputFilled");
         validForm = isInputFilled(this);
+        console.log ("REQUIRED FIELDS: " + validForm)
     });
-    console.log ("REQUIRED FIELDS: " + validForm)
-
+ 
+    console.log("call #isEmailInputValid");
     validForm = isEmailInputValid($('.emailInput'));
     console.log ("email FIELDS: " + validForm)
 
@@ -178,9 +183,10 @@ function validateRegisterForm(){
 
 
     if($('.has-error').length > 0){
-        validForm =  false;
+        validForm = false;
     }
 
+    console.log ("Validate form result: " + validForm);
     return validForm;
 }
 
@@ -214,8 +220,7 @@ function isInputFilled(inputElem){
         // $(inputElem).closest(".form-group").addClass("has-error");
         markInputAsError(inputElem, "Please complete field.")
         return false;
-    }
-    else{
+    } else {
         // $(inputElem).closest(".form-group").removeClass("has-error");
         markInputAsOk(inputElem);
         return true;
@@ -223,19 +228,25 @@ function isInputFilled(inputElem){
 }
 
 function isEmailInputValid(inputElem){
+    console.log("begin #isEmailInputValid");
     var isValidEmail = false;
     if(validateEmail($(inputElem).val().trim()) == false){
+        console.log("email format wrong");
         //sends parent because the '@' form field add-on affects the heirarchy         
         markInputAsError($(inputElem).parent(), "Invalid email address.")
         isValidEmail =  false;
     }else{
+        console.log("email validated true");
         // $(inputElem).closest(".form-group").removeClass("has-error");
         // $(inputElem).siblings(".help-block").html("");
+        console.log("marking input as ok")
         markInputAsOk($(inputElem).parent())
         isValidEmail =  true;
     }
 
     if(isValidEmail){
+
+        console.log("valid email... start ajax check");
         $.ajax({
             method: "POST",
             url: "/auth/checkEmail",
@@ -244,13 +255,14 @@ function isEmailInputValid(inputElem){
         })
             .done(function (msg) {
                 if(msg.split(":")[0] === "Error"){
-                    markInputAsError($('#email'), msg.split(":")[1])
+                    markInputAsError($('#email').parent(), msg.split(":")[1])
                 }
                 else if(msg.split(":")[0] === "OK"){
-                    markInputAsOk($('#email'), msg.split(":")[1])
+                    markInputAsOk($('#email').parent(), msg.split(":")[1])
                 }
 
             });
+    
     }
 }
 

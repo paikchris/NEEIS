@@ -70,7 +70,7 @@ class AuthController {
         log.info("Total Memory:" + runtime.totalMemory() / mb);
 
         //Print Maximum available memory
-        log.info("Max Memory:" + runtime.maxMemory() / mb);
+        log.info("Max Memory:" + runtime.maxMemory() / mb); 
     }
     def register() {
         log.info("REGISTER PAGE");
@@ -104,19 +104,21 @@ class AuthController {
         [registerError: params.registerError ]
     }
     def registerUser(){
-        log.info("REGISTERING USER")
-        log.info params;
+        log.info("begin #registerUser()");
+        log.info("params: " + params);
 
         def userRole = "Broker";
         def error = false;
         def defaultUW = ""
         User u;
         try{
+            log.info("begin try to find by email block");
             def userReferenceID = 0;
             def userExistsInAIM = false;
             def aimsql = new Sql(dataSource_aim)
 
-            aimsql.eachRow("SELECT     NameKeyPK, Name, IDCode, NameTypeID, TypeID, Address1, Address2, City, State, PostalCode, AddressKey, Country, MailAddress1, MailAddress2, MailCity, \n" +
+            aimsql.withTransaction {
+                aimsql.eachRow("SELECT     NameKeyPK, Name, IDCode, NameTypeID, TypeID, Address1, Address2, City, State, PostalCode, AddressKey, Country, MailAddress1, MailAddress2, MailCity, \n" +
                     "                      MailState, MailPostalCode, MailAddressKey, Phone, Extension, Fax, PhoneAltType, Home, PhoneAltType2, Remarks, Title, OwnerKey_FK, Email, URL, StatusID, \n" +
                     "                      ActiveFlag, SSN_TaxID, FlagPhysicalAddr, FlagAccountingAddr, FlagPrimaryContact, FlagCompany, PositionID, TitleID, Salutation, CreatedByID, DateAdded, \n" +
                     "                      DateModified, SortName, OwnerID, CustomGrpID, FlagContact, PreviousPhone, PreviousFax, AcctExec, CsrID, AcctExecName, CsrName, OtherGroupID, \n" +
@@ -126,15 +128,19 @@ class AuthController {
                     "                      LastStatementKey_FK, CountryID, MailCountryID\n" +
                     "FROM         taaNameMaster\n" +
                     "WHERE     (Email = '${params.email}')") {
-                log.info it.email
                 log.info "Broker is in AIM"
                 userExistsInAIM = true;
+                log.info "about to assign it.NameKeyPK..."
                 userReferenceID = it.NameKeyPK
+                }
+                log.info("finished email lookup loop");    
             }
 
             if(userExistsInAIM){
+                log.info("userExistsInAIM: true");
             }
             else{
+                log.info("user not in AIM. begin aimsql.call...");
                 aimsql.call("{call dbo.GetKeyField(${Sql.INTEGER}, 'ReferenceID')}") { num ->
                     log.info "userReferenceID $num"
                     userReferenceID = num
@@ -142,7 +148,9 @@ class AuthController {
                 def now = new Date()
                 def timestamp = now.format(dateFormat, timeZone)
 
-                aimsql.execute "insert into taaNameMaster\n" +
+                log.info("begin aimsql.execute insert");
+                aimsql.withTransaction {
+                    aimsql.execute "insert into taaNameMaster\n" +
                         "  (Name, NameTypeID, NameKeyPK, IDCode, TypeID, Address1, Address2, City, \n" +
                         "   State, PostalCode, AddressKey, Country, MailAddress1, MailAddress2, \n" +
                         "   MailCity, MailState, MailPostalCode, MailAddressKey, Phone, Extension, \n" +
@@ -153,22 +161,27 @@ class AuthController {
                         "   FlagContact, FlagUseOwnerPhone, FlagUseOwnerFax, FlagUseOwnerAddress, \n" +
                         "   CommMethodID, FlagPhoneBookOnly, LicenseNbr, UserField1)\n" +
                         "values\n" +
-                        "  ('${params.firstName} ${params.lastName}', 'I', ${userReferenceID}, '${params.agencyID}', 'A', NULL, NULL, \n" +
+                        "  ('${params.firstName} ${params.lastName}', 'I', ${userReferenceID}, '${params.company}', 'A', NULL, NULL, \n" +
                         "   NULL, NULL, NULL, NULL, NULL, NULL, NULL, \n" +
                         "   NULL, NULL, NULL, NULL, NULL, NULL, \n" +
                         "   NULL, NULL, NULL, NULL, NULL, NULL, \n" +
-                        "   '', NULL, ${params.agencyPIN}, NULL, NULL, NULL, 'Y', \n" +
+                        "   '', NULL, ${params.agencyPIN}, '${params.email}', NULL, NULL, 'Y', \n" +
                         "   NULL, NULL, NULL, NULL, \n" +
                         "   NULL, NULL, NULL, '${params.firstName}', 'jason', '${timestamp}', \n" +
                         "   '${timestamp}', NULL, NULL, NULL, NULL, \n" +
                         "   NULL, NULL, NULL, 'N', \n" +
                         "   NULL, NULL)"
-                aimsql.commit();
+                    log.info("ending aim execute. begin aim commit.")
+                    aimsql.commit();
+                    log.info("ending aim commit");    
+                }
             }
 
+            log.info("begin create user");
             u = new User(userRole:userRole, email:params.email, password:params.password,
                     company:params.company, firstName: params.firstName, lastName: params.lastName, phoneNumber: params.phoneNumber, defaultUnderwriter: "",aimContactID:userReferenceID)
             u.save(flush: true, failOnError: true)
+            log.info("end create user");
 
 
 
@@ -185,7 +198,7 @@ class AuthController {
 
         catch(Exception e){
             error=true;
-            log.info(e)
+            log.info("exception caught: " + e)
             if(portal.User.findWhere(email:params.email) ){
                 log.info("User with that email already exists.")
             }
@@ -195,7 +208,7 @@ class AuthController {
         if(error==false) {
 
             session.user = u;
-            log.info(u)
+            log.info("user: " + u)
             redirect(controller: 'auth', action: 'index')
         }
 
@@ -291,7 +304,6 @@ class AuthController {
     }
     def logout(){
         log.info("LOGGING OUT")
-        println "LOGOUT"
         session.user = null;
         log.info("User session info: " + session.user)
         log.info "Logged Out"
@@ -322,9 +334,11 @@ class AuthController {
         def renderString = "";
         if(User.findWhere(email:params.email) ){
             renderString = "Error:User with that email already exists."
+            log.info renderString
         }
         else{
             renderString = "OK:Email/Username is available"
+            log.info renderString
         }
         render text: renderString;
     }

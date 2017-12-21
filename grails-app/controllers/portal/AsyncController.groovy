@@ -4220,7 +4220,6 @@ class AsyncController {
                 "FROM         Producer with (NOLOCK)\n" +
                 "WHERE         (ProducerID='${params.agencyID}') AND (ActiveFlag = 'Y')\n" +
                 "ORDER BY Name") {
-            log.info "Result: " + it.Name
             string = it.Name
         }
         render string;

@@ -36,6 +36,7 @@
                                     <span class="glyphicon glyphicon-remove form-control-feedback" style="display:none"></span>
                                     <span class="help-block"></span>
                                     <span class="agencyName"></span>
+                                </div>
                                 <div class="form-group has-feedback">
                                     <label>Agency PIN<span style="color:red; font-size:12px;">*</span> </label>
                                     <g:passwordField type="password" class="form-control required" name="agencyPIN" placeholder="Agency PIN" id="agencyPIN"/>
@@ -89,7 +90,7 @@
                             </div>
                             <div class="form-group has-feedback">
                                 <label for="phoneNumber">Phone Number<span style="color:red; font-size:12px;">*</span></label>
-                                <g:textField type="text" class="form-control phoneNumberMask required" name="phoneNumber" placeholder="(xxx)xxx-xxxx" id="phoneNumber"/>
+                                <g:textField type="text" class="form-control phoneNumberMask" name="phoneNumber" placeholder="(xxx)xxx-xxxx" id="phoneNumber"/>
                                 <span class="glyphicon glyphicon-ok form-control-feedback" style="display:none"></span>
                                 <span class="glyphicon glyphicon-remove form-control-feedback" style="display:none"></span>
                                 <span class="help-block"></span>
