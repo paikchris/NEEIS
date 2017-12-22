@@ -90,7 +90,7 @@
                             </div>
                             <div class="form-group has-feedback">
                                 <label for="phoneNumber">Phone Number<span style="color:red; font-size:12px;">*</span></label>
-                                <g:textField type="text" class="form-control phoneNumberMask" name="phoneNumber" placeholder="(xxx)xxx-xxxx" id="phoneNumber"/>
+                                <g:textField type="text" class="form-control required" name="phoneNumber" placeholder="(xxx)xxx-xxxx" id="phoneNumberInput"/>
                                 <span class="glyphicon glyphicon-ok form-control-feedback" style="display:none"></span>
                                 <span class="glyphicon glyphicon-remove form-control-feedback" style="display:none"></span>
                                 <span class="help-block"></span>
