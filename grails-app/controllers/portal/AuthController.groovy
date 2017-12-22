@@ -364,7 +364,9 @@ class AuthController {
             body "An email with appointment information has been sent to the following agency:\n\n" +
                 "Agency Name: ${params.agency}\n" +
                 "Agency Contact: ${params.agencyContact}\n" +
-                "Contact Email: ${params.contactEmail}\n\n" +
+                "Agency Address: ${params.agencyStreet}, ${params.agencyCity}, ${params.agencyState}" + " ${params.agencyZip}\n" +
+                "Contact Email: ${params.contactEmail}\n" +
+                "Phone: ${params.agencyPhone}\n\n" +
                 "Thank you."
         }
         redirect(url: "/auth/appointmentRequestThanks");

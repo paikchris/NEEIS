@@ -2,7 +2,8 @@ $(document).ready(function () {
     $(document.body).on('focus', '.phoneNumberMask' ,function(){
         //this.value = this.value.replace(/(\d{3})\-?(\d{3})\-?(\d{4})/,'$1-$2-$3');
         //alert ("OK");
-        $(".phoneNumberMask").mask("(999)999-9999"); //check if mask has options so you can turn off placeholder on form
+        $(".phoneNumberMask").mask("(999)999-9999");
+        
     });
 
     $(document.body).on('focusout', '#agencyID' ,function(){
@@ -34,6 +35,7 @@ $(document).ready(function () {
         if($(this).hasClass('passwordVerify')){
             doesPasswordsMatch();
         }
+
         // console.log(validateRegisterForm())
         // if(validateRegisterForm()){
         //     $('#submitButton').prop('disabled', false)
@@ -79,6 +81,12 @@ $(document).ready(function () {
         else{
             event.preventDefault();
         }
+    });
+
+    // this masks the phone number input while allowing the 'required' validation
+    document.getElementById('phoneNumberInput').addEventListener('input', function (e) {
+        var x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+        e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
     });
 });
 

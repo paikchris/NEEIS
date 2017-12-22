@@ -55,6 +55,98 @@
                                 <span class="glyphicon glyphicon-remove form-control-feedback" style="display:none"></span>
                                 <span class="help-block"></span>
                             </div>
+                            <div>
+                                <label>Agency Address</label>
+                            </div>
+                            <div class="form-group has-feedback">
+                                <label for="agencyStreet">Street<span style="color:red; font-size:12px;">*</span></label>
+                                <g:textField type="text" class="form-control required" name="agencyStreet" placeholder="Agency Street" id="agencyStreet"/>
+                                <span class="glyphicon glyphicon-ok form-control-feedback" style="display:none"></span>
+                                <span class="glyphicon glyphicon-remove form-control-feedback" style="display:none"></span>
+                                <span class="help-block"></span> 
+                            </div>
+                            <div class="form-group has-feedback">
+                                <label for="contactEmail">City<span style="color:red; font-size:12px;">*</span></label>
+                                <g:textField type="text" class="form-control required" name="agencyCity" placeholder="Agency City" id="agencyCity"/>
+                                <span class="glyphicon glyphicon-ok form-control-feedback" style="display:none"></span>
+                                <span class="glyphicon glyphicon-remove form-control-feedback" style="display:none"></span>
+                                <span class="help-block"></span>
+                            </div> 
+                            <div class="form-group has-feedback">
+                                <label for="contactEmail">State<span style="color:red; font-size:12px;">*</span></label>
+                                <select class="form-control required" name="agencyState" id="agencyState">
+                                    <option value="" selected="selected">State</option>
+                                    <option value="AL">Alabama</option>
+                                    <option value="AK">Alaska</option>
+                                    <option value="AZ">Arizona</option>
+                                    <option value="AR">Arkansas</option>
+                                    <option value="CA">California</option>
+                                    <option value="CO">Colorado</option>
+                                    <option value="CT">Connecticut</option>
+                                    <option value="DE">Delaware</option>
+                                    <option value="DC">District Of Columbia</option>
+                                    <option value="FL">Florida</option>
+                                    <option value="GA">Georgia</option>
+                                    <option value="GU">Guam</option>
+                                    <option value="HI">Hawaii</option>
+                                    <option value="ID">Idaho</option>
+                                    <option value="IL">Illinois</option>
+                                    <option value="IN">Indiana</option>
+                                    <option value="IA">Iowa</option>
+                                    <option value="KS">Kansas</option>
+                                    <option value="KY">Kentucky</option>
+                                    <option value="LA">Louisiana</option>
+                                    <option value="ME">Maine</option>
+                                    <option value="MD">Maryland</option>
+                                    <option value="MA">Massachusetts</option>
+                                    <option value="MI">Michigan</option>
+                                    <option value="MN">Minnesota</option>
+                                    <option value="MS">Mississippi</option>
+                                    <option value="MO">Missouri</option>
+                                    <option value="MT">Montana</option>
+                                    <option value="NE">Nebraska</option>
+                                    <option value="NV">Nevada</option>
+                                    <option value="NH">New Hampshire</option>
+                                    <option value="NJ">New Jersey</option>
+                                    <option value="NM">New Mexico</option>
+                                    <option value="NY">New York</option>
+                                    <option value="NC">North Carolina</option>
+                                    <option value="ND">North Dakota</option>
+                                    <option value="OH">Ohio</option>
+                                    <option value="OK">Oklahoma</option>
+                                    <option value="OR">Oregon</option>
+                                    <option value="PA">Pennsylvania</option>
+                                    <option value="PR">Puerto Rico</option>
+                                    <option value="RI">Rhode Island</option>
+                                    <option value="SC">South Carolina</option>
+                                    <option value="SD">South Dakota</option>
+                                    <option value="TN">Tennessee</option>
+                                    <option value="TX">Texas</option>
+                                    <option value="UT">Utah</option>
+                                    <option value="VT">Vermont</option>
+                                    <option value="VI">Virgin Islands</option>
+                                    <option value="VA">Virginia</option>
+                                    <option value="WA">Washington</option>
+                                    <option value="WV">West Virginia</option>
+                                    <option value="WI">Wisconsin</option>
+                                    <option value="WY">Wyoming</option>
+                                </select>
+                                <span class="help-block"></span> 
+                            </div>
+                            <div class="form-group has-feedback">
+                                <label for="contactEmail">Zipcode<span style="color:red; font-size:12px;">*</span></label>
+                                <g:textField type="text" class="form-control required" name="agencyZipCode" placeholder="Agency Zipcode" id="agencyZipCode"/>
+                                <span class="glyphicon glyphicon-ok form-control-feedback" style="display:none"></span>
+                                <span class="glyphicon glyphicon-remove form-control-feedback" style="display:none"></span>
+                                <span class="help-block"></span>
+                            </div>
+                            <div class="form-group has-feedback">
+                                <label for="agencyPhone">Agency Phone Number<span style="color:red; font-size:12px;">*</span></label>
+                                <g:textField type="text" class="form-control required" name="agencyPhone" placeholder="(xxx)xxx-xxxx" id="phoneNumberInput"/>
+                                <span class="glyphicon glyphicon-ok form-control-feedback" style="display:none"></span>
+                                <span class="glyphicon glyphicon-remove form-control-feedback" style="display:none"></span>
+                                <span class="help-block"></span>
+                            </div>
                             <br>
 
                             <button type="submit" class="btn btn-primary btn-lg btn-block" id="getAppointedButton">Get Appointed</button>
