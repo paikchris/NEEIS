@@ -48,6 +48,13 @@ $(document).ready(function () {
 
     });
 
+    $(document).on('focusout', '.forgotPassword', function (){
+        isInputFilled(this);
+
+        //VALIDATE EMAILS
+        isEmailFormatValid(this);
+    });
+
     $(document).on('click', '#submitButton', function (event){
         console.info("reg.js: validating register form...");
         if(validateRegisterForm()){
@@ -271,6 +278,23 @@ function isEmailInputValid(inputElem){
 
             });
     
+    }
+}
+
+// put in own function because reverse functionality needed - must be existing email
+function isEmailFormatValid(inputElem){
+    var emailFormatValid = false;
+    if(validateEmail($(inputElem).val().trim()) == false){
+        console.log("email format wrong");
+        //sends parent because the '@' form field add-on affects the heirarchy         
+        markInputAsError($(inputElem).parent(), "Invalid email address.")
+        $('.submitButton').addClass('disabled');    
+        emailFormatValid = false;
+    }else{
+        console.log("email in correct format");
+        console.log("marking input as ok");
+        markInputAsOk($(inputElem).parent());
+        emailFormatValid = true;
     }
 }
 

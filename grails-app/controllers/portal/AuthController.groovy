@@ -210,7 +210,7 @@ class AuthController {
 
             session.user = u;
             log.info("user: " + u)
-            redirect(controller: 'auth', action: 'index')
+            redirect(controller: 'main', action: 'index')
         }
 
     }
@@ -355,7 +355,7 @@ class AuthController {
             body "An email with appointment information has been sent to the following agency:\n\n" +
                 "Agency Name: ${params.agency}\n" +
                 "Agency Contact: ${params.agencyContact}\n" +
-                "Agency Address: ${params.agencyStreet}, ${params.agencyCity}, ${params.agencyState}" + " ${params.agencyZip}\n" +
+                "Agency Address: ${params.agencyStreet}, ${params.agencyCity}, ${params.agencyState}" + " ${params.agencyZipCode}\n" +
                 "Contact Email: ${params.contactEmail}\n" +
                 "Phone: ${params.agencyPhone}\n\n" +
                 "Thank you."
@@ -366,5 +366,27 @@ class AuthController {
     def appointmentRequestThanks() {
     }
 
+    def forgotPassword() {
+    }
+
+    def sendPasswordResetEmail() {
+        def user = User.findWhere(email:params.email)
+        if(user){
+            mailService.sendMail {
+                to "travis.smith@mac.com" //remove for dev only -- change to ${user.name}
+                from "service@neeis.com"
+                subject "NEEIS Password Reset"
+                body "Click the link below to reset your New Empire user password...\n\n" +
+                    "http://localhost/auth/resetForgottenPassword\n\n" +
+                    "Thank you."
+            }
+            redirect(url: "/auth/login");
+        } else {
+            // No registered user associated with that email address.
+        }
+    }
+
+    def resetForgottenPassword() {
+    }
 
 }
