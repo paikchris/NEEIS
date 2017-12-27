@@ -18,6 +18,11 @@
                 <div class="panel panel-default" style="background: rgba(255, 255, 255, 0.9);">
                     <div class="panel-body">
                         <g:form controller="auth" action="login">
+                            <g:if test="${flash.error}">
+                                <div class="form-group alert alert-danger" role="alert" style="text-align: center;">
+                                    ${flash.error}
+                                </div>
+                            </g:if>
                             <div class="form-group">
                                 <label for="email">Email</label>
                                 <g:textField type="email" class="form-control" name="email" placeholder="Email"/>

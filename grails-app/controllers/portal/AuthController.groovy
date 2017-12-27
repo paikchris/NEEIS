@@ -14,6 +14,7 @@ class AuthController {
     def dateFormat = 'yyyy-MM-dd HH:mm:ss.SSS'
     def mailService
     def groovyPageRenderer
+    def bcryptService
 
     def check(){
         log.info params
@@ -178,10 +179,10 @@ class AuthController {
             }
 
             log.info("begin create user");
-            u = new User(userRole:userRole, email:params.email, password:params.password,
+            u = new User(userRole:userRole, email:params.email, password:params.password.encodeAsBcrypt(),
                     company:params.company, firstName: params.firstName, lastName: params.lastName, phoneNumber: params.phoneNumber, defaultUnderwriter: "",aimContactID:userReferenceID)
             u.save(flush: true, failOnError: true)
-            log.info("end create user");
+            log.info("end create user" + u.password);
 
 
 
@@ -272,36 +273,27 @@ class AuthController {
             log.info(it+":"+request.getHeader(it))
         }
 
-        def user = User.findWhere(email:params.email, password:params.password)
+        def user = User.findWhere(email:params.email)
 
+        if(user){
+            if(bcryptService.checkPassword(params.password, user.password)){
+                session.user = user
+                log.info("User session info: " + session.user)
 
-        session.user = user
-        log.info("User session info: " + session.user)
+                //FIX AIM CONTACT ID IF NULL
+                if(session.user.aimContactID == null){
+                    aimSqlService.fixUserAimContactID(submissionMap.brokerEmail)
+                }
 
-
-
-
-
-        if (user){
-            //FIX AIM CONTACT ID IF NULL
-            if(session.user.aimContactID == null){
-                aimSqlService.fixUserAimContactID(submissionMap.brokerEmail)
+                log.info "Logged In"
+                redirect(controller:'main',action:'index')
             }
-
-
-            log.info "Logged In"
-            redirect(controller:'main',action:'index')
-
-        }
-        else{
-            log.info "Log In Fail"
+        } else {
+            flash.error = "Invalid Email/Password"
             redirect(controller:'auth',action:'index')
         }
-
-
-
-
     }
+
     def logout(){
         log.info("LOGGING OUT")
         session.user = null;
