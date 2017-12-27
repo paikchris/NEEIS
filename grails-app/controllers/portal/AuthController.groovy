@@ -275,20 +275,19 @@ class AuthController {
 
         def user = User.findWhere(email:params.email)
 
-        if(user){
-            if(bcryptService.checkPassword(params.password, user.password)){
-                session.user = user
-                log.info("User session info: " + session.user)
+        if(user && bcryptService.checkPassword(params.password, user.password)){
+            session.user = user
+            log.info("User session info: " + session.user)
 
-                //FIX AIM CONTACT ID IF NULL
-                if(session.user.aimContactID == null){
-                    aimSqlService.fixUserAimContactID(submissionMap.brokerEmail)
-                }
-
-                log.info "Logged In"
-                redirect(controller:'main',action:'index')
+            //FIX AIM CONTACT ID IF NULL
+            if(session.user.aimContactID == null){
+                aimSqlService.fixUserAimContactID(submissionMap.brokerEmail)
             }
+
+            log.info "Logged In"
+            redirect(controller:'main',action:'index')
         } else {
+            log.info("user or password wrong.")
             flash.error = "Invalid Email/Password"
             redirect(controller:'auth',action:'index')
         }
