@@ -36,7 +36,7 @@
                     <br>
                     <div class="row">
                         <div class="col-xs-4">
-                            <button type="button" class="btn btn-default" id="openResetPasswordButton">Change Password</button>
+                            <button type="button" class="btn btn-default" id="openChangePasswordButton">Change Password</button>
                         </div>
                         <div class="col-xs-2">
 

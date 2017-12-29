@@ -308,7 +308,7 @@
 </div>
 
 <g:render template="/shared/modals/myAccountModal" model="[user:user]"/>
-<g:render template="/shared/modals/resetPasswordModal" model=""/>
+<g:render template="/shared/modals/changePasswordModal" model=""/>
 <g:render template="/shared/modals/alertMessageModal" model=""/>
 
 

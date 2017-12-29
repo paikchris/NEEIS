@@ -43,3 +43,7 @@
 /vagrant/vagrant.conf
 /vagrant/files/TrainingInsertStatements.sql
 /vagrant/files/TrainingInsertStatements2.sql
+
+null/logs/grails\.log
+
+*.log

@@ -17,7 +17,7 @@
         <div class="col-xs-4">
             <div class="panel panel-default" style="background: rgba(255, 255, 255, 0.9);">
                 <div class="panel-body" style="padding:25px;">
-                    <g:form controller="auth" action="resetPassword">
+                    <g:form controller="auth" action="changePassword">
                         <div class="form-group" style="margin-bottom:40px;">
                             <g:passwordField type="password" class="form-control" name="password" placeholder="Current Password"/>
                         </div>

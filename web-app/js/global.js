@@ -103,11 +103,11 @@ $(document).ready(function () {
     $( "#settingsButton" ).click(function() {
         $('#settingsModal').modal('show');
     });
-    $( "#openResetPasswordButton" ).click(function() {
+    $( "#openChangePasswordButton" ).click(function() {
         $('#myAccountModal').modal('hide');
-        $('#resetPasswordModal').modal('show');
+        $('#changePasswordModal').modal('show');
     });
-    $( "#resetPasswordButton" ).click(function() {
+    $( "#changePasswordButton" ).click(function() {
         //alert();
         var currentPass = $('#currentPassword').val();
         var newPass = $('#newPassword').val();
@@ -116,13 +116,13 @@ $(document).ready(function () {
         if(validateResetForm()){
             $.ajax({
                 method: "POST",
-                url: "/auth/resetPassword",
+                url: "/auth/changePassword",
                 data: {currentPass: currentPass, newPass: newPass, confirmNewPass: confirmNewPass}
             })
                 .done(function (msg) {
                     alert(msg);
                     if(msg === "good"){
-                        $('#resetPasswordModal').modal('hide');
+                        $('#changePasswordModal').modal('hide');
                         window.location.href = "./../main/index";
                     }
                     else{
@@ -133,7 +133,7 @@ $(document).ready(function () {
         }
 
     });
-    $(document).on('focusout', '.requiredResetPassword', function (){
+    $(document).on('focusout', '.requiredChangePassword', function (){
         if($(this).val().trim().length ==0){
             $(this).closest(".form-group").addClass("has-error");
         }
@@ -597,7 +597,7 @@ function hasHiddenDivInputInit(){
 ///////////////////////MOVE THIS TO ANOTHER FILE///////////////////
 function validateResetForm(){
     var validReset = true;
-    $('.requiredResetPassword').each(function () {
+    $('.requiredChangePassword').each(function () {
         if($(this).val().trim().length ==0){
             $(this).closest(".form-group").addClass("has-error");
             validReset = false;
