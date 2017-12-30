@@ -55,6 +55,10 @@ $(document).ready(function () {
         isEmailFormatValid(this);
     });
 
+    $(document).on('focus', '.forgotPassword', function(){
+        $('.alert').hide();
+    });
+
     $(document).on('click', '#submitButton', function (event){
         console.info("reg.js: validating register form...");
         if(validateRegisterForm()){
@@ -287,7 +291,7 @@ function isEmailFormatValid(inputElem){
     if(validateEmail($(inputElem).val().trim()) == false){
         console.log("email format wrong");
         //sends parent because the '@' form field add-on affects the heirarchy         
-        markInputAsError($(inputElem).parent(), "Invalid email address.")
+        markInputAsError($(inputElem).parent(), "Invalid format.")
         $('.submitButton').addClass('disabled');    
         emailFormatValid = false;
     }else{

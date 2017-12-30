@@ -7,7 +7,7 @@
   <body>
     <div class="container">
         <div class="row">
-            <div class="col-xs-12 loginHeader"><h1>NEW PASSWORD</h1></div>
+            <div class="col-xs-12 loginHeader"><h1>RESET PASSWORD</h1></div>
         </div>
 
         <div class="row">
@@ -20,7 +20,7 @@
             <div class="col-xs-6 col-xs-offset-3">
                 <div class="panel panel-default" style="background: rgba(255, 255, 255, 0.9);">
                     <div class="panel-body">
-                        <g:form controller="auth" action="emailPasswordResetLink">
+                        <g:form controller="user" action="resetPassword">
                             <div class="form-group has-feedback">
                                 <label for="password">Password<span style="color:red; font-size:12px;">*</span> <span style="font-weight: 300">(Must be at least 6 characters)</span></label>
                                 <g:passwordField type="password" class="form-control required passwordInput" name="password" placeholder="Password" id="password"/>
@@ -35,7 +35,9 @@
                                 <span class="glyphicon glyphicon-remove form-control-feedback" style="display:none"></span>
                                 <span class="help-block"></span>
                             </div>
-                            <button type="submit" class="btn btn-primary btn-lg btn-block" id="submitButton">Update Password</button>
+                            <g:hiddenField name="email" value="${email}" />
+                            <g:hiddenField name="token" value="${token}" />
+                            <button type="submit" class="btn btn-primary btn-lg btn-block" id="submitButton">Reset Password</button>
                         </g:form>
                     </div>
                 </div>

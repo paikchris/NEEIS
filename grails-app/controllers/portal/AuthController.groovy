@@ -6,6 +6,7 @@ import static groovyx.net.http.ContentType.URLENC
 import portal.DAO.*
 
 
+
 class AuthController {
 
     def dataSource_aim
@@ -217,8 +218,8 @@ class AuthController {
 
 
 
-    def resetPassword(){
-        log.info("PASSWORD RESET ACTION1")
+    def changePassword(){
+        log.info("PASSWORD CHANGE ACTION1")
         log.info(params)
 
         log.info("session user: " + session.user.password)
@@ -342,15 +343,14 @@ class AuthController {
         mailService.sendMail {
             multipart true
             to "${params.contactEmail}"
-            cc "travis@neeis.com" // REMOVE for development only
+            cc "travis@neeis.com" // dev only, change for production
             from "service@neeis.com"
             subject "NEEIS Broker Appointment Application"
             html(content)
             attachBytes 'NEEIS_Broker_Contract.pdf','application/pdf', new File('./web-app/attachments/NEEIS_Broker_Contract.pdf').readBytes()
         }
         mailService.sendMail {
-            to "travis.smith@mac.com" //remove for dev only
-            from "service@neeis.com"
+            to "travis.smith@mac.com" // dev only, change for production
             subject "NEEIS Appointment Information Request Notification"
             body "An email with appointment information has been sent to the following agency:\n\n" +
                 "Agency Name: ${params.agency}\n" +
@@ -363,30 +363,50 @@ class AuthController {
         redirect(url: "/auth/appointmentRequestThanks");
     }
 
-    def appointmentRequestThanks() {
-    }
+    def appointmentRequestThanks() {}
 
-    def forgotPassword() {
-    }
+    def forgotPassword() {}
 
     def sendPasswordResetEmail() {
         def user = User.findWhere(email:params.email)
         if(user){
-            mailService.sendMail {
-                to "travis.smith@mac.com" //remove for dev only -- change to ${user.name}
-                from "service@neeis.com"
-                subject "NEEIS Password Reset"
-                body "Click the link below to reset your New Empire user password...\n\n" +
-                    "http://localhost/auth/resetForgottenPassword\n\n" +
-                    "Thank you."
+            def token = Token.findByEmail(user.email)
+            if(!token) {
+                token = new Token(email: user.email)
+                token.save(flush: true);
             }
-            redirect(url: "/auth/login");
+                mailService.sendMail {
+                to "travis@neeis.com" //dev only, change for production -- change to ${user.email}
+                subject "NEEIS Password Reset"
+                // dev only, change URL link for production 
+                body "A request has been made to reset your NEEIS user password. Click the link below to create a new password...\n\n" +
+                    "http://localhost:8080/auth/resetPassword?e=" + user.email + "&t=" + token.value + "\n\n" +
+                    "This link will expire in 24 hours.\n\n" +
+                    "Thank you!\n\n" +
+                    "New Empire Entertainment Insurance Services\n" +
+                    "1216 Hermosa Avenue, Suite A\n" +
+                    "Hermosa Beach, CA 90254"
+            }
+            flash.notice = "Check your email for a link to reset your password.";
+            redirect(controller:'auth',action:'passwordEmailConfirmation');
         } else {
-            // No registered user associated with that email address.
+            flash.error = "Email address not found.";
+            redirect(controller:'auth',action:'forgotPassword');
+        }   
+    }
+
+    def resetPassword() {
+        log.info("#auth.resetPassword params:" + params)
+        def token = Token.findByEmail(params.e)
+        log.info("token: " + token)
+        if(token && (token.value == params.t) && (token.isActive())) {
+            log.info("token valid, rendering form")
+            [email: params.e, token: params.t]    
+        } else {
+            render(view:'invalidToken');
         }
     }
 
-    def resetForgottenPassword() {
-    }
+    def passwordEmailConfirmation() {}
 
 }

@@ -23,6 +23,11 @@
                                     ${flash.error}
                                 </div>
                             </g:if>
+                            <g:if test="${flash.message}">
+                                <div class="form-group alert alert-info" role="alert" style="text-align: center;">
+                                    ${flash.message}
+                                </div>
+                            </g:if>
                             <div class="form-group">
                                 <label for="email">Email</label>
                                 <g:textField type="email" class="form-control" name="email" placeholder="Email"/>
