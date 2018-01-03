@@ -2,6 +2,8 @@ var userRole = ""
 var submissionArray
 var submissionTableDataArray = []
 var submissionTable
+var monthlyPremium
+var monthlyPremiumArray = []
 $(document).ready(function () {
     // var thisUser
     // $.fn.dataTable.moment('L');
@@ -15,6 +17,7 @@ function init() {
     setNeeisUnderwriterList()
     getUnderwriterDashboardTableRowContent()
     initDashboardListeners()
+    getTotalMonthlyPremiums()
 }
 
 function initDashboardListeners() {
@@ -39,8 +42,6 @@ function initDashboardListeners() {
     })
 }
 
-
-// Determines the users account Underwriter / Broker to determine layout
 function setUserRole() {
     try {
         userRole = $('#userRole').html().trim();
@@ -61,8 +62,88 @@ function setNeeisUnderwriterList() {
     }
 }
 
-// UNDERWRITER DASHBOARD AJAX call to MainController / (.done) "render json string format of the submission data"
-// underWriterDashboardTableRowLoop() -> insert Reformated Array into DataTable / Clicks collumn: "Submission Date" twice to default view ascending order
+function getTotalMonthlyPremiums() {
+    $.ajax({
+        url: "/main/getTotalMonthlyPremium",
+        data: {
+            user: userRole
+        }
+    })
+
+        .done(function (msg) {
+            monthlyPremium = JSON.parse(msg)
+            totalMonthlyPremiumFilter()
+            totalMonthlyPremiumLoop()
+            // console.log(monthlyPremium)
+        })
+}
+
+function totalMonthlyPremiumFilter() {
+    monthlyPremiumArray = []
+    for (var i = 0; i < monthlyPremium.length; i++) {
+        var premiumGraph = monthlyPremium[i]
+        var monthlyPremiumRow = {}
+        if (premiumGraph.StatusID == 'EXP'){
+            monthlyPremiumArray.push(premiumGraph)
+        }
+    }
+    console.log(monthlyPremiumArray)
+    monthlyPremiumFilterDate()
+    // $('.dashboardSubmissionTableRows').html(allTableRowsHTML)
+}
+
+function monthlyPremiumFilterDate(){
+    for (var i = 0; i < monthlyPremiumArray.length; i++) {
+        var premiumGraph = monthlyPremiumArray[i]
+        var monthlyPremiumRow = []
+        var momentsDate = premiumGraph.Received
+        var date = moment(momentsDate).format("MM/YYYY")
+        console.log(date)
+        if (date == 'EXP'){
+            monthlyPremiumRow.push(premiumGraph.BndPremium)
+            monthlyPremiumRow.push(premiumGraph.Received)
+            monthlyPremiumRow.push(premiumGraph.StatusID)
+            monthlyPremiumArray.push(monthlyPremiumRow)
+        }
+    }
+}
+
+function totalMonthlyPremiumLoop() {
+    monthlyPremiumArray = []
+    for (var i = 0; i < monthlyPremium.length; i++) {
+        var premiumGraph = monthlyPremium[i]
+        var monthlyPremiumRom = []
+
+        // monthlyPremiumRom.push(premiumGraph.aimQuoteID)
+        // monthlyPremiumRom.push(premiumGraph.namedInsured)
+        // monthlyPremiumRom.push(premiumGraph.statusCode)
+        // monthlyPremiumRom.push(premiumGraph.submitDate)
+        // monthlyPremiumRom.push(premiumGraph.submittedBy)
+        //
+        // monthlyPremiumArray.push(monthlyPremiumRom)
+
+        // var submissionMap = submissionArray[i]
+        // var submissionTableRow = getUnderwriterDashboardSubmissionRowHTML(submissionMap)
+        // allTableRowsHTML = allTableRowsHTML + submissionTableRow
+    }
+    // $('.dashboardSubmissionTableRows').html(allTableRowsHTML)
+}
+
+//REPLACE JANUARY WITH A VARIABLE THAT WILL BE USED FOR Y AXIS
+// function createDashboardGraphBars() {
+//     var htmlString = "" +
+//         "<span class='chart__label'>" +
+//         "January" +
+//         "</span>" +
+//         "</li>"
+//     "<li class='chart__bar' style='width: 98%;'>" +
+//     return htmlString//
+
+// }
+
+
+
+
 function getUnderwriterDashboardTableRowContent() {
     $.ajax({
         url: "/main/getUnderwriterDashboardTableData",
@@ -91,7 +172,6 @@ function getUnderwriterDashboardTableRowContent() {
         })
 }
 
-// Converts submission DataTable string into proper array format [[],[],[]] / loops to push collumns data into array
 function underWriterDashboardTableRowLoop() {
     submissionTableDataArray = []
     for (var i = 0; i < submissionArray.length; i++) {
@@ -112,16 +192,6 @@ function underWriterDashboardTableRowLoop() {
     }
     // $('.dashboardSubmissionTableRows').html(allTableRowsHTML)
 }
-
-var table = $('#example').DataTable();
-
-// #column3_search is a <input type="text"> element
-$('#column3_search').on('keyup', function () {
-    table
-        .columns(3)
-        .search(this.value)
-        .draw();
-});
 
 
 // function createDashboardTableRows(dvVersionData, versionData, quoteDetails, submissionRowParent) {

@@ -1504,10 +1504,7 @@ class MainController {
 
     }
 
-//
-//UNDERWRITER DASHBOARD SUBMISSION TABLE AJAX CALL FROM dashboard.js / Call DashboardService.groovy to receive Submission Data as JSON Object -> Convert to JS String
-//render String to dashboard.js
-//(data received: UserRole will need to set up a check to verify underwriter status)
+
     def getUnderwriterDashboardTableData(){
 
         def jsString = dashboardService.getUnderwriterDashboardTableRows()
@@ -1515,5 +1512,14 @@ class MainController {
 //        log.info jsString
         render jsString
 //        log.info ("controller")
+    }
+
+    def getTotalMonthlyPremium(){
+
+        def premiumString = dashboardService.getSubmissionPremiumDataGraph()
+
+//        log.info jsString
+        render premiumString
+        log.info ("controller")
     }
 }

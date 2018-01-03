@@ -45,7 +45,7 @@
                                        id="table_id"
                                        class="table table-striped table-bordered" width="100%" cellspacing="">
                                     <div class="tableButton  col-xs-12">
-                                        <div class="row pull-right"
+                                        <div class="row pull-right">
 
                                         <div class="btn-group">
                                             <button type="button" class="btn-xs btn-primary dropdown-toggle submissionStatusButton"
@@ -176,7 +176,7 @@
             <div class="col-xs-4">
                 <div class="panel panel-primary">
                     <!-- Default panel contents -->
-                    <div class="panel-heading">Activity Feed</div>
+                    <div class="panel-heading">This is not an Activity Feed</div>
 
                     <div id="dashboardActivityFeedPanel">
                         <div class="activity-feed">
