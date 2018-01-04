@@ -274,24 +274,46 @@ class AuthController {
             log.info(it+":"+request.getHeader(it))
         }
 
-        def user = User.findWhere(email:params.email)
+        def user = User.findByEmail(params.email);
 
-        if(user && bcryptService.checkPassword(params.password, user.password)){
-            session.user = user
-            log.info("User session info: " + session.user)
-
-            //FIX AIM CONTACT ID IF NULL
-            if(session.user.aimContactID == null){
-                aimSqlService.fixUserAimContactID(submissionMap.brokerEmail)
+        if(user) {
+            log.info("User found.");
+            
+            // check if hashed password in database
+            try {
+                if(bcryptService.checkPassword(params.password, user.password)) {
+                }
             }
+            // catch unencrypted passwords and encrypt
+            catch (IllegalArgumentException illegalArgument) {
+                log.info(illegalArgument);
+                log.info("Password not encrypted. Encrypting...");
+                user.password = user.password.encodeAsBcrypt();
+                user.merge(flush:true);
+                log.info("... saved.");
+            }
+            
 
-            log.info "Logged In"
-            redirect(controller:'main',action:'index')
-        } else {
-            log.info("user or password wrong.")
-            flash.error = "Invalid Email/Password"
-            redirect(controller:'auth',action:'index')
-        }
+            // check entered password against encrypted password in database
+            if(bcryptService.checkPassword(params.password, user.password)) {
+                log.info("Encrypted password authenticated.");
+                session.user = user;
+                log.info("Logged In: " + session.user);
+                
+                // FIX AIM CONTACT ID IF NULL
+                if(session.user.aimContactID == null){
+                    aimSqlService.fixUserAimContactID(submissionMap.brokerEmail)
+                }
+
+                redirect(controller:'main',action:'index');
+                return;
+            }
+        } 
+        
+        // display friendly message for incorrect credentials
+        log.info("No user found or incorrect password.");
+        flash.error = "Invalid Email/Password";
+        redirect(controller:'auth',action:'index');
     }
 
     def logout(){
