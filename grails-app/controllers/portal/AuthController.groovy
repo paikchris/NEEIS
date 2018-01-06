@@ -163,7 +163,7 @@ class AuthController {
                         "   FlagContact, FlagUseOwnerPhone, FlagUseOwnerFax, FlagUseOwnerAddress, \n" +
                         "   CommMethodID, FlagPhoneBookOnly, LicenseNbr, UserField1)\n" +
                         "values\n" +
-                        "  ('${params.firstName} ${params.lastName}', 'I', ${userReferenceID}, '${params.company}', 'A', NULL, NULL, \n" +
+                        "  ('${params.firstName} ${params.lastName}', 'I', ${userReferenceID}, '${params.agencyID}', 'A', NULL, NULL, \n" +
                         "   NULL, NULL, NULL, NULL, NULL, NULL, NULL, \n" +
                         "   NULL, NULL, NULL, NULL, NULL, NULL, \n" +
                         "   NULL, NULL, NULL, NULL, NULL, NULL, \n" +
@@ -181,7 +181,7 @@ class AuthController {
 
             log.info("begin create user");
             u = new User(userRole:userRole, email:params.email, password:params.password.encodeAsBcrypt(),
-                    company:params.company, firstName: params.firstName, lastName: params.lastName, phoneNumber: params.phoneNumber, defaultUnderwriter: "",aimContactID:userReferenceID)
+                    company:params.agencyID, firstName: params.firstName, lastName: params.lastName, phoneNumber: params.phoneNumber, defaultUnderwriter: "",aimContactID:userReferenceID)
             u.save(flush: true, failOnError: true)
             log.info("end create user" + u.password);
 
