@@ -18,17 +18,17 @@
 
                 <div class="form-group" style="margin-bottom:40px;">
                     <label for="password">Current Password<span style="color:red; font-size:12px;">*</span> </label>
-                    <g:passwordField type="password" class="form-control requiredChangePassword passwordInput" name="password" placeholder="Current Password" id="currentPassword" />
+                    <g:passwordField type="password" class="form-control requiredChangePassword passwordInput" name="currentPassword" placeholder="Current Password" id="currentPassword" />
                     <span class="help-block"></span>
                 </div>
                 <div class="form-group" style="margin-bottom:10px;">
                     <label for="password">New Password<span style="color:red; font-size:12px;">*</span> <span style="font-weight: 300">(Must be at least 6 characters)</span></label>
-                    <g:passwordField type="password" class="form-control requiredChangePassword passwordInput" name="newpassword" placeholder="New Password" id="newPassword" />
+                    <g:passwordField type="password" class="form-control requiredChangePassword passwordInput" name="newPassword" placeholder="New Password" id="newPassword" />
                     <span class="help-block"></span>
                 </div>
                 <div class="form-group" style="margin-bottom:25px;">
                     <label for="verifyPassword">Verify Password<span style="color:red; font-size:12px;">*</span></label>
-                    <g:passwordField type="password" class="form-control requiredChangePassword passwordInput passwordVerify" name="newpasswordConfirm" placeholder="Confirm New Password" id="confirmNewPassword" />
+                    <g:passwordField type="password" class="form-control requiredChangePassword passwordInput passwordVerify" name="newPasswordConfirm" placeholder="Confirm New Password" id="newPasswordConfirm" />
                     <span class="help-block"></span>
                 </div>
 

@@ -144,8 +144,7 @@
 
 	<script src="${resource(dir: 'js/utils', file: 'notifications.js')}" ></script>
 
-	<!-- Neeis Global JS file-->
-	<script src="${resource(dir: 'js', file: 'global.js')}" ></script>
+	
 
 	<script src="${resource(dir: 'js/utils', file: 'ajaxHandlers.js')}" ></script>
 
@@ -238,7 +237,7 @@
 
 				<li><a href="#" style="padding-right:2px; padding-top: 14px;"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></a></li>
 				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" style="padding-left: 2px" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+					<a href="#" class="dropdown-toggle" style="padding-left: 2px" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" id="loggedInUser">
 						${user.firstName} ${user.lastName}
 						<span id="userDetails-email" style="display:none">${user.email}</span>
 						<span id="userDetails-company" style="display:none">${user.company}</span>
@@ -249,7 +248,7 @@
 						<span class="caret"></span>
 					</a>
 					<ul class="dropdown-menu">
-						<li><a href="#" id="myAccountButton">My Account</a></li>
+						<li><a href="#" id="myAccountButton">Account Settings</a></li>
 						<g:if test="${user.admin == "true"}">
 							<li><a href="./../admin/data" id="data">Data Management</a></li>
 							<li><a href="./../admin/datab" id="data2">Data Management V2</a></li>
@@ -307,7 +306,9 @@
 
 </div>
 
-<g:render template="/shared/modals/myAccountModal" model="[user:user]"/>
+<!-- Neeis Global JS file-->
+<script src="${resource(dir: 'js', file: 'global.js')}" ></script>
+<g:render template="/shared/modals/myAccountModal" model="[user:user,agency:agency]"/>
 <g:render template="/shared/modals/changePasswordModal" model=""/>
 <g:render template="/shared/modals/alertMessageModal" model=""/>
 

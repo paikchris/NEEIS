@@ -9,6 +9,10 @@ $(document).ready(function () {
         thisUser = "";
     }
 
+    $( ".alert-link" ).click(function() {
+        $('#myAccountModal').modal('show');
+    });
+
     $(".messageDate").each(function(){
         var dateFormattedString = convertUTCDateToLocalDate_messages($(this).html().trim().split(".")[0]);
         //alert(dateFormattedString)
@@ -49,6 +53,18 @@ $(document).ready(function () {
     });
 
 });
+
+function needAgencyUpdate(){
+    console.log("called needAgencyUpdate");
+    console.log(document.referrer); // in case we just want to run from login
+    $.ajax({
+        method: "GET",
+        url: "/producer/needsInfoUpdate"
+    })
+    .done(function (msg) {
+        console.log("msg: " + msg);
+    });
+}
 
 function convertUTCDateToLocalDate_messages(dateTimeString) {
     var localTime = moment.utc(dateTimeString).toDate();

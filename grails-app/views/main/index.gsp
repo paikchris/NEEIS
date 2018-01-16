@@ -8,6 +8,15 @@
 	<body>
     <div id="thisUserIs" style="display:none">${user.email}</div>
         <div class="container-fluid">
+            
+            <!-- display flash message about updating account info with link to myaccountmodal -->
+            <g:if test="${agencyNeedsUpdate}">
+                <div class="alert alert-danger" role="alert">
+                <p style="text-align: center;"><strong>Agency information is missing or expired. Please review and update <a href="#" class="alert-link">HERE</a>. Thank you!</strong></p>
+                </div>
+            </g:if>
+            <!-- end of warning -->
+            
             <div class="row">
                 <div class="col-xs-12">
                     <h3 style=" color: rgba(0, 0, 0, 0.57);">${todaysDate}</h3>

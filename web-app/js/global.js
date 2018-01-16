@@ -75,7 +75,7 @@ $(document).ready(function () {
 
             inputsFocusableArray.eq(nextIndex).focus();
 
-            e.preventDefault()
+            e.preventDefault();
             e.stopPropagation();
         }
     });
@@ -93,9 +93,6 @@ $(document).ready(function () {
     initializeNotifications()
     //BUTTON LISTENERS
 
-
-
-
     //"MY ACCOUNT" JAVASCRIPT (MOVE THIS TO NEW FILE)
     $( "#myAccountButton" ).click(function() {
         $('#myAccountModal').modal('show');
@@ -107,32 +104,111 @@ $(document).ready(function () {
         $('#myAccountModal').modal('hide');
         $('#changePasswordModal').modal('show');
     });
+    
     $( "#changePasswordButton" ).click(function() {
-        //alert();
         var currentPass = $('#currentPassword').val();
         var newPass = $('#newPassword').val();
         var confirmNewPass = $('#confirmNewPassword').val();
 
-        if(validateResetForm()){
+        if(validateChangeForm()){
             $.ajax({
                 method: "POST",
                 url: "/auth/changePassword",
                 data: {currentPass: currentPass, newPass: newPass, confirmNewPass: confirmNewPass}
             })
                 .done(function (msg) {
-                    alert(msg);
-                    if(msg === "good"){
+                    console.log("entering done function. msg: " + msg);
+                    
+                    if(msg === "Password updated."){
+                        console.log("valid msg");
                         $('#changePasswordModal').modal('hide');
                         window.location.href = "./../main/index";
                     }
                     else{
-                        alert("Password reset error");
-
+                        console.log("invalid msg");
                     }
+                    alert(msg);
                 });
         }
 
     });
+
+    // this masks the phone number input while allowing the 'required' validation
+    document.getElementById('phoneNumberInput').addEventListener('input', function (e) {
+        var x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+        e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+    });
+
+    // this masks the phone number input while allowing the 'required' validation
+    document.getElementById('agencyPhoneNumberInput').addEventListener('input', function (e) {
+        var x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+        e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+    });
+    
+    // determine which tab is active and route update accordingly using only one save button
+    $("#saveChangesButton").click(function(){
+        if($('li.personalTab').hasClass("active")){
+            console.log("personal updates beginning...");
+            if(validateUpdateForm()){
+                var firstName = $('#firstName').val();
+                var lastName = $('#lastName').val();
+                var phoneNumber = $('#phoneNumberInput').val();
+                
+                $.ajax({
+                    method: "POST",
+                    url: "/user/update",
+                    data: {firstName: firstName, lastName: lastName, phoneNumber: phoneNumber},
+                    cache: false
+                })
+                .done(function (msg) {
+                    if(msg === "Account updated."){
+                        console.log("valid msg: " + msg);
+                        $('#myAccountModal').modal('hide');
+                        showAlert(msg);
+                        $("#loggedInUser").html(firstName + " " + lastName);
+                    }
+                    else{
+                        console.log("invalid msg");
+                        showAlert(msg);
+                    }
+                });
+            }       
+        } else {
+            var agencyLicenseExpiration = moment($('#agencyLicenseExpiration').datepicker('getDate')).format('YYYY/MM/DD');
+            var agencyEOPolicy = $('#agencyEOPolicy').val();
+            var agencyEOPolicyExpiration = moment($('#agencyEOPolicyExpiration').datepicker('getDate')).format('YYYY/MM/DD');
+            var agencyPhoneNumber = $('#agencyPhoneNumberInput').val();
+            var agencyStreet = $('#agencyStreet').val();
+            var agencyCity = $('#agencyCity').val();
+            var agencyZipCode = $('#agencyZipCode').val();
+            
+            $.ajax({
+                method: "POST",
+                url: "/producer/update",
+                data: {agencyLicenseExpiration: agencyLicenseExpiration, agencyEOPolicy: agencyEOPolicy,
+                    agencyEOPolicyExpiration: agencyEOPolicyExpiration, agencyPhoneNumber: agencyPhoneNumber,
+                    agencyStreet: agencyStreet, agencyCity: agencyCity, agencyZipCode: agencyZipCode}
+            })
+            .done(function (msg) {
+                if(msg === "Agency info updated."){
+                    console.log("valid msg: " + msg);
+                    $('#myAccountModal').modal('hide');
+                    showAlert(msg);
+                }
+                else{
+                    console.log("invalid msg");
+                    showAlert(msg);
+                }
+
+            });      
+        }          
+    });
+
+    // make sure this won't interfere with Chris -- maybe change modal name or make more specific
+    $('#alertMessageModal').on('hidden.bs.modal', function () {
+        window.location.reload();
+    })
+
     $(document).on('focusout', '.requiredChangePassword', function (){
         if($(this).val().trim().length ==0){
             $(this).closest(".form-group").addClass("has-error");
@@ -401,6 +477,7 @@ function keyPressChecker(e){
 
 ///////////////////MODAL FUNCTIONS///////////////////
 function showAlert(message){
+    
     $('#alertMessageContent').html(message)
 
     $('#alertMessageModal').modal('show')
@@ -595,12 +672,12 @@ function hasHiddenDivInputInit(){
 
 
 ///////////////////////MOVE THIS TO ANOTHER FILE///////////////////
-function validateResetForm(){
-    var validReset = true;
+function validateChangeForm(){
+    var validChange = true;
     $('.requiredChangePassword').each(function () {
         if($(this).val().trim().length ==0){
             $(this).closest(".form-group").addClass("has-error");
-            validReset = false;
+            validChange = false;
             return false;
         }
         else{
@@ -613,7 +690,7 @@ function validateResetForm(){
             if($(this).val().trim().length <6){
                 $(this).closest(".form-group").addClass("has-error");
                 $(this).siblings(".help-block").html("Must be at least 6 characters");
-                validReset = false;
+                validChange = false;
                 return false;
             }
             else{
@@ -636,7 +713,7 @@ function validateResetForm(){
                 $('#newPassword').closest(".form-group").addClass("has-error");
                 $(this).siblings(".help-block").html("Passwords must match");
                 $('#newPassword').siblings(".help-block").html("Passwords must match");
-                validReset = false;
+                validChange = false;
                 return false;
             }
             if($('#newPassword').val().trim().length <6){
@@ -644,14 +721,36 @@ function validateResetForm(){
                 $('#newPassword').siblings(".help-block").html("Must be at least 6 characters");
                 $(this).closest(".form-group").addClass("has-error");
                 $(this).siblings(".help-block").html("");
-                validReset = false;
+                validChange = false;
                 return false;
             }
         }
     });
 
-    return validReset;
+    return validChange;
 }
+
+// validate updated personal or agency settings forms
+function validateUpdateForm(){
+    console.log("validateUpdateForm called...");
+    var validForm = true;
+    $('.required').each(function () {
+        console.log($(this).val().trim());
+        if($(this).val().trim().length ==0){
+            $(this).closest(".form-group").addClass("has-error");
+            $(this).siblings(".help-block").html("Cannot be blank.");
+            validForm = false;
+            return false;
+        }
+        else{
+            $(this).closest(".form-group").removeClass("has-error");
+            $(this).siblings(".help-block").html("");
+        }
+    });
+
+    return validForm;
+}   
+
 function sqlToJsDate(sqlDate){
 
     var offset = new Date().getTimezoneOffset();

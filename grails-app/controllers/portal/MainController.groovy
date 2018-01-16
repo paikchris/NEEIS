@@ -6,6 +6,7 @@ import groovy.sql.Sql
 import helper.Utils;
 import portal.DAO.*
 import portal.Utils.Email;
+import groovy.sql.Sql;
 
 class MainController {
     def aimSqlService
@@ -46,6 +47,28 @@ class MainController {
         def todaysDateFormat = 'EEEE MMMM d, yyyy'
         def now = new Date()
         def todaysDate = now.format(todaysDateFormat, timeZone)
+        def user = session.user
+        def agency = Producer.findByProducerID(user.company)
+        def aimAgency = aimSqlService.selectRecords("Producer", [ProducerID: user.company])[0]
+        def agencyNeedsUpdate = false
+        log.info("user: " + user)
+        log.info("agency name: " + agency.name)
+        log.info("PIN: " + aimAgency.ReferenceID)
+
+        //determine if agency info update alert needed
+        if(user.agencyAdmin){
+            log.info("user is an agency admin");
+            log.info("needs update: " + agency.needsInfoUpdate());
+            if(agency.needsInfoUpdate()){
+                agencyNeedsUpdate = true;
+            }
+        }
+
+        //format dates for agency settings datepickers
+        def agencyLicenseExpiration = agency.licenseExpiration.format('MM/dd/yyyy');
+        def agencyEOPolicyExpiration = agency.eoPolicyExpiration.format('MM/dd/yyyy');
+        log.info("lic exp: " + agencyLicenseExpiration);
+        log.info("eo exp: " + agencyEOPolicyExpiration);
 
         //MESSAGES
         def groupedMessages = getGroupedMessages();
@@ -116,7 +139,8 @@ class MainController {
 
         [user: session.user, messageChains:groupedMessages, messagesUnreadCount: countUnread,
          submissions: submissions, submissionsQuoted: submissionsQuoted, submissionsUnderReview: submissionsUnderReview,
-        todaysDate: todaysDate]
+        todaysDate: todaysDate, agency: agency, agencyPIN: aimAgency.ReferenceID, agencyNeedsUpdate: agencyNeedsUpdate,
+        agencyLicenseExpiration: agencyLicenseExpiration, agencyEOPolicyExpiration: agencyEOPolicyExpiration]
     }
 
     def newSubmissionV2() {

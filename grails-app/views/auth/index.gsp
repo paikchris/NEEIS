@@ -35,7 +35,7 @@
                             <div class="form-group">
                                 <label for="password">Password</label>
                                 <g:passwordField type="password" class="form-control" name="password" placeholder="Password"/>
-                                <a href="/auth/forgotPassword" class="btn btn-xs btn-danger" style="margin-top: 5px;">Forgot Password</a>
+                                <a href="/auth/forgotPassword" style="color: red; margin-top: 5px;">Forgot Password</a>
                             </div>
 
                             <button type="submit" class="btn btn-primary btn-lg btn-block">Login</button>

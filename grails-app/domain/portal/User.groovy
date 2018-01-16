@@ -14,8 +14,8 @@ class User {
     String aimContactID //
     String autoSaveData
     String notificationMap
-
-
+    Boolean agencyAdmin = false
+    
     String toString(){
         "$email"
     }
@@ -25,12 +25,13 @@ class User {
         password(blank:true, password:true)
         userRole(role:true)
         defaultUnderwriter(nullable:true)
-        company nullable:true
-        phoneNumber nullable:true
-        admin nullable:true
-        aimContactID nullable:true
-        autoSaveData nullable:true
-        notificationMap nullable:true
+        company(nullable:true)
+        phoneNumber(nullable:true)
+        admin(nullable:true)
+        agencyAdmin(nullable:true)
+        aimContactID(nullable:true)
+        autoSaveData(nullable:true)
+        notificationMap(nullable:true)
     }
 
     static mapping = {

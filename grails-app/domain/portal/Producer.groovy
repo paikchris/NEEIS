@@ -79,7 +79,9 @@ class Producer {
     Integer acctgContactKeyFK
     String csrID
     String countyName
-
+    Date licenseExpiration
+    String eoPolicyNumber
+    Date eoPolicyExpiration
 
     static constraints = {
         producerID unique: true
@@ -118,9 +120,21 @@ class Producer {
         acctgContactKeyFK nullable: true, maxSize: 128
         csrID nullable: true, maxSize: 15
         countyName nullable: true, maxSize: 30
+        licenseExpiration nullable: true
+        eoPolicyNumber nullable: true
+        eoPolicyExpiration nullable: true
     }
 
     static mapping = {
         comment type: 'text'
     }
+
+    // form needs to display value of expiration dates
+
+    def needsInfoUpdate() {
+        def needsUpdate = false;
+        def attributesToCheck = [this.mailAddress1, this.mailCity, this.mailZip, this.phone, this.eoPolicyNumber, this.licenseExpiration, this.eoPolicyExpiration].toArray()
+        attributesToCheck.any { !it }
+    }
+
 }

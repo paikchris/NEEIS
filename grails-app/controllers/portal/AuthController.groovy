@@ -219,29 +219,28 @@ class AuthController {
 
 
     def changePassword(){
-        log.info("PASSWORD CHANGE ACTION1")
-        log.info(params)
+        log.info("PASSWORD CHANGE")
+        log.info("params: " + params)
 
         log.info("session user: " + session.user.password)
 
         def renderString = ""
 
-        if(params.currentPass == session.user.password){
+        log.info("checking password...");
+        if(bcryptService.checkPassword(params.currentPass, session.user.password)){
+            log.info("current password verified");
             try{
-                def userRecord = User.findWhere(email:session.user.email, password:params.currentPass);
-                log.info (userRecord.email)
-                log.info (userRecord.password)
-                userRecord.password = params.newPass;
+                def userRecord = User.findWhere(email:session.user.email)  // ,password:userRecord.password
+                userRecord.password = params.newPass.encodeAsBcrypt();
                 userRecord.save(flush: true, failOnError: true)
-                log.info (userRecord.password)
 
                 session.user = null;
 //                redirect(url: "/")
 
-                def user = User.findWhere(email:userRecord.email, password:userRecord.password)
+                def user = User.findWhere(email:userRecord.email) // ,password:userRecord.password
                 session.user = user
 
-                renderString = "good"
+                renderString = "Password updated."
 
 
             }
@@ -257,12 +256,11 @@ class AuthController {
         }
         else{
             log.info("wrong password")
-            renderString = "wrong password"
+            renderString = "Incorrect current password."
 
         }
-        log.info "render final error"
+        log.info("renderString returned... " + renderString);
         render renderString
-
     }
 
 
@@ -286,7 +284,6 @@ class AuthController {
             }
             // catch unencrypted passwords and encrypt
             catch (IllegalArgumentException illegalArgument) {
-                log.info(illegalArgument);
                 log.info("Password not encrypted. Encrypting...");
                 user.password = user.password.encodeAsBcrypt();
                 user.merge(flush:true);
