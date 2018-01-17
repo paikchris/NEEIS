@@ -129,12 +129,14 @@ class Producer {
         comment type: 'text'
     }
 
-    // form needs to display value of expiration dates
-
-    def needsInfoUpdate() {
-        def needsUpdate = false;
+    def hasMissingInfo() {
         def attributesToCheck = [this.mailAddress1, this.mailCity, this.mailZip, this.phone, this.eoPolicyNumber, this.licenseExpiration, this.eoPolicyExpiration].toArray()
         attributesToCheck.any { !it }
+    }
+
+    def hasExpiredInfo() {
+        def today = new Date();
+        (this.licenseExpiration < today || this.eoPolicyExpiration < today);
     }
 
 }

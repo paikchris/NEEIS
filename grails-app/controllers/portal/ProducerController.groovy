@@ -29,9 +29,9 @@ class ProducerController {
                     "EO_PolicyID = '${params.agencyEOPolicy}',\n" +
                     "EO_Expiration = '${params.agencyEOPolicyExpiration}',\n" +
                     "Phone = '${params.agencyPhoneNumber}',\n" +
-                    "Address1 = '${params.agencyStreet}',\n" +
-                    "City = '${params.agencyCity}',\n" +
-                    "Zip = '${params.agencyZipCode}'\n" +
+                    "MailAddress1 = '${params.agencyStreet}',\n" +
+                    "MailCity = '${params.agencyCity}',\n" +
+                    "MailZip = '${params.agencyZipCode}'\n" +
                     "where ProducerID = '${session.user.company}';"
                 log.info("ending aim execute. begin aim commit.")
                 aimsql.commit();
@@ -47,9 +47,9 @@ class ProducerController {
         producer.eoPolicyExpiration = Date.parse("yyyy/MM/dd", params.agencyEOPolicyExpiration).clearTime();
         producer.eoPolicyNumber = params.agencyEOPolicy;
         producer.phone = params.agencyPhoneNumber;
-        producer.address1 = params.agencyStreet;
-        producer.city = params.agencyCity;
-        producer.zip = params.agencyZipCode;
+        producer.mailAddress1 = params.agencyStreet;
+        producer.mailCity = params.agencyCity;
+        producer.mailZip = params.agencyZipCode;
         producer.save(flush:true);
         render "Agency info updated.";
     }

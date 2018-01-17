@@ -55,11 +55,9 @@ class MainController {
         log.info("agency name: " + agency.name)
         log.info("PIN: " + aimAgency.ReferenceID)
 
-        //determine if agency info update alert needed
+        //determine if agency info update needed
         if(user.agencyAdmin){
-            log.info("user is an agency admin");
-            log.info("needs update: " + agency.needsInfoUpdate());
-            if(agency.needsInfoUpdate()){
+            if(agency.hasMissingInfo() || agency.hasExpiredInfo()){
                 agencyNeedsUpdate = true;
             }
         }
@@ -67,8 +65,6 @@ class MainController {
         //format dates for agency settings datepickers
         def agencyLicenseExpiration = agency.licenseExpiration.format('MM/dd/yyyy');
         def agencyEOPolicyExpiration = agency.eoPolicyExpiration.format('MM/dd/yyyy');
-        log.info("lic exp: " + agencyLicenseExpiration);
-        log.info("eo exp: " + agencyEOPolicyExpiration);
 
         //MESSAGES
         def groupedMessages = getGroupedMessages();

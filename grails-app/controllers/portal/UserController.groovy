@@ -17,8 +17,6 @@ class UserController {
         log.info("#user.resetPassword params: " + params)
         def user = User.findByEmail(params.email);
         def token = Token.findByValue(params.token);
-        log.info(user);
-        log.info(token);
         if(user && token) {
             log.info("user and token present");
             user.password = params.password.encodeAsBcrypt();
