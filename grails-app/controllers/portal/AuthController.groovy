@@ -389,23 +389,26 @@ class AuthController {
     def sendPasswordResetEmail() {
         def user = User.findWhere(email:params.email)
         if(user){
-            def token = Token.findByEmail(user.email)
-            if(!token) {
-                token = new Token(email: user.email)
-                token.save(flush: true);
+            def token = Token.findByEmail(user.email);
+            if(token){
+                token.delete(flush:true);
             }
-                mailService.sendMail {
-                to "travis@neeis.com" //dev only, change for production -- change to ${user.email}
-                subject "NEEIS Password Reset"
-                // dev only, change URL link for production 
-                body "A request has been made to reset your NEEIS user password. Click the link below to create a new password...\n\n" +
-                    "http://localhost:8080/auth/resetPassword?e=" + user.email + "&t=" + token.value + "\n\n" +
-                    "This link will expire in 24 hours.\n\n" +
-                    "Thank you!\n\n" +
-                    "New Empire Entertainment Insurance Services\n" +
-                    "1216 Hermosa Avenue, Suite A\n" +
-                    "Hermosa Beach, CA 90254"
+            token = new Token(email: user.email)
+            token.save(flush: true);
+            
+            mailService.sendMail {
+            to "travis@neeis.com" //dev only, change for production -- change to ${user.email}
+            subject "NEEIS Password Reset"
+            // dev only, change URL link for production 
+            body "A request has been made to reset your NEEIS user password. Click the link below to create a new password...\n\n" +
+                "http://localhost:8080/auth/resetPassword?e=" + user.email + "&t=" + token.value + "\n\n" +
+                "This link will expire in 24 hours.\n\n" +
+                "Thank you!\n\n" +
+                "New Empire Entertainment Insurance Services\n" +
+                "1216 Hermosa Avenue, Suite A\n" +
+                "Hermosa Beach, CA 90254"
             }
+
             flash.notice = "Check your email for a link to reset your password.";
             redirect(controller:'auth',action:'passwordEmailConfirmation');
         } else {
@@ -414,6 +417,7 @@ class AuthController {
         }   
     }
 
+    // resetPassword form which submits to user#resetPassword
     def resetPassword() {
         log.info("#auth.resetPassword params:" + params)
         def token = Token.findByEmail(params.e)
