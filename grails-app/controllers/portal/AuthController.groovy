@@ -190,7 +190,6 @@ class AuthController {
         }
 
         if(error==false) {
-
             session.user = u;
             log.info(u)
             redirect(controller: 'auth', action: 'index')

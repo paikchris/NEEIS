@@ -194,6 +194,7 @@ function initializeGlobalListeners(){
     datePickerInit()
 
     checkboxHiddenDivInit()
+    checkboxNoneOfAboveListener()
     radioHiddenDivInit()
     hasHiddenDivInputInit()
     closeButtonListener()
@@ -530,6 +531,21 @@ function checkboxHiddenDivInit(){
             $(this).closest('.checkboxAndHiddenDivContainer').find('.hiddenContainer').css('display', 'none')
         }
     });
+}
+function checkboxNoneOfAboveListener(){
+    $(document.body).on('change', 'input[type="checkbox"]', function(e) {
+        var checkboxGroupName = $(this).attr('name')
+
+        if($(this).val() === 'none' && $(this).is(':checked')){
+            $('input[type="checkbox"][name="' + checkboxGroupName + '"]:visible:checked').prop('checked', false)
+            $(this).prop('checked', true)
+        }
+        else if($(this).val() !== 'none' && $(this).is(':checked')){
+            $('input[type="checkbox"][name="' + checkboxGroupName + '"][value="none"]').prop('checked', false)
+
+        }
+    });
+
 }
 function radioHiddenDivInit(){
     /*

@@ -618,6 +618,9 @@ class SyncService {
     }
 
 
+    /**********LOCAL DEV DATABASE SYNC TO LOCAL AND PROD **********/
+
+
 
     /***********DATA SAVING AND UPDATING FUNCTIONS **********/
     //CREATE METHODS
@@ -721,6 +724,8 @@ class SyncService {
             def requiredQuestionsMap = jsonSlurper.parseText(params.requiredQuestionsMap)
             def weightOrderedRequiredQuestions = jsonSlurper.parseText(params.weightOrderedRequiredQuestions)
             def monolineCoveragesArray = jsonSlurper.parseText(params.monolineArray)
+            def rulesEngineMap = jsonSlurper.parseText(params.rulesEngineMap)
+
 
 
             log.info operationID
@@ -736,6 +741,8 @@ class SyncService {
             operationRecord.requiredQuestionsMap = jsonOutput.toJson(requiredQuestionsMap)
             operationRecord.weightOrderedRequiredQuestions = jsonOutput.toJson(weightOrderedRequiredQuestions)
             operationRecord.monolineCoverages = jsonOutput.toJson(monolineCoveragesArray)
+            operationRecord.rulesEngineMap = jsonOutput.toJson(rulesEngineMap)
+
 
             operationRecord.save(flush: true, failOnError: true)
 
@@ -791,6 +798,7 @@ class SyncService {
             productRecord.productID = productMap.productID
             productRecord.formIDS = jsonOutput.toJson(formIDArray)
             productRecord.productName = productMap.productName
+            productRecord.shortDescription = productMap.shortDescription
             productRecord.marketCompanyID = productMap.marketCompanyID
             productRecord.riskCompanyID = productMap.riskCompanyID
             productRecord.coverage = productMap.coverage

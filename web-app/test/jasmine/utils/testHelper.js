@@ -17,6 +17,12 @@ var monthNames = [
 ];
 
 function autoFillAllElse(){
+        //NEW SUBMISSION PAGE TESTING
+        if($('#operationsDropdown').is(":visible")){
+            $('#operationsDropdown').prop('disabled', false)
+        }
+
+
         var htmlElementArray = $("input:visible, select:visible").not(notString).toArray()
         var count = 0;
 
@@ -45,13 +51,32 @@ function autoFillInputCallback(htmlElementArray){
             autoFillInputCallback(htmlElementArray)
         }
         //TESTING ONLY
+        else if($(htmlElement).attr('id') == 'stateMailing'){
+            $(htmlElement).val('CA')
+            $(htmlElement).trigger('change')
+
+            htmlElementArray.shift()
+            autoFillInputCallback(htmlElementArray)
+        }
+        else if($(htmlElement).attr('id') == 'operationCategoryDropdown'){
+            var numOptions = $(htmlElement).find('option').length - 1;
+            var randomSelected = chance.integer({min: 0, max: numOptions});
+
+            var valueOfOption = $(htmlElement).find('option').eq(randomSelected).val()
+            // $(htmlElement).val(valueOfOption)
+            $(htmlElement).val('Entertainer')
+            $(htmlElement).trigger('change')
+
+            htmlElementArray.shift()
+            autoFillInputCallback(htmlElementArray)
+        }
         else if($(htmlElement).attr('id') == 'operationsDropdown'){
             var numOptions = $(htmlElement).find('option').length - 1;
             var randomSelected = chance.integer({min: 0, max: numOptions});
 
             var valueOfOption = $(htmlElement).find('option').eq(randomSelected).val()
             // $(htmlElement).val(valueOfOption)
-            $(htmlElement).val('FP0')
+            $(htmlElement).val('EN1')
             $(htmlElement).trigger('change')
 
             htmlElementArray.shift()
@@ -171,8 +196,6 @@ function autoFillInputCallback(htmlElementArray){
             htmlElementArray.shift()
             autoFillInputCallback(htmlElementArray)
         }
-
-
 
 
     }

@@ -10,7 +10,8 @@
  }
 .form-group label.checkBoxLabel{
     margin-bottom:0px;
-    font-weight:300
+    font-weight:300;
+
 }
 div.radioWithHiddenDiv_RadioContainer{
     padding-left: 0px;
@@ -130,6 +131,10 @@ div#productPage_QuestionDetailsContainer div.uwQuestion input{
     height: 24px;
     font-size: 12px;
 }
+div.productPage_limitRow > div, div#productPage_limitsHeaderRow > div{
+    padding-left: 2px;
+    padding-right: 2px;
+}
 
 
 
@@ -155,6 +160,7 @@ div.questionEditRow div.form-group{
 label.checkboxVerticalLayout{
     display:inline-block;
     font-weight:300;
+    margin-bottom: 0px;
 }
 label.radioHorizontalLayout{
     margin-right: 20px;

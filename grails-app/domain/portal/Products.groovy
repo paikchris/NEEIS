@@ -24,6 +24,7 @@ class Products {
 
     String productID
     String productName
+    String shortDescription
     String coverage
     String lobDist
     BigDecimal flatPremium
@@ -58,6 +59,7 @@ class Products {
     static constraints = {
         productID unique:true, maxSize: 8
         productName maxSize: 55
+        shortDescription nullable:true
         coverage nullable: true, maxSize: 6
         lobDist nullable:true, maxSize: 240
         flatPremium nullable:true, scale: 2, maxSize:32

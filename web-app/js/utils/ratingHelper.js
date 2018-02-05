@@ -5,7 +5,9 @@ function calculatePackageTotalPremium(packageID, selectedLOBIDArray){
     var totalPackagePremium = 0
     var operationObject = getCurrentOperationTypeObject()
     var coverageMap = getCoverageObject(packageID)
-    var productObject = getProductObjectFromProductID(getProductIDForCoverage(packageID))
+    var productID = getProductIDForCoverage(packageID)
+    var productObject = getProductOptionObject(packageID, productID)
+    // var productObject = getProductObjectFromProductID(getProductIDForCoverage(packageID))
     var rateID = productObject.rateCode
     var rateObject = getRateObjectByID(rateID)
     var ratingBasisID = rateObject.rateBasis
@@ -32,120 +34,97 @@ function calculatePackageTotalPremium(packageID, selectedLOBIDArray){
     return totalPackagePremium
 }
 
-function calculateTotalCoveragePremium(productObject, rateMap, ratingBasisMap, ifLOB_PackageID){
+function calculateTotalCoveragePremium(productObject, rateMap, ratingBasisMap){
     var rateBasis = rateMap.rateBasis
     var premium = 0
 
-    if(rateBasis !== "invalid"){
-        if(rateBasis === 'LIMIT'){
-            var limitRateArray = jsonStringToObject( rateMap.limitRateArray )
-
-            for(var i=0;i<limitRateArray.length;i++){
-                var limDescription = limitRateArray[i].limitDescription
-                var userInputValue = getLimitValueFromLimitDescription(ifLOB_PackageID, limitRateArray[i])
-
-
-                premium = calculateLimitPremium(rateMap, limDescription, userInputValue)
-            }
-        }
-        else if(rateBasis === 'BRACKET'){
-            var minPremium = rateMap.minPremium
-            var basisQuestionID = ratingBasisMap.basisQuestionID
-            var basisQuestionValue = getFloatValueOfMoney($('#' + basisQuestionID).val())
-
-            var bracketRateArray = jsonStringToObject(rateMap.bracketRateArray)
-
-            var remainingAmountOfQuestionValue = basisQuestionValue
-            for(var i=0;i<bracketRateArray.length;i++) {
-                var thisBracketMap = jsonStringToObject(bracketRateArray[i])
-                var rateValue = parseFloat(thisBracketMap.rateValue)
-                var upto = parseFloat(thisBracketMap.upto)
-
-                if (remainingAmountOfQuestionValue > upto) {
-                    remainingAmountOfQuestionValue = remainingAmountOfQuestionValue - upto
-                    premium = premium + (upto * rateValue)
-                }
-                else {
-                    premium = premium + (remainingAmountOfQuestionValue * rateValue)
-                    remainingAmountOfQuestionValue = 0
-                }
-            }
-
-            if(premium < minPremium){
-                premium = minPremium
-            }
-        }
-        else if(rateBasis === 'FLAT'){
-            var flatAmount = parseFloat(rateMap.flatAmount)
-
-            premium = flatAmount
-
-            // if(premium < minPremium){
-            //     premium = minPremium
-            // }
-        }
-        else{
-            var rateValue = parseFloat(rateMap.rateValue)
-            var minPremium = rateMap.minPremium
-            var basisQuestionID = ratingBasisMap.basisQuestionID
-            var basisQuestionValue = getFloatValueOfMoney($('#' + basisQuestionID).val())
-
-            premium = basisQuestionValue * rateValue
-
-            if(premium < minPremium){
-                premium = minPremium
-            }
-        }
-
-        //CHECK ADDITIONAL OPTIONS
-        if(productObject){
-            premium = checkAdditionalOptionsForPremiumChanges(productObject, premium)
-        }
-    }
+    premium = calculateProductOptionPremium(productObject)
 
     return parseFloat(premium)
 }
 
-function calculatePackageLOBPremium(){
-}
-
-function checkAdditionalOptionsForPremiumChanges(productObject, currentPremium){
+function checkAdditionalOptionsForPremiumChangesBACKUP(productObject, currentPremium){
     var updatedPremium = currentPremium
     var additionalOptionArray = getSelectedProductAdditionalOptionMap()[productObject.productID]
 
-    for(var i=0; i<additionalOptionArray.length; i++){
-        var additionalOptionID = additionalOptionArray[i]
+    if(additionalOptionArray){
+        for(var i=0; i<additionalOptionArray.length; i++){
+            var additionalOptionID = additionalOptionArray[i]
 
-        if(additionalOptionID === 'MED'){
-            var premiumToAdd = 25
-            updatedPremium = parseFloat(updatedPremium) + parseFloat(premiumToAdd)
-        }
+            if(additionalOptionID === 'MED'){
+                var premiumToAdd = 25
+                updatedPremium = parseFloat(updatedPremium) + parseFloat(premiumToAdd)
+            }
 
-        if(additionalOptionID === 'BAI'){
-            var premiumToAdd = 100
-            updatedPremium = parseFloat(updatedPremium) + parseFloat(premiumToAdd)
-        }
+            if(additionalOptionID === 'BAI'){
+                var premiumToAdd = 100
+                updatedPremium = parseFloat(updatedPremium) + parseFloat(premiumToAdd)
+            }
 
-        if(additionalOptionID === 'WOS'){
-            var premiumToAdd = 100
-            updatedPremium = parseFloat(updatedPremium) + parseFloat(premiumToAdd)
-        }
+            if(additionalOptionID === 'WOS'){
+                var premiumToAdd = 100
+                updatedPremium = parseFloat(updatedPremium) + parseFloat(premiumToAdd)
+            }
 
-        if(additionalOptionID === 'INCAGG'){
-            var premiumToAdd = 250
-            updatedPremium = parseFloat(updatedPremium) + parseFloat(premiumToAdd)
-        }
-        if(additionalOptionID === 'CIVAUTH100'){
-            var premiumToAdd = 250
-            updatedPremium = parseFloat(updatedPremium) + parseFloat(premiumToAdd)
-        }
-        if(additionalOptionID === 'CIVAUTH500'){
-            var premiumToAdd = 500
-            updatedPremium = parseFloat(updatedPremium) + parseFloat(premiumToAdd)
+            if(additionalOptionID === 'INCAGG'){
+                var premiumToAdd = 250
+                updatedPremium = parseFloat(updatedPremium) + parseFloat(premiumToAdd)
+            }
+            if(additionalOptionID === 'CIVAUTH100'){
+                var premiumToAdd = 250
+                updatedPremium = parseFloat(updatedPremium) + parseFloat(premiumToAdd)
+            }
+            if(additionalOptionID === 'CIVAUTH500'){
+                var premiumToAdd = 500
+                updatedPremium = parseFloat(updatedPremium) + parseFloat(premiumToAdd)
+            }
         }
     }
 
+
     return updatedPremium
+}
+function checkAdditionalOptionsForPremiumChanges(productObject, currentPremium) {
+    var applyMinPremiumsToAdd = 0
+    var premiumsToAdd = 0
+
+
+    //CHECK LIMIT ARRAY FOR PRODUCT LIMIT OPTIONS
+    if(productObject.limitArray){
+        var limitArray = jsonStringToObject(productObject.limitArray)
+        for(var i=0; i<limitArray.length; i++) {
+            var limitMap = jsonStringToObject(limitArray[i])
+
+            if (limitMap.limitProductOption) {
+                var optionCheckboxElement = $("#" + productObject.productID + "_" + i + "_ProductOptionCheckbox")
+
+                //CHECK IF PRODUCT OPTION CHECKBOX EXISTS, AND IS CHECKED
+                if( $(optionCheckboxElement).length > 0 && $(optionCheckboxElement).is(':checked') ){
+                    //PRODUCT OPTION ACTIONS
+
+                    //1. ADDITIONAL PREMIUM
+                    if(limitMap.productOptionAdditionalPremium){
+                        var additionalPremium = limitMap.productOptionAdditionalPremium
+
+                        //IF APPLY MIN PREMIUM IS TRUE. CHECK IF MIN PREMIUM IS MET
+                        if(limitMap.applyMinPremium){
+                            applyMinPremiumsToAdd = parseFloat(applyMinPremiumsToAdd) + parseFloat(additionalPremium)
+                        }
+                        else{
+                            premiumsToAdd = parseFloat(premiumsToAdd) + parseFloat(additionalPremium)
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+
+    var optionPremiumMap = {}
+    optionPremiumMap.applyMPPremiums = applyMinPremiumsToAdd
+    optionPremiumMap.nonAppliedPremiums = premiumsToAdd
+
+    return optionPremiumMap
 }
 
 function calculateLimitPremium(rateMap, limitDescString, userInputLimit){
@@ -743,5 +722,524 @@ function updateDeductiblesBasedOnLimitInputs(){
 }
 
 
+function calculateProductOptionPremium(productObject){
+    var rateMap = getRateObjectByID(productObject.rateCode)
+    var rateBasis = rateMap.rateBasis
+    var ratingBasisMap = getRatingBasisObjectByID(rateBasis)
+    var premium = 0
+    var additionalOptionPremiums = {}
+
+    if(rateBasis !== "invalid"){
+        if(rateBasis === 'LIMIT'){
+            var limitRateArray = jsonStringToObject( rateMap.limitRateArray )
+
+            for(var i=0;i<limitRateArray.length;i++){
+                var limDescription = limitRateArray[i].limitDescription
+                var userInputValue = getLimitValueFromLimitDescription(productObject.coverage, limitRateArray[i])
+
+
+                premium = calculateLimitPremium(rateMap, limDescription, userInputValue)
+            }
+        }
+        else if(rateBasis === 'BRACKET'){
+            var basisQuestionID = rateMap.tieredQuestionID
+            var basisQuestionValue = getFloatValueOfMoney($('#' + basisQuestionID).val())
+
+            var bracketRateArray = jsonStringToObject(rateMap.bracketRateArray)
+
+            var remainingAmountOfQuestionValue = basisQuestionValue
+            for(var i=0;i<bracketRateArray.length;i++) {
+                var thisBracketMap = jsonStringToObject(bracketRateArray[i])
+                var rateValue = parseFloat(thisBracketMap.rateValue)
+                var upto = parseFloat(thisBracketMap.upto)
+
+                if (remainingAmountOfQuestionValue > upto) {
+                    remainingAmountOfQuestionValue = remainingAmountOfQuestionValue - upto
+                    premium = premium + (upto * rateValue)
+                }
+                else {
+                    premium = premium + (remainingAmountOfQuestionValue * rateValue)
+                    remainingAmountOfQuestionValue = 0
+                }
+            }
+
+        }
+        else if(rateBasis === 'FLAT'){
+            var flatAmount = parseFloat(rateMap.flatAmount)
+
+            premium = flatAmount
+        }
+        else if(rateBasis === 'RATESHEET'){
+            runWCRateSheet('TOTAL', productObject)
+        }
+        else{
+            var rateValue = parseFloat(rateMap.rateValue)
+            var basisQuestionID = ratingBasisMap.basisQuestionID
+            var basisQuestionValue = getFloatValueOfMoney($('#' + basisQuestionID).val())
+
+            premium = basisQuestionValue * rateValue
+
+        }
+
+        //CHECK ADDITIONAL OPTIONS
+        if(productObject){
+            additionalOptionPremiums = checkAdditionalOptionsForPremiumChanges(productObject, premium)
+
+            //ADD OPTION PREMIUMS THAT COUNT TOWARD MIN PREMIUM
+            premium = parseFloat(premium) + parseFloat(additionalOptionPremiums.applyMPPremiums)
+        }
+
+        //CHECK MIN PREMIUM IS MET
+        if(rateMap.minPremium){
+            var minPremium = rateMap.minPremium
+
+            if(premium < minPremium){
+                premium = minPremium
+            }
+        }
+
+        //ADD ADDITIONAL OPTION PREMIUMS THAT ARE ADDED AFTER MIN PREMIUM CHECK
+        if(additionalOptionPremiums.nonAppliedPremiums){
+            premium = parseFloat(premium) + parseFloat(additionalOptionPremiums.nonAppliedPremiums)
+        }
+    }
+
+    return parseFloat(premium)
+}
+
+function calculateProductOptionPremium_RatedPremium(productObject){
+    var rateMap = getRateObjectByID(productObject.rateCode)
+    var rateBasis = rateMap.rateBasis
+    var ratingBasisMap = getRatingBasisObjectByID(rateBasis)
+    var premium = 0
+    var additionalOptionPremiums = {}
+
+    if(rateBasis !== "invalid"){
+        if(rateBasis === 'LIMIT'){
+            var limitRateArray = jsonStringToObject( rateMap.limitRateArray )
+
+            for(var i=0;i<limitRateArray.length;i++){
+                var limDescription = limitRateArray[i].limitDescription
+                var userInputValue = getLimitValueFromLimitDescription(productObject.coverage, limitRateArray[i])
+
+
+                premium = calculateLimitPremium(rateMap, limDescription, userInputValue)
+            }
+        }
+        else if(rateBasis === 'BRACKET'){
+            var basisQuestionID = rateMap.tieredQuestionID
+            var basisQuestionValue = getFloatValueOfMoney($('#' + basisQuestionID).val())
+
+            var bracketRateArray = jsonStringToObject(rateMap.bracketRateArray)
+
+            var remainingAmountOfQuestionValue = basisQuestionValue
+            for(var i=0;i<bracketRateArray.length;i++) {
+                var thisBracketMap = jsonStringToObject(bracketRateArray[i])
+                var rateValue = parseFloat(thisBracketMap.rateValue)
+                var upto = parseFloat(thisBracketMap.upto)
+
+                if (remainingAmountOfQuestionValue > upto) {
+                    remainingAmountOfQuestionValue = remainingAmountOfQuestionValue - upto
+                    premium = premium + (upto * rateValue)
+                }
+                else {
+                    premium = premium + (remainingAmountOfQuestionValue * rateValue)
+                    remainingAmountOfQuestionValue = 0
+                }
+            }
+
+        }
+        else if(rateBasis === 'FLAT'){
+            var flatAmount = parseFloat(rateMap.flatAmount)
+
+            premium = flatAmount
+        }
+        else{
+            var rateValue = parseFloat(rateMap.rateValue)
+            var basisQuestionID = ratingBasisMap.basisQuestionID
+            var basisQuestionValue = getFloatValueOfMoney($('#' + basisQuestionID).val())
+
+            premium = basisQuestionValue * rateValue
+
+        }
+
+        //CHECK ADDITIONAL OPTIONS
+        if(productObject){
+            additionalOptionPremiums = checkAdditionalOptionsForPremiumChanges(productObject, premium)
+
+            //ADD OPTION PREMIUMS THAT COUNT TOWARD RATED PREMIUM
+            premium = parseFloat(premium) + parseFloat(additionalOptionPremiums.applyMPPremiums)
+        }
+
+
+    }
+
+    return parseFloat(premium)
+}
+
+function canProductPremiumCalculate(productObject){
+    var rateMap = getRateObjectByID(productObject.rateCode)
+    var rateBasis = rateMap.rateBasis
+    var ratingBasisMap = getRatingBasisObjectByID(rateBasis)
+
+    if(rateBasis !== "invalid"){
+        if(rateBasis === 'LIMIT'){
+            var limitRateArray = jsonStringToObject( rateMap.limitRateArray )
+
+            for(var i=0;i<limitRateArray.length;i++){
+                //CHECK IF LIMIT EXISTS
+                var userInputValue = getLimitValueFromLimitDescription(productObject.coverage, limitRateArray[i])
+                if(userInputValue){
+                    return true
+                }
+                else{
+                    return false
+                }
+            }
+        }
+        else if(rateBasis === 'BRACKET'){
+            var basisQuestionID = rateMap.tieredQuestionID
+
+            if( doesQuestionExistOnPage(basisQuestionID) ){
+                return true
+            }
+            else{
+                return false
+            }
+        }
+        else if(rateBasis === 'FLAT'){
+            return true
+        }
+        else if(rateBasis === 'RATESHEET'){
+            //WC RATE SHEET REQUIRES 2PREM RATE CODES TO HAVE INPUTS
+
+        }
+        else{
+            var basisQuestionID = ratingBasisMap.basisQuestionID
+
+            if( doesQuestionExistOnPage(basisQuestionID) ){
+                return true
+            }
+            else{
+                return false
+            }
+        }
+
+        //CHECK ADDITIONAL OPTIONS
+        if(productObject){
+            var additionalOptionPremiums = {}
+            additionalOptionPremiums = checkAdditionalOptionsForPremiumChanges(productObject)
+        }
+    }
+}
+
+function getRatingBasisQuestionAbbrev(questionID){
+    var basisAbbrev = ""
+
+    if(questionID === 'totalBudgetConfirm'){
+        basisAbbrev = "GPC"
+    }
+    else if(questionID === 'belowTheLineTotal'){
+        basisAbbrev = "BTL"
+    }
+    else if(questionID === 'nipcInput'){
+        basisAbbrev = "NIPC"
+    }
+
+    return basisAbbrev
+}
+
 
 //RATING LOGIC
+
+function runWCRateSheet(MODE, productObject){
+    //IF MODE IS PREMIUMDISPLAY: BUILD PREMIUMLINEHTML AND RETURN IT
+    //IF MODE IS TOTAL: RETURN TOTAL PREMIUM AND FEES
+
+    var covID = productObject.coverage
+    var productID = productObject.productID
+    var coverageMap = getCoverageObject(covID)
+
+    var rateID = productObject.rateCode
+    var rateSheetObject = getRateSheetObjectByID(rateID)
+    var rateSheetArray = JSON.parse(rateSheetObject.rateSheetArray)
+
+    var state = getInsuredMailingState()
+    var rateCodeArray = rateSheetArray[state]
+
+    var premiumLineHTML = ""
+
+    //PREMIUM LINES HEADER ROW
+    premiumLineHTML = premiumLineHTML +
+        "<div class='row premiumLineRow premiumHeaderRow " + coverageMap.coverageCode + "_PremiumLineRow'> " +
+        "   <div class='col-xs-8' style='height: 12px;'>" +
+        "   </div>" +
+        "   <div class='col-xs-2' style='padding:0px; text-align: center; height: 12px;'>" +
+        "       <span style='font-size:12px;'>Estimated Premiums</span>" +
+        "   </div>" +
+        "   <div class='col-xs-4'> " +
+        "       <span class='premiumLine_description' style=''>" + coverageMap.coverageName + "</span> " +
+        "   </div> " +
+        "   <div class='col-xs-2'> " +
+        "       <span class=''>" + "Basis" + "</span> " +
+        "   </div> " +
+        "   <div class='col-xs-2'> " +
+        "       <span class=''>" + "Rate" + "</span> " +
+        "   </div> " +
+        "   <div class='col-xs-1' style='padding:0px; text-align: center;'> " +
+        "       <span class='' style='font-size:9px;'>" + "Subj. to Mod" + "</span> " +
+        "   </div> " +
+        "   <div class='col-xs-1' style='padding:0px; text-align: center;'> " +
+        "       <span class='' style='font-size:9px;'>" + "All Others" + "</span> " +
+        "   </div> " +
+        "   <div class='col-xs-2'>" +
+        "   </div>" +
+        "</div>"
+
+    var payrollInputTotal = 0
+    var payrollPremiumTotal = 0
+    var premiumTotalAgainstMP = 0
+    var employerLiabilityPremiumTotal = 0
+    var rateSheetTotalPremium = 0
+    var rateSheetTotalFees = 0
+    var rateSheetTotalPremiumAndFees = 0
+
+    //LOOP TRHOUGH RATE CODES TO INSERT NECESSARY LINES
+    for(var i=0; i<rateCodeArray.length; i++){
+        var rateCode = rateCodeArray[i]
+        var rateCodeObject = getWCRateObjectByIDAndState(rateCode, state, productObject.productID)
+
+        var howProcessed = rateCodeObject.howProcessed
+
+        var testResultRowObject = {
+            code: rateCode,
+            description: rateCodeObject.description
+        }
+
+        //BUILD EACH ROW BASED ON WHAT THE RATE CODE AND HOW IT IS PROCESSED
+        if(howProcessed === "1STD"){
+            continue;
+        }
+        else if(howProcessed === '2RATE'){
+            //PAYROLL PREMIUM ROW
+
+            //FIND THE INPUT WITH THE RATE CODE
+            testResultRowObject.basisValue = getIntValueOfMoney($("#" + rateCode + "_WCPayroll").val())
+            testResultRowObject.rate = rateCodeObject.rate
+
+            var thisPayrollPremium = Math.round( ( parseFloat(testResultRowObject.basisValue) * parseFloat(testResultRowObject.rate) ) / 100 )
+            testResultRowObject.modPrem = thisPayrollPremium
+
+            premiumLineHTML = premiumLineHTML + getPremiumLineHTML_WCRateSheet(testResultRowObject, coverageMap)
+            payrollPremiumTotal = parseFloat(payrollPremiumTotal) + parseFloat(thisPayrollPremium)
+            premiumTotalAgainstMP = parseFloat(premiumTotalAgainstMP) + parseFloat(thisPayrollPremium)
+            rateSheetTotalPremium = parseFloat(rateSheetTotalPremium) + parseFloat(thisPayrollPremium)
+            payrollInputTotal = parseFloat(payrollInputTotal) + parseFloat(testResultRowObject.basisValue)
+        }
+        else if(howProcessed === '3PREM'){
+            if(rateCodeObject.nonMod === '1' ){
+                testResultRowObject.otherPrem = rateCodeObject.premium
+            }
+            else{
+                testResultRowObject.modPrem = rateCodeObject.premium
+            }
+
+            premiumLineHTML = premiumLineHTML + getPremiumLineHTML_WCRateSheet(testResultRowObject, coverageMap)
+            premiumTotalAgainstMP = parseFloat(premiumTotalAgainstMP) + parseFloat(rateCodeObject.premium)
+            rateSheetTotalPremium = parseFloat(rateSheetTotalPremium) + parseFloat(rateCodeObject.premium)
+
+        }
+        else if(howProcessed === '4EL'){
+            //ADD PREMIUMS FOR PAYROLL
+            var employerLiabilityPrem = Math.round( (parseFloat(payrollPremiumTotal) * parseFloat(rateCodeObject.rate)) / 100 )
+
+            testResultRowObject.basisValue = payrollPremiumTotal
+            testResultRowObject.rate = rateCodeObject.rate
+            testResultRowObject.modPrem = employerLiabilityPrem
+
+            premiumLineHTML = premiumLineHTML + getPremiumLineHTML_WCRateSheet(testResultRowObject, coverageMap)
+
+            //MAKE THE EMPLOYER LIABILITY MIN PREMIUM ROW
+            var elMPRowObject = {
+                code:rateCode,
+                description: 'Employers Liability to Equal Minimum of ' + formatMoney(rateCodeObject.premium),
+                basisValue: employerLiabilityPrem
+            }
+
+            //CHECK IF EMPLOYER LIABILITY MIN PREMIUM IS MET
+            if( (parseFloat(rateCodeObject.premium) - parseFloat(employerLiabilityPrem)) > 0 ){ //NOT MET
+                elMPRowObject.modPrem = parseFloat(rateCodeObject.premium) - parseFloat(employerLiabilityPrem)
+
+                premiumLineHTML = premiumLineHTML + getPremiumLineHTML_WCRateSheet(elMPRowObject, coverageMap)
+            }
+            else{ //MET
+                elMPRowObject.modPrem = 0
+            }
+
+
+
+            premiumTotalAgainstMP = parseFloat(premiumTotalAgainstMP) + parseFloat(employerLiabilityPrem)
+            premiumTotalAgainstMP = parseFloat(premiumTotalAgainstMP) + parseFloat(elMPRowObject.modPrem)
+
+            employerLiabilityPremiumTotal = parseFloat(employerLiabilityPremiumTotal) + parseFloat(employerLiabilityPrem)
+            employerLiabilityPremiumTotal = parseFloat(employerLiabilityPremiumTotal) + parseFloat(elMPRowObject.modPrem)
+
+            rateSheetTotalPremium = parseFloat(rateSheetTotalPremium) + parseFloat(employerLiabilityPrem)
+            rateSheetTotalPremium = parseFloat(rateSheetTotalPremium) + parseFloat(elMPRowObject.modPrem)
+        }
+        else if(howProcessed === '5MP'){
+            var minPrem = rateCodeObject.premium
+            if( ( parseFloat(minPrem) - parseFloat(premiumTotalAgainstMP) ) > 0 ){ //NOT MET
+                testResultRowObject.modPrem = parseFloat(minPrem) - parseFloat(premiumTotalAgainstMP)
+
+                testResultRowObject.description = rateCodeObject.description + " " + formatMoney(minPrem)
+                testResultRowObject.basisValue = premiumTotalAgainstMP
+                testResultRowObject.rate = formatMoney(minPrem)
+
+                premiumLineHTML = premiumLineHTML + getPremiumLineHTML_WCRateSheet(testResultRowObject, coverageMap)
+            }
+            else{ //MET
+                testResultRowObject.modPrem = 0
+            }
+
+            rateSheetTotalPremium = parseFloat(rateSheetTotalPremium) + parseFloat(testResultRowObject.modPrem)
+
+        }
+        else if(howProcessed === '6PDISC'){
+            var premDiscountBasisValue = 0
+            if( (parseFloat(payrollPremiumTotal) + parseFloat(employerLiabilityPremiumTotal)) > parseFloat(rateCodeObject.premium) ){//IF PREMIUM IS HIGH ENOUGH FOR DISCOUNT
+                premDiscountBasisValue = (parseFloat(payrollPremiumTotal) + parseFloat(employerLiabilityPremiumTotal)) - parseFloat(rateCodeObject.premium)
+            }
+
+            var premDiscount = Math.round(0 - ( (parseFloat(premDiscountBasisValue) * parseFloat(rateCodeObject.rate))/100 ) )
+
+            testResultRowObject.basisValue = premDiscountBasisValue
+            testResultRowObject.rate = rateCodeObject.rate
+            testResultRowObject.modPrem = premDiscount
+
+            premiumLineHTML = premiumLineHTML + getPremiumLineHTML_WCRateSheet(testResultRowObject, coverageMap)
+
+            rateSheetTotalPremium = parseFloat(rateSheetTotalPremium) + parseFloat(testResultRowObject.modPrem)
+
+        }
+        else if(howProcessed === 'FEE_PR'){
+            var rate = rateCodeObject.rate
+
+            var premium = Math.round( ( parseFloat(payrollInputTotal) * parseFloat(rate) ) / 100 )
+            if(rateCodeObject.nonMod === '1' ){
+                testResultRowObject.otherPrem = premium
+            }
+            else{
+                testResultRowObject.modPrem = premium
+            }
+
+            testResultRowObject.basisValue = payrollInputTotal
+            testResultRowObject.rate  = rate
+
+            premiumLineHTML = premiumLineHTML + getPremiumLineHTML_WCRateSheet(testResultRowObject, coverageMap)
+
+            rateSheetTotalPremium = parseFloat(rateSheetTotalPremium) + parseFloat(premium)
+        }
+        else if(howProcessed === 'FEE_RATE'){
+            var totalPremium = 0
+
+            testResultRowObject.basisValue = rateSheetTotalPremium
+            testResultRowObject.rate = rateCodeObject.rate
+
+            var premium = Math.round( ( parseFloat(rateSheetTotalPremium) * parseFloat(rateCodeObject.rate) ) / 100 )
+            if(rateCodeObject.nonMod === '1' ){
+                testResultRowObject.otherPrem = premium
+            }
+            else{
+                testResultRowObject.modPrem = premium
+            }
+
+            premiumLineHTML = premiumLineHTML + getPremiumLineHTML_WCRateSheet(testResultRowObject, coverageMap)
+
+            rateSheetTotalFees = parseFloat(rateSheetTotalFees) + parseFloat(premium)
+
+        }
+        else if(howProcessed === 'FEE_EL' || howProcessed === 'FEE_ME'){
+            var basisValue = parseFloat(payrollPremiumTotal) + parseFloat(employerLiabilityPremiumTotal)
+
+            var rate = rateCodeObject.rate
+
+            var premium = Math.round( ( parseFloat(basisValue) * parseFloat(rate) ) / 100 )
+            if(rateCodeObject.nonMod === '1' ){
+                testResultRowObject.otherPrem = premium
+            }
+            else{
+                testResultRowObject.modPrem = premium
+            }
+
+            testResultRowObject.basisValue = basisValue
+            testResultRowObject.rate = rate
+
+            premiumLineHTML = premiumLineHTML + getPremiumLineHTML_WCRateSheet(testResultRowObject, coverageMap)
+
+            rateSheetTotalFees = parseFloat(rateSheetTotalFees) + parseFloat(premium)
+
+        }
+        else if(howProcessed === 'FEE_MEL'){
+
+            var basisValue = parseFloat(payrollPremiumTotal)
+
+            var rate = rateCodeObject.rate
+
+            var premium = Math.round( ( parseFloat(basisValue) * parseFloat(rate) ) / 100 )
+            if(rateCodeObject.nonMod === '1' ){
+                testResultRowObject.otherPrem = premium
+            }
+            else{
+                testResultRowObject.modPrem = premium
+            }
+
+            testResultRowObject.basisValue = basisValue
+            testResultRowObject.rate = rate
+
+            premiumLineHTML = premiumLineHTML + getPremiumLineHTML_WCRateSheet(testResultRowObject, coverageMap)
+
+            rateSheetTotalFees = parseFloat(rateSheetTotalFees) + parseFloat(premium)
+        }
+        else if(howProcessed === 'FEE_WV'){
+            //TODO: WEST VIRGINIA NOT COMPLETE YET
+
+        }
+    }
+
+    rateSheetTotalPremiumAndFees = parseFloat(rateSheetTotalPremium) + parseFloat(rateSheetTotalFees)
+
+    //COVERAGE TOTAL LINE
+    premiumLineHTML = premiumLineHTML +
+        "<div class='row premiumLineRow premiumCoverageTotalRow " + coverageMap.coverageCode + "_PremiumLineRow'> " +
+        "   <div class='col-xs-4'> " +
+        "       <span class='premiumLine_description' style=''>" + covID + " Total" + "</span> " +
+        "   </div> " +
+        "   <div class='col-xs-2'> " +
+        "       <span class=''>" + "" + "</span> " +
+        "   </div> " +
+        "   <div class='col-xs-2'> " +
+        "       <span class=''>" + "" + "</span> " +
+        "   </div> " +
+        "   <div class='col-xs-2'> " +
+        "       <span class=''>" + "" + "</span> " +
+        "   </div> " +
+        "   <div class='col-xs-2'> " +
+        "       <span class='premiumLine_premium coverageTotalPremium'>" + formatMoney(rateSheetTotalPremiumAndFees) + "</span> " +
+        "   </div> " +
+        "</div>"
+
+    if(MODE === 'PREMIUMDISPLAY'){
+        return premiumLineHTML
+    }
+    else if(MODE === 'TOTAL'){
+        return rateSheetTotalPremiumAndFees
+    }
+    else if(MODE === 'TOTALPREMIUM'){
+        return rateSheetTotalPremium
+    }
+    else if(MODE === 'TOTALFEES'){
+        return rateSheetTotalFees
+    }
+}
+

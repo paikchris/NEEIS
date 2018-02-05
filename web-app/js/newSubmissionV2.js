@@ -17,6 +17,8 @@ var currentSubmissionWasLoadedFromSave = false;
 var loadedSubmissionMap = {};
 var ratePremiumsRunning = false;
 var ratePremiumsLock = false;
+var step2LogicIsRunning = false;
+
 
 
 //DATA OBJECTS
@@ -25,6 +27,10 @@ var riskTypes, riskCategories, products, productConditions, operations, coverage
     ratingBasisArray, rates, conditionBasisArray
 var riskTypeString
 var submission = new Submission()
+var productOptions = {}
+var savedProductOptionCheckboxes =[]
+var savedProductsSelected = []
+
 
 //VERSION VARIABLES
 var quoteRecord, versionRecords, dvVersionRecords, dvVersionView, submissionRecord
@@ -73,9 +79,11 @@ function newSubmissionInit() {
     questionCategories = qC
     ratingBasisArray = rB
     rates = rL
+    rateSheets = rS
     conditionBasisArray = cB
-
+    ruleEngineObjects = rO
     versionMode = vM
+    wcRates = wC
 
 
     mandatoryQuestionsForProductInit()
@@ -94,7 +102,6 @@ function newSubmissionInit() {
 
     clickChangeListenerInit()
     stepWizardInit()
-
 }
 function clickChangeListenerInit(){
 
@@ -135,17 +142,24 @@ function clickChangeListenerInit(){
     ///////////////////STEP 2 SELECT OPERATION AND COVERAGES///////////////////
 
     //WHEN OPERATION TYPE CHANGES, UPDATE COVERAGES AVAILABLE
-    $(document).on('change', '#operationsDropdown', function () {
-        operationDropdownChange(this);
+    $(document.body).on('change', '#operationCategoryDropdown', function(e) {
+        operationCategorySelectAction(this)
     });
+    $(document).on('change', '#operationsDropdown', function () {
+        // operationDropdownChange(this);
+        step2Logic()
+    });
+
 
     //LISTEN TO COVERAGE CHECKBOXES CHANGING
     $(document).on('change', '.coverageCheckbox', function () {
-        coverageCheckboxChangeAction(this);
+        // coverageCheckboxChangeAction(this);
+        step2Logic()
     })
 
     $(document).on('change', '.packageCoverageCheckbox', function () {
-        packageCoverageCheckboxChangeAction(this);
+        // packageCoverageCheckboxChangeAction(this);
+        step2Logic()
     })
 
     $(document).on('change', '.additionalOption', function () {
@@ -164,32 +178,11 @@ function clickChangeListenerInit(){
         }
     });
 
-
-
-
-
-
-
     //LISTEN TO REQUIRED QUESTIONS CHANGES
     $(document).on('change', 'div.requiredQuestion input, div.requiredQuestion select', function () {
         //THIS CHANGED INPUT MAY HAVE CHANGED PRODUCTS, UPDATE AND RECHECK ALL QUESTIONS
 
-        //CHECK IF ANY CHECKBOXES SHOULD BE HIDDEN
-
-        updateRequiredQuestions()
-        updateAdditionalOptions()
-        checkCoverageShowHideLogicAndShowHideCovCheckboxes()
-
-        if(isReadyToShowLimitAndDeducts()){
-            fillLimitDeductContainer()
-            showLimitDeductContainer()
-
-            //PREMIUM ONLY DISPLAYS IF LIMITS AND DEDUCTS SHOW CORRECTLY
-            if(isReadyToRatePremiums()){
-                calculatePremiumsAndFillContainer()
-                showPremiumRateContainer()
-            }
-        }
+        step2Logic()
     });
 
     //LIMIT RATING BASIS LIMIT INPUTS
@@ -202,16 +195,20 @@ function clickChangeListenerInit(){
         }
     });
 
+    $(document).on('change', '.productOptionCheckbox', function () {
+        productOptionCheckboxChangeAction(this)
+    });
 
+    //PRODUCT CARD CAROUSEL LISTENERS
+    $(document).on('click', '.productCard', function () {
+        productCardClickAction(this)
+    });
 
 
     //WHEN THE STATE CHANGES IN STEP 3, UPDATE PREMIUMS FOR TAX
     $(document).on('focusout', '#stateMailing', function () {
         stateChangeAction(this);
     });
-
-
-
 
     //GOTO STEP 2 AFTER CLICKING ON RISKTYPE
     $(document).on('change', '.riskTypeDropdown', function () {
@@ -606,7 +603,7 @@ function showStep(stepNumToShow){
     allWells.hide();
     $target.show();
     $target.find('input:eq(0)').focus();
-    scrollToTopOfPage
+    scrollToTopOfPage()
 }
 function furtherValidationStep3(){
     //1. OPERATION TYPE MUST BE CHOSEN
@@ -746,27 +743,529 @@ function getRatingBasisObjectByID(ratingBasisID){
 }
 
 ///////////////////STEP 1 -INSURED INFO FUNCTIONS///////////////////
+function getInsuredMailingState(){
+    return $('#stateMailing').val()
+}
+
+///////////////////STEP 2 -OPERATION, COVERAGE FUNCTIONS///////////////////
+function step2Logic(){
+    if(step2LogicIsRunning === false){
+        try{
+            step2LogicIsRunning = true
+
+            //IS OPERATION CHOSEN
+            if(isOperationTypeChosen()){
+                showOperationDescription()
+                showCovAndQuestionsContainer()
+                runRulesForOperation()
+            }
+            else{
+                hideOperationDescription()
+                hideCovAndQuestionsContainer()
+                clearCoveragesAvailableSection()
+                hideCoveragesAvailableSection()
+                clearRequiredQuestions()
+                return false
+            }
+
+            if(isPolicyTermQuestionsComplete()){
+                runRulesForOperation()
+            }
+            else{
+                clearRequiredQuestions()
+                return false
+            }
 
 
-///////////////////STEP 2 -OPERATION, COVERAGE, PRODUCTS FUNCTIONS///////////////////
+            //IS COVERAGE CHECKBOXES READY TO BE SHOWN
+            if(isCoveragesSectionReadyToBeShown()){
+                var checkboxCheckedMap = saveCoverageCheckboxesChecked()
+                buildCoveragesAvailableSection()
+                recheckCoverageCheckboxes(checkboxCheckedMap)
+                showCoveragesAvailableSection()
+                runRulesForOperation()
+                // updateRequiredQuestions()
+            }
+            else{
+                clearCoveragesAvailableSection()
+                hideCoveragesAvailableSection()
 
-//OPERATION TYPE
-function operationDropdownChange(input){
-    var selectedOperation = getSelectedOperationID()
+                clearProductCardContainers()
+                hideProductCardContainers()
 
-    if(selectedOperation === 'invalid'){
-        clearCoveragesAvailableSection()
-        hideCoveragesAvailableSection()
-        clearRequiredQuestions()
+                clearLimitDeductContainer()
+                hideLimitDeductContainer()
+
+                hidePremiumRateContainer()
+                return false
+            }
+
+
+
+            //CHECK IF READY TO SHOW PRODUCTS CAROUSEL
+            if(isReadyToShowAvailableProducts()){
+                savedProductsSelected = saveProductCardSelections()
+                clearProductCardContainers()
+                buildProductCardContainers()
+                resetProdOptionsArray()
+                runRulesForOperation()
+                buildAndInsertProductCards()
+                refillSelectedProductCards(savedProductsSelected)
+                showProductCardContainers()
+                $('.productCarousel').carousel({
+                    interval: false
+                })
+            }
+            else{
+                clearProductCardContainers()
+                hideProductCardContainers()
+
+                clearLimitDeductContainer()
+                hideLimitDeductContainer()
+
+                hidePremiumRateContainer()
+                return false
+            }
+
+            //CHECK IF LIMITS AND DEDUCTS IS READY
+            if(isReadyToShowLimitAndDeducts()){
+                fillLimitDeductContainer()
+
+                showLimitDeductContainer()
+            }
+            else{
+                clearLimitDeductContainer()
+                hideLimitDeductContainer()
+                return false
+            }
+
+
+            //CHECK IF READY TO RATE PREMIUMS AND SHOW PREMIUMS
+            if(isReadyToRatePremiums()){
+                calculatePremiumsAndFillContainer()
+                showPremiumRateContainer()
+            }
+            else{
+                hidePremiumRateContainer()
+                return false
+            }
+
+
+        }
+        finally{
+            step2LogicIsRunning = false
+        }
+    }
+
+}
+
+///////////////////STEP 2 -PRODUCT FUNCTIONS///////////////////
+function isReadyToShowAvailableProducts(){
+    if(isAllRequiredQuestionsComplete() && getCoveragesSelectedArray().length > 0){
+        return true
     }
     else{
-        buildCoveragesAvailableSection()
-        //CHECK IF ANY CHECKBOXES SHOULD BE HIDDEN
-        checkCoverageShowHideLogicAndShowHideCovCheckboxes()
-        showCoveragesAvailableSection()
-        updateRequiredQuestions()
+        return false
     }
 }
+function isAllRatingQuestionsOnPage(){
+    var coveragesSelected = getCoveragesSelectedArray()
+
+    for(var i=0;i<coveragesSelected.length;i++){
+        var covID = coveragesSelected[i]
+
+        var productOptionsForCov = productOptions[covID]
+
+        for(var j=0;j<productOptionsForCov.length;j++){
+            var productObject = productOptionsForCov[j]
+            var rateID = productObject.rateCode
+            var rateObject = getRateObjectByID(rateID)
+            var ratingBasisID = rateObject.rateBasis
+            var ratingBasisObject = getRatingBasisObjectByID(ratingBasisID)
+
+            if( doesQuestionExistOnPage(ratingBasisObject.questionID) === false ){
+                return false
+            }
+        }
+    }
+
+    return true
+}
+function getProductPremiumMoreInfoHTML(){
+    var htmlString = "" +
+        "       <div class='col-xs-12 productPremiumFooter' data-premiumvalue='INFO'>" +
+        "           <span class='productCardPremiumSpan'> More Info Needed </span>" +
+        "       </div>"
+
+    return htmlString
+}
+function getPremiumPreviewHTML(productObject){
+    var premiumPreviewHTML
+
+    var premiumVal = calculateProductOptionPremium(productObject)
+
+    premiumPreviewHTML = "" +
+        "       <div class='col-xs-12 productPremiumFooter' data-premiumvalue='" + premiumVal + "'>" +
+        "           <span class='productCardPremiumSpan'>" + formatMoney(premiumVal) + "</span>" +
+        "       </div>"
+
+    return premiumPreviewHTML
+}
+function updateProductCardPremium(covID, productID){
+    //RECALCULATE A PRODUCT CARDS PREMIUM BASED ON OPTIONS SELECTED ON PAGE
+
+    var productCardElement = $('#productCarousel_' + covID).find('.productCard[data-productid="' + productID + '"]')
+    var productOptionObject = getProductOptionObject(covID, productID)
+
+    $(productCardElement).find('.productPremiumFooter').replaceWith( $(getPremiumPreviewHTML(productOptionObject)) )
+
+
+}
+function getProductCardHTML(productObject, index){
+    var premiumPreviewHTML
+
+    if( canProductPremiumCalculate(productObject) ){
+        premiumPreviewHTML = getPremiumPreviewHTML(productObject)
+
+    }
+    else{
+        premiumPreviewHTML = getProductPremiumMoreInfoHTML()
+    }
+
+    var htmlString = "" +
+        "<div class='col-md-4'>" +
+        "   <div class='productCard' data-productid='" + productObject.productID + "'>" +
+        "       <div class='col-xs-12 productIDHeader'>" +
+        "           <span class='productIDSpan'>Option " + index + "</span>" +
+        "       </div>" +
+        "       <div class='col-xs-12 productShortDescriptionDiv'>" +
+        "           <span class='productShortDescription'>" + (productObject.shortDescription ? productObject.shortDescription : "") + "</span>" +
+        "       </div>" +
+        "       <div class='col-xs-12 productTermLengthContainer'>" +
+        "           <span>Term Length</span>" +
+        "       </div>" +
+        "       <div class='col-xs-12 hiddenCardInfo'>" +
+        "           <span class=''>" + productObject.productID + ", " + productObject.riskCompanyID + "</span>" +
+        "       </div>" +
+                    premiumPreviewHTML +
+        "   </div>" +
+        "</div>"
+
+    return htmlString
+}
+function getNewCarouselItemRow(){
+    var htmlString = "" +
+        "<div class='item'>" +
+        "   <div class='productGroup'>" +
+        "   </div>" +
+        "</div>"
+
+    return htmlString
+}
+function getNewCarouselIndicatorHTML(carouselID, index){
+    var htmlString = "" +
+        "<li data-target='#" + carouselID + "' data-slide-to='" + index + "'></li>"
+
+    return htmlString
+}
+function addProductCardToDisplay(prodOptionObject){
+    var productCardContainerCovID
+
+    if(prodOptionObject){
+        if(prodOptionObject.coverage){
+            productCardContainerCovID = prodOptionObject.coverage
+        }
+        else{
+            productCardContainerCovID = prodOptionObject.coverage
+        }
+
+        var productCardContainer = $('#productCardContainer_' + productCardContainerCovID)
+        var carouselID = $(productCardContainer).find('.carousel').attr('id')
+        var productCarouselInner = $(productCardContainer).find('.carousel-inner')
+        var cardCount = $(productCardContainer).find('.productCard').length
+
+
+        if(cardCount%3 === 0){
+            $(productCarouselInner).append( $(getNewCarouselItemRow()) )
+        }
+
+        var productCard = $(getProductCardHTML(prodOptionObject, cardCount + 1 ))
+        var carouselItemRow = $(productCarouselInner).find('.item').children('.productGroup').last()
+        $(carouselItemRow).append( $(productCard) )
+
+        //UPDATE INDICATORS
+        var carouselIndicatorContainer = $(productCardContainer).find('.carousel-indicators')
+        var indicatorsCount = $(carouselIndicatorContainer).find('li').length
+        var itemRowCount = $(productCarouselInner).find('.item').length
+
+        if(itemRowCount > indicatorsCount){
+            $(carouselIndicatorContainer).append( $(getNewCarouselIndicatorHTML(carouselID, itemRowCount-1)))
+        }
+    }
+    else{
+        //PRODUCT OBJECT DOESN'T EXIST, MAY BE INACTIVE
+    }
+
+}
+function saveProductCardSelections(){
+    return getSelectedProductsAndCoveragesMap()
+
+}
+function refillSelectedProductCards(savedProductsSelected){
+    var coveragesSelected = getCoveragesSelectedArray()
+
+    for(var i=0;i<coveragesSelected.length;i++){
+        var covID = coveragesSelected[i]
+
+        //CHECK IF THERE WAS A PREVIOUSLY SELECTED PRODUCT.
+        if(savedProductsSelected[covID]){
+            var productID = savedProductsSelected[covID]
+            //FIND THE CAROUSEL FOR COVERAGE ID,
+            var productCarouselElement = $('#productCarousel_' + covID)
+
+
+            //MARK PRODUCT CARD ACTIVE IF PRODUCT IS STILL AN OPTION
+            var productCardElement = $(productCarouselElement).find(".productCard[data-productid='" + productID + "']")
+            if( $(productCardElement).length > 0){
+                $(productCardElement).addClass('active')
+
+                //MARK THE ITEM ROW ACTIVE
+                $(productCarouselElement).find('.item.active').removeClass('active')
+                $(productCardElement).closest('.item').addClass('active')
+            }
+
+
+        }
+    }
+}
+function buildProductCardContainers(){
+    var coverages = getCoveragesSelectedArray()
+    var allProductCardsContainer = $('#productCardsContainer')
+    $(allProductCardsContainer).empty()
+
+    for(var i=0;i<coverages.length;i++){
+        var covID = coverages[i]
+        var carouselID = "productCarousel_" + covID
+
+        var htmlString = "" +
+            // "<div class='row' id='productCardContainer_" + covID + "'>" +
+            // "</div>"
+            "<div class='row productCardContainer' id='productCardContainer_" + covID + "' data-covid='" + covID + "'>" +
+            "   <div class='col-xs-12 carousel-header'>" +
+            "       <label>" + covID + "</label>" +
+            "   </div>" +
+            "   <div class='col-md-12'>" +
+            "       <div id='" + carouselID + "' class='productCarousel carousel slide'>" +
+            "           <ol class='carousel-indicators'>" +
+            "               <li data-target='#" + carouselID + "' data-slide-to='0' class='active'></li>" +
+            "           </ol>" +
+
+            "           <div class='carousel-inner'>" +
+            "           </div><!--.carousel-inner-->" +
+
+            "           <a data-slide='prev' href='#" + carouselID + "' class='left productCarousel carousel-control'>‹</a>" +
+            "           <a data-slide='next' href='#" + carouselID + "' class='right productCarousel carousel-control'>›</a>" +
+            "       </div><!--.Carousel-->" +
+
+            "   </div>" +
+            "</div>"
+
+        var productCardContainer_Coverage = $(htmlString)
+
+        $(allProductCardsContainer).append( $(productCardContainer_Coverage) )
+    }
+}
+function buildAndInsertProductCards(){
+    var covArray = getCoveragesSelectedArray()
+
+    for(var i=0;i<covArray.length;i++){
+        var covID = covArray[i]
+        var prodOptionsForCoverage = Object.keys(productOptions[covID])
+
+        for(var p=0;p<prodOptionsForCoverage.length;p++){
+            var productID = prodOptionsForCoverage[p]
+            var prodOptionObject = productOptions[covID][productID]
+            addProductCardToDisplay(prodOptionObject)
+        }
+
+        //SET FIRST IN CAROUSEL TO ACTIVE
+        var productCarouselContainer = $('#productCarousel_' + covID)
+        var firstCarouselItem = $(productCarouselContainer).find('.item').first()
+        $(productCarouselContainer).find('.item').removeClass('active')
+        $(firstCarouselItem).addClass('active')
+    }
+}
+function clearProductOptionsMap(){
+    productOptions = {}
+}
+function resetProdOptionsArray(){
+    clearProductOptionsMap()
+
+    var covArray = getCoveragesSelectedArray()
+
+    for(var i=0;i<covArray.length;i++){
+        var covID = covArray[i]
+        productOptions[covID] = {}
+    }
+}
+function addProductOption(productObject){
+    var prodObjectClone = JSON.parse(JSON.stringify(productObject))
+
+    if(productOptions[prodObjectClone.coverage]){
+        productOptions[prodObjectClone.coverage][prodObjectClone.productID] = prodObjectClone
+
+    }
+}
+function addProductOption_SpecificCovID(productObject, covID){
+    var prodObjectClone = JSON.parse(JSON.stringify(productObject))
+    prodObjectClone.coverage = covID
+
+    if(productOptions[covID]){
+        productOptions[covID][prodObjectClone.productID] = prodObjectClone
+    }
+
+}
+function showProductCardContainers(){
+    $('#productCardsContainer').css('display','')
+}
+function hideProductCardContainers(){
+    $('#productCardsContainer').css('display','none')
+}
+function clearProductCardContainers(){
+    $('#productCardsContainer').empty()
+}
+function updateRateForProductOption(coverageID, productObject, rateID){
+    // var prodOptionsForCoverageArray = productOptions[coverageID]
+    //
+    // if(prodOptionsForCoverageArray){
+    //     for(var i=0;i<prodOptionsForCoverageArray.length;i++){
+    //         if(prodOptionsForCoverageArray[i].productID === productObject.productID){
+    //             prodOptionsForCoverageArray[i].rateCode = rateID
+    //         }
+    //     }
+    // }
+    if(productOptions[coverageID]){
+        productOptions[coverageID][productObject.productID].rateCode = rateID
+    }
+
+
+}
+function productCardClickAction(productCardElement){
+
+    //IF THE CARD CLICK IS ALREADY ACTIVE MAKE IT INACTIVE.
+    if($(productCardElement).hasClass('active')){
+        $(productCardElement).removeClass('active')
+
+    }
+    else{
+        $(productCardElement).closest('.carousel-inner').find('.productCard.active').removeClass('active')
+        $(productCardElement).addClass('active')
+    }
+
+    step2Logic()
+
+}
+function getProductOptionObject(covID, productID){
+    var prodOptionObject = productOptions[covID][productID]
+
+    return prodOptionObject
+}
+
+//OPERATION CATEGORY
+function isOperationTypeChosen(){
+    var selectedOperation = getSelectedOperationID()
+
+    if(selectedOperation === 'invalid' || selectedOperation.trim().length === 0){
+        return false
+    }
+    else{
+        return true
+    }
+}
+function operationCategorySelectAction(input){
+    if($(input).val() === "invalid"){
+        disableOperationTypeDropdown()
+        resetOperationTypeDropdown()
+
+    }
+    else{
+        enableOperationTypeDropdown()
+        fillOperationTypeDropdown()
+        resetOperationTypeDropdown()
+    }
+}
+function disableOperationTypeDropdown(){
+    //DISABLE
+    $( "#operationsDropdown" ).prop( "disabled", true )
+    $( "#operationsDropdown" ).closest('div.form-group').find('label').css( "color", '#808080c9')
+
+}
+function enableOperationTypeDropdown(){
+    //HIDE
+    $( "#operationsDropdown" ).prop( "disabled", false );
+    $( "#operationsDropdown" ).closest('div.form-group').find('label').css( "color", '#333')
+
+
+}
+function resetOperationTypeDropdown(){
+    //RESET OPTION
+    $('#operationsDropdown').val('invalid')
+    $('#operationsDropdown').trigger('change')
+}
+function fillOperationTypeDropdown(){
+    var selectedCategory = getSelectedOperationCategory()
+    if(selectedCategory !== 'invalid'){
+        var categoryOperationArray
+        if(selectedCategory === 'ALL'){
+            categoryOperationArray = operations
+        }
+        else{
+            categoryOperationArray = getArrayOfOperationsForCategory(selectedCategory)
+        }
+
+
+        var optionHTML = "<option value='invalid'>Select One</option>"
+        for(var i=0;i<categoryOperationArray.length;i++){
+            var thisOperation = categoryOperationArray[i]
+            optionHTML = optionHTML + "<option value='" + thisOperation.operationID + "'>" + thisOperation.description + "</option>"
+        }
+
+        $('#operationsDropdown').html(optionHTML)
+    }
+    else{
+        var optionHTML = "<option value='invalid'>Select One</option>"
+
+        $('#operationsDropdown').html(optionHTML)
+    }
+}
+function hideOperationDescription(){
+    $('#operationDescriptionContainer').css('display', 'none')
+}
+function showOperationDescription(){
+    $('#operationDescriptionContainer').css('display', '')
+}
+function getSelectedOperationCategory(){
+    return $('#operationCategoryDropdown').val()
+}
+function getArrayOfOperationsForCategory(categoryString){
+    var operationArrayForCategory = []
+    for(var i=0; i<operations.length; i++){
+        var thisOperationMap = operations[i]
+        var thisDescription = thisOperationMap.description
+
+        //IF OPERATION HAS A CATEGORY
+        if(thisDescription.indexOf(' - ') > -1){
+            var thisCategory = thisDescription.split(' - ')[0]
+
+            if(thisCategory === categoryString){
+                operationArrayForCategory.push(thisOperationMap)
+            }
+        }
+    }
+
+    return operationArrayForCategory
+}
+//OPERATION TYPE
 function getCurrentOperationTypeObject(){
     for(var i=0; i < operations.length; i++ ){
         if(operations[i].operationID === submission.operationID()){
@@ -778,12 +1277,39 @@ function getSelectedOperationID(){
     return $('#operationsDropdown').val()
 }
 
+//POLCY TERM
+function showCovAndQuestionsContainer(){
+    $('#coveragesAndQuestionsContainer').css('display', '')
+}
+function hideCovAndQuestionsContainer(){
+    $('#coveragesAndQuestionsContainer').css('display', 'none')
+}
+
+
 //COVERAGE FUNCTIONS
+function isCoveragesSectionReadyToBeShown(){
+    if(isAllRequiredQuestionsComplete_Global()){
+        return true
+    }
+    else{
+        return false
+    }
+}
 function hideCoveragesAvailableSection(){
+    showCoveragesAvailableNotReady()
     $('#coveragesAvailableContainer').css('display', 'none')
 }
 function showCoveragesAvailableSection(){
     $('#coveragesAvailableContainer').css('display', '')
+    hideCoveragesAvailableNotReady()
+}
+function showCoveragesAvailableNotReady(){
+    $('#coveragesAvailableContainer_NotReady').css('display', '')
+
+}
+function hideCoveragesAvailableNotReady(){
+    $('#coveragesAvailableContainer_NotReady').css('display', 'none')
+
 }
 function clearCoveragesAvailableSection(){
     $('#coverageOptionsContainer').html('')
@@ -803,6 +1329,7 @@ function buildCoveragesAvailableSection(){
 
         var coverageProductMapKeys = Object.keys(coverageProductMap)
         var packageHTML = ""
+        var coverageHeaderHTML = "<h4 style='font-size:20px'>Coverages</h4>"
 
         //BUILD PACKAGE CHECKBOXES FIRST
         packageHTML = packageHTML + getPackageCheckboxesForCoveragesSectionHTML()
@@ -828,10 +1355,10 @@ function buildCoveragesAvailableSection(){
 
             //GIVE COVERAGE SECTION HEADER IF THERE ARE COVERAGES
             if(nonPackageCoverageCount > 0){
-                coverageHTML = "<label>Coverages</label>" + coverageHTML
+                // coverageHTML = "<label>Coverages</label>" + coverageHTML
             }
 
-            $('#coverageOptionsContainer').html(packageHTML + coverageHTML)
+            $('#coverageOptionsContainer').html( coverageHeaderHTML + packageHTML + coverageHTML)
         }
         else{
             clearCoveragesAvailableSection()
@@ -845,6 +1372,40 @@ function buildCoveragesAvailableSection(){
     }
 
 
+}
+function saveCoverageCheckboxesChecked(){
+    var checkboxIDCheckedMap = {}
+    $('#coveragesAvailableContainer').find('input:checkbox').each(function(){
+        var checkboxID = $(this).attr('id')
+        checkboxIDCheckedMap[checkboxID] = $(this).is(':checked')
+    })
+
+    return checkboxIDCheckedMap
+}
+function recheckCoverageCheckboxes(checkboxIDCheckedMap){
+    var checkboxIDArray = Object.keys(checkboxIDCheckedMap)
+    for(var i=0;i<checkboxIDArray.length;i++){
+        var checkboxID = checkboxIDArray[i]
+        var isChecked = checkboxIDCheckedMap[checkboxID]
+
+        $('#' + checkboxID).prop('checked', isChecked)
+    }
+}
+function moveCheckboxUnderCovID(covIDToMove, covID){
+    var checkboxToMove = $('#' + covIDToMove + '_CoverageOptionContainer')
+
+    //MOVE CHECKBOX TO UNDER TRIGGERING CHECKBOX
+    $('#' + covID + '_CoverageOptionContainer').after($(checkboxToMove))
+
+    //INDENT TARGET CHECKBOX
+    $(checkboxToMove).css('margin-left', '10px')
+}
+function hideCoverageCheckboxByCovID(covID){
+    $('#' + covID + '_CoverageOptionContainer').css('display', 'none')
+    $('#' + covID + '_CoverageOptionContainer').find('input').prop('checked', false)
+}
+function showCoverageCheckboxByCovID(covID){
+    $('#' + covID + '_CoverageOptionContainer').css('display', '')
 }
 function checkCoverageShowHideLogicAndShowHideCovCheckboxes(){
     var operationsObject = getCurrentOperationTypeObject()
@@ -931,8 +1492,8 @@ function getPackageCheckboxesForCoveragesSectionHTML(){
 
         var packageIDs = Object.keys(coveragePackageMap)
 
-        htmlString = htmlString +
-            "<label>Packages</label>"
+        // htmlString = htmlString +
+            // "<label>Packages</label>"
 
         for(var i=0;i<packageIDs.length;i++){
             var covID = packageIDs[i]
@@ -1005,29 +1566,29 @@ function getCoverageOptionContainerRowHTML(covID){
     return coverageRowHTML
 }
 function coverageCheckboxChangeAction(checkbox){
-    updateRequiredQuestions()
-
-    updateAdditionalOptions()
-
-    //IF THIS COVERAGE IS ALREADY CHECKED IN A PACKAGE OR ELSEWHERE, UNCHECK TO AVOID DUPLICATES
-    removeDuplicateCoveragesAndPackageLOBS(checkbox)
-
-    //IF AT LEAST TWO COVERAGES ARE CHECKED THAT ARE IN A PACKAGE, ASK IF THEY WANT TO PACKAGE
-
-
-    if(isReadyToShowLimitAndDeducts()){
-        fillLimitDeductContainer()
-        showLimitDeductContainer()
-
-        //PREMIUM ONLY DISPLAYS IF LIMITS AND DEDUCTS SHOW CORRECTLY
-        if(isReadyToRatePremiums()){
-            calculatePremiumsAndFillContainer()
-            showPremiumRateContainer()
-        }
-        else{
-
-        }
-    }
+    // updateRequiredQuestions()
+    //
+    // // updateAdditionalOptions()
+    //
+    // //IF THIS COVERAGE IS ALREADY CHECKED IN A PACKAGE OR ELSEWHERE, UNCHECK TO AVOID DUPLICATES
+    // removeDuplicateCoveragesAndPackageLOBS(checkbox)
+    //
+    // //IF AT LEAST TWO COVERAGES ARE CHECKED THAT ARE IN A PACKAGE, ASK IF THEY WANT TO PACKAGE
+    //
+    //
+    // if(isReadyToShowLimitAndDeducts()){
+    //     fillLimitDeductContainer()
+    //     showLimitDeductContainer()
+    //
+    //     //PREMIUM ONLY DISPLAYS IF LIMITS AND DEDUCTS SHOW CORRECTLY
+    //     if(isReadyToRatePremiums()){
+    //         calculatePremiumsAndFillContainer()
+    //         showPremiumRateContainer()
+    //     }
+    //     else{
+    //
+    //     }
+    // }
 }
 function packageCoverageCheckboxChangeAction(checkbox){
     var isValid = true
@@ -1055,7 +1616,7 @@ function packageCoverageCheckboxChangeAction(checkbox){
             limitInputValues[thisLimitInputDescription] = thisLimitInputValue
         })
 
-        updateRequiredQuestions()
+        // updateRequiredQuestions()
         //IF THIS COVERAGE IS ALREADY CHECKED IN A PACKAGE OR ELSEWHERE, UNCHECK TO AVOID DUPLICATES
         removeDuplicateCoveragesAndPackageLOBS(checkbox)
 
@@ -1191,6 +1752,88 @@ function getCoverageObject(covID){
 }
 
 //ADDITIONAL OPTIONS
+function productOptionCheckboxChangeAction(checkboxElement){
+    var limitDescription = $(checkboxElement).attr('data-limitdescription').trim()
+    var productID = $(checkboxElement).attr('data-productid')
+    var covID = $(checkboxElement).attr('data-covid')
+
+    if( $(checkboxElement).is(':checked') ){
+        //1. CHECK IF LIMIT NEEDS TO BE ADDED
+        var newLimitValue = $(checkboxElement).attr('data-limitvalue')
+        if(limitDescription.length > 0){
+            //IF THERE IS A LIMIT DESCRIPTION, CHECK TO SEE IF IT ALREADY EXISTS, IF IT EXISTS EDIT IT. IF IT DOESN'T, CREATE A NEW LINE
+            if(   $('.' + productID + '_LimitRow_LimitDescription[data-limitdescription="' + limitDescription + '"').length  > 0   ){
+                var limitValueElement = $('.' + productID + '_LimitRow_LimitValue[data-limitdescription="' + limitDescription + '"')
+
+                $(limitValueElement).val(newLimitValue)
+            }
+            else{
+                var newLimitLineHTML = "" +
+                    "<div class='row limitRow " + productID + "_LimitRow' data-limitdescription='" + limitDescription + "'>" +
+                    "   <div class='col-xs-4'>" +
+                    "       <span class='limitValue " + productID + "_LimitRow_LimitValue' " +
+                    "           data-limitdescription='" + limitDescription + "'>" + newLimitValue + "</span>" +
+                    "   </div>" +
+                    "   <div class='col-xs-8'>" +
+                    "       <span class='limitDescription " + productID + "_LimitRow_LimitDescription' " +
+                    "           data-limitdescription='" + limitDescription + "'>" + limitDescription + "</span>" +
+                    "   </div>" +
+                    "</div>"
+
+                $('#' + covID + '_LimDeductColumnsContainer .limitColumn').append( $(newLimitLineHTML) )
+
+            }
+        }
+
+        //CHECK IF EXISTING LIMIT VALUE NEEDS TO CHANGE
+        if( $(checkboxElement).attr('data-limitdescriptionchange').trim().length > 0 ){
+            var limitDescChange = $(checkboxElement).attr('data-limitdescriptionchange').trim()
+            var limitValueChange = $(checkboxElement).attr('data-limitvaluechange').trim()
+
+            $('.' + productID + '_LimitRow_LimitValue[data-limitdescription="' + limitDescChange + '"').html(limitValueChange)
+        }
+
+
+
+
+        //UPDATE PREMIUMS
+        var productObject = getProductOptionObject(covID, productID)
+        var limitArray = jsonStringToObject( productObject.limitArray )
+        var testPremium = calculateProductOptionPremium(productObject)
+        calculatePremiumsAndFillContainer()
+        updateProductCardPremium(covID,productID)
+    }
+    else{
+        //FIND THE LIMIT LINE IF IT EXISTS
+        if( $('.' + productID + '_LimitRow[data-limitdescription="' + limitDescription + '"').length > 0 ){
+            $('.' + productID + '_LimitRow[data-limitdescription="' + limitDescription + '"').remove()
+        }
+
+        //RECALCULATE PREMIUMS
+        calculatePremiumsAndFillContainer()
+        updateProductCardPremium(covID,productID)
+
+
+    }
+}
+function saveProductOptionCheckboxes(){
+    savedProductOptionCheckboxes = []
+
+    $('.productOptionCheckbox').each(function(){
+        if( $(this).is(':checked') ){
+            savedProductOptionCheckboxes.push( $(this).attr('id') )
+        }
+    })
+
+    return savedProductOptionCheckboxes
+}
+function reCheckProductOptionCheckboxes(savedCheckboxIDArray){
+    for(var i=0;i<savedCheckboxIDArray.length;i++){
+        var elementID = savedCheckboxIDArray[i]
+
+        $('#'+elementID).prop('checked')
+    }
+}
 function updateAdditionalOptions(){
     var operationsObject = getCurrentOperationTypeObject()
 
@@ -1309,7 +1952,7 @@ function updateAdditionalOptions(){
         //ADDITIONAL PRODUCT OPTION CHECKBOXES
         if(getProductIDForCoverage(covID) !== null && getProductIDForCoverage(covID) !== undefined){
             var productID = getProductIDForCoverage(covID)
-            var productObject = getProductObjectFromProductID(productID)
+            var productObject = getProductOptionObject(covID, productID)
 
             if(productObject){
                 if(productObject.additionalOptionsArray !== null && productObject.additionalOptionsArray !== undefined  ){
@@ -1537,12 +2180,13 @@ function ANIMALOptionHTML(){
 }
 function getSelectedProductAdditionalOptionMap(){
     var selectedProductAdditionalOptionMap = {}
-    var productsSelectedArray = getProductsSelectedArray()
+    var coveragesSelected = getCoveragesSelectedArray()
 
-    for(var i=0;i<productsSelectedArray.length; i++){
-        var productID = productsSelectedArray[i]
-        var productObject = getProductObjectFromProductID(productID)
-        var covID = productObject.coverage
+    for(var i=0;i<coveragesSelected.length; i++){
+        var covID = coveragesSelected[i]
+        var productID = getProductIDForCoverage(covID)
+        var productObject = getProductOptionObject(covID, productID)
+
 
         var selectedOptionsForProduct = []
 
@@ -1645,10 +2289,9 @@ function getCoverageQuestionSectionHTML(covID){
 //PRODUCT CONDITION AND RATING BASIS REQUIRED QUESTIONS SECTION
 function clearRequiredQuestions(){
     $('#ratingBasisRequiredQuestionsContainer').empty()
-    $('#productConditionBasisRequiredQuestionsContainer').empty()
+    $('.questionsContainer').empty()
 }
-
-function updateRequiredQuestions(){
+function updateRequiredQuestionsBACKUP(){
     var operationsObject = getCurrentOperationTypeObject()
 
     //SAVE ANSWERS TO REFILL LATER FOR SAME QUESTIONS
@@ -1743,10 +2386,6 @@ function updateRequiredQuestions(){
             }
         }
 
-
-
-
-
         //FILTER QUESTIONS FOR DUPLICATES
         var requiredQuestionsForCoveragesCheckedArray_Filtered = []
 
@@ -1758,7 +2397,6 @@ function updateRequiredQuestions(){
 
             }
         }
-
 
         var requiredQuestionsForCoveragesCheckedArray_Sorted = []
 
@@ -1780,10 +2418,10 @@ function updateRequiredQuestions(){
         requiredQuestionsForCoveragesCheckedArray_Sorted = requiredQuestionsForCoveragesCheckedArray_Sorted.concat(requiredQuestionsForCoveragesCheckedArray_Filtered)
 
         //BUILD CONTAINERS FOR COVERAGES AND QUESTIONS (PRODUCT CONDITION CONTAINER)
-        $('#productConditionBasisRequiredQuestionsContainer').append(getCoverageQuestionSectionHTML("DEFAULT"))
+        $('#questionsContainer_global').append(getCoverageQuestionSectionHTML("DEFAULT"))
         for(var i=0;i<allCoveragesPackagesArray.length;i++){
             var cID = allCoveragesPackagesArray[i]
-            $('#productConditionBasisRequiredQuestionsContainer').append(getCoverageQuestionSectionHTML(cID))
+            $('#questionsContainer_global').append(getCoverageQuestionSectionHTML(cID))
         }
 
         //BUILD HTML FOR REQUIRED QUESTIONS
@@ -1796,22 +2434,20 @@ function updateRequiredQuestions(){
 
             //IF THIS QUESTION HAS COVERAGE QUESTION CONTAINER
             if(covID){
-                $('#productConditionBasisRequiredQuestionsContainer .' + covID + '_productLogicQuestions').append(getNewSubmissionRequiredQuestion(qID))
-                $('#productConditionBasisRequiredQuestionsContainer .' + covID + '_questionsForCoverageSection').css('display', '')
+                $('#questionsContainer_global .' + covID + '_productLogicQuestions').append(getNewSubmissionRequiredQuestion(qID))
+                $('#questionsContainer_global .' + covID + '_questionsForCoverageSection').css('display', '')
             }
             else{
                 covID = "DEFAULT"
-                $('#productConditionBasisRequiredQuestionsContainer .' + covID + '_productLogicQuestions').append(getNewSubmissionRequiredQuestion(qID))
-                $('#productConditionBasisRequiredQuestionsContainer .' + covID + '_questionsForCoverageSection').css('display', '')
+                $('#questionsContainer_global .' + covID + '_productLogicQuestions').append(getNewSubmissionRequiredQuestion(qID))
+                $('#questionsContainer_global .' + covID + '_questionsForCoverageSection').css('display', '')
             }
 
         }
         // finalHTML = finalHTML + "</div>"
 
         //INSERT INTO REQUIRED QUESTIONS CONTAINER
-        // $('#productConditionBasisRequiredQuestionsContainer').html(finalHTML)
-
-
+        // $('#questionsContainer_global').html(finalHTML)
 
         //REINSERT PREVIOUSLY FILLED OUT
         var questionAnswersKeys = Object.keys(questionAnswers)
@@ -1857,7 +2493,7 @@ function updateRequiredQuestions(){
         var gridSizeCount = 0
         var rowHeight = 0
         var elementsInRow = []
-        $('#productConditionBasisRequiredQuestionsContainer div.requiredQuestion').each(function(){
+        $('#questionsContainer_global div.requiredQuestion').each(function(){
             var thisGridSize = $(this).attr('data-gridsize')
             var thisHeight = $(this).height()
 
@@ -1905,7 +2541,184 @@ function updateRequiredQuestions(){
     }
 
     validate()
+}
 
+function updateQuestions(missingQuestions){
+
+
+    //SAVE QUESTION ANSWERS
+    var questionAnswersMap = saveRequiredQuestionAnswers()
+
+    //SAVE CURRENT QUESTION ORDER
+    var questionOrderArray = saveRequiredQuestionOrder()
+
+    //REMOVE ALL QUESTIONS
+    clearRequiredQuestions()
+
+    //GET CURRENTLY CHOSEN COVERAGE CHECKBOXES
+    var allCoveragesPackagesArray = getCoveragesAndPackagesSelectedArray()
+
+    // insertQuestionsNoContainers(missingQuestions)
+    insertQuestionsWithContainers(missingQuestions)
+
+    refillSavedAnswers(questionAnswersMap)
+
+    fixRequiredQuestionHeights()
+
+    validate()
+}
+function fixRequiredQuestionHeights(){
+    //CHECK HEIGHTS OF QUESTION CONTAINERS, IF HEIGHT IS DIFFERENT WILL MESS UP ALIGNMENT. APPLY LARGEST DIV HEIGHT IN ROW TO ALL CONTAINERS
+    var gridSizeCount = 0
+    var rowHeight = 0
+    var elementsInRow = []
+    $('#step-2 div.requiredQuestion').each(function(){
+        var thisGridSize = $(this).attr('data-gridsize')
+        var thisHeight = $(this).height()
+
+
+        // console.log(thisGridSize)
+        // console.log(parseInt(gridSizeCount) + parseInt(thisGridSize))
+
+        if( (parseInt(gridSizeCount) + parseInt(thisGridSize) ) <= 12 ){
+            if(thisHeight > rowHeight){
+                rowHeight = thisHeight
+            }
+
+            elementsInRow.push( $(this) )
+
+            gridSizeCount = parseInt(gridSizeCount) + parseInt(thisGridSize)
+        }
+        else{
+            // console.log(elementsInRow)
+            //LOOP THROUGH THE ROWS IN THE ROW
+            for(var i=0;i<elementsInRow.length;i++){
+                var questionElement = elementsInRow[i]
+                console.log(rowHeight)
+                $(questionElement).height(rowHeight)
+            }
+
+            gridSizeCount = thisGridSize
+            rowHeight = thisHeight
+        }
+    })
+}
+function fixRequiredQuestionValidationColors(){
+    $('#step-2 div.requiredQuestion').each(function(){
+
+    })
+}
+function sortQuestionsByOrderAdded(questionOrder, questionIDArray){
+    var sortedQuestionsArray = []
+    //SORT QUESTIONS BY ORDER ADDED
+    for(var i=0;i<questionOrder.length;i++){
+        var qID = questionOrder[i]
+
+        //IF QUESTION ID EXISTED BEFORE
+        if(questionIDArray.indexOf(qID) > -1){
+            sortedQuestionsArray.push(qID)
+
+            var index = questionIDArray.indexOf(qID)
+            questionIDArray.splice(index,1)
+        }
+    }
+    sortedQuestionsArray = sortedQuestionsArray.concat(questionIDArray)
+
+    return sortedQuestionsArray
+
+}
+function removeDuplicateQuestions(questionIDArray){
+    var newQuestionIDArray = []
+
+    for(var i=0; i<questionIDArray.length;i++){
+        if(newQuestionIDArray.indexOf(questionIDArray[i]) === -1 ){
+            if($('#' + questionIDArray[i]).length === 0){
+                newQuestionIDArray.push(questionIDArray[i])
+            }
+        }
+    }
+
+    return newQuestionIDArray
+}
+function buildQuestionCategoryContainers(){
+    var allCoveragesPackagesArray = getCoveragesAndPackagesSelectedArray()
+    //BUILD CONTAINERS FOR COVERAGES AND QUESTIONS (PRODUCT CONDITION CONTAINER)
+    $('#questionsContainer_global').append(getCoverageQuestionSectionHTML("DEFAULT"))
+    for(var i=0;i<allCoveragesPackagesArray.length;i++){
+        var cID = allCoveragesPackagesArray[i]
+        $('#questionsContainer_global').append(getCoverageQuestionSectionHTML(cID))
+    }
+}
+function insertQuestionsWithContainers(questionIDArray){
+    for(var i=0;i<questionIDArray.length;i++){
+        var qID = questionIDArray[i].questionID
+        var type = questionIDArray[i].type
+
+        var questionContainer = $('#questionsContainer_' + type)
+
+
+        //CHECK IF QUESTION ALREADY EXISTS
+        if( doesQuestionExistOnPage(qID) ){
+            //SKIP
+        }
+        else{
+            $('#questionsContainer_' + type).append(getNewSubmissionRequiredQuestion(qID))
+        }
+
+    }
+}
+function insertQuestionsNoContainers(questionIDArray){
+    for(var i=0;i<questionIDArray.length;i++){
+        var qID = questionIDArray[i].questionID
+        var type = questionIDArray[i].type
+
+        $('#questionsContainer_global').append(getNewSubmissionRequiredQuestion(qID))
+    }
+}
+function refillSavedAnswers(questionAnswers){
+    //REINSERT PREVIOUSLY FILLED OUT AGAIN FOR ADDITIONAL QUESTIONS ADDED
+    var questionAnswersKeys = Object.keys(questionAnswers)
+    for(var i=0;i<questionAnswersKeys.length; i++){
+        var elementID = questionAnswersKeys[i]
+        var element = $('#' + elementID)
+
+        if( $(element).attr('type') === 'radio' || $(element).attr('type') === 'checkbox' ){
+            $(element).prop('checked', questionAnswers[elementID])
+        }
+        else{
+            $(element).val(questionAnswers[elementID])
+        }
+    }
+    initializeGlobalListeners()
+}
+
+function saveRequiredQuestionAnswers(){
+    var questionAnswers = {}
+    $('div.requiredQuestion input, div.requiredQuestion select').each(function(){
+        var elementID = $(this).attr('id')
+        var value = $(this).val()
+
+        if($(this).attr('type') === 'radio' || $(this).attr('type') === 'checkbox' ){
+            value = $(this).is(':checked')
+            questionAnswers[elementID] = value
+        }
+        else{
+            questionAnswers[elementID] = value
+        }
+    })
+
+    return questionAnswers
+}
+function saveRequiredQuestionOrder(){
+    var questionOrder = []
+    $('div.requiredQuestion').each(function(){
+        var qID = $(this).attr('data-questionid')
+        if(qID && qID.trim().length > 0){
+            questionOrder.push(qID)
+        }
+    })
+
+    return questionOrder
 }
 function updateShowHideLogicRequiredQuestions(){
     var showHideMap = jsonStringToObject( getCurrentOperationTypeObject().coverageShowMap )
@@ -1923,8 +2736,8 @@ function updateShowHideLogicRequiredQuestions(){
         if( getProductIDForCoverage(covID) ){
 
             //GET RATING BASIS REQUIRED QUESTIONS
-            if(getProductObjectFromProductID(productID) !== undefined){
-                var productObject = getProductObjectFromProductID(productID)
+            if(getProductOptionObject(covID, productID) !== undefined){
+                var productObject = getProductOptionObject(covID, productID)
 
                 if(productObject.rateCode !== undefined && productObject.rateCode !== null){
                     var rateID = productObject.rateCode
@@ -1942,8 +2755,8 @@ function updateShowHideLogicRequiredQuestions(){
                             questionHTML = questionHTML + getNewSubmissionRequiredRateQuestion(ratingBasisQuestionID)
                             // questionHTML = questionHTML + "</div>"
 
-                            $('#productConditionBasisRequiredQuestionsContainer .' + covID + '_ratingLogicQuestions').append(getNewSubmissionRequiredRateQuestion(ratingBasisQuestionID))
-                            $('#productConditionBasisRequiredQuestionsContainer .' + covID + '_ratingLogicQuestions').css('display', '')
+                            $('#questionsContainer_global .' + covID + '_ratingLogicQuestions').append(getNewSubmissionRequiredRateQuestion(ratingBasisQuestionID))
+                            $('#questionsContainer_global .' + covID + '_ratingLogicQuestions').css('display', '')
                         }
                     }
                 }
@@ -1962,8 +2775,8 @@ function updateRatingRequiredQuestion(){
         if( getProductIDForCoverage(covID) ){
 
             //GET RATING BASIS REQUIRED QUESTIONS
-            if(getProductObjectFromProductID(productID) !== undefined){
-                var productObject = getProductObjectFromProductID(productID)
+            if(getProductOptionObject(covID, productID) !== undefined){
+                var productObject = getProductOptionObject(covID, productID)
 
                 if(productObject.rateCode !== undefined && productObject.rateCode !== null){
                     var rateID = productObject.rateCode
@@ -1981,8 +2794,8 @@ function updateRatingRequiredQuestion(){
                             questionHTML = questionHTML + getNewSubmissionRequiredRateQuestion(ratingBasisQuestionID)
                             // questionHTML = questionHTML + "</div>"
 
-                            $('#productConditionBasisRequiredQuestionsContainer .' + covID + '_ratingLogicQuestions').append(getNewSubmissionRequiredRateQuestion(ratingBasisQuestionID))
-                            $('#productConditionBasisRequiredQuestionsContainer .' + covID + '_ratingLogicQuestions').css('display', '')
+                            $('#questionsContainer_global .' + covID + '_ratingLogicQuestions').append(getNewSubmissionRequiredRateQuestion(ratingBasisQuestionID))
+                            $('#questionsContainer_global .' + covID + '_ratingLogicQuestions').css('display', '')
                         }
                     }
                 }
@@ -2027,8 +2840,8 @@ function updatePackageRequiredRatingQuestions(){
                                     questionHTML = questionHTML + getNewSubmissionRequiredPackageRateQuestion(ratingBasisQuestionID)
                                     // questionHTML = questionHTML + "</div>"
                                     // $('#ratingBasisRequiredQuestionsContainer').append(questionHTML)
-                                    $('#productConditionBasisRequiredQuestionsContainer .' + covID + '_ratingLogicQuestions').append(getNewSubmissionRequiredPackageRateQuestion(ratingBasisQuestionID))
-                                    $('#productConditionBasisRequiredQuestionsContainer .' + covID + '_ratingLogicQuestions').css('display', '')
+                                    $('#questionsContainer_global .' + covID + '_ratingLogicQuestions').append(getNewSubmissionRequiredPackageRateQuestion(ratingBasisQuestionID))
+                                    $('#questionsContainer_global .' + covID + '_ratingLogicQuestions').css('display', '')
 
                                 }
                             }
@@ -2061,7 +2874,7 @@ function isReadyToShowLimitAndDeducts(){
     //4. AT LEAST ONE COVERAGE HAS BEEN SELECTED
     //HIDES LIMIT AND PREMIUM CONTAINERS IF FALSE
 
-    if( isAllProductsDeterminedForCoveragesChosen() && isAllRequiredQuestionsComplete()
+    if( isThereAtLeastOneProductChosen() && isAllRequiredQuestionsComplete()
         && $('.coverageCheckbox:checked').length > 0 ){
         return true
     }
@@ -2080,26 +2893,13 @@ function isReadyToRatePremiums(){
 
 
     //CHECK IF PRODUCT REQUIRED QUESTIONS EXIST
-    var productsSelectedArray = getProductsSelectedArray()
-    for(var i=0; i<productsSelectedArray.length; i++){
-        var productID = productsSelectedArray[i]
-        var productObject = getProductObjectFromProductID(productID)
+    var coveragesSelected = getCoveragesSelectedArray()
+    for(var i=0;i<coveragesSelected.length; i++){
+        var covID = coveragesSelected[i]
+        var productID = getProductIDForCoverage(covID)
+        var productObject = getProductOptionObject(covID, productID)
 
-        if(productObject.requiredQuestions !== null && productObject.requiredQuestions !== undefined){
-            var productRequiredQuestionsArray = jsonStringToObject(productObject.requiredQuestions)
-
-            //LOOP THROUGH PRODUCT REQUIRED QUESTIONS
-            for(var j=0; j<productRequiredQuestionsArray.length; j++){
-                var questionID = productRequiredQuestionsArray[j]
-
-                //CHECK IF QUESTIONS EXIST
-                if( $('#step-2 #' + questionID).length === 0 ){
-                    return false
-                }
-
-                //CHECK IF QUESTION IS FILLED ?
-            }
-
+        if(productObject && productObject.requiredQuestions !== null && productObject.requiredQuestions !== undefined){
             //CHECK IF ALL RATING REQUIRED QUESTIONS EXIST
             if(productObject.rateCode !== undefined && productObject.rateCode !== null){
                 var rateID = productObject.rateCode
@@ -2117,7 +2917,6 @@ function isReadyToRatePremiums(){
 
             }
         }
-
     }
 
     //CHECK IF LIMITS AND DEDUCTIBLES ARE READY TO DISPLAY
@@ -2150,6 +2949,61 @@ function isReadyToRatePremiums(){
     }
 }
 function isAllRequiredQuestionsComplete(){
+    var isComplete = true
+    $('div.requiredQuestion input, div.requiredQuestion select').each(function(){
+        if($(this).attr('type') === 'radio' || $(this).attr('type') === 'checkbox'){
+            var groupName = $(this).attr('name')
+            var value = $("div.requiredQuestion input[name='" + groupName + "']:checked").val()
+            if(value === undefined || value === null || value.trim().length === 0){
+                isComplete = false
+            }
+        }
+        else{
+            if( $(this).val().trim().length === 0 || $(this).val().trim() === 'invalid'){
+                isComplete = false
+            }
+        }
+
+    })
+
+    return isComplete
+}
+function isAllRequiredQuestionsComplete_Global(){
+    var isComplete = true
+    $('#questionsContainer_global').find('div.requiredQuestion input, div.requiredQuestion select').each(function(){
+        if($(this).attr('type') === 'radio' || $(this).attr('type') === 'checkbox'){
+            var groupName = $(this).attr('name')
+            var value = $("div.requiredQuestion input[name='" + groupName + "']:checked").val()
+            if(value === undefined || value === null || value.trim().length === 0){
+                isComplete = false
+            }
+        }
+        else{
+            if( $(this).val().trim().length === 0 || $(this).val().trim() === 'invalid'){
+                isComplete = false
+            }
+        }
+
+    })
+
+    return isComplete
+}
+function isPolicyTermQuestionsComplete(){
+    if( $('#proposedEffectiveDate').val().trim().length === 0 ){
+        return false
+    }
+
+    if( $('#proposedExpirationDate').val().trim().length === 0 ){
+        return false
+    }
+
+    if( $('#proposedTermLength').val().trim().length === 0 ){
+        return false
+    }
+
+    return true
+}
+function isDefaultQuestionsComplete(){
     var isComplete = true
     $('div.requiredQuestion input').each(function(){
         if($(this).attr('type') === 'radio' || $(this).attr('type') === 'checkbox'){
@@ -2201,6 +3055,14 @@ function isAllProductConditionQuestionsComplete(){
     console.log(isComplete)
 
     return isComplete
+}
+function isThereAtLeastOneProductChosen(){
+    if( getProductsSelectedArray().length > 0){
+        return true
+    }
+    else{
+        return false
+    }
 }
 function isAllProductsDeterminedForCoveragesChosen(){
     var covSelectedArray = getCoveragesSelectedArray()
@@ -2264,11 +3126,11 @@ function isRatingRequiredQuestionsExist(){
 //LIMITS DEDUCTIBLES FUNCTIONS
 function showLimitDeductContainer(){
     $('#limitsDeductiblesContainer').css('display', '')
-    hideLimitDeductQuestionsNotAnsweredContainer()
+    // hideLimitDeductQuestionsNotAnsweredContainer()
 }
 function hideLimitDeductContainer(){
     $('#limitsDeductiblesContainer').css('display', 'none')
-    showLimitDeductQuestionsNotAnsweredContainer()
+    // showLimitDeductQuestionsNotAnsweredContainer()
 }
 function clearLimitDeductContainer(){
     $('#limitsDeductiblesContainer').empty()
@@ -2300,9 +3162,14 @@ function buildLimitDeductibleContainersForEachCoverage(){
 
     //BUILD LIMIT DEDUCT ROWS
     for(var i=0;i<covArray.length; i++){
+        var covID = covArray[i]
         var thisCovContainer = $(temporaryContainer).find('#' + covArray[i] + '_CoverageLimDeductContainer')
         var productID = getProductIDForCoverage(covArray[i])
-        $(thisCovContainer).append(buildLimDedRows(productID))
+
+        if(productID){
+            $(thisCovContainer).append(buildLimDedRows(covID, productID))
+        }
+
     }
 
 
@@ -2323,35 +3190,49 @@ function getLimDeductCovContainerHTML(covID){
 }
 function getLimDeductCoverageLabelRow(covID){
     var coverageMap = getCoverageObject(covID)
+    var productID = getProductIDForCoverage(covID)
+
     var covLabelRowHTML =
         "<div class='row coverageLabelRow' " +
         "   id='" + covID + "_LimDeductLabelRow' " +
         "   data-covid='" + covID + "' " +
-        "   data-productid='" + getProductIDForCoverage(covID) + "' " +
-        ">" +
-        "   <div class=col-xs-12>" +
-        "       <label class='covNameLabel'>" +
-        "           " + coverageMap.coverageName + "" +
-        (testingMode ? (" - " + getProductIDForCoverage(covID) + "") : ("") ) +
-        "       </label>" +
-        "   </div>" +
-        "   <div class=col-xs-6>" +
-        "       <label class='limitsLabel'>" +
-        "           Limits" +
-        "       </label>" +
-        "   </div>" +
-        "   <div class=col-xs-6>" +
-        "       <label class='deductsLabel'>" +
-        "           Deductibles" +
-        "       </label>" +
-        "   </div>" +
-        "</div>"
+        "   data-productid='" + productID + "' " +
+        ">"
+
+
+    if(productID){
+        covLabelRowHTML = covLabelRowHTML +
+            "   <div class=col-xs-12>" +
+            "       <label class='covNameLabel'>" +
+            coverageMap.coverageName + " - " + productID +
+            "       </label>" +
+            "   </div>" +
+            "   <div class=col-xs-6>" +
+            "       <label class='limitsLabel'>" +
+            "           Limits" +
+            "       </label>" +
+            "   </div>" +
+            "   <div class=col-xs-6>" +
+            "       <label class='deductsLabel'>" +
+            "           Deductibles" +
+            "       </label>" +
+            "   </div>" +
+            "</div>"
+    }
+    else{
+        covLabelRowHTML = covLabelRowHTML +
+            "   <div class=col-xs-12>" +
+            "       <label class='covNameLabel'>" +
+            coverageMap.coverageName + " - " + "<label style='color: #ca0101;'>Please Select a Product</label>" +
+            "       </label>" +
+            "   </div>" +
+            "</div>"
+    }
 
     return covLabelRowHTML
 }
-function buildLimDedRows(productID){
-    var productMap = getProductObjectFromProductID(productID)
-    var covID = productMap.coverage
+function buildLimDedRows(covID, productID){
+    var productMap = getProductOptionObject(covID, productID)
     var limitArray = []
     var deductArray = []
 
@@ -2420,6 +3301,11 @@ function buildLimDedRows(productID){
         "   <div class='col-xs-6 deductColumn'>" +
                 getDeductRowsHTML(deductArray, productID, productMap.coverage) +
         "   </div>" +
+        "</div>" +
+        "<div class='row'>" +
+        "   <div class='col-xs-6 limitProductOptionsContainer'>" +
+                getLimitProductOptionsHTML(limitArray, productID, productMap.coverage) +
+        "   </div>" +
         "</div>"
 
     return limDeductColumns
@@ -2480,7 +3366,9 @@ function checkAdditionalOptionsForLimitChanges(productID, limitArray){
     }
 }
 
-
+function limitRowHTML(){
+    var htmlString = ""
+}
 function getLimitRowsHTML(limitArray, productID, covID){
     var limitRowsHTML = ""
     for(var i=0; i<limitArray.length; i++){
@@ -2488,9 +3376,16 @@ function getLimitRowsHTML(limitArray, productID, covID){
         var limitDescription
 
         //LIMITS AND DEDUCTS CURRENTLY STORED IN TWO FORMATS, CHECK FOR FORMAT
-        if(jsonStringToObject( limitArray[i] ).limitDescription !== null || jsonStringToObject( limitArray[i] ).limitDescription !== undefined){
-            limitValue = jsonStringToObject( limitArray[i] ).limitAmount
-            limitDescription = jsonStringToObject( limitArray[i] ).limitDescription
+        if(jsonStringToObject( limitArray[i] ).limitDescription !== null && jsonStringToObject( limitArray[i] ).limitDescription !== undefined){
+            var limitMap = jsonStringToObject( limitArray[i] )
+            limitValue = limitMap.limitAmount
+            limitDescription = limitMap.limitDescription
+
+            if(limitMap.limitProductOption){
+                //IF OPTION FLAG IS TRUE, SKIP
+                continue
+            }
+
         }
         else{
             limitValue = limitArray[i].split('\t')[0]
@@ -2504,7 +3399,7 @@ function getLimitRowsHTML(limitArray, productID, covID){
         var productIDClassString = replaceEachSpaceWith(productID.trim(), "_")
 
         //IF THE RATE BASIS FOR THIS PRODUCT IS LIMIT RATING THEN HTML NEEDS INPUT FIELDS
-        var rateCode_product = getProductObjectFromProductID(productID).rateCode
+        var rateCode_product = getProductOptionObject(covID, productID).rateCode
         var rateBasis_product = getRateObjectByID(rateCode_product).rateBasis
 
         //CHECK IF COVERAGE IS A PACKAGE, IF PACKAGE THEN NEED TO CHECK THE LOB RATES FOR A LIMIT RATING
@@ -2621,7 +3516,7 @@ function getDeductRowsHTML(deductArray, productID, covID){
     for(var i=0; i<deductArray.length; i++){
         var deductValue
         var deductDescription
-        if(jsonStringToObject( deductArray[i] ).deductDescription !== null || jsonStringToObject( deductArray[i] ).deductDescription !== undefined){
+        if(jsonStringToObject( deductArray[i] ).deductDescription !== null && jsonStringToObject( deductArray[i] ).deductDescription !== undefined){
             deductValue = jsonStringToObject( deductArray[i] ).deductAmount
             deductDescription = jsonStringToObject( deductArray[i] ).deductDescription
         }
@@ -2646,6 +3541,66 @@ function getDeductRowsHTML(deductArray, productID, covID){
             "</div>"
     }
     return deductRowsHTML
+}
+function getLimitProductOptionsHTML(limitArray, productID, covID){
+    var htmlString = ""
+
+    for(var i=0; i<limitArray.length; i++){
+        var limitMap = jsonStringToObject( limitArray[i] )
+
+        if(limitMap.limitProductOption){
+            var limitDescription = limitMap.limitDescription
+            var limitValue = limitMap.limitAmount
+            var productOptionAdditionalPremium = limitMap.productOptionAdditionalPremium
+            var limitDescriptionChange = ""
+            var limitValueChange = ""
+
+            if(limitMap.limitDescriptionChange){
+                limitDescriptionChange = limitMap.limitDescriptionChange
+                limitValueChange = limitMap.limitValueChange
+            }
+
+
+            htmlString = htmlString +
+                "<div class='row productOptionRow'>" +
+                "   <div class='col-xs-6'>" +
+                "       <label class='checkboxVerticalLayout'>" +
+                "           <input type='checkbox' class='productOptionCheckbox' id='" + productID + "_" + i + "_ProductOptionCheckbox' " +
+                "               data-productid='" + productID + "' " +
+                "               data-covid='" + covID + "'" +
+                "               data-limitdescription='" + limitDescription + "'" +
+                "               data-limitvalue='" + limitValue + "'" +
+                "               data-limitdescriptionchange='" + limitDescriptionChange + "'" +
+                "               data-limitvaluechange='" + limitValueChange + "'" +
+                "           > " +
+                limitDescription +
+                "       </label>" +
+                "   </div>" +
+                "   <div class='col-xs-6'>" +
+                "       <span class=''>" +
+                productOptionAdditionalPremium +
+                "       </span>" +
+                "   </div>" +
+                "</div>"
+        }
+    }
+
+    if(htmlString.trim().length > 0){
+        var headerString = "" +
+            "<div class='row' style='margin-top:20px'>" +
+            "   <div class='col-xs-6' >" +
+            "       <label class='productOptionHeader'>" + productID + " Product Options</label>" +
+            "   </div>" +
+            "   <div class='col-xs-6'>" +
+            "       <label class='productOptionHeader'>Additional Premium</label>" +
+            "   </div>" +
+            "</div>"
+
+        htmlString = headerString + htmlString
+
+    }
+
+    return htmlString
 }
 function removeCoverageIdentifierFromLimDeduct(string, covID){
     var covIdentifier = covID + ":"
@@ -2734,24 +3689,31 @@ function isRatingBasisLimitForAnyCoverages(){
     var atLeastOneProductHasLimitRateBasis = false
 
     for(var i=0;i<covSelectedArray.length;i++){
-        var thisProductID = getProductIDForCoverage(covSelectedArray[i])
-        var rateCode = getProductObjectFromProductID(thisProductID).rateCode
-        var rateObject = getRateObjectByID(rateCode)
-        var rateBasis = rateObject.rateBasis
+        var covID = covSelectedArray[i]
+        var thisProductID = getProductIDForCoverage(covID)
+        var productObject = getProductOptionObject(covID, thisProductID)
+        if(productObject){
+            var rateID = productObject.rateCode
+            var rateObject = getRateObjectByID(rateID)
+            var rateBasis = rateObject.rateBasis
 
-        if(rateBasis === 'LIMIT'){
-            atLeastOneProductHasLimitRateBasis = true
+            if(rateBasis === 'LIMIT'){
+                atLeastOneProductHasLimitRateBasis = true
+            }
         }
+
     }
 
     return atLeastOneProductHasLimitRateBasis
 }
 function buildLimitMapForSelectedProducts(){
-    var productsSelected = getProductsSelectedArray()
+    var coveragesSelected = getCoveragesSelectedArray()
     var limitMap = {}
-    for(var i=0; i<productsSelected.length; i++){
-        var productID = productsSelected[i]
-        var productObject = getProductObjectFromProductID(productID)
+
+    for(var i=0;i<coveragesSelected.length;i++){
+        var covID = coveragesSelected[i]
+        var productID = getProductIDForCoverage(covID)
+        var productObject = getProductOptionObject(covID, productID)
         var tempLimitArray = productObject.limitArray
         limitMap[productID] = jsonStringToObject(tempLimitArray)
     }
@@ -2759,11 +3721,13 @@ function buildLimitMapForSelectedProducts(){
     return limitMap
 }
 function buildDeductMapForSelectedProducts(){
-    var productsSelected = getProductsSelectedArray()
+    var coveragesSelected = getCoveragesSelectedArray()
     var deductMap = {}
-    for(var i=0; i<productsSelected.length; i++){
-        var productID = productsSelected[i]
-        var productObject = getProductObjectFromProductID(productID)
+
+    for(var i=0; i<coveragesSelected.length; i++){
+        var covID = coveragesSelected[i]
+        var productID = getProductIDForCoverage(covID)
+        var productObject = getProductOptionObject(covID, productID)
         var tempDeductArray = productObject.deductArray
         deductMap[productID] = jsonStringToObject(tempDeductArray)
     }
@@ -2771,11 +3735,12 @@ function buildDeductMapForSelectedProducts(){
     return deductMap
 }
 function buildLimitDeductMapForAllProducts(){
-    var productsSelected = getProductsSelectedArray()
+    var coveragesSelected = getCoveragesSelectedArray()
     var finalLimitDeductMap = {}
-    for(var i=0; i<productsSelected.length; i++){
-        var productID = productsSelected[i]
-        var productObject = getProductObjectFromProductID(productID)
+    for(var i=0; i<coveragesSelected.length; i++){
+        var covID = coveragesSelected[i]
+        var productID = getProductIDForCoverage(covID)
+        var productObject = getProductOptionObject(covID, productID)
         var limitArray = jsonStringToObject(productObject.limitArray)
         var deductArray = jsonStringToObject(productObject.deductArray)
         var thisProductLimitDeductArray =[]
@@ -2847,7 +3812,6 @@ function buildLimitDeductMapForAllProducts(){
     return finalLimitDeductMap
 }
 
-
 //PREMIUM AND RATE INFO
 function showPremiumRateContainer(){
     $('#premiumDetailContainer').css('display', '')
@@ -2859,18 +3823,7 @@ function clearPremiumRateContainer(){
     $('#premiumDetailContainer').empty()
 }
 function calculatePremiumsAndFillContainer(){
-    selectProductsInCoverageOptionDropdowns()
     buildPremiumLinesForEachCoverage()
-}
-function selectProductsInCoverageOptionDropdowns(){
-    var covSelectedArray = getCoveragesSelectedArray()
-
-    for(var i=0;i<covSelectedArray.length; i++){
-        var covID = covSelectedArray[i]
-        var productDropdownElement = $('#' + covID + '_ProductAvailableDropdown')
-        $(productDropdownElement).val(getProductIDForCoverage(covID))
-
-    }
 }
 function buildPremiumLinesForEachCoverage(){
     var premiumLinesContainer = $('#premiumLinesContainer')
@@ -2882,25 +3835,23 @@ function buildPremiumLinesForEachCoverage(){
     for(var i=0;i<covArray.length; i++){
         var covID = covArray[i]
         var coverageObject = getCoverageObject(covID)
-        var productObject = getProductObjectFromProductID(getProductIDForCoverage(covID))
+        var productID = getProductIDForCoverage(covID)
+        var productObject = getProductOptionObject(covID, productID)
         var operationMap = getCurrentOperationTypeObject()
         var coveragePackageLOBInfoArray = jsonStringToObject(operationMap.coveragePackageMap)[covID]
 
-        //CREATE CONTAINER FOR THIS COVERAGE ID
-        premiumLinesHTML = premiumLinesHTML + "<div class='" + covID + "_PremiumLinesContainer'>"
+        if(productObject){
+            //CREATE CONTAINER FOR THIS COVERAGE ID
+            premiumLinesHTML = premiumLinesHTML + "<div class='" + covID + "_PremiumLinesContainer premiumLinesContainer'>"
 
-        //CHECK IF PACKAGE
-        if(coverageObject.packageFlag === 'Y'){
-            var lobSelectedArray = getLOBSSelectedInPackageArray(covID)
+            premiumLinesHTML = premiumLinesHTML + getPremiumLineHTML(productObject)
 
-            premiumLinesHTML = premiumLinesHTML + buildPackagePremiumRows(covID)
+            premiumLinesHTML = premiumLinesHTML + "</div>"
         }
         else{
-            var rateID = productObject.rateCode
-            premiumLinesHTML = premiumLinesHTML + getPremiumLineHTML(rateID, covID, false)
+
         }
 
-        premiumLinesHTML = premiumLinesHTML + "</div>"
 
     }
 
@@ -2960,109 +3911,45 @@ function calculatePremiumSubTotal(){
 
     return totalPremiumForAllCoverages
 }
-function buildPackagePremiumRows(packageID){
-    var premiumLineHTML = ""
-
-    var packageProductID = getProductIDForCoverage(packageID)
-    var productObject = getProductObjectFromProductID(packageProductID)
-    var rateID = productObject.rateCode
 
 
-    //PACKAGE HEADER LINE
-    premiumLineHTML = premiumLineHTML + getPremiumLineHTML(rateID, packageID, false)
-    //PACKAGE LOB LINES
-    var lobIDArray = getLOBSSelectedInPackageArray(packageID)
-    for(var i=0;i<lobIDArray.length;i++){
-        var lobID = lobIDArray[i]
-        // var rateID = lobObject.rateID
-        var rateID = getRateIDForPackageLOB(packageID, lobID)
-
-        premiumLineHTML = premiumLineHTML + getPremiumLineHTML(rateID, lobID, packageID)
-
-    }
-
-    if(lobIDArray.length > 0){
-        premiumLineHTML = premiumLineHTML + getPremiumLineHTML_PackageTotal(packageID)
-    }
-
-    return premiumLineHTML
-}
-
-function getPremiumLineHTML_CoverageHeader(covID){
-    var coverageMap = getCoverageObject(covID)
-
-    var premiumLineHTML = "<div class='row premiumHeaderRow premiumLineRow " + coverageMap.coverageCode + "_PremiumLineRow'> " +
+function getPremiumLineHTML_WCRateSheet(wcRateObject, coverageObject){
+    var htmlString =  "" +
+        "<div class='row premiumLineRow " + coverageObject.coverageCode + "_PremiumLineRow'> " +
         "   <div class='col-xs-4'> " +
-        "       <span class='premiumLine_description'>" + coverageMap.coverageName + "</span> " +
+        "       <span class='premiumLine_description' style=''>" + (wcRateObject.description !== undefined ? wcRateObject.description : '' ) + "</span> " +
         "   </div> " +
         "   <div class='col-xs-2'> " +
-        "       <span class='premiumLine_premiumBasis'>" + "" + "</span> " +
+        "       <span class='premiumLine_premiumBasis'>" + (wcRateObject.basisValue !== undefined ? formatMoney(wcRateObject.basisValue) : '' ) + "</span> " +
         "   </div> " +
         "   <div class='col-xs-2'> " +
-        "       <span class='premiumLine_basisValue'>" + "" + "</span> " +
+        "       <span class='premiumLine_basisValue'>" + (wcRateObject.rate !== undefined ? wcRateObject.rate : '' ) + "</span> " +
         "   </div> " +
-        "   <div class='col-xs-2'> " +
-        "       <span class='premiumLine_rate'>" + "" + "</span> " +
+        "   <div class='col-xs-1' style='background: #add8e63b;'> " +
+        "       <span class='premiumLine_rate'>" + (wcRateObject.modPrem !== undefined ? formatMoney(wcRateObject.modPrem) : '-' ) + "</span> " +
         "   </div> " +
-        "   <div class='col-xs-2'> " +
-        "       <span class='premiumLine_premium'>" + "" + "</span> " +
+        "   <div class='col-xs-1' style='background: #add8e63b;'> " +
+        "       <span class='premiumLine_premium'>" + (wcRateObject.otherPrem !== undefined ? formatMoney(wcRateObject.otherPrem) : '-' ) + "</span> " +
         "   </div> " +
         "</div>"
 
-    return premiumLineHTML
+    return htmlString
 }
-function getPremiumLineHTML_PackageTotal(packageID){
-    var premiumLineHTML = ""
-    var premium = calculatePackageTotalPremium(packageID, getLOBSSelectedInPackageArray(packageID))
-    var packageObject = getCoverageObject(packageID)
-
-    premiumLineHTML = premiumLineHTML + "<div class='row premiumLineRow packageTotalLine " + packageObject.coverageCode + "_PremiumLineRow'> " +
-        "   <div class='col-xs-4'> " +
-        "       <span class='premiumLine_description' style=''>" + packageObject.coverageName + " Total </span> " +
-        "   </div> " +
-        "   <div class='col-xs-2'> " +
-        "       <span class='premiumLine_premiumBasis'>" + "" + "</span> " +
-        "   </div> " +
-        "   <div class='col-xs-2'> " +
-        "       <span class='premiumLine_basisValue'>" + "" + "</span> " +
-        "   </div> " +
-        "   <div class='col-xs-2'> " +
-        "       <span class='premiumLine_rate'></span> " +
-        "   </div> " +
-        "   <div class='col-xs-2'> " +
-        "       <span class='premiumLine_premium coverageTotalPremium'>" + formatMoney(premium) + "</span> " +
-        "   </div> " +
-        "</div>"
-
-    return premiumLineHTML
-
-}
-function getPremiumLineHTML(rateID, covID, ifLOB_PackageID){
+function getPremiumLineHTML(productObject){
+    var covID = productObject.coverage
+    var productID = productObject.productID
     var coverageMap = getCoverageObject(covID)
     var productMap
     var premiumLineHTML = ""
-    var limitHeaderStyleString = ""
-    var limitHeaderRowClass = ""
-    var lobLimitLineIndentClass = ""
-    var totalPremiumClassString = ""
-
-    if(ifLOB_PackageID){
-        lobLimitLineIndentClass = "lobIndent"
-        limitHeaderStyleString = ""
-        limitHeaderRowClass = "premiumLOBHeaderRow"
-        totalPremiumClassString = "lobTotalPremium"
 
 
-    }
-    else{
-        productMap = getProductObjectFromProductID(getProductIDForCoverage(covID))
-        limitHeaderRowClass = "premiumHeaderRow"
-        totalPremiumClassString = "coverageTotalPremium"
-    }
     //THIS FUNCTION WILL HANDLE BOTH MONOLINE COVIDS AND PACKAGE LOBS
-    if(rateID !== null && rateID !== undefined
-        && rateID !== 'invalid' && rateID !== 'NONE' ){
+    if(productObject !== undefined && productObject !== null &&
+        productObject.rateCode !== undefined && productObject.rateCode !== null &&
+        productObject.rateCode.trim().length > 0){
+        var rateID = productObject.rateCode
         var rateMap = getRateObjectByID(rateID)
+        var ratingBasisID = rateMap.rateBasis
         var ratingBasisMap = getRatingBasisObjectByID(rateMap.rateBasis)
 
         var totalCoveragePremium = 0
@@ -3072,7 +3959,7 @@ function getPremiumLineHTML(rateID, covID, ifLOB_PackageID){
             var limitRateArray = jsonStringToObject( rateMap.limitRateArray )
 
             premiumLineHTML = premiumLineHTML +
-                "<div class='row premiumLineRow " + limitHeaderRowClass + " " + coverageMap.coverageCode + "_PremiumLineRow'> " +
+                "<div class='row premiumLineRow premiumHeaderRow " + coverageMap.coverageCode + "_PremiumLineRow'> " +
                 "   <div class='col-xs-4'> " +
                 "       <span class='premiumLine_description'>" + coverageMap.coverageName + "</span> " +
                 "   </div> " +
@@ -3097,12 +3984,9 @@ function getPremiumLineHTML(rateID, covID, ifLOB_PackageID){
                 //GET USER INPUT FROM LIMIT INPUT
                 var userInputLimitValue = ""
                 var limitPremium = ""
-                if(ifLOB_PackageID){
-                    userInputLimitValue = getLimitValueFromLimitDescription(ifLOB_PackageID, thisLimitRateMap)
-                }
-                else{
-                    userInputLimitValue = getLimitValueFromLimitDescription(covID, thisLimitRateMap)
-                }
+
+                userInputLimitValue = getLimitValueFromLimitDescription(covID, thisLimitRateMap)
+
 
 
 
@@ -3117,14 +4001,11 @@ function getPremiumLineHTML(rateID, covID, ifLOB_PackageID){
 
 
                 var limitLineStyleString = ""
-                if(ifLOB_PackageID){
-                    limitLineStyleString = ""
-                }
 
                 premiumLineHTML = premiumLineHTML +
                     "<div class='row premiumLineRow limitPremiumLineRow " + coverageMap.coverageCode + "_PremiumLineRow'>" +
                     "   <div class='col-xs-4'> " +
-                    "       <span class='premiumLine_description " + lobLimitLineIndentClass + "' " +
+                    "       <span class='premiumLine_description ' " +
                     "           style='white-space: pre;" + limitLineStyleString + "'>" + limitDescription + "</span> " +
                     "   </div> " +
                     "   <div class='col-xs-2'> " +
@@ -3147,7 +4028,7 @@ function getPremiumLineHTML(rateID, covID, ifLOB_PackageID){
             premiumLineHTML = premiumLineHTML +
                 "<div class='row premiumLineRow coveragePremiumRow limitTotalPremiumLineRow " + coverageMap.coverageCode + "_PremiumLineRow' > " +
                 "   <div class='col-xs-4'> " +
-                "       <span class='premiumLine_description " +  lobLimitLineIndentClass  + "' " +
+                "       <span class='premiumLine_description' " +
                 "           style='white-space: pre;'>" + coverageMap.coverageCode + " Total" + "</span> " +
                 "   </div> " +
                 "   <div class='col-xs-2'> " +
@@ -3160,7 +4041,7 @@ function getPremiumLineHTML(rateID, covID, ifLOB_PackageID){
                 "       <span class='premiumLine_rate'>" + "" + "</span> " +
                 "   </div> " +
                 "   <div class='col-xs-2'> " +
-                "       <span class='premiumLine_premium " + totalPremiumClassString + "'>" + formatMoney(totalPremium) + "</span> " +
+                "       <span class='premiumLine_premium coverageTotalPremium'>" + formatMoney(totalPremium) + "</span> " +
                 "   </div> " +
                 "</div>"
 
@@ -3169,81 +4050,318 @@ function getPremiumLineHTML(rateID, covID, ifLOB_PackageID){
 
         }
         else if (rateMap.rateBasis === 'BRACKET'){
-            var ratingBasisQuestion = $('#' + ratingBasisMap.basisQuestionID)
-            var premium = calculateTotalCoveragePremium(productMap, rateMap, ratingBasisMap, ifLOB_PackageID)
+            var ratingBasisQuestion = $('#' + rateMap.tieredQuestionID)
 
-            premiumLineHTML = premiumLineHTML + "<div class='row premiumLineRow " + limitHeaderRowClass + " " + coverageMap.coverageCode + "_PremiumLineRow'> " +
+            var basisAbbrev = getRatingBasisQuestionAbbrev(rateMap.tieredQuestionID)
+
+            var premium = calculateProductOptionPremium(productObject)
+
+            //PREMIUM LINES HEADER ROW
+            premiumLineHTML = premiumLineHTML + "<div class='row premiumLineRow premiumHeaderRow " + coverageMap.coverageCode + "_PremiumLineRow'> " +
                 "   <div class='col-xs-4'> " +
-                "       <span class='premiumLine_description' style='" + limitHeaderStyleString + "'>" + coverageMap.coverageName + "</span> " +
+                "       <span class='premiumLine_description' style=''>" + coverageMap.coverageName + "</span> " +
                 "   </div> " +
                 "   <div class='col-xs-2'> " +
-                "       <span class='premiumLine_premiumBasis'>" + rateMap.rateBasis + "</span> " +
+                "       <span class=''>" + basisAbbrev + "</span> " +
                 "   </div> " +
                 "   <div class='col-xs-2'> " +
-                "       <span class='premiumLine_basisValue'>" + formatMoney($(ratingBasisQuestion).val()) + "</span> " +
+                "       <span class=''>" + "Rate" + "</span> " +
                 "   </div> " +
                 "   <div class='col-xs-2'> " +
-                "       <span class='premiumLine_rate'>" + jsonStringToObject(rateMap.bracketRateArray)[0].rateValue + "</span> " +
+                "       <span class=''>" + "" + "</span> " +
                 "   </div> " +
                 "   <div class='col-xs-2'> " +
-                "       <span class='premiumLine_premium " + totalPremiumClassString + "'>" + formatMoney(premium) + "</span> " +
+                "       <span class='premiumLine_premium " + "'>" + "" + "</span> " +
                 "   </div> " +
                 "</div>"
+
+
+            //BUILD LINES FOR TIERED/BRACKET RATES
+            var actualBasisValue = getFloatValueOfMoney( $(ratingBasisQuestion).val() )
+            var leftoverValue = actualBasisValue
+            var bracketRateArray = jsonStringToObject(rateMap.bracketRateArray)
+
+            for(var i=0;i<bracketRateArray.length; i++){
+                var bracketRateMap = bracketRateArray[i]
+                var bracketRate = bracketRateMap.rateValue
+                var bracketUpTo = bracketRateMap.upto
+
+                if( parseFloat(leftoverValue) > parseFloat(bracketUpTo) ){
+                    leftoverValue = parseFloat(leftoverValue) - parseFloat(bracketUpTo)
+
+                    var bracketPremium = parseFloat(bracketUpTo) * parseFloat(bracketRate)
+
+                    premiumLineHTML = premiumLineHTML +
+                        "<div class='row premiumLineRow " + coverageMap.coverageCode + "_PremiumLineRow'> " +
+                        "   <div class='col-xs-4'> " +
+                        "       <span class='premiumLine_description' style=''>" + "" + "</span> " +
+                        "   </div> " +
+                        "   <div class='col-xs-2'> " +
+                        "       <span class='premiumLine_premiumBasis'>" + formatMoney(bracketUpTo) + "</span> " +
+                        "   </div> " +
+                        "   <div class='col-xs-2'> " +
+                        "       <span class='premiumLine_basisValue'>" + bracketRate + "</span> " +
+                        "   </div> " +
+                        "   <div class='col-xs-2'> " +
+                        "       <span class='premiumLine_rate'>" + formatMoney(bracketPremium) + "</span> " +
+                        "   </div> " +
+                        "   <div class='col-xs-2'> " +
+                        "       <span class='premiumLine_premium'>" + "" + "</span> " +
+                        "   </div> " +
+                        "</div>"
+                }
+                else{
+                    // premium = premium + (remainingAmountOfQuestionValue * rateValue)
+                    var bracketPremium = parseFloat(leftoverValue) * parseFloat(bracketRate)
+
+                    premiumLineHTML = premiumLineHTML +
+                        "<div class='row premiumLineRow " + coverageMap.coverageCode + "_PremiumLineRow'> " +
+                        "   <div class='col-xs-4'> " +
+                        "       <span class='premiumLine_description' style=''>" + "" + "</span> " +
+                        "   </div> " +
+                        "   <div class='col-xs-2'> " +
+                        "       <span class='premiumLine_premiumBasis'>" + formatMoney(leftoverValue) + "</span> " +
+                        "   </div> " +
+                        "   <div class='col-xs-2'> " +
+                        "       <span class='premiumLine_basisValue'>" + bracketRate + "</span> " +
+                        "   </div> " +
+                        "   <div class='col-xs-2'> " +
+                        "       <span class='premiumLine_rate'>" + formatMoney(bracketPremium) + "</span> " +
+                        "   </div> " +
+                        "   <div class='col-xs-2'> " +
+                        "       <span class='premiumLine_premium'>" + "" + "</span> " +
+                        "   </div> " +
+                        "</div>"
+
+                    break;
+                }
+
+
+            }
+
+
 
 
             totalCoveragePremium = premium
         }
         else if (rateMap.rateBasis === 'FLAT'){
-            var premium = calculateTotalCoveragePremium(productMap, rateMap, ratingBasisMap, ifLOB_PackageID)
-            premiumLineHTML = premiumLineHTML + "<div class='row premiumLineRow " + limitHeaderRowClass + " " + coverageMap.coverageCode + "_PremiumLineRow'> " +
-                "   <div class='col-xs-4'> " +
-                "       <span class='premiumLine_description' style='" + limitHeaderStyleString + "'>" + coverageMap.coverageName + "</span> " +
-                "   </div> " +
-                "   <div class='col-xs-2'> " +
-                "       <span class='premiumLine_premiumBasis'>" + rateMap.rateBasis + "</span> " +
-                "   </div> " +
-                "   <div class='col-xs-2'> " +
-                "       <span class='premiumLine_basisValue'>" + formatMoney(rateMap.flatAmount) + "</span> " +
-                "   </div> " +
-                "   <div class='col-xs-2'> " +
-                "       <span class='premiumLine_rate'> FLAT </span> " +
-                "   </div> " +
-                "   <div class='col-xs-2'> " +
-                "       <span class='premiumLine_premium " + totalPremiumClassString + "'>" + formatMoney(premium) + "</span> " +
-                "   </div> " +
-                "</div>"
+            var premium = calculateProductOptionPremium(productObject)
+            // var premium = calculateTotalCoveragePremium(productMap, rateMap, ratingBasisMap)
+            // premiumLineHTML = premiumLineHTML + "<div class='row premiumLineRow premiumHeaderRow " + coverageMap.coverageCode + "_PremiumLineRow'> " +
+            //     "   <div class='col-xs-4'> " +
+            //     "       <span class='premiumLine_description' style=''>" + coverageMap.coverageName + "</span> " +
+            //     "   </div> " +
+            //     "   <div class='col-xs-2'> " +
+            //     "       <span class='premiumLine_premiumBasis'>" + rateMap.rateBasis + "</span> " +
+            //     "   </div> " +
+            //     "   <div class='col-xs-2'> " +
+            //     "       <span class='premiumLine_basisValue'>" + formatMoney(rateMap.flatAmount) + "</span> " +
+            //     "   </div> " +
+            //     "   <div class='col-xs-2'> " +
+            //     "       <span class='premiumLine_rate'> FLAT </span> " +
+            //     "   </div> " +
+            //     "   <div class='col-xs-2'> " +
+            //     "       <span class='premiumLine_premium coverageTotalPremium'>" + formatMoney(premium) + "</span> " +
+            //     "   </div> " +
+            //     "</div>"
 
-            totalCoveragePremium = premium
+            // totalCoveragePremium = premium
+        }
+        else if (rateMap.rateBasis === 'RATESHEET'){
+            premiumLineHTML = premiumLineHTML + runWCRateSheet('PREMIUMDISPLAY', productObject)
         }
         else{
             var ratingBasisQuestion = $('#' + ratingBasisMap.basisQuestionID)
-            var premium = calculateTotalCoveragePremium(productMap, rateMap, ratingBasisMap, ifLOB_PackageID)
+            var basisAbbrev = getRatingBasisQuestionAbbrev(ratingBasisMap.basisQuestionID)
+            var premium = calculateProductOptionPremium(productObject)
+            var premiumRatedBeforeOptions = calculateProductOptionPremium_RatedPremium(productObject)
+            var actualBasisValue = getFloatValueOfMoney( $(ratingBasisQuestion).val() )
+            var rateValue = rateMap.rateValue
 
-            premiumLineHTML = premiumLineHTML + "<div class='row premiumLineRow " + limitHeaderRowClass + " " + coverageMap.coverageCode + "_PremiumLineRow'> " +
+            //PREMIUM LINES HEADER ROW
+            premiumLineHTML = premiumLineHTML + "<div class='row premiumLineRow premiumHeaderRow " + coverageMap.coverageCode + "_PremiumLineRow'> " +
                 "   <div class='col-xs-4'> " +
-                "       <span class='premiumLine_description' style='" + limitHeaderStyleString + "'>" + coverageMap.coverageName + "</span> " +
+                "       <span class='premiumLine_description' style=''>" + coverageMap.coverageName + "</span> " +
                 "   </div> " +
                 "   <div class='col-xs-2'> " +
-                "       <span class='premiumLine_premiumBasis'>" + rateMap.rateBasis + "</span> " +
+                "       <span class=''>" + basisAbbrev + "</span> " +
                 "   </div> " +
                 "   <div class='col-xs-2'> " +
-                "       <span class='premiumLine_basisValue'>" + formatMoney($(ratingBasisQuestion).val()) + "</span> " +
+                "       <span class=''>" + "Rate" + "</span> " +
                 "   </div> " +
                 "   <div class='col-xs-2'> " +
-                "       <span class='premiumLine_rate'>" + rateMap.rateValue + "</span> " +
+                "       <span class=''>" + "" + "</span> " +
                 "   </div> " +
                 "   <div class='col-xs-2'> " +
-                "       <span class='premiumLine_premium " + totalPremiumClassString + "'>" + formatMoney(premium) + "</span> " +
+                "       <span class='premiumLine_premium " + "'>" + "" + "</span> " +
                 "   </div> " +
                 "</div>"
+
+
+            premiumLineHTML = premiumLineHTML +
+                "<div class='row premiumLineRow " + coverageMap.coverageCode + "_PremiumLineRow'> " +
+                "   <div class='col-xs-4'> " +
+                "       <span class='premiumLine_description' style=''>" + "" + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_premiumBasis'>" + formatMoney(actualBasisValue) + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_basisValue'>" + rateValue + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_rate'>" + formatMoney(premiumRatedBeforeOptions) + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_premium'>" + "" + "</span> " +
+                "   </div> " +
+                "</div>"
+
+            // premiumLineHTML = premiumLineHTML + "<div class='row premiumLineRow premiumHeaderRow " + coverageMap.coverageCode + "_PremiumLineRow'> " +
+            //     "   <div class='col-xs-4'> " +
+            //     "       <span class='premiumLine_description' style=''>" + coverageMap.coverageName + "</span> " +
+            //     "   </div> " +
+            //     "   <div class='col-xs-2'> " +
+            //     "       <span class='premiumLine_premiumBasis'>" + rateMap.rateBasis + "</span> " +
+            //     "   </div> " +
+            //     "   <div class='col-xs-2'> " +
+            //     "       <span class='premiumLine_basisValue'>" + formatMoney($(ratingBasisQuestion).val()) + "</span> " +
+            //     "   </div> " +
+            //     "   <div class='col-xs-2'> " +
+            //     "       <span class='premiumLine_rate'>" + rateMap.rateValue + "</span> " +
+            //     "   </div> " +
+            //     "   <div class='col-xs-2'> " +
+            //     "       <span class='premiumLine_premium coverageTotalPremium'>" + formatMoney(premium) + "</span> " +
+            //     "   </div> " +
+            //     "</div>"
 
             totalCoveragePremium = premium
         }
 
+
+        //STANDARD PREMIUM DISPLAY LINES (DOES NOT APPLY TO RATESHEETS)
+        if(rateMap.rateBasis !== 'RATESHEET'){
+            //ADDITIONAL OPTIONS THAT APPLY TO MIN PREMIUM
+            var selectedAdditionalOptions = getSelectedProductAdditionalOptions(covID, productID)
+            for(var j=0;j<selectedAdditionalOptions.length;j++){
+                var optionMap = selectedAdditionalOptions[j]
+                var applyMinPremium = optionMap.applyMinPremium
+
+                if(applyMinPremium === true){
+                    var productDescription = optionMap.limitDescription
+                    var additionalPremium = optionMap.productOptionAdditionalPremium
+
+                    premiumLineHTML = premiumLineHTML +
+                        "<div class='row premiumLineRow " + coverageMap.coverageCode + "_PremiumLineRow'> " +
+                        "   <div class='col-xs-4'> " +
+                        "       <span class='premiumLine_description' style=''>" + productDescription + "</span> " +
+                        "   </div> " +
+                        "   <div class='col-xs-2'> " +
+                        "       <span class='premiumLine_premiumBasis'>" + "" + "</span> " +
+                        "   </div> " +
+                        "   <div class='col-xs-2'> " +
+                        "       <span class='premiumLine_basisValue'>" + "Premium" + "</span> " +
+                        "   </div> " +
+                        "   <div class='col-xs-2'> " +
+                        "       <span class='premiumLine_rate'>" + formatMoney(additionalPremium) + "</span> " +
+                        "   </div> " +
+                        "   <div class='col-xs-2'> " +
+                        "       <span class='premiumLine_premium'>" + "" + "</span> " +
+                        "   </div> " +
+                        "</div>"
+                }
+            }
+
+
+            //INSERT RATED PREMIUM LINE
+            var ratedPremium = calculateProductOptionPremium_RatedPremium(productObject)
+            premiumLineHTML = premiumLineHTML + "<div class='row premiumLineRow " + coverageMap.coverageCode + "_PremiumLineRow premiumLine_ratedPremiumRow'> " +
+                "   <div class='col-xs-4'> " +
+                "       <span class='premiumLine_description' style=''>" + "" + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_premiumBasis'>" + "" + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_basisValue'>" + "Rated Premium" + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_rate'>" + formatMoney(ratedPremium) + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_premium " + "'>" + "" + "</span> " +
+                "   </div> " +
+                "</div>"
+
+
+
+            //INSERT MIN PREMIUM LINE IF RATED PREMIUM DOES NOT MEAN MIN PREMIUM
+            var minPremium = rateMap.minPremium
+            if(ratedPremium < minPremium){
+                premiumLineHTML = premiumLineHTML +
+                    "<div class='row premiumLineRow " + coverageMap.coverageCode + "_PremiumLineRow'> " +
+                    "   <div class='col-xs-12 premiumLine_minPremiumDescription'> " +
+                    "       <span class='' style=''>" + "Minimum Premium: " + formatMoney(minPremium) + "</span> " +
+                    "   </div> " +
+                    "</div>"
+            }
+
+
+
+            //ADDITIONAL OPTIONS NOT APPLIED TO MIN PREMIUM
+            var selectedAdditionalOptions = getSelectedProductAdditionalOptions(covID, productID)
+            for(var j=0;j<selectedAdditionalOptions.length;j++){
+                var optionMap = selectedAdditionalOptions[j]
+                var applyMinPremium = optionMap.applyMinPremium
+
+                if(applyMinPremium === false){
+                    var productDescription = optionMap.limitDescription
+                    var additionalPremium = optionMap.productOptionAdditionalPremium
+
+                    premiumLineHTML = premiumLineHTML +
+                        "<div class='row premiumLineRow " + coverageMap.coverageCode + "_PremiumLineRow'> " +
+                        "   <div class='col-xs-4'> " +
+                        "       <span class='premiumLine_description' style=''>" + productDescription + "</span> " +
+                        "   </div> " +
+                        "   <div class='col-xs-2'> " +
+                        "       <span class='premiumLine_premiumBasis'>" + "" + "</span> " +
+                        "   </div> " +
+                        "   <div class='col-xs-2'> " +
+                        "       <span class='premiumLine_basisValue'>" + "Flat Charge" + "</span> " +
+                        "   </div> " +
+                        "   <div class='col-xs-2'> " +
+                        "       <span class='premiumLine_rate'>" + formatMoney(additionalPremium) + "</span> " +
+                        "   </div> " +
+                        "   <div class='col-xs-2'> " +
+                        "       <span class='premiumLine_premium'>" + "" + "</span> " +
+                        "   </div> " +
+                        "</div>"
+                }
+            }
+
+            //COVERAGE TOTAL LINE
+            premiumLineHTML = premiumLineHTML + "<div class='row premiumLineRow premiumCoverageTotalRow " + coverageMap.coverageCode + "_PremiumLineRow'> " +
+                "   <div class='col-xs-4'> " +
+                "       <span class='premiumLine_description' style=''>" + covID + " Total" + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class=''>" + "" + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class=''>" + "" + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class=''>" + "" + "</span> " +
+                "   </div> " +
+                "   <div class='col-xs-2'> " +
+                "       <span class='premiumLine_premium coverageTotalPremium'>" + formatMoney(premium) + "</span> " +
+                "   </div> " +
+                "</div>"
+        }
     }
     else{
         //IF PRODUCT DOES NOT HAVE A VALID RATE CODE
-        premiumLineHTML = "<div class='row premiumLineRow " + limitHeaderRowClass + " " + coverageMap.coverageCode + "_PremiumLineRow'> " +
+        premiumLineHTML = "<div class='row premiumLineRow premiumHeaderRow " + coverageMap.coverageCode + "_PremiumLineRow'> " +
             "   <div class='col-xs-4'> " +
             "       <span class='premiumLine_description'>" + coverageMap.coverageName + "</span> " +
             "   </div> " +
@@ -3409,10 +4527,37 @@ function buildTaxRows(taxMap){
 //PRODUCT FUNCTIONS
 function getProductIDForCoverage(covID){
     var operationMap = getCurrentOperationTypeObject()
-    var coverageProductMap = jsonStringToObject(operationMap.coverageProductMap)
-    var thisCoverageConditionArray = jsonStringToObject(coverageProductMap[covID])
+    // var coverageProductMap = jsonStringToObject(operationMap.coverageProductMap)
+    // var thisCoverageConditionArray = jsonStringToObject(coverageProductMap[covID])
 
-    return evaluateLogicConditionArray(thisCoverageConditionArray)
+    var activeProductCard = $('#productCarousel_' + covID).find('.productCard.active')
+    var productID = $(activeProductCard).attr('data-productid')
+
+    return productID
+}
+function getSelectedProductAdditionalOptions(covID, productID){
+    var productObject = getProductOptionObject(covID, productID)
+    var selectedAdditionalOptionsArray = []
+    //CHECK LIMIT ARRAY FOR PRODUCT LIMIT OPTIONS
+    if(productObject.limitArray){
+        var limitArray = jsonStringToObject(productObject.limitArray)
+        for(var i=0; i<limitArray.length; i++) {
+            var limitMap = jsonStringToObject(limitArray[i])
+
+            if (limitMap.limitProductOption) {
+                var optionCheckboxElement = $("#" + productObject.productID + "_" + i + "_ProductOptionCheckbox")
+
+                //CHECK IF PRODUCT OPTION CHECKBOX EXISTS, AND IS CHECKED
+                if( $(optionCheckboxElement).length > 0 && $(optionCheckboxElement).is(':checked') ){
+                    //PRODUCT OPTION ACTIONS
+
+                    selectedAdditionalOptionsArray.push(limitMap)
+                }
+            }
+        }
+    }
+
+    return selectedAdditionalOptionsArray
 }
 
 //PACKAGE LOB FUNCTIONS
@@ -3435,6 +4580,23 @@ function getRateIDForPackageLOB(packageID, lobID){
     return evaluateLogicConditionArray(thisCoverageConditionArray)
 }
 
+//RATE SHEET FUNCTIONS
+function getRateSheetObjectByID(rateSheetID){
+    for(var i=0; i<rateSheets.length; i++){
+        if(rateSheets[i].rateSheetID === rateSheetID){
+            return rateSheets[i]
+        }
+    }
+}
+function getWCRateObjectByIDAndState(rateCode, state, prodID){
+    for(var i=0;i<wcRates.length;i++){
+        if(rateCode === wcRates[i].code &&
+            state === wcRates[i].state &&
+            prodID === wcRates[i].product){
+            return wcRates[i]
+        }
+    }
+}
 
 function getProductsSelectedArray(){
     var tempMap = buildCoverageAndProductSelectedMap()
@@ -3442,10 +4604,29 @@ function getProductsSelectedArray(){
     var productsSelectedArray = []
 
     for(var i=0;i<tempMapKeys.length;i++){
-        productsSelectedArray.push(tempMap[tempMapKeys[i]].productID)
+        if( tempMap[tempMapKeys[i]].productID ){
+            productsSelectedArray.push(tempMap[tempMapKeys[i]].productID)
+        }
+
     }
 
     return productsSelectedArray
+}
+function getSelectedProductsAndCoveragesMap(){
+    var coveragesSelected = getCoveragesSelectedArray()
+    var productsAndCoveragesMap = {}
+
+    for(var i=0;i<coveragesSelected.length;i++){
+        var covID = coveragesSelected[i]
+        var productID = getProductIDForCoverage(covID)
+
+        if(productID){
+            productsAndCoveragesMap[covID] = productID
+        }
+
+    }
+
+    return productsAndCoveragesMap
 }
 function getProductObjectFromProductID(productID){
     for(var i=0; i < products.length; i++ ){
@@ -3559,6 +4740,7 @@ function showHideQuestionCategoryPanels(){
             $(this).css('display', 'none')
         }
         else{
+            //WHAT TYPE OF OPERATION IS IN PLAY
             $(this).css('display', '')
         }
     })
@@ -3896,12 +5078,13 @@ function getReviewHTMLFromQuestionContainer(questionContainer){
     return questionReviewHTML
 }
 function buildTermsStringForAllProducts(){
-    var productsArray = getProductsSelectedArray()
+    var coveragesSelected = getCoveragesSelectedArray()
     var finalTermsString = ""
 
-    for(var i=0;i<productsArray.length;i++){
-        var productID = productsArray[i]
-        var productObject = getProductObjectFromProductID(productID)
+    for(var i=0;i<coveragesSelected.length;i++){
+        var covID = coveragesSelected[i]
+        var productID = getProductIDForCoverage(covID)
+        var productObject = getProductOptionObject(covID, productID)
 
         if(productObject.terms){
             var termsString = productObject.terms.trim()

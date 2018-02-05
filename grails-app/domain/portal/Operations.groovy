@@ -21,6 +21,7 @@ class Operations {
     String activeFlag
     String bindingAuthority
     String monolineCoverages
+    String rulesEngineMap
 
     static constraints = {
         operationID unique:true, maxSize: 3
@@ -35,6 +36,7 @@ class Operations {
         activeFlag nullable:true, maxSize:1
         bindingAuthority nullable:true, maxSize:1
         monolineCoverages nullable:true
+        rulesEngineMap nullable:true
     }
 
     static mapping = {
@@ -45,5 +47,6 @@ class Operations {
         weightOrderedRequiredQuestions type:'text'
         requiredQuestionsMap type:'text'
         monolineCoverages type:'text'
+        rulesEngineMap type:'text'
     }
 }
