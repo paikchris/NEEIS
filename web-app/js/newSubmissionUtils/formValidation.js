@@ -110,7 +110,7 @@ function validateFields() {
 function validate(){
     var isValid = true;
     //VALIDATE REQUIRED FIELDS
-    $(':input[required]:visible').each(function(index) {
+    $(':input[required]:visible, select[required]:visible').each(function(index) {
         if( validateThisInput(this) !== "VALID"){
             isValid = false
         }
@@ -150,9 +150,25 @@ function validateThisInput(input){
     }
     else if($(input).is(":checkbox[required]")){
         var checkboxGroupName = $(input).attr('name')
-        var valueOfCheckboxGroup = $('input[required][type="checkbox"][name="' + checkboxGroupName + '"]:visible:checked').val()
+        var valuesOfCheckboxGroup = []
 
-        if( valueOfCheckboxGroup === undefined || valueOfCheckboxGroup.trim().length === 0 ){
+        $('input[required][type="checkbox"][name="' + checkboxGroupName + '"]:visible:checked').each(function(){
+            valuesOfCheckboxGroup.push( $(this).val() )
+        })
+
+
+
+        if( valuesOfCheckboxGroup.length === 0 ){
+            message = message + "Required Field (" + $(input).attr('id') + ") cannot be blank \n"
+            markClosestFormGroup_Error(input)
+            return message;
+        }
+        else{
+            markClosestFormGroup_Success(input)
+        }
+    }
+    else if($(input).is("select[required]")){
+        if( $(input).val().trim().length === 0 || $(input).val() === 'invalid'){
             message = message + "Required Field (" + $(input).attr('id') + ") cannot be blank \n"
             markClosestFormGroup_Error(input)
             return message;

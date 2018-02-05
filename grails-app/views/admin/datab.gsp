@@ -5,11 +5,13 @@
     <link rel="stylesheet" href="${resource(dir: 'css', file: 'datab.css')}" type="text/css">
     <script src="${resource(dir: 'js/admin/', file: "data2.js?ts=" + new Date().getTime())}"></script>
     <script src="${resource(dir: 'js/utils/', file: "logicConditionHelper.js?ts=" + new Date().getTime())}"></script>
+    <script src="${resource(dir: 'js/utils/', file: "rulesEngine.js?ts=" + new Date().getTime())}"></script>
+    <link rel="stylesheet" href="${resource(dir: 'css/utils', file: 'rulesEngine.css')}" type="text/css">
     <script src="${resource(dir: 'js/utils/', file: "ratingHelper.js?ts=" + new Date().getTime())}"></script>
     <script src="${resource(dir: 'js/utils/', file: "stringUtils.js?ts=" + new Date().getTime())}"></script>
     <script src="${resource(dir: 'js/vendor/', file: "numeral.min.js")}"></script>
     <script src="${resource(dir: 'js/vendor/', file: "math.js")}"></script>
-    <script src="${resource(dir: 'js/utils/', file: "JSONHelper.js")}"></script>
+    <script src="${resource(dir: 'js/utils/', file: "JSONHelper.js?ts=" + new Date().getTime())}"></script>
     <script src="${resource(dir: 'js/newSubmissionUtils/', file: "questionHelper.js?ts=" + new Date().getTime())}"></script>
     <script src="${resource(dir: 'js/utils/', file: "multiRangePlugin.js?ts=" + new Date().getTime())}"></script>
     <script src="${resource(dir: 'js', file: "/utils/typeAheadHelper.js?ts=" + new Date().getTime())}" async></script>
@@ -28,7 +30,9 @@
         var rB = ${raw(ratingBasis)}
         var rL = ${raw(rates)}
         var fL = ${raw(forms)}
-
+        var rO = ${raw(ruleEngineObjects)}
+        var rS = ${raw(rateSheets)}
+        var wC = ${raw(wcRates)}
 
 </script>
 </head>
@@ -43,23 +47,6 @@
 
             <div class="col-xs-4 header-center">
 
-            </div>
-
-            %{--SYNC BUTTONS--}%
-            <div class="col-xs-4 header-right">
-                <div class="row">
-                    <div class="col-xs-6">
-
-                    </div>
-                    <div class="col-xs-6">
-                        <button class="btn btn-sm btn-primary pull-right" id="syncAllWithDMU">
-                            <span>Import From DMU</span>
-                        </button>
-                        <button class="btn btn-sm btn-primary pull-right" id="checkSyncWithDMU">
-                            <span>Check For Updates</span>
-                        </button>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -83,7 +70,10 @@
                     <a href="#productsPage" id="productsNavTab" aria-controls="productsPage" role="tab" data-toggle="tab">Products</a>
                 </li>
                 <li role="presentation" class="">
-                    <a href="#ratesPage" id="ratesNavTab" aria-controls="ratesPage" role="tab" data-toggle="tab">Rates</a>
+                    <a href="#ratingSheetPage" id="ratingSheetNavTab" aria-controls="ratingSheetPage" role="tab" data-toggle="tab"> WC Rates</a>
+                </li>
+                <li role="presentation" class="">
+                    <a href="#ratesPage" id="ratesNavTab" aria-controls="ratesPage" role="tab" data-toggle="tab">Rate Codes</a>
                 </li>
                 <li role="presentation" class="">
                     <a href="#ratingBasisPage" id="ratingBasisNavTab" aria-controls="ratingBasisPage" role="tab" data-toggle="tab">Rating Basis</a>
@@ -93,6 +83,9 @@
                 </li>
                 <li role="presentation" class="">
                     <a href="#formsPage" id="formsNavTab" aria-controls="formsPage" role="tab" data-toggle="tab">Forms</a>
+                </li>
+                <li role="presentation" class="">
+                    <a href="#syncPage" id="syncNavTab" aria-controls="syncPage" role="tab" data-toggle="tab">Sync</a>
                 </li>
 
             </ul>
@@ -141,8 +134,6 @@
                             </div>
                         </div>
                     </div>
-
-
                     %{--OPERATION DETAILS--}%
                     <div class="row" id="operationDetailsContainer" style="display:none; border-bottom: 1px solid rgba(150, 146, 141, 0.24);">
                         <div class="col-xs-12">
@@ -182,6 +173,16 @@
                                 </label>
                             </div>
                         </div>
+                        <div class="col-xs-12">
+                            <div class="col-xs-12 well">
+                                <h4>Operation Global Rules</h4>
+                                <br>
+                                <div class="rulesEngineContainer" id="operationGlobal_RulesEngineContainer" data-covid="global">
+
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
                     %{--COVERAGES ALLOWED --}%
@@ -190,303 +191,9 @@
                             <h4>Coverages Allowed</h4>
                         </div>
                         <div class="col-xs-12" style="margin-left: 16px;">
-                            <h5>Packages:</h5>
-                            %{--EACH PACKAGE OPTIONS--}%
-                            <g:each var="coverage" in="${coverageResults.findAll{ it.packageFlag == 'Y' } }">
-                                <div class="row coverageContainer packageContainer checkboxAndHiddenDivContainer" data-covid="${coverage.coverageCode}" style="margin-left: 0px; margin-right:0px;">
-                                    <div class='col-xs-12 form-group checkboxContainer'>
-                                        <g:if test="${coverage.activeFlag == 'N'}">
-                                            <label class="checkBoxLabel" style="color:darkgrey">
-                                                <input type='checkbox' class='coverageCheckbox checkboxHiddenDiv ' data-covid='${coverage.coverageCode}'
-                                                       id='${coverage.coverageCode}_checkbox'
-                                                       disabled="true"/> ${coverage.coverageName}
-                                                <span class="label label-default" style="padding: .1em .4em .1em;background-color: rgba(119, 119, 119, 0.79)">Not Active</span>
-                                            </label>
-                                            <button type="button" class="btn btn-xs btn-info editCoverageButton"
-                                                    id='${coverage.coverageCode}_EditCoverageButton'
-                                                    data-covid='${coverage.coverageCode}'
-                                                    style="padding: 0px 4px; font-size:10px;">
-                                                <i class="fa fa-fw fa-pencil" aria-hidden="true"></i>
-                                                Edit
-                                            </button>
-                                        </g:if>
-                                        <g:else>
-                                            <label class="checkBoxLabel">
-                                                <input type='checkbox' class='coverageCheckbox checkboxHiddenDiv onChangeSaveOperation' data-covid='${coverage.coverageCode}'
-                                                       id='${coverage.coverageCode}_checkbox'/> ${coverage.coverageName}
-                                            </label>
-                                            <button type="button" class="btn btn-xs btn-primary hideCoverageQuestions"
-                                                    id='${coverage.coverageCode}_HideCoverageQuestionsButton'
-                                                    data-covid='${coverage.coverageCode}'
-                                                    style="padding: 0px 4px; display:none">
-                                                <i class="fa fa-fw fa-eye-slash" aria-hidden="true"></i>
-                                                Hide Details
-                                            </button>
-                                            <button type="button" class="btn btn-xs btn-primary showCoverageQuestions"
-                                                    id='${coverage.coverageCode}_ShowCoverageQuestionsButton'
-                                                    data-covid='${coverage.coverageCode}'
-                                                    style="padding: 0px 4px; display:none">
-                                                <i class="fa fa-fw fa-eye" aria-hidden="true"></i>
-                                                Show Details
-                                            </button>
-                                            <button type="button" class="btn btn-xs btn-info editCoverageButton"
-                                                    id='${coverage.coverageCode}_EditCoverageButton'
-                                                    data-covid='${coverage.coverageCode}'
-                                                    style="padding: 0px 4px; font-size:10px;">
-                                                <i class="fa fa-fw fa-pencil" aria-hidden="true"></i>
-                                                Edit
-                                            </button>
-                                        </g:else>
-                                    </div>
-                                    <div class="coverageQuestionsContainer hiddenContainer" id="${coverage.coverageCode}_CoverageQuestionsContainer" style="display:none">
-
-                                        %{--SHOW COVERAGE LOGIC--}%
-                                        <div class="col-xs-12 well coverageShowLogicWell">
-                                            <h5>Show ${coverage.coverageCode} When:</h5>
-                                            <div class="row logicConditionRowsContainer rowContainer" id="${coverage.coverageCode}_ShowLogicConditionRowsContainer">
-                                            <div class="col-xs-12 logicConditionRow">
-                                                <div class="row mainLogicContainer" style="margin-left: -5px;">
-                                                    <div class="col-xs-1" style="">
-                                                        <select class="form-control rowConditionDropdown onChangeSaveOperation">
-                                                            <option class="alwaysOption" value="ALWAYS">ALWAYS</option>
-                                                            <option class="ifOption" value="IF">IF</option>
-                                                            <option class="ifElseOption" value="IFELSE" >IF ELSE</option>
-                                                            <option class="elseOption" value="ELSE" >ELSE</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-xs-1" style="visibility:hidden">
-                                                        <select class="form-control conditionBasis onChangeSaveOperation">
-                                                            <g:each var="conditionBasis" in="${conditionBasisResults}">
-                                                                <option value="${conditionBasis.conditionID}">${conditionBasis.description}</option>
-                                                            </g:each>
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-xs-1" style="visibility:hidden">
-                                                        <select class="form-control conditionOperator onChangeSaveOperation">
-                                                            <g:each var="conditionOperator" in="${conditionOperatorsResults}">
-                                                                <option value="${conditionOperator.conditionID}">${conditionOperator.description}</option>
-                                                            </g:each>
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-xs-2" style="visibility:hidden">
-                                                        <div class="form-group">
-                                                            <input class="form-control conditionBasisValue maskMoney onChangeSaveOperation" type="text" data-precision="0" data-prefix="$">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xs-4">
-                                                        <select class="form-control conditionOutput onChangeSaveOperation">
-                                                            <option value="SHOW">Show</option>
-                                                            <option value="HIDE">Hide</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-xs-3 buttonColumn" style="visibility:hidden">
-                                                        <button class="btn btn-sm btn-primary pull-left addLogicConditionRow" style="margin-left:10px;">
-                                                            <span>Add Row</span>
-                                                        </button>
-                                                        <button class="btn btn-sm pull-left addSubLogicConditionRow">
-                                                            <span>Add Sub Logic</span>
-                                                        </button>
-                                                        <button class="btn btn-xs btn-success pull-left moveLogicRowDownButton onChangeSaveOperation" style="border-radius:20px; margin-left:10px;font-size:10px;">
-                                                            <i class="fa fa-arrow-down" aria-hidden="true"></i>
-                                                        </button>
-                                                        <button class="btn btn-xs btn-success pull-left moveLogicRowUpButton onChangeSaveOperation" style="border-radius:20px;  font-size:10px;">
-                                                            <i class="fa fa-arrow-up" aria-hidden="true"></i>
-                                                        </button>
-                                                        <button class="btn btn-sm btn-danger pull-right removeLogicConditionRow onChangeSaveOperation" style="display:none">
-                                                            <span>Remove</span>
-                                                        </button>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                        </div>
-
-                                       %{--PACKAGE OPTIONS--}%
-                                        <div class="col-xs-12 well">
-                                            <h5>Coverages available in this Package:</h5>
-                                            <div style="color: rgb(175, 0, 0); margin-top: -10px;font-size:11px">
-                                                <span>Package is automatically selected as a Submission's Product/Coverage when 2 OR MORE of the following are chosen by the broker </span>
-                                            </div>
-                                            <div style="color: rgb(175, 0, 0); margin-top: -10px;font-size:11px">
-                                                <span>If no Coverages are selected, this package will be offered as clickable option </span>
-                                            </div>
-
-
-                                            <div class="row packageCoverageOptionsContainer "
-                                                 id="${coverage.coverageCode}_PackageCoverageOptionsContainer"
-                                                 style="padding:12px">
-                                                <g:each var="packageCoverageOption" in="${coverageResults.findAll{ it.packageFlag == 'N' && it.activeFlag == 'Y' } }">
-                                                    <div class="col-xs-2 form-group" style="margin-bottom: 0px; padding-left: 0px; padding-right: 0px;">
-                                                        <label class="checkBoxLabel">
-                                                            <input type='checkbox'
-                                                                   class='packageProductCheckbox onChangeSaveOperation
-                                                                            ${coverage.coverageCode}_packageCoverageOption
-                                                                            ${packageCoverageOption.coverageCode}_PackageProductCheckbox'
-                                                                   name="${coverage.coverageCode}_CheckboxGroup"
-                                                                   value="${packageCoverageOption.coverageCode}" data-covid="${packageCoverageOption.coverageCode}"/>
-                                                            ${packageCoverageOption.coverageCode} (${packageCoverageOption.coverageName})
-                                                        </label>
-                                                    </div>
-                                                </g:each>
-                                            </div>
-
-                                            <div class="row allLOBDetailContainer" id="${coverage.coverageCode}_AllLOBDetailContainer" style="margin-top:40px;">
-
-                                            </div>
-                                        </div>
-
-                                        %{--PRODUCT ALWAYS/WHEN CONDITION CONTAINER V2--}%
-                                        <div class="col-xs-12 well">
-                                            <h5>Which Product to Use</h5>
-                                            <div class="row logicConditionRowsContainer rowContainer" id="${coverage.coverageCode}_LogicConditionRowsContainer">
-                                                <div class="col-xs-12 logicConditionRow">
-                                                    <div class="row mainLogicContainer" style="margin-left: -5px;">
-                                                        <div class="col-xs-1" style="">
-                                                            <select class="form-control rowConditionDropdown onChangeSaveOperation">
-                                                                <option class="alwaysOption" value="ALWAYS">ALWAYS</option>
-                                                                <option class="ifOption" value="IF">IF</option>
-                                                                <option class="ifElseOption" value="IFELSE" >IF ELSE</option>
-                                                                <option class="elseOption" value="ELSE" >ELSE</option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="col-xs-1" style="visibility:hidden">
-                                                            <select class="form-control conditionBasis onChangeSaveOperation">
-                                                                <g:each var="conditionBasis" in="${conditionBasisResults}">
-                                                                    <option value="${conditionBasis.conditionID}">${conditionBasis.description}</option>
-                                                                </g:each>
-                                                            </select>
-                                                        </div>
-                                                        <div class="col-xs-1" style="visibility:hidden">
-                                                            <select class="form-control conditionOperator onChangeSaveOperation">
-                                                                <g:each var="conditionOperator" in="${conditionOperatorsResults}">
-                                                                    <option value="${conditionOperator.conditionID}">${conditionOperator.description}</option>
-                                                                </g:each>
-                                                            </select>
-                                                        </div>
-                                                        <div class="col-xs-2" style="visibility:hidden">
-                                                            <div class="form-group">
-                                                                <input class="form-control conditionBasisValue maskMoney onChangeSaveOperation" type="text" data-precision="0" data-prefix="$">
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-xs-4">
-                                                            <select class="form-control conditionOutput onChangeSaveOperation
-                                                                    ${coverage.coverageCode}_ProductsForCoverageSelect"
-                                                                    data-covid="${coverage.coverageCode}">
-                                                                <g:each var="product" in="${productResults.findAll{ it.coverage == coverage.coverageCode && it.activeFlag == 'Y'} }">
-                                                                    <option value="${product.productID}">(${product.productID}) ${product.productName}</option>
-                                                                </g:each>
-                                                            </select>
-                                                        </div>
-                                                        <div class="col-xs-3 buttonColumn" style="visibility:hidden">
-                                                            <button class="btn btn-sm btn-primary pull-left addLogicConditionRow" style="margin-left:10px;">
-                                                                <span>Add Row</span>
-                                                            </button>
-                                                            <button class="btn btn-sm pull-left addSubLogicConditionRow">
-                                                                <span>Add Sub Logic</span>
-                                                            </button>
-                                                            <button class="btn btn-xs btn-success pull-left moveLogicRowDownButton onChangeSaveOperation" style="border-radius:20px; margin-left:10px;font-size:10px;">
-                                                                <i class="fa fa-arrow-down" aria-hidden="true"></i>
-                                                            </button>
-                                                            <button class="btn btn-xs btn-success pull-left moveLogicRowUpButton onChangeSaveOperation" style="border-radius:20px;  font-size:10px;">
-                                                                <i class="fa fa-arrow-up" aria-hidden="true"></i>
-                                                            </button>
-                                                            <button class="btn btn-sm btn-danger pull-right removeLogicConditionRow onChangeSaveOperation" style="display:none">
-                                                                <span>Remove</span>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-                                            </div>
-                                        </div>
-
-
-                                        %{--REQUIRED QUESTIONS ALL CONTAINER--}%
-                                        <div class="col-xs-12 well" id="${coverage.coverageCode}_RequiredQuestionsAllSection" style="display:">
-                                            <div class="row">
-                                                <div class="col-xs-12">
-                                                    <label>Required Questions All ${coverage.coverageName}</label>
-                                                </div>
-                                            </div>
-                                            <br>
-                                            <div class="row requiredQuestionsAllContainer" >
-                                                <div class="col-xs-12">
-                                                    <div class="panel panel-primary requiredQuestionsPanel ${coverage.coverageCode}_RequiredQuestionsAllPanel"
-                                                         style="">
-                                                        <div class="panel-heading">
-                                                            <h6 class="panel-title">Required Questions All</h6>
-                                                        </div>
-                                                        <div class="panel-body"
-                                                             id="${coverage.coverageCode}_RequiredQuestionsAll">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        %{--UW QUESTIONS CONTAINER--}%
-                                        <div class="col-xs-12 well" id="${coverage.coverageCode}_UWQuestionsSection" style="display:">
-                                            <div class="row">
-                                                <div class="col-xs-12">
-                                                    <label>Under Writing Questions for ${coverage.coverageName}</label>
-                                                </div>
-                                            </div>
-                                            <div class="row underwritingQuestionsContainer" id="${coverage.coverageCode}_UnderwritingQuestionsContainer">
-                                                <g:each var="questionCategory" in="${questionCategoryResults.findAll{ it.coverageCategoryFlag == "N" || it.categoryCode == coverage.coverageCode  }}">
-                                                    <div class="col-xs-12">
-                                                        <div class="panel panel-primary uwQuestionCategoryPanel ${coverage.coverageCode}_uwQuestionCategoryPanel"
-                                                             id="${coverage.coverageCode}_${questionCategory.categoryCode}_QuestionCategoryPanel"
-                                                             data-questioncategorycode="${questionCategory.categoryCode}"
-                                                             style="">
-                                                            <div class="panel-heading">
-                                                                <button type="button" class="btn btn-xs btn-info pull-right hideQuestionCategory"
-                                                                        data-questionCategory="${questionCategory.categoryCode}" style="padding: 0px 4px; display:none">
-                                                                    <i class="fa fa-fw fa-eye-slash" aria-hidden="true"></i>
-                                                                    Hide Details
-                                                                </button>
-                                                                <button type="button" class="btn btn-xs btn-info pull-right showQuestionCategory"
-                                                                        data-questionCategory="${questionCategory.categoryCode}" style="padding: 0px 4px;">
-                                                                    <i class="fa fa-fw fa-eye" aria-hidden="true"></i>
-                                                                    Show Details
-                                                                </button>
-                                                                <h6 class="panel-title">${questionCategory.categoryName}</h6>
-                                                            </div>
-                                                            <div class="panel-body"
-                                                                 id="${coverage.coverageCode}_${questionCategory.categoryCode}_QuestionCategoryContainer"
-                                                                 data-questioncategorycode="${questionCategory.categoryCode}"
-                                                                 style="display: none">
-                                                                <g:each var="question" in="${questionResults.findAll{ it.category == questionCategory.categoryCode && it.hiddenFlag == 'N'} }">
-                                                                    <div class="col-xs-4 form-group ">
-                                                                        <label>
-                                                                            <input type="checkbox" class="uwQuestionCheckbox onChangeSaveOperation
-                                                                            <g:if test="${question.questionGroup != null} ">
-                                                                                questionGroup_${question.questionGroup} "
-                                                                            </g:if>
-                                                                                   id="${coverage.coverageCode}_${question.questionID}_QuestionCheckbox"
-                                                                                   data-questionid="${question.questionID}"
-                                                                                   data-questioncategorycode="${questionCategory.categoryCode}"
-                                                                                   data-covid="${coverage.coverageCode}">
-                                                                            ${question.questionText}
-                                                                        </label>
-                                                                    </div>
-                                                                </g:each>
-
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </g:each>
-                                                <div class="underwriterQuestions" id="${coverage.coverageCode}_UnderwriterQuestions">
-                                                </div>
-                                            </div>
-                                        </div>
-
-
-                                    </div>
-                                </div>
-                            </g:each>
                             <h5>Coverages:</h5>
                             %{--EACH COVERAGE OPTIONS--}%
-                            <g:each var="coverage" in="${coverageResults.findAll{ it.packageFlag == 'N' && it.activeFlag == 'Y' } }">
+                            <g:each var="coverage" in="${coverageResults.findAll{ it.activeFlag == 'Y' } }">
                                 <div class="row coverageContainer checkboxAndHiddenDivContainer" data-covid="${coverage.coverageCode}" style="margin-left: 0px; margin-right:0px;">
                                     <div class='col-xs-12 form-group checkboxContainer'>
                                         <g:if test="${coverage.activeFlag == 'N'}">
@@ -535,6 +242,15 @@
                                         </g:else>
                                     </div>
                                     <div class="coverageQuestionsContainer hiddenContainer" id="${coverage.coverageCode}_CoverageQuestionsContainer" style="display:none">
+                                        %{--RULES ENGINE--}%
+                                        <div class="col-xs-12 well">
+                                            <h4>${coverage.coverageCode} Rules</h4>
+                                            <br>
+                                            <div class="rulesEngineContainer" id="${coverage.coverageCode}_RulesEngineContainer" data-covid="${coverage.coverageCode}">
+
+                                            </div>
+                                        </div>
+
                                         %{--MONOLINE CHECKBOX--}%
                                         <div class="col-xs-12 well">
                                             <h5>Coverage Options</h5>
@@ -950,6 +666,12 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        <h6>Short Description</h6>
+                                        <input class="form-control onChangeSaveProduct" id="productShortDescription" type="text">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-xs-4">
@@ -976,14 +698,42 @@
                                                 <h6>Description</h6>
                                             </div>
                                             <div class="col-xs-1">
-                                                <h6>Flex</h6>
+                                                <h6>O/AMP/LV</h6>
                                             </div>
                                             <div class="col-xs-2">
-                                                <h6>Max Limit</h6>
+                                                <h6>Add. Prem.</h6>
                                             </div>
                                         </div>
                                         <div id="productPage_limitsContainer">
 
+                                        </div>
+                                        <div class="row" id="productPage_productOptionHeaderRow">
+                                            <div class="col-xs-2">
+                                                <h6>Option Desc.</h6>
+                                            </div>
+                                            <div class="col-xs-2">
+                                                <h6>Incl in MP Flag</h6>
+                                            </div>
+                                            <div class="col-xs-2">
+                                                <h6>Product Action</h6>
+                                            </div>
+                                            <div class="col-xs-2">
+                                                <h6>Limit</h6>
+                                            </div>
+                                        </div>
+                                        <div class="row" id="">
+                                            <div class="col-xs-2">
+                                                <input class="form-control input-xs" type="text">
+                                            </div>
+                                            <div class="col-xs-2">
+                                                <input class="form-control" type="checkbox">
+                                            </div>
+                                            <div class="col-xs-2">
+                                                <select></select>
+                                            </div>
+                                            <div class="col-xs-2">
+                                                <input class="form-control input-xs" type="text">
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-xs-6">
@@ -1246,12 +996,376 @@
 
                 </div>
 
+                <div role="tabpanel" class="tab-pane fade in" id="ratingSheetPage">
+                    %{--RATE SHEET SELECT--}%
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <div class="form-group">
+                                <label class="control-label">Rates</label>
+                                <select class="form-control" id="rateSheetPage_RateSheetsDropdown">
+                                    <option value="invalid">Select One</option>
+
+                                    <g:each var="rateSheets" in="${rateSheetResults}">
+                                        <option value="${rateSheets.rateSheetID}">${rateSheets.rateSheetID} - ${rateSheets.description}</option>
+                                    </g:each>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <button class="btn btn-sm btn-primary" style="margin-top:26px; display:" id="saveRateSheetButton">
+                                <span>SAVE</span>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-success" id="addNew_RateSheet_Button" style="margin-top:26px" onclick="$('#createRateSheetModal').modal('show')">
+                                <i class="fa fa-plus" aria-hidden="true"></i>
+                                New Rate
+                            </button>
+                        </div>
+                    </div>
+
+                    %{--RATE SHEET DETAILS--}%
+                    <div class="row" id="rateSheetDetailsContainer" style="display:none">
+                        <div class="col-xs-12" id="rateSheetPageLeftColumn">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <label class="control-label">Rate Sheet Details</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-2">
+                                    <div class="form-group">
+                                        <h6>Rate Sheet ID</h6>
+                                        <input class="form-control onChangeSaveRate" id="rateSheetIDInput" type="text">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-4">
+                                    <div class="form-group">
+                                        <h6>Rate Description</h6>
+                                        <input class="form-control onChangeSaveRate" id="rateSheetDescriptionInput" type="text">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-xs-6" id="rateSheetPageRightColumn">
+
+                        </div>
+                    </div>
+
+                    %{--RATE SHEET--}%
+                    <div class="row" id="rateSheetContainer" style="display:none">
+                        <div class="col-xs-12">
+                            <div class="well">
+                                %{--WC STATE DROPDOWN--}%
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <div class="form-group">
+                                            <select class="form-control" id="wcStateDropdown" >
+                                                <option value="invalid" selected="selected">Select WC State</option>
+                                                <option value="AL">Alabama</option>
+                                                <option value="AK">Alaska</option>
+                                                <option value="AZ">Arizona</option>
+                                                <option value="AR">Arkansas</option>
+                                                <option value="CA">California</option>
+                                                <option value="CO">Colorado</option>
+                                                <option value="CT">Connecticut</option>
+                                                <option value="DE">Delaware</option>
+                                                <option value="DC">District Of Columbia</option>
+                                                <option value="FL">Florida</option>
+                                                <option value="GA">Georgia</option>
+                                                <option value="GU">Guam</option>
+                                                <option value="HI">Hawaii</option>
+                                                <option value="ID">Idaho</option>
+                                                <option value="IL">Illinois</option>
+                                                <option value="IN">Indiana</option>
+                                                <option value="IA">Iowa</option>
+                                                <option value="KS">Kansas</option>
+                                                <option value="KY">Kentucky</option>
+                                                <option value="LA">Louisiana</option>
+                                                <option value="ME">Maine</option>
+                                                <option value="MD">Maryland</option>
+                                                <option value="MA">Massachusetts</option>
+                                                <option value="MI">Michigan</option>
+                                                <option value="MN">Minnesota</option>
+                                                <option value="MS">Mississippi</option>
+                                                <option value="MO">Missouri</option>
+                                                <option value="MT">Montana</option>
+                                                <option value="NE">Nebraska</option>
+                                                <option value="NV">Nevada</option>
+                                                <option value="NH">New Hampshire</option>
+                                                <option value="NJ">New Jersey</option>
+                                                <option value="NM">New Mexico</option>
+                                                <option value="NY">New York</option>
+                                                <option value="NC">North Carolina</option>
+                                                <option value="ND">North Dakota</option>
+                                                <option value="OH">Ohio</option>
+                                                <option value="OK">Oklahoma</option>
+                                                <option value="OR">Oregon</option>
+                                                <option value="PA">Pennsylvania</option>
+                                                <option value="PR">Puerto Rico</option>
+                                                <option value="RI">Rhode Island</option>
+                                                <option value="SC">South Carolina</option>
+                                                <option value="SD">South Dakota</option>
+                                                <option value="TN">Tennessee</option>
+                                                <option value="TX">Texas</option>
+                                                <option value="UT">Utah</option>
+                                                <option value="VT">Vermont</option>
+                                                <option value="VI">Virgin Islands</option>
+                                                <option value="VA">Virginia</option>
+                                                <option value="WA">Washington</option>
+                                                <option value="WV">West Virginia</option>
+                                                <option value="WI">Wisconsin</option>
+                                                <option value="WY">Wyoming</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="wcRateSheet_StateChosen" style="display:none">
+                                    %{--ADD RATE CODE BUTTON--}%
+                                    <div class="row">
+                                        <div class="col-xs-5">
+                                            <button class='btn btn-sm btn-primary' id='addRatedPremiumButton' style=''>
+                                                <i class='fa fa-plus'></i> Add Rate Code
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    %{--SHEET ROWS HEADER--}%
+                                    <div class="row" id="rateSheetRowsHeader">
+                                        <div class="col-xs-1">
+                                            <label>#</label>
+                                        </div>
+                                        <div class="col-xs-1">
+                                            <label>Code</label>
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <label>Description</label>
+                                        </div>
+                                        <div class="col-xs-1">
+                                            <label>Rate</label>
+                                        </div>
+                                        <div class="col-xs-1">
+                                            <label>Premium</label>
+                                        </div>
+                                        <div class="col-xs-1">
+                                            <label>Non Mod</label>
+                                        </div>
+                                        <div class="col-xs-1">
+                                            <label>Flat</label>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <label>How Processed</label>
+                                        </div>
+                                        <div class="col-xs-2">
+
+                                        </div>
+                                    </div>
+                                    %{--SHEET ROWS CONTAINER--}%
+                                    <div class="row" id="wcRateSheetRowsContainer">
+                                        <div class="col-xs-12 rowContainer" id="1STD_rateSheetRowsContainer">
+
+                                        </div>
+                                        <div class="col-xs-12 rowContainer" id="2RATE_rateSheetRowsContainer">
+
+                                        </div>
+                                        <div class="col-xs-12 rowContainer" id="3PREM_rateSheetRowsContainer">
+
+                                        </div>
+                                        <div class="col-xs-12 rowContainer" id="4EL_rateSheetRowsContainer">
+
+                                        </div>
+                                        <div class="col-xs-12 rowContainer" id="5MP_rateSheetRowsContainer">
+
+                                        </div>
+                                        <div class="col-xs-12 rowContainer" id="6PDISC_rateSheetRowsContainer">
+
+                                        </div>
+                                        <div class="col-xs-12 rowContainer" id="FEE_EL_rateSheetRowsContainer">
+
+                                        </div>
+                                        <div class="col-xs-12 rowContainer" id="FEE_MEL_rateSheetRowsContainer">
+
+                                        </div>
+                                        <div class="col-xs-12 rowContainer" id="FEE_PR_rateSheetRowsContainer">
+
+                                        </div>
+                                        <div class="col-xs-12 rowContainer" id="FEE_RATE_rateSheetRowsContainer">
+
+                                        </div>
+                                        <div class="col-xs-12 rowContainer" id="FEE_WV_rateSheetRowsContainer">
+
+                                        </div>
+                                        <div class="col-xs-12 rowContainer" id="rateSheetRatedPremiumRowsContainer">
+
+                                        </div>
+                                        <div class="col-xs-12 rowContainer" id="rateSheetFeeRowsContainer">
+
+                                        </div>
+                                    </div>
+
+
+                                    <div id="wcRateSheetTestContainer" style="display:none">
+                                        %{--RATE SHEET TEST INPUTS--}%
+                                        <div class="row" id="rateSheetTestInputsContainer">
+                                            <div class="col-xs-2">
+                                                <div class="form-group">
+                                                    <h6>Cast & Crew Payroll 9610</h6>
+                                                    <input class="form-control" type="text">
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-2">
+                                                <div class="form-group">
+                                                    <h6>Clerical Payroll 8810</h6>
+                                                    <input class="form-control" type="text">
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-2">
+                                                <div class="form-group">
+                                                    <h6>Salesperson Payroll 8742</h6>
+                                                    <input class="form-control" type="text">
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-2">
+                                                <h6></h6>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-2">
+                                                <button class='btn btn-sm btn-primary'  style='' id="testRateSheetButton">
+                                                    <i class="fa fa-play" aria-hidden="true"></i> Test Rate Sheet
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        %{--RATE SHEET TEST CONTAINER--}%
+                                        <div id="wcRateSheetTestResultsContainer" style="display:none">
+                                            <div class="row" id="rateSheetRowsHeader1_Test">
+                                                <div class="col-xs-1">
+                                                </div>
+                                                <div class="col-xs-3">
+                                                </div>
+                                                <div class="col-xs-2">
+                                                </div>
+                                                <div class="col-xs-2">
+                                                </div>
+                                                <div class="col-xs-3">
+                                                    <div class="col-xs-12" style="text-align:center">
+                                                        <div class="col-xs-12">
+                                                            <label style="margin-bottom:0px">Est. Premiums</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row" id="rateSheetRowsHeader2_Test">
+                                                <div class="col-xs-1">
+                                                    <label>Code</label>
+                                                </div>
+                                                <div class="col-xs-3">
+                                                    <label>Description</label>
+                                                </div>
+                                                <div class="col-xs-2">
+                                                    <label>Est. Total Renumeration</label>
+                                                </div>
+                                                <div class="col-xs-2">
+                                                    <label>Rate per $100</label>
+                                                </div>
+                                                <div class="col-xs-3">
+                                                    <div class="col-xs-12" style="text-align:center">
+                                                        <div class="col-xs-6">
+                                                            <label style="font-size:9px;">Subject to Mod</label>
+                                                        </div>
+                                                        <div class="col-xs-6">
+                                                            <label style="font-size:9px;">All Others</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row" id="wcRateSheetRowsContainer_Test">
+                                                <div class="col-xs-12 rowContainer" id="1STD_rateSheetRowsContainer_Test">
+
+                                                </div>
+                                                <div class="col-xs-12 rowContainer" id="2RATE_rateSheetRowsContainer_Test">
+
+                                                </div>
+                                                <div class="col-xs-12 rowContainer" id="3PREM_rateSheetRowsContainer_Test">
+
+                                                </div>
+                                                <div class="col-xs-12 rowContainer" id="4EL_rateSheetRowsContainer_Test">
+
+                                                </div>
+                                                <div class="col-xs-12 rowContainer" id="5MP_rateSheetRowsContainer_Test">
+
+                                                </div>
+                                                <div class="col-xs-12 rowContainer" id="6PDISC_rateSheetRowsContainer_Test">
+
+                                                </div>
+                                                <div class="col-xs-12 rowContainer" id="FEE_EL_rateSheetRowsContainer_Test">
+
+                                                </div>
+                                                <div class="col-xs-12 rowContainer" id="FEE_MEL_rateSheetRowsContainer_Test">
+
+                                                </div>
+                                                <div class="col-xs-12 rowContainer" id="FEE_PR_rateSheetRowsContainer_Test">
+
+                                                </div>
+                                                <div class="col-xs-12 rowContainer" id="FEE_RATE_rateSheetRowsContainer_Test">
+
+                                                </div>
+                                                <div class="col-xs-12 rowContainer" id="FEE_WV_rateSheetRowsContainer_Test">
+
+                                                </div>
+                                                <div class="col-xs-12 rowContainer" id="rateSheetTotalRowsContainer_Test">
+                                                    <div class="row rateSheetTotalPremiumRow_Test">
+                                                        <div class="col-xs-8">
+
+                                                        </div>
+                                                        <div class="col-xs-2">
+                                                            <label>Total Premium</label>
+                                                        </div>
+                                                        <div class="col-xs-2">
+                                                            <span id="rateSheetTestResultTotalPremium"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row rateSheetTotalFeeRow_Test">
+                                                        <div class="col-xs-8">
+
+                                                        </div>
+                                                        <div class="col-xs-2">
+                                                            <label>Total Fees</label>
+                                                        </div>
+                                                        <div class="col-xs-2">
+                                                            <span id="rateSheetTestResultTotalFee"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row rateSheetTotalPremiumAndFeeRow_Test">
+                                                        <div class="col-xs-8">
+
+                                                        </div>
+                                                        <div class="col-xs-2">
+                                                            <label>Total Premium & Fees</label>
+                                                        </div>
+                                                        <div class="col-xs-2">
+                                                            <span id="rateSheetTestResultTotalPremiumAndFee"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div role="tabpanel" class="tab-pane fade in" id="ratesPage">
                     %{--RATES SELECT--}%
                     <div class="row">
                         <div class="col-xs-3">
                             <div class="form-group">
-                                <label class="control-label">Rate</label>
+                                <label class="control-label">Rate Codes</label>
                                 <select class="form-control" id="ratePage_RatesDropdown">
                                     <option value="invalid">Select One</option>
 
@@ -1291,8 +1405,51 @@
                             <div class="row">
                                 <div class="col-xs-6">
                                     <div class="form-group">
+                                        <h6>Rate Code</h6>
+                                        <input class="form-control onChangeSaveRate" id="rateCodeInput" type="text">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <div class="form-group">
                                         <h6>Rate Description</h6>
                                         <input class="form-control onChangeSaveRate" id="rateDescriptionInput" type="text">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <div class="form-group">
+                                        <h6>Rate Type</h6>
+                                        <select class="form-control onChangeSaveRate" id="rateTypeDropdown">
+                                            <option value="invalid">Select Rate Type</option>
+                                            <option value="RATEDPREMIUM">Rated Premium</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <div class="form-group">
+                                        <h6>Rate Method</h6>
+                                        <select class="form-control onChangeSaveRate" id="rateMethodDropdown">
+                                            <option value="invalid">Select Rate Method</option>
+                                            <option value="FLATPREMIUM">Rate Is</option>
+                                            <option value="INPUTVALUE">Input</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <div class="form-group">
+                                        <h6>Rate Method</h6>
+                                        <select class="form-control onChangeSaveRate" id="premiumMethodDropdown">
+                                            <option value="invalid">Select Rate Method</option>
+                                            <option value="FLATPREMIUM">Flat Premium</option>
+                                            <option value="INPUTXRATE">Input X Rate</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -1432,6 +1589,14 @@
                                                 <div class="row col-xs-12">
                                                     <div class="col-xs-3">
                                                         <div class="form-group">
+                                                            <h6>Premium Basis Question ID</h6>
+                                                            <input class="form-control onChangeSaveRate" id="ratesPage_BracketBasisQuestionID" type="text">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row col-xs-12">
+                                                    <div class="col-xs-3">
+                                                        <div class="form-group">
                                                             <h6>Min Premium</h6>
                                                             <input class="form-control onChangeSaveRate" id="ratesPage_BracketRateMinPremium" type="text">
                                                         </div>
@@ -1499,6 +1664,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+
 
                                         </div>
 
@@ -1950,6 +2116,33 @@
                     </div>
                 </div>
 
+                <div role="tabpanel" class="tab-pane fade in" id="syncPage">
+                    %{--SYNC BUTTONS WELL--}%
+                    <div class="row">
+                        <div class="col-xs-11">
+                            <div class="well">
+                                %{--SYNC BUTTONS--}%
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            <button class="btn btn-sm btn-primary" id="">
+                                                <span>Check Database Sync Status</span>
+                                            </button>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <button class="btn btn-sm btn-primary" id="syncAllWithDMU">
+                                                <span>Import From DMU</span>
+                                            </button>
+                                            <button class="btn btn-sm btn-primary" id="checkSyncWithDMU">
+                                                <span>Check For Updates</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -2111,6 +2304,39 @@
                         <div class="col-xs-6">
                             <button type="submit" class="btn btn-primary pull-right" style="margin-left: 10px" onclick="createNewProduct()">Save Changes</button>
                             <button type="button" class="btn btn-primary pull-right" onclick="$('#createProductModal').modal('hide')">Cancel</button>
+
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <div class="modal fade" tabindex="-1" role="dialog" id="createRateSheetModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">Add New Rate Sheet</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Rate Sheet ID</label>
+                        <input type="text" class="form-control noSpacesInput" id="newRateSheet_rateSheetID" placeholder="Rate Sheet ID" style="text-transform: uppercase" maxlength="255">
+                    </div>
+                    <div class="form-group">
+                        <label>Rate Sheet Name</label>
+                        <input type="text" class="form-control" id="newRateSheet_rateSheetName" placeholder="Rate Sheet Name" maxlength="255">
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-xs-4">
+                        </div>
+                        <div class="col-xs-2">
+
+                        </div>
+                        <div class="col-xs-6">
+                            <button type="submit" class="btn btn-primary pull-right" style="margin-left: 10px" onclick="createNewRateSheet()">Save Changes</button>
+                            <button type="button" class="btn btn-primary pull-right" onclick="$('#createRateModal').modal('hide')">Cancel</button>
 
                         </div>
                     </div>
@@ -2295,6 +2521,45 @@
                             <button type="submit" class="btn btn-primary pull-right" style="margin-left: 10px" onclick="saveQuestionCategoryChanges()">Save Changes</button>
                             <button type="button" class="btn btn-primary pull-right" onclick="$('.modal').modal('hide')">Cancel</button>
 
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <div class="modal fade" tabindex="-1" role="dialog" id="selectRateCodeModal">
+        <div class="modal-dialog" role="document" style="width: 1000px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">Select Rate Code</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <button type="button" class="btn btn-primary pull-right " style="margin-left: 10px" onclick="addSelectedWCRateCodes()">Add Selected</button>
+                            <button type="button" class="btn btn-primary pull-right" onclick="$('.modal').modal('hide')">Cancel</button>
+                        </div>
+                    </div>
+
+                    <div id="selectRateCodeModalBodyContainer">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <select class="form-control">
+                                    <option>Rate</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-4">
+                        </div>
+                        <div class="col-xs-2">
+
+                        </div>
+                        <div class="col-xs-6">
+                            <button type="button" class="btn btn-primary pull-right" style="margin-left: 10px" onclick="addSelectedWCRateCodes()">Add Selected</button>
+                            <button type="button" class="btn btn-primary pull-right" onclick="$('.modal').modal('hide')">Cancel</button>
                         </div>
                     </div>
                 </div>

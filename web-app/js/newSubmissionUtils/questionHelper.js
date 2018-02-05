@@ -21,6 +21,7 @@ function getQuestionHTML(qID, options){
 
 
     var questionText = (typeof options.questionText === 'undefined') ? question.questionText : options.questionText
+    var labelStyle = (typeof options.labelStyle === 'undefined') ? "" : options.labelStyle
 
     //DIV CONTAINER
     var gridSize = (typeof options.gridSize === 'undefined') ? question.gridSize : options.gridSize
@@ -101,7 +102,10 @@ function getQuestionHTML(qID, options){
     if(inputType === 'text' || inputType === 'number'){
 
         //QUESTION LABEL
-        questionLabelElement= $("<label class='questionText'>" + questionText + "</label>")
+        questionLabelElement= $(
+            "<label class='questionText control-label' " +
+            "style='" + labelStyle + "'>" + questionText + "</label>"
+        )
         $(formGroupElem).append($(questionLabelElement))
 
         inputElement = $(
@@ -171,7 +175,7 @@ function getQuestionHTML(qID, options){
         var tempMultiRowContainer = $('<div></div>')
 
         var tempFormGroupElem = $("<div class='form-group col-xs-12" + "' style='padding-left:2px; padding-right:2px; margin-bottom:0px'>" + "</div> ")
-        questionLabelElement= $("<label class='questionText'>" + questionText + "</label>")
+        questionLabelElement= $("<label class='questionText control-label'>" + questionText + "</label>")
         $(tempFormGroupElem).append($(questionLabelElement))
         $(tempMultiRowContainer).append( $(tempFormGroupElem) )
 
@@ -233,7 +237,7 @@ function getQuestionHTML(qID, options){
     else if(inputType === 'textarea'){
 
         //QUESTION LABEL
-        questionLabelElement= $("<label class='questionText'>" + questionText + "</label>")
+        questionLabelElement= $("<label class='questionText control-label'>" + questionText + "</label>")
         $(formGroupElem).append($(questionLabelElement))
 
         inputElement = $(
@@ -270,7 +274,7 @@ function getQuestionHTML(qID, options){
     }
     else if(inputType === 'checkbox'){
         //QUESTION LABEL
-        questionLabelElement= $("<label class='questionText'>" + questionText + "</label>")
+        questionLabelElement= $("<label class='questionText control-label'>" + questionText + "</label>")
         $(formGroupElem).append($(questionLabelElement))
 
         var checkboxOptionValTextMap = jsonStringToObject(htmlCheckboxRadioValText)
@@ -283,7 +287,7 @@ function getQuestionHTML(qID, options){
             var thisCheckboxOptionText = checkboxOptionValTextMap[thisCheckboxOptionValue]
 
             inputElement = $(
-                "<label class='checkboxVerticalLayout questionOptionLabel'>" +
+                "<label class='checkboxVerticalLayout questionOptionLabel control-label'>" +
                 "   <input type='" + inputType + "' class='" + inputClass + "' " +
                 "       data-reviewName='" + htmlDataReviewName + "' " +
                 "       value='" + thisCheckboxOptionValue + "'" +
@@ -304,7 +308,7 @@ function getQuestionHTML(qID, options){
     }
     else if(inputType === 'radio'){
         //QUESTION LABEL
-        questionLabelElement= $("<label class='questionText'>" + questionText + "</label>")
+        questionLabelElement= $("<label class='questionText control-label'>" + questionText + "</label>")
         $(formGroupElem).append($(questionLabelElement))
 
         var radioOptionValTextMap = jsonStringToObject(htmlCheckboxRadioValText)
@@ -339,7 +343,7 @@ function getQuestionHTML(qID, options){
     }
     else if(inputType === 'dropdown'){
         //QUESTION LABEL
-        questionLabelElement= $("<label class='questionText'>" + questionText + "</label>")
+        questionLabelElement= $("<label class='questionText control-label'>" + questionText + "</label>")
         $(formGroupElem).append($(questionLabelElement))
 
         inputElement = $(
@@ -374,7 +378,7 @@ function getQuestionHTML(qID, options){
     }
     else if(inputType === 'custom_mailingAddress'){
         //QUESTION LABEL
-        questionLabelElement= $("<label class='questionText'>" + questionText + "</label>")
+        questionLabelElement= $("<label class='questionText control-label'>" + questionText + "</label>")
         $(formGroupElem).append($(questionLabelElement))
 
         inputElement = $(
@@ -452,12 +456,6 @@ function getQuestionHTML(qID, options){
             "</div>"
         )
 
-        if(required === 'Y'){
-            $(inputElement).find('input').each(function(){
-                $(this).attr('required', 'required')
-            })
-        }
-
 
         //IF INPUT HAS A MAX LENGTH
         if(maxLength !== undefined && maxLength !== null && maxLength.trim().length !== 0){
@@ -489,7 +487,7 @@ function getQuestionHTML(qID, options){
     }
     else{
         //QUESTION LABEL
-        questionLabelElement= $("<label class='questionText'>" + questionText + "</label>")
+        questionLabelElement= $("<label class='questionText control-label'>" + questionText + "</label>")
         $(formGroupElem).append($(questionLabelElement))
 
         inputElement = $(
@@ -499,6 +497,15 @@ function getQuestionHTML(qID, options){
             "style='" + inputStyle + "' " +
             "id='" + qID + "' " +
             ">")
+    }
+
+    if(required === 'Y'){
+        $(inputElement).find('input').each(function(){
+            $(this).attr('required', 'required')
+        })
+        $(inputElement).find('select').each(function(){
+            $(this).attr('required', 'required')
+        })
     }
 
     $(formGroupElem).append($(inputElement))
@@ -724,7 +731,7 @@ function getNewSubmissionRequiredQuestion(qID){
 
         if(options.required === true){
             var tempElement = $(stringHTML)
-            $(tempElement).find('input').attr('required', 'true')
+            $(tempElement).find('input, select').attr('required', 'true')
 
             stringHTML = $(tempElement)[0].outerHTML
 
@@ -778,6 +785,39 @@ function getNewSubmissionRequiredPackageRateQuestion(qID){
             closeButton: false,
             required: true,
             questionText: questionObject.questionText + " (PR)"
+        }
+
+        var stringHTML = getQuestionHTML(qID, options)
+
+        if(options.required === true){
+            var tempElement = $(stringHTML)
+            $(tempElement).find('input').attr('required', 'true')
+
+            stringHTML = $(tempElement)[0].outerHTML
+
+        }
+
+        return stringHTML
+    }
+}
+function getNewSubmissionProductCardQuestion(qID){
+    var questionObject = getQuestionObjectByID(qID)
+
+    if(questionObject) {
+        var gridsize = "12"
+        var options = {
+            gridColumns: gridsize,
+            containerClass: "productCardQuestion " + qID + "",
+            inputStyle: "height: 22px;",
+            labelStyle: "font-size: 12px; margin-bottom: 0px;",
+            containerStyle: "padding: 0px 4px;",
+            formGroupStyle:"margin-bottom: 4px;",
+            containerDataAttr: "data-questionid='" + qID + "' " +
+            "data-weight='" + questionObject.weight + "' " +
+            "data-inputtype='" + questionObject.inputType  + "'" +
+            "data-gridsize='" + gridsize  + "'",
+            closeButton: false,
+            required: true
         }
 
         var stringHTML = getQuestionHTML(qID, options)

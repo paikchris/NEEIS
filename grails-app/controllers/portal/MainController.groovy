@@ -1,5 +1,6 @@
 package portal
 
+import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import groovy.json.JsonOutput
 import groovy.sql.Sql
@@ -141,6 +142,24 @@ class MainController {
         operationResults.sort{ it.description }
         String operations = utilService.gormResultsToJSObject(operationResults)
 
+        //OPERATION CATEGORIES
+        List operationCategoryResults = []
+        operationResults.each{
+            if( it.description.contains(" - ") ){
+                def operationCategoryMap = [:]
+                operationCategoryMap.operationID = it.operationID
+                operationCategoryMap.description = it.description.split(" - ")[0].trim()
+
+                operationCategoryResults << operationCategoryMap
+            }
+        }
+        operationCategoryResults = operationCategoryResults.unique{ it.description }
+        String operationCategories = new JsonBuilder(operationCategoryResults).toString()
+
+        //RULE ENGINE OBJECTS
+        List <Conditions> ruleConditionResults = Conditions.list()
+        String ruleEngineObjects = utilService.gormResultsToJSObject(ruleConditionResults)
+
         //COVERAGES
         List <Coverages> coverageResults = Coverages.findAllWhere(activeFlag: "Y")
         String coverages = utilService.gormResultsToJSObject(coverageResults)
@@ -162,6 +181,16 @@ class MainController {
         //RATES
         List <Rates> rateResults = portal.Rates.list()
         String rates = utilService.gormResultsToJSObject(rateResults)
+
+        //RATE SHEETS
+        List <RateSheet> rateSheetResults = portal.RateSheet.list()
+        rateSheetResults.sort { it.rateSheetID }
+        String rateSheets = utilService.gormResultsToJSObject(rateSheetResults)
+
+        //WC RATE CODES
+        List <Ratings> wcRateResults = portal.Ratings.list()
+        wcRateResults.sort { it.code }
+        String wcRates = utilService.gormResultsToJSObject(wcRateResults)
 
 
 
@@ -290,11 +319,15 @@ class MainController {
          riskTypes:riskTypes, riskTypeResults:riskTypeResults,
          products:products, productConditionResults:productConditionResults, productConditions:productConditions,
          operations: operations, operationResults: operationResults,
+         operationCategories: operationCategories, operationCategoryResults: operationCategoryResults,
          coverages: coverages, coverageResults: coverageResults,
          questionResults:questionResults, questions:questions,
          questionCategoryResults:questionCategoryResults, questionCategories:questionCategories,
          ratingBasisResults:ratingBasisResults, ratingBasis:ratingBasis,
          rateResults:rateResults, rates:rates,
+         rateSheetResults: rateSheetResults, rateSheets: rateSheets,
+         wcRateResults: wcRateResults, wcRates: wcRates,
+         ruleEngineObjects: ruleEngineObjects,
 
          versionMode:versionMode,
          originalVersion: params.editingVersion,

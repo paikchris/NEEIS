@@ -124,10 +124,13 @@ class AdminController {
         coverageResults.sort{ it.coverageCode }
         String coverages = utilService.gormResultsToJSObject(coverageResults)
 
+        //RULE ENGINE OBJECTS
+        List <Conditions> ruleConditionResults = Conditions.list()
+        String ruleEngineObjects = utilService.gormResultsToJSObject(ruleConditionResults)
+
+
         //CONDITION BASIS
         List <Conditions> conditionBasisResults = Conditions.findAllByTypeInList(['basis', 'limitBasis'])
-        log.info "CONDITION BASIS RESULTS"
-        log.info conditionBasisResults.description
         String conditionBasis = utilService.gormResultsToJSObject(conditionBasisResults)
 
         //CONDITION OPERATORS
@@ -157,6 +160,16 @@ class AdminController {
         rateResults.sort { it.rateID }
         String rates = utilService.gormResultsToJSObject(rateResults)
 
+        //WC RATE CODES
+        List <Ratings> wcRateResults = portal.Ratings.list()
+        wcRateResults.sort { it.code }
+        String wcRates = utilService.gormResultsToJSObject(wcRateResults)
+
+        //RATE SHEETS
+        List <RateSheet> rateSheetResults = portal.RateSheet.list()
+        rateSheetResults.sort { it.rateSheetID }
+        String rateSheets = utilService.gormResultsToJSObject(rateSheetResults)
+
         //COMPANY
         List <Company> companyResults = Company.list()
         String companies = utilService.gormResultsToJSObject(companyResults)
@@ -174,9 +187,13 @@ class AdminController {
          operationCategoryResults:operationCategoryResults, operationCategories:operationCategories,
          conditionBasisResults: conditionBasisResults, conditionBasis: conditionBasis, conditionOperatorsResults:conditionOperatorsResults,
          conditionOperators: conditionOperators,
+         ruleEngineObjects: ruleEngineObjects,
          questionResults:questionResults, questions:questions,
          questionCategoryResults:questionCategoryResults, questionCategories:questionCategories,
-         rateResults:rateResults, rates:rates, companyResults:companyResults, companies:companies, formResults:formResults, forms:forms,
+         rateResults:rateResults, rates:rates,
+         rateSheetResults: rateSheetResults, rateSheets: rateSheets,
+         wcRateResults: wcRateResults, wcRates: wcRates,
+         companyResults:companyResults, companies:companies, formResults:formResults, forms:forms,
          operationResults: operationResults, coverages: coverages, coverageResults: coverageResults, ratingBasisResults:ratingBasisResults, ratingBasis:ratingBasis ]
     }
 
@@ -319,6 +336,16 @@ class AdminController {
 
         render rates
     }
+    def refreshRateSheets(){
+        log.info "REFRESH RATE SHEETS"
+        log.info params
+
+        List <RateSheet> rateSheetResults = portal.RateSheet.list()
+        rateSheetResults.sort { it.rateSheetID }
+        String rateSheets = utilService.gormResultsToJSObject(rateSheetResults)
+
+        render rateSheets
+    }
     def refreshCompanies(){
         log.info "REFRESH COMPANIES"
         log.info params
@@ -411,6 +438,67 @@ class AdminController {
         render syncService.saveProductChanges(params)
     }
 
+    def createRateSheetRecord(){
+        log.info "CREATING NEW RATE SHEET RECORD"
+        log.info params
+
+        def renderMessage = "Success"
+
+        try{
+            def rateSheetID = params.rateSheetID.toUpperCase()
+            def rateSheetName = params.rateSheetName
+
+
+            RateSheet rateSheetRecord = new RateSheet(
+                    rateSheetID: rateSheetID,
+                    description: rateSheetName,
+                    rateSheetArray: "[]"
+            )
+        rateSheetRecord.save(flush: true, failOnError: true)
+        }catch(Exception e){
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+            renderMessage = "Error " + exceptionAsString
+        }
+
+        render renderMessage
+    }
+    def saveRateSheetChanges(){
+        log.info "SAVING RATE SHEET CHANGES"
+        log.info params
+
+        def renderMessage = "Success"
+
+        try{
+            RateSheet rateSheetRecord = RateSheet.findByRateSheetID(params.rateSheetID)
+
+            rateSheetRecord.rateSheetID = params.rateSheetID
+            rateSheetRecord.description = params.description
+
+
+            if(params.rateSheetArray != null){
+                rateSheetRecord.rateSheetArray = jsonOutput.toJson( jsonSlurper.parseText(params.rateSheetArray) )
+            }
+            else{
+                rateSheetRecord.rateSheetArray = "[]"
+            }
+
+
+            rateSheetRecord.save(flush: true, failOnError: true)
+        }catch(Exception e){
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+            renderMessage = "Error"
+        }
+
+        render renderMessage
+    }
+
+
     def createRateRecord(){
         log.info "CREATING NEW RATE RECORD"
         log.info params
@@ -424,7 +512,6 @@ class AdminController {
 
             Rates rateRecord = new Rates(
                     rateID: rateID,
-                    rateCode: rateID,
                     description: rateName,
                     ratingBasis: ratingBasis)
             rateRecord.save(flush: true, failOnError: true)
@@ -445,14 +532,14 @@ class AdminController {
         def renderMessage = "Success"
 
         try{
-
-
             Rates rateRecord = Rates.findByRateID(params.rateID)
 
             rateRecord.rateID = params.rateID
-            rateRecord.rateCode = params.rateID
+            rateRecord.rateCode = params.rateCode
+            rateRecord.rateType = params.rateType
             rateRecord.description = params.description
             rateRecord.rateBasis = params.rateBasis
+            rateRecord.rateMethod = params.rateMethod
 
             if(params.rateBasis == 'LIMIT'){
                 def limitRateArray = jsonSlurper.parseText(params.limitRateArray)
@@ -462,6 +549,7 @@ class AdminController {
                 def bracketRateArray = jsonSlurper.parseText(params.bracketRateArray)
                 rateRecord.bracketRateArray = jsonOutput.toJson(bracketRateArray)
                 rateRecord.minPremium = params.minPremium
+                rateRecord.tieredQuestionID = params.tieredQuestionID
             }
             else if(params.rateBasis == 'FLAT'){
                 rateRecord.flatAmount = params.flatAmount

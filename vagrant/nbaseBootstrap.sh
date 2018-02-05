@@ -37,6 +37,12 @@ sqlcmd -S localhost -U SA -P 'jakePoos521' -i /vagrant/files/TrainingInsertState
 rm /vagrant/files/TrainingInsertStatements.sql
 
 
+#SETUP SQL SERVER FROM A SQL DUMP BACKUP FROM AIMSQL
+sudo su
+cd /vagrant/files/
+yes | unzip sqlfileProducts.zip
+sqlcmd -S localhost -U SA -P 'jakePoos521' -i /vagrant/files/sqlfileProducts.sql
+
 
 #CLONE NEEIS REPOSITORY
 #cd /universe/

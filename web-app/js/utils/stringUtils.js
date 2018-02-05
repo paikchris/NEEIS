@@ -47,29 +47,35 @@ function capitalizeFirstLetters(originalString){
 function formatMoney(value) {
     // console.log("value=" + value);
 
-    if (isNaN(parseFloat(value))) {
-        if(value.indexOf("incl") > -1 || value.indexOf("Incl") > -1){
-            return value;
-        }
-        if (value.substring(0, 1) === "\$") {
-            value = value.replace("$", "");
-            value = ("$" + value + "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-            return value + "";
-        }
-        else {
-            return value + "";
-        }
-    }
-    else {
-        if (("" + value).indexOf("%") > -1) {
-            return value + "";
+    if(value !== undefined){
+        if (isNaN(parseFloat(value))) {
+            if(value.indexOf("incl") > -1 || value.indexOf("Incl") > -1){
+                return value;
+            }
+            if (value.substring(0, 1) === "\$") {
+                value = value.replace("$", "");
+                value = ("$" + value + "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                return value + "";
+            }
+            else {
+                return value + "";
+            }
         }
         else {
-            var floatValue = parseFloat(value);
-            floatValue = Math.ceil(floatValue)
-            return ("$" + floatValue + "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            if (("" + value).indexOf("%") > -1) {
+                return value + "";
+            }
+            else {
+                var floatValue = parseFloat(value);
+                floatValue = Math.ceil(floatValue)
+                return ("$" + floatValue + "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
         }
     }
+    else{
+        return undefined
+    }
+
 }
 
 function formatTaxAndFee(value) {

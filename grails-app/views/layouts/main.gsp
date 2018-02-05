@@ -145,7 +145,7 @@
 	<script src="${resource(dir: 'js/utils', file: 'notifications.js')}" ></script>
 
 	<!-- Neeis Global JS file-->
-	<script src="${resource(dir: 'js', file: 'global.js')}" ></script>
+	<script src="${resource(dir: 'js', file: "global.js?ts=" + new Date().getTime())}"></script>
 
 	<script src="${resource(dir: 'js/utils', file: 'ajaxHandlers.js')}" ></script>
 

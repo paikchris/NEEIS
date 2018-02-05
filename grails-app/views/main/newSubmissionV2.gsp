@@ -15,7 +15,10 @@
         var qC = ${raw(questionCategories)}
         var rB = ${raw(ratingBasis)}
         var rL = ${raw(rates)}
+        var rS = ${raw(rateSheets)}
         var cB = ${raw(productConditions)}
+        var rO = ${raw(ruleEngineObjects)}
+        var wC = ${raw(wcRates)}
 
         //VERSION MODE SETUP
         var vM= false
@@ -52,7 +55,9 @@
     <script src="${resource(dir: 'js', file: "/vendor/numeral.min.js?ts=" + new Date().getTime())}" async></script>
     <script src="${resource(dir: 'js', file: 'jquery.maskMoney.min.js')}" async></script>
     <script src="${resource(dir: 'js', file: "newSubmissionV2.js?ts=" + new Date().getTime())}" async></script>
-    <script src="${resource(dir: 'js', file: "/utils/logicConditionHelper.js?ts=" + new Date().getTime())}" async></script>
+    %{--<script src="${resource(dir: 'js', file: "/utils/logicConditionHelper.js?ts=" + new Date().getTime())}" async></script>--}%
+    <script src="${resource(dir: 'js', file: "/utils/rulesEngine.js?ts=" + new Date().getTime())}" async></script>
+
 
 
 
@@ -175,7 +180,7 @@
             <div class="col-xs-12">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                            <h3 class="panel-title" style="font-size: 20px;">Insured Information</h3>
+                            <h3 class="panel-title" >Insured Information</h3>
                         </div>
                     <div class="panel-body newSubmissionPanel" id="insuredInfoPanelBody">
                         <div class="row">
@@ -297,182 +302,217 @@
             <div class="col-xs-12">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h3 class="panel-title" style="font-size: 20px;">Coverages</h3>
+                        <h3 class="panel-title" >Coverages</h3>
                     </div>
-                    <div class="panel-body newSubmissionPanel" id="operationsCoveragesPanelBody">
-                        %{--OPERATIONS AND COVERAGES--}%
-                        <div class="col-xs-4 leftColumn">
-                            %{--OPERATIONS--}%
+                    <div class="panel-body newSubmissionPanel" id="operationsCoveragesPanelBody" style="">
+                        %{--OPERATION DROPDOWNS--}%
+                        <div class="col-xs-4">
                             <div class="row">
                                 <div class="col-xs-12">
                                     <div class="form-group">
-                                        <label class="control-label">Operation Type</label>
-                                        <select class="form-control " data-reviewName="State" id="operationsDropdown" required="required" >
+                                        <label class="control-label">Risk Category</label>
+                                        %{--<select class="form-control " data-reviewName="State" id="operationsCategoryDropdown" required="required" >--}%
+                                        %{--<option value="invalid" selected="selected">Select One</option>--}%
+                                        %{--<g:each var="operation" in="${operationResults.sort{it.description}}">--}%
+                                        %{--<option value="${operation.operationID}">${operation.description}</option>--}%
+                                        %{--</g:each>--}%
+                                        %{--</select>--}%
+
+                                        <select class="form-control " id="operationCategoryDropdown" required="required" >
                                             <option value="invalid" selected="selected">Select One</option>
-                                            <g:each var="operation" in="${operationResults.sort{it.description}}">
-                                                <option value="${operation.operationID}">${operation.description}</option>
+                                            <g:each var="operation" in="${operationCategoryResults}">
+                                                <option value="${operation.description}">${operation.description}</option>
                                             </g:each>
                                         </select>
-                                        <input class="typeahead form-control" id="typeaheadTest" type="text" data-typeahead_dataset="typeahead_operations" style="display:none">
+                                        <input type="text" disabled="disabled" style="display:none">
                                     </div>
                                 </div>
                             </div>
-                            %{--COVERAGES--}%
-                            <div id="coveragesAvailableContainer" style="margin-bottom: 26px; display:none">
-                                <div class="row">
-                                    <div class="col-xs-12">
-                                        %{--<label>Select Coverages:</label>--}%
-                                    </div>
-                                </div>
-                                <div id="coverageOptionsContainer">
-                                    %{--<g:each var="coverage" in="${coverageResults.findAll{ it.coverageOffered == "Y"}.sort{it.coverageOfferedDisplayOrder} }">--}%
-                                    %{--<div class="row coverageContainer checkboxAndHiddenDivContainer" id="${coverage.coverageCode}_CoverageOptionContainer">--}%
-                                    %{--<div class='col-xs-12 form-group checkboxContainer'>--}%
-                                    %{--<p><input type='checkbox' class='coverageCheckbox checkboxHiddenDiv' id='${coverage.coverageCode}_CoverageCheckbox'/> ${coverage.coverageName}--}%
-                                    %{--</p>--}%
-                                    %{--</div>--}%
-                                    %{--<div class="coverageQuestionsContainer hiddenContainer" style="display:none">--}%
-
-                                    %{--</div>--}%
-                                    %{--</div>--}%
-                                    %{--</g:each>--}%
-
-                                </div>
-                            </div>
-                        </div>
-                        %{--ALL REQUIRED QUESTIONS SECTION--}%
-                        <div class="col-xs-8 rightColumn">
                             <div class="row">
-                                <div class="col-xs-4 proposedEffectiveDate" data-questionid="proposedEffectiveDate" style="">
-                                    <div class="form-group requiredQuestion " style="">
-                                        <label class="questionText">Proposed Effective</label>
-                                        <input class="form-control defaultQuestion questionAnswer datepicker" type="text" data-reviewname="Proposed Effective Date"
-                                               style="" data-questionid="proposedEffectiveDate" id="proposedEffectiveDate" placeholder="MM/DD/YYYY" required>
-                                    </div>
-                                </div>
-                                <div class="col-xs-4 proposedExpirationDate requiredQuestion" data-questionid="proposedExpirationDate">
-                                    <div class="form-group " style="">
-                                        <label class="questionText">Proposed Expiration</label>
-                                        <input class="form-control defaultQuestion questionAnswer datepicker" type="text" data-reviewname="Proposed Expiration Date"
-                                               style="" data-questionid="proposedExpirationDate" id="proposedExpirationDate" placeholder="MM/DD/YYYY" required>
-                                    </div>
-                                </div>
-                                <div class="col-xs-4 proposedTermLength requiredQuestion" data-questionid="proposedTermLength">
-                                    <div class="form-group " style="">
-                                        <label class="questionText">Term Length</label>
-                                        <input class="form-control questionAnswer showReview " type="text" data-reviewname="Proposed Term Length"
-                                               data-questionid="proposedTermLength" id="proposedTermLength" placeholder="" required>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row" id="productConditionBasisRequiredQuestionsContainer">
-
-                            </div>
-                            <div class="row" id="ratingBasisRequiredQuestionsContainer">
-
-                            </div>
-
-                        </div>
-                        %{--LIMITS AND DEDUCTIBLES SECTION--}%
-                        <div class="col-xs-12">
-                            <div class="well" id="limitsDeductiblesContainer" style="display:none">
-                                <div class="row limDeductColumnLabels">
-                                    <div class="col-xs-4">
-                                    </div>
-                                    <div class="col-xs-4">
-                                        <label>Limits</label>
-                                    </div>
-                                    <div class="col-xs-4">
-                                        <label>Deductibles</label>
-                                    </div>
-                                </div>
-                                <div id="coverageLimitDeducts">
-
-                                </div>
-
-                            </div>
-                            <div class="well" id="limitsDeductNotAnsweredContainer" style="display:">
-                                <div class="row ">
-                                    <div class="col-xs-12">
-                                        <label style="color: rgb(157, 0, 0);">Please select coverages and complete all questions to continue</label>
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        <label class="control-label" style="color:#808080c9">Risk Type</label>
+                                        <select class="form-control " data-reviewName="State" id="operationsDropdown" required="required" disabled="true">
+                                            <option value="invalid" selected="selected">Select One</option>
+                                            %{--<g:each var="operation" in="${operationResults.sort{it.description}}">--}%
+                                            %{--<option value="${operation.operationID}">${operation.description}</option>--}%
+                                            %{--</g:each>--}%
+                                        </select>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        %{--RATING SECTION--}%
-                        <div class="col-xs-12">
-                            <div class="well" id="premiumDetailContainer" style="display:none">
-                                <div class="row premiumDetailHeader">
-                                    <div class="col-xs-4">
-                                        <h4>Premium and Rate Info</h4>
-                                    </div>
-                                    <div class="col-xs-4">
-                                    </div>
-                                    <div class="col-xs-4">
-                                    </div>
-                                </div>
-                                <div class="row premiumDetailLabels">
-                                    <div class="col-xs-4">
-                                        <h5>Coverage</h5>
-                                    </div>
-                                    <div class="col-xs-2">
-                                        <h5>Premium Basis</h5>
-                                    </div>
-                                    <div class="col-xs-2">
-                                        <h5>Basis Value</h5>
-                                    </div>
-                                    <div class="col-xs-2">
-                                        <h5>Rate</h5>
-                                    </div>
-                                    <div class="col-xs-2">
-                                        <h5>Premium</h5>
-                                    </div>
-                                </div>
-                                <div id="premiumLinesContainer">
-                                    <div class='row premiumLineRow'>
-                                        <div class='col-xs-3'>
-                                            <span>Entertainment Package</span>
-                                        </div>
-                                        <div class='col-xs-1'>
-                                            <span>GPC</span>
-                                        </div>
-                                        <div class='col-xs-1'>
-                                            <span>$232,234</span>
-                                        </div>
-                                        <div class='col-xs-1'>
-                                            <span>.12</span>
-                                        </div>
-                                        <div class='col-xs-1'>
-                                            <span>$400</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div id="taxLinesContainer" style="margin-top:36px;">
-
-                                </div>
-                                <div id="premiumTotalContainer" style="border-top: 1px solid rgba(128, 128, 128, 0.39);">
-
-                                </div>
-
-                            </div>
-                        </div>
-                        %{--BROKER FEE--}%
-                        <div class="col-xs-12" style="margin-top:20px">
+                        %{--OPERATION DESCRIPTION--}%
+                        <div class="col-xs-8">
                             <div class="row">
-                                <div class="col-xs-4 proposedEffectiveDate" style="">
-                                    <div class="form-group " style="">
-                                        <label class="questionText">Broker Fee</label>
-                                        <input class="form-control defaultQuestion questionAnswer maskMoney" type="text" data-reviewname="Broker Fee"
-                                               style="" data-questionid="brokerFee" id="brokerFeeInput" placeholder="">
+                                <div class="col-xs-12">
+                                    <div class="jumbotron" id="operationDescriptionContainer" style="margin-top:20px; padding: 16px 26px; display: none">
+                                        <span id='operationDescriptionSpan' style="font-size: 16px;"> At NEEIS, film and video production underwriting is a core competency. Over the years our staff has insured thousands of feature films, television productions, commercial shoots, documentaries, corporate videos and numerous other forms of video and film productions. We have the capacity to insure major feature Films with gross production costs of up $25,000,000. </span>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        %{--PRODUCT CARDS--}%
+
+
+                        %{--OPERATIONS AND COVERAGES--}%
+                        <div class='col-xs-12' id="coveragesAndQuestionsContainer" style="display:none;">
+                            <div class="row">
+                                %{--POLICY TERM QUESTIONS--}%
+                                <div class="col-xs-12">
+                                    <h4 style="font-size:20px;margin-bottom:28px;">Required Questions</h4>
+                                    <div class="row">
+                                        <div class="col-xs-4 proposedEffectiveDate requiredQuestion defaultQuestion" data-questionid="proposedEffectiveDate" style="">
+                                            <div class="form-group requiredQuestion " style="">
+                                                <label class="questionText control-label">Proposed Effective</label>
+                                                <input class="form-control defaultQuestion questionAnswer datepicker" type="text" data-reviewname="Proposed Effective Date"
+                                                       style="" data-questionid="proposedEffectiveDate" id="proposedEffectiveDate" placeholder="MM/DD/YYYY" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-4 proposedExpirationDate requiredQuestion defaultQuestion" data-questionid="proposedExpirationDate">
+                                            <div class="form-group " style="">
+                                                <label class="questionText control-label">Proposed Expiration</label>
+                                                <input class="form-control defaultQuestion questionAnswer datepicker" type="text" data-reviewname="Proposed Expiration Date"
+                                                       style="" data-questionid="proposedExpirationDate" id="proposedExpirationDate" placeholder="MM/DD/YYYY" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-4 proposedTermLength requiredQuestion defaultQuestion" data-questionid="proposedTermLength">
+                                            <div class="form-group " style="">
+                                                <label class="questionText control-label">Term Length</label>
+                                                <input class="form-control questionAnswer showReview " type="text" data-reviewname="Proposed Term Length"
+                                                       data-questionid="proposedTermLength" id="proposedTermLength" placeholder="" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                %{--ALL REQUIRED QUESTIONS SECTION--}%
+                                <div class="col-xs-12">
+                                    <div class="row questionsContainer" id="questionsContainer_global">
+
+                                    </div>
+                                </div>
+                                %{--COVERAGES--}%
+                                <div class="col-xs-12" style="border-top: solid 1px #4a484880; padding-top:20px">
+                                    <div class="row" id="coveragesAvailableContainer" style="margin-bottom: 26px; display:none; ">
+                                        <div class="col-xs-4 " id="coverageOptionsContainer" style="">
+
+                                        </div>
+                                        %{--PREMIUM RATING QUESTIONS--}%
+                                        <div class="col-xs-8">
+                                            <div class="row questionsContainer" id="questionsContainer_coverage">
+
+                                            </div>
+                                            <div class="row questionsContainer" id="questionsContainer_rate">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="coveragesAvailableContainer_NotReady" style="margin-bottom: 26px; display:">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <div class="well" style="">
+                                                    <div class="row ">
+                                                        <div class="col-xs-12">
+                                                            <label style="color: rgb(157, 0, 0);">Please complete all questions to view available Coverages</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                %{--PRODUCT CAROUSELS--}%
+                                <div class="col-xs-12" id="productCardsContainer">
+
+                                </div><!--.container-->
+                                %{--LIMITS AND DEDUCTIBLES SECTION--}%
+                                <div class="col-xs-12">
+                                    <div class="well" id="limitsDeductiblesContainer" style="display:none">
+                                        <div class="row limDeductColumnLabels">
+                                            <div class="col-xs-4">
+                                            </div>
+                                            <div class="col-xs-4">
+                                                <label>Limits</label>
+                                            </div>
+                                            <div class="col-xs-4">
+                                                <label>Deductibles</label>
+                                            </div>
+                                        </div>
+                                        <div id="coverageLimitDeducts">
+
+                                        </div>
+
+                                    </div>
+                                    <div class="well" id="limitsDeductNotAnsweredContainer" style="display:none">
+                                        <div class="row ">
+                                            <div class="col-xs-12">
+                                                <label style="color: rgb(157, 0, 0);">Please select coverages and complete all questions to continue</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                %{--RATING SECTION--}%
+                                <div class="col-xs-12">
+                                    <div class="well" id="premiumDetailContainer" style="display:none">
+                                        <div class="row premiumDetailHeader">
+                                            <div class="col-xs-4">
+                                                <h4>Premium and Rate Info</h4>
+                                            </div>
+                                            <div class="col-xs-4">
+                                            </div>
+                                            <div class="col-xs-4">
+                                            </div>
+                                        </div>
+                                        <div id="premiumLinesContainer">
+                                            <div class='row premiumLineRow'>
+                                                <div class='col-xs-3'>
+                                                    <span>Entertainment Package</span>
+                                                </div>
+                                                <div class='col-xs-1'>
+                                                    <span>GPC</span>
+                                                </div>
+                                                <div class='col-xs-1'>
+                                                    <span>$232,234</span>
+                                                </div>
+                                                <div class='col-xs-1'>
+                                                    <span>.12</span>
+                                                </div>
+                                                <div class='col-xs-1'>
+                                                    <span>$400</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="taxLinesContainer" style="margin-top:36px;">
+
+                                        </div>
+                                        <div id="premiumTotalContainer" style="border-top: 1px solid rgba(128, 128, 128, 0.39);">
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                                %{--BROKER FEE--}%
+                                <div class="col-xs-12" style="margin-top:20px">
+                                    <div class="row">
+                                        <div class="col-xs-4 proposedEffectiveDate" style="">
+                                            <div class="form-group " style="">
+                                                <label class="questionText">Broker Fee</label>
+                                                <input class="form-control defaultQuestion questionAnswer maskMoney" type="text" data-reviewname="Broker Fee"
+                                                       style="" data-questionid="brokerFee" id="brokerFeeInput" placeholder="">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
 
                     </div>
                 </div>
             </div>
-
             <div class="col-xs-12">
                 <button class="btn btn-default prevBtn btn-lg pull-left" type="button" >Prev</button>
                 <button class="btn btn-primary nextBtn btn-lg pull-right" type="button" id="nextButtonStep2" data-step="2">Next</button>

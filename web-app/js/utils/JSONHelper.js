@@ -6,6 +6,9 @@ function jsonStringToObject(stringJSON){
 
     var arrayOrMap
     try {
+        if(stringJSON === null || stringJSON === undefined){
+            return stringJSON
+        }
         arrayOrMap = JSON.parse(stringJSON)
     }
     catch(e){

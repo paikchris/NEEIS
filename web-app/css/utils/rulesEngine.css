@@ -1,0 +1,119 @@
+.ruleConditionContainer, .ruleActionContainer, .ruleModifierRow{
+    margin-top:2px;
+    margin-bottom:2px;
+}
+.ruleConditionContainer{
+    margin-left:-5px;
+}
+div.ruleRow div.ruleActionContainer{
+    padding-left:36px;
+}
+div.ruleRow div.ruleModifierRow{
+    padding-left:48px;
+}
+div.ruleRowsContainer div.ruleRow div.subRuleRowsContainer{
+    margin-left: 26px;
+    margin-right: -3px;
+}
+div.rulesEngineContainer > div.ruleRowsContainer > div.ruleRow{
+    padding-bottom: 20px;
+}
+
+/*SUB RULE BUTTONS*/
+div.subRuleRowsContainer button.addRuleRowButton, div.subRuleRowsContainer  button.removeRuleRowButton{
+    font-size: 7px;
+    padding: 1px 4px;
+    height: 18px;
+}
+div.subRuleRowsContainer .removeRuleRowButton .fa-trash-o{
+    font-size: 12px;
+}
+div.subRuleRowsContainer .moveRuleRowUpButton, div.subRuleRowsContainer .moveRuleRowDownButton{
+    font-size: 8px;
+    height: 20px;
+    border-radius: 3px;
+    padding: 0px 5px;
+}
+
+
+
+.ruleRowsHeader label{
+    font-size:9px;
+}
+.ruleRow input, .ruleRow select{
+    font-size:12px;
+    height: 24px;
+}
+.ruleRow button{
+    font-size:10px;
+    height: 24px;
+    padding: 2px 7px;
+}
+
+.mainRuleRow, .ruleRowsHeader{
+    margin-left:-5px;
+}
+
+.ruleRow div[class*="col-xs-"], .ruleRowsHeader div[class*="col-xs-"] {
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
+/*ICON*/
+.ruleActionRow .ruleRowIcon{
+    position: absolute;
+    left: -11px;
+    padding-top: 6px;
+    color: #8e8e8e;
+}
+.ruleModifierRow .ruleRowIcon{
+    position: absolute;
+    left: 32px;
+    padding-top: 6px;
+    color: #8e8e8e;
+}
+
+/*BUTTONS*/
+.rulesButtonColumn{
+    text-align:right
+}
+.addRuleRowButton .fa-plus{
+    padding: 0px 5px;
+}
+
+.addRuleActionButton{
+    border-color: #e2d9d9;
+}
+.addRuleActionButton .fa-bolt{
+    font-size: 12px;
+}
+.addRuleActionButton .fa-plus{
+    padding-right: 1px;
+    font-size: 6px;
+}
+
+.addRuleModifierButton{
+    border-color: #e2d9d9;
+}
+.addRuleModifierButton .fa-random{
+    font-size: 12px;
+}
+.addRuleModifierButton .fa-plus{
+    padding-right: 1px;
+    font-size: 6px;
+}
+
+.removeRuleRowButton .fa-trash-o{
+    font-size: 16px;
+    padding: 0px 5px;
+}
+.moveRuleRowDownButton{
+    border-radius:20px;
+    margin-left:10px;
+    font-size:10px;
+}
+.moveRuleRowUpButton{
+    border-radius:20px;
+    font-size:10px;
+}
+
