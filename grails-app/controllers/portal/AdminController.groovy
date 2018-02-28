@@ -7,7 +7,6 @@ import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.sql.Sql
 import portal.DAO.AIMSQL
-import portal.DAO.Intelledox
 import portal.Utils.GORMHelper
 import org.apache.commons.lang3.StringUtils
 
@@ -29,7 +28,6 @@ class AdminController {
     def timeZone = TimeZone.getTimeZone('PST')
     def dateFormat = 'yyyy-MM-dd HH:mm:ss.SSS'
     AIMSQL aimDAO = new AIMSQL();
-    Intelledox intelledoxDAO = new Intelledox();
     GORMHelper gormHelper = new GORMHelper()
     def jsonSlurper = new JsonSlurper()
     JsonOutput jsonOutput = new JsonOutput()
@@ -139,9 +137,9 @@ class AdminController {
 
         //QUESTIONS
         List <Questions> questionResults = Questions.list()
-
-        questionResults.sort{ it.weight }
-        log.info questionResults.weight
+        questionResults.sort{ it.questionID }
+        log.info "NEW QUESTION SORT ORDER"
+        log.info questionResults.questionID
         String questions = utilService.gormResultsToJSObject(questionResults)
 
         //QUESTION CATEGORIES
@@ -165,6 +163,12 @@ class AdminController {
         wcRateResults.sort { it.code }
         String wcRates = utilService.gormResultsToJSObject(wcRateResults)
 
+        //RATE CODES
+        List <Ratings> rateCodeResults = portal.Ratings.list()
+        rateCodeResults.sort { it.code }
+        String rateCodes = utilService.gormResultsToJSObject(rateCodeResults)
+
+
         //RATE SHEETS
         List <RateSheet> rateSheetResults = portal.RateSheet.list()
         rateSheetResults.sort { it.rateSheetID }
@@ -181,7 +185,6 @@ class AdminController {
 
 
 
-
         [user: session.user, operations: operations,
          productResults:productResults, products:products,
          operationCategoryResults:operationCategoryResults, operationCategories:operationCategories,
@@ -193,6 +196,7 @@ class AdminController {
          rateResults:rateResults, rates:rates,
          rateSheetResults: rateSheetResults, rateSheets: rateSheets,
          wcRateResults: wcRateResults, wcRates: wcRates,
+         rateCodeResults: rateCodeResults, rateCodes:rateCodes,
          companyResults:companyResults, companies:companies, formResults:formResults, forms:forms,
          operationResults: operationResults, coverages: coverages, coverageResults: coverageResults, ratingBasisResults:ratingBasisResults, ratingBasis:ratingBasis ]
     }
@@ -336,6 +340,17 @@ class AdminController {
 
         render rates
     }
+    def refreshRateCodes(){
+        log.info "REFRESH RATE CODES"
+        log.info params
+
+        List <Ratings> rateCodeResults = portal.Ratings.list()
+        rateCodeResults.sort { it.code }
+        String rateCodes = utilService.gormResultsToJSObject(rateCodeResults)
+
+        render rateCodes
+    }
+
     def refreshRateSheets(){
         log.info "REFRESH RATE SHEETS"
         log.info params
@@ -452,6 +467,8 @@ class AdminController {
             RateSheet rateSheetRecord = new RateSheet(
                     rateSheetID: rateSheetID,
                     description: rateSheetName,
+                    company: 'invalid',
+                    cov: 'invalid',
                     rateSheetArray: "[]"
             )
         rateSheetRecord.save(flush: true, failOnError: true)
@@ -476,7 +493,8 @@ class AdminController {
 
             rateSheetRecord.rateSheetID = params.rateSheetID
             rateSheetRecord.description = params.description
-
+            rateSheetRecord.company = params.company
+            rateSheetRecord.cov = params.cov
 
             if(params.rateSheetArray != null){
                 rateSheetRecord.rateSheetArray = jsonOutput.toJson( jsonSlurper.parseText(params.rateSheetArray) )
@@ -498,6 +516,39 @@ class AdminController {
         render renderMessage
     }
 
+    def createRateCode(){
+        log.info "CREATING NEW RATE CODE RECORD"
+        log.info params
+
+        def renderMessage = "Success"
+
+        try{
+            def rateCodeID = params.rateCodeID.toUpperCase()
+            def code  = params.code.toUpperCase()
+            def company = params.company
+            def state = params.state
+            def coverage = params.coverage
+            def description = params.description
+
+            Ratings ratingsRecord = new Ratings(
+                    rateCodeID: rateCodeID,
+                    code: code,
+                    company: company,
+                    state: state,
+                    cov: coverage,
+                    description: description
+            )
+            ratingsRecord.save(flush: true, failOnError: true)
+        }catch(Exception e){
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            log.info("Error Details - " + exceptionAsString)
+            renderMessage = "Error " + exceptionAsString
+        }
+
+        render renderMessage
+    }
 
     def createRateRecord(){
         log.info "CREATING NEW RATE RECORD"

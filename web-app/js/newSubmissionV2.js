@@ -24,7 +24,7 @@ var step2LogicIsRunning = false;
 //DATA OBJECTS
 var riskTypeObject = {}
 var riskTypes, riskCategories, products, productConditions, operations, coverages, questions, questionCategories,
-    ratingBasisArray, rates, conditionBasisArray
+    ratingBasisArray, rates, conditionBasisArray, wcRates, rateCodes
 var riskTypeString
 var submission = new Submission()
 var productOptions = {}
@@ -52,6 +52,7 @@ var allNextBtn
 var allPrevBtn
 
 var currentCivAuthChecked = ""
+var versionModeUserInputMap
 
 $(document).ready(function () {
     newSubmissionInit()
@@ -84,6 +85,7 @@ function newSubmissionInit() {
     ruleEngineObjects = rO
     versionMode = vM
     wcRates = wC
+    rateCodes = rC
 
 
     mandatoryQuestionsForProductInit()
@@ -142,7 +144,7 @@ function clickChangeListenerInit(){
     ///////////////////STEP 2 SELECT OPERATION AND COVERAGES///////////////////
 
     //WHEN OPERATION TYPE CHANGES, UPDATE COVERAGES AVAILABLE
-    $(document.body).on('change', '#operationCategoryDropdown', function(e) {
+    $(document.body).on('change', '#operationCategoryDropdown', function() {
         operationCategorySelectAction(this)
     });
     $(document).on('change', '#operationsDropdown', function () {
@@ -274,7 +276,7 @@ function stepWizardInit(){
     });
 
     //NEXT BUTTONS CLICK HANDLER
-    allNextBtn.click(function (e) {
+    allNextBtn.click(function () {
         nextButtonClickAction(this)
     });
 
@@ -591,7 +593,8 @@ function validateAndNavigateToStep(stepNum){
 
 }
 function scrollToTopOfPage(){
-    document.body.scrollTop = document.documentElement.scrollTop = 0;
+    document.documentElement.scrollTop = 0
+    document.body.scrollTop = 0
 }
 function showStep(stepNumToShow){
     var $target = $('#step-' + stepNumToShow)
@@ -1480,7 +1483,7 @@ function checkCoverageShowHideLogicAndShowHideCovCheckboxes(){
         }
     }
     catch(e){
-        alert("error")
+        alert(e)
     }
 }
 function getPackageCheckboxesForCoveragesSectionHTML(){
@@ -3223,7 +3226,7 @@ function getLimDeductCoverageLabelRow(covID){
         covLabelRowHTML = covLabelRowHTML +
             "   <div class=col-xs-12>" +
             "       <label class='covNameLabel'>" +
-            coverageMap.coverageName + " - " + "<label style='color: #ca0101;'>Please Select a Product</label>" +
+            coverageMap.coverageName + " - " + "<label style='color: rgb(202,1,1);'>Please Select a Product</label>" +
             "       </label>" +
             "   </div>" +
             "</div>"
@@ -3674,6 +3677,7 @@ function getDeductValueFromDeductDescription(productID, deductDescription){
     }
 }
 function isAllLimitInputFieldsFilled(){
+    var ratingBasisIsLimitAndAllLimitsAreFilled
     var unfilledLimitInputCount = $('div#limitsDeductiblesContainer input.limitValue').filter(function() { return $(this).val().trim().length === 0; }).length
     if(unfilledLimitInputCount > 0){
         ratingBasisIsLimitAndAllLimitsAreFilled = false
@@ -3925,10 +3929,10 @@ function getPremiumLineHTML_WCRateSheet(wcRateObject, coverageObject){
         "   <div class='col-xs-2'> " +
         "       <span class='premiumLine_basisValue'>" + (wcRateObject.rate !== undefined ? wcRateObject.rate : '' ) + "</span> " +
         "   </div> " +
-        "   <div class='col-xs-1' style='background: #add8e63b;'> " +
+        "   <div class='col-xs-1' style='background: rgba(173,216,230,0.23);'> " +
         "       <span class='premiumLine_rate'>" + (wcRateObject.modPrem !== undefined ? formatMoney(wcRateObject.modPrem) : '-' ) + "</span> " +
         "   </div> " +
-        "   <div class='col-xs-1' style='background: #add8e63b;'> " +
+        "   <div class='col-xs-1' style='background: rgba(173,216,230,0.23);'> " +
         "       <span class='premiumLine_premium'>" + (wcRateObject.otherPrem !== undefined ? formatMoney(wcRateObject.otherPrem) : '-' ) + "</span> " +
         "   </div> " +
         "</div>"
@@ -4078,18 +4082,18 @@ function getPremiumLineHTML(productObject){
 
             //BUILD LINES FOR TIERED/BRACKET RATES
             var actualBasisValue = getFloatValueOfMoney( $(ratingBasisQuestion).val() )
-            var leftoverValue = actualBasisValue
-            var bracketRateArray = jsonStringToObject(rateMap.bracketRateArray)
+            var leftoverValue = actualBasisValue;
+            var bracketRateArray = jsonStringToObject(rateMap.bracketRateArray);
 
             for(var i=0;i<bracketRateArray.length; i++){
-                var bracketRateMap = bracketRateArray[i]
-                var bracketRate = bracketRateMap.rateValue
-                var bracketUpTo = bracketRateMap.upto
+                var bracketRateMap = bracketRateArray[i];
+                var bracketRate = bracketRateMap.rateValue;
+                var bracketUpTo = bracketRateMap.upto;
 
                 if( parseFloat(leftoverValue) > parseFloat(bracketUpTo) ){
-                    leftoverValue = parseFloat(leftoverValue) - parseFloat(bracketUpTo)
+                    leftoverValue = parseFloat(leftoverValue) - parseFloat(bracketUpTo);
 
-                    var bracketPremium = parseFloat(bracketUpTo) * parseFloat(bracketRate)
+                    var bracketPremium = parseFloat(bracketUpTo) * parseFloat(bracketRate);
 
                     premiumLineHTML = premiumLineHTML +
                         "<div class='row premiumLineRow " + coverageMap.coverageCode + "_PremiumLineRow'> " +
@@ -4112,7 +4116,7 @@ function getPremiumLineHTML(productObject){
                 }
                 else{
                     // premium = premium + (remainingAmountOfQuestionValue * rateValue)
-                    var bracketPremium = parseFloat(leftoverValue) * parseFloat(bracketRate)
+                    var bracketPremium = parseFloat(leftoverValue) * parseFloat(bracketRate);
 
                     premiumLineHTML = premiumLineHTML +
                         "<div class='row premiumLineRow " + coverageMap.coverageCode + "_PremiumLineRow'> " +
@@ -4131,7 +4135,7 @@ function getPremiumLineHTML(productObject){
                         "   <div class='col-xs-2'> " +
                         "       <span class='premiumLine_premium'>" + "" + "</span> " +
                         "   </div> " +
-                        "</div>"
+                        "</div>";
 
                     break;
                 }
@@ -4171,12 +4175,12 @@ function getPremiumLineHTML(productObject){
             premiumLineHTML = premiumLineHTML + runWCRateSheet('PREMIUMDISPLAY', productObject)
         }
         else{
-            var ratingBasisQuestion = $('#' + ratingBasisMap.basisQuestionID)
-            var basisAbbrev = getRatingBasisQuestionAbbrev(ratingBasisMap.basisQuestionID)
-            var premium = calculateProductOptionPremium(productObject)
-            var premiumRatedBeforeOptions = calculateProductOptionPremium_RatedPremium(productObject)
-            var actualBasisValue = getFloatValueOfMoney( $(ratingBasisQuestion).val() )
-            var rateValue = rateMap.rateValue
+            var ratingBasisQuestion = $('#' + ratingBasisMap.basisQuestionID);
+            var basisAbbrev = getRatingBasisQuestionAbbrev(ratingBasisMap.basisQuestionID);
+            var premium = calculateProductOptionPremium(productObject);
+            var premiumRatedBeforeOptions = calculateProductOptionPremium_RatedPremium(productObject);
+            var actualBasisValue = getFloatValueOfMoney( $(ratingBasisQuestion).val() );
+            var rateValue = rateMap.rateValue;
 
             //PREMIUM LINES HEADER ROW
             premiumLineHTML = premiumLineHTML + "<div class='row premiumLineRow premiumHeaderRow " + coverageMap.coverageCode + "_PremiumLineRow'> " +
@@ -4195,7 +4199,7 @@ function getPremiumLineHTML(productObject){
                 "   <div class='col-xs-2'> " +
                 "       <span class='premiumLine_premium " + "'>" + "" + "</span> " +
                 "   </div> " +
-                "</div>"
+                "</div>";
 
 
             premiumLineHTML = premiumLineHTML +
@@ -4215,7 +4219,7 @@ function getPremiumLineHTML(productObject){
                 "   <div class='col-xs-2'> " +
                 "       <span class='premiumLine_premium'>" + "" + "</span> " +
                 "   </div> " +
-                "</div>"
+                "</div>";
 
             // premiumLineHTML = premiumLineHTML + "<div class='row premiumLineRow premiumHeaderRow " + coverageMap.coverageCode + "_PremiumLineRow'> " +
             //     "   <div class='col-xs-4'> " +
@@ -4242,14 +4246,14 @@ function getPremiumLineHTML(productObject){
         //STANDARD PREMIUM DISPLAY LINES (DOES NOT APPLY TO RATESHEETS)
         if(rateMap.rateBasis !== 'RATESHEET'){
             //ADDITIONAL OPTIONS THAT APPLY TO MIN PREMIUM
-            var selectedAdditionalOptions = getSelectedProductAdditionalOptions(covID, productID)
+            var selectedAdditionalOptions = getSelectedProductAdditionalOptions(covID, productID);
             for(var j=0;j<selectedAdditionalOptions.length;j++){
-                var optionMap = selectedAdditionalOptions[j]
-                var applyMinPremium = optionMap.applyMinPremium
+                var optionMap = selectedAdditionalOptions[j];
+                var applyMinPremium = optionMap.applyMinPremium;
 
                 if(applyMinPremium === true){
-                    var productDescription = optionMap.limitDescription
-                    var additionalPremium = optionMap.productOptionAdditionalPremium
+                    var productDescription = optionMap.limitDescription;
+                    var additionalPremium = optionMap.productOptionAdditionalPremium;
 
                     premiumLineHTML = premiumLineHTML +
                         "<div class='row premiumLineRow " + coverageMap.coverageCode + "_PremiumLineRow'> " +
@@ -4274,7 +4278,7 @@ function getPremiumLineHTML(productObject){
 
 
             //INSERT RATED PREMIUM LINE
-            var ratedPremium = calculateProductOptionPremium_RatedPremium(productObject)
+            var ratedPremium = calculateProductOptionPremium_RatedPremium(productObject);
             premiumLineHTML = premiumLineHTML + "<div class='row premiumLineRow " + coverageMap.coverageCode + "_PremiumLineRow premiumLine_ratedPremiumRow'> " +
                 "   <div class='col-xs-4'> " +
                 "       <span class='premiumLine_description' style=''>" + "" + "</span> " +
@@ -4291,12 +4295,12 @@ function getPremiumLineHTML(productObject){
                 "   <div class='col-xs-2'> " +
                 "       <span class='premiumLine_premium " + "'>" + "" + "</span> " +
                 "   </div> " +
-                "</div>"
+                "</div>";
 
 
 
             //INSERT MIN PREMIUM LINE IF RATED PREMIUM DOES NOT MEAN MIN PREMIUM
-            var minPremium = rateMap.minPremium
+            var minPremium = rateMap.minPremium;
             if(ratedPremium < minPremium){
                 premiumLineHTML = premiumLineHTML +
                     "<div class='row premiumLineRow " + coverageMap.coverageCode + "_PremiumLineRow'> " +
@@ -4309,14 +4313,14 @@ function getPremiumLineHTML(productObject){
 
 
             //ADDITIONAL OPTIONS NOT APPLIED TO MIN PREMIUM
-            var selectedAdditionalOptions = getSelectedProductAdditionalOptions(covID, productID)
+            var selectedAdditionalOptions = getSelectedProductAdditionalOptions(covID, productID);
             for(var j=0;j<selectedAdditionalOptions.length;j++){
-                var optionMap = selectedAdditionalOptions[j]
-                var applyMinPremium = optionMap.applyMinPremium
+                var optionMap = selectedAdditionalOptions[j];
+                var applyMinPremium = optionMap.applyMinPremium;
 
                 if(applyMinPremium === false){
-                    var productDescription = optionMap.limitDescription
-                    var additionalPremium = optionMap.productOptionAdditionalPremium
+                    var productDescription = optionMap.limitDescription;
+                    var additionalPremium = optionMap.productOptionAdditionalPremium;
 
                     premiumLineHTML = premiumLineHTML +
                         "<div class='row premiumLineRow " + coverageMap.coverageCode + "_PremiumLineRow'> " +
@@ -4384,31 +4388,31 @@ function getPremiumLineHTML(productObject){
 }
 
 function buildPremiumMap(){
-    var coveragesSelected = getCoveragesSelectedArray()
-    var premiumMap = {}
-    var totalPremium = 0
-    var totalTax = 0
-    var totalPremiumAndTax = 0
+    var coveragesSelected = getCoveragesSelectedArray();
+    var premiumMap = {};
+    var totalPremium = 0;
+    var totalTax = 0;
+    var totalPremiumAndTax = 0;
 
     for(var i=0;i<coveragesSelected.length;i++){
-        var coverageCode = coveragesSelected[i]
-        var productID = getProductIDForCoverage(coverageCode)
-        var premiumLinesArrayForCoverage = []
-        var premiumMapForCoverage = {}
-        var totalPremiumForCoverage = 0
+        var coverageCode = coveragesSelected[i];
+        var productID = getProductIDForCoverage(coverageCode);
+        var premiumLinesArrayForCoverage = [];
+        var premiumMapForCoverage = {};
+        var totalPremiumForCoverage = 0;
 
-        premiumMapForCoverage.coverageName = getCoverageObject(coverageCode).coverageName
+        premiumMapForCoverage.coverageName = getCoverageObject(coverageCode).coverageName;
 
         //BUILD PREMIUM LINES ARRAY
         $('#step-2 .' + coverageCode + '_PremiumLineRow').each(function(){
-            var premiumLineRow = $(this)
-            var tempPremiumMapForCoverage = {}
-            tempPremiumMapForCoverage.description = $(premiumLineRow).find('.premiumLine_description').html()
-            tempPremiumMapForCoverage.productID = productID
-            tempPremiumMapForCoverage.premiumBasis = $(premiumLineRow).find('.premiumLine_premiumBasis').html()
-            tempPremiumMapForCoverage.basisValue = $(premiumLineRow).find('.premiumLine_basisValue').html()
-            tempPremiumMapForCoverage.rate = $(premiumLineRow).find('.premiumLine_rate').html()
-            tempPremiumMapForCoverage.premium = $(premiumLineRow).find('.premiumLine_premium').html()
+            var premiumLineRow = $(this);
+            var tempPremiumMapForCoverage = {};
+            tempPremiumMapForCoverage.description = $(premiumLineRow).find('.premiumLine_description').html();
+            tempPremiumMapForCoverage.productID = productID;
+            tempPremiumMapForCoverage.premiumBasis = $(premiumLineRow).find('.premiumLine_premiumBasis').html();
+            tempPremiumMapForCoverage.basisValue = $(premiumLineRow).find('.premiumLine_basisValue').html();
+            tempPremiumMapForCoverage.rate = $(premiumLineRow).find('.premiumLine_rate').html();
+            tempPremiumMapForCoverage.premium = $(premiumLineRow).find('.premiumLine_premium').html();
 
             //COVERAGE TOTAL PREMIUM
             if( $(premiumLineRow).find('.coverageTotalPremium').length > 0 ){
@@ -4416,45 +4420,45 @@ function buildPremiumMap(){
             }
 
             premiumLinesArrayForCoverage.push(tempPremiumMapForCoverage)
-        })
-        premiumMapForCoverage.premiumLinesArray = premiumLinesArrayForCoverage
+        });
+        premiumMapForCoverage.premiumLinesArray = premiumLinesArrayForCoverage;
 
         //BUILD TOTAL PREMIUM FOR COVERAGE
-        premiumMapForCoverage.premium = totalPremiumForCoverage
-        totalPremium = totalPremium + totalPremiumForCoverage
+        premiumMapForCoverage.premium = totalPremiumForCoverage;
+        totalPremium = totalPremium + totalPremiumForCoverage;
 
 
         premiumMap[coverageCode] = premiumMapForCoverage
     }
-    premiumMap.totalPremium = totalPremium
+    premiumMap.totalPremium = totalPremium;
 
     //TOTAL UP TAX
-    var taxLines = []
+    var taxLines = [];
     $('#taxLinesContainer .taxRow').each(function(){
-        var tempTaxMap = {}
-        var taxValue = getFloatValueOfMoney( $(this).find('.taxValue').html() )
-        var taxName = $(this).find('.taxLine_description').html()
-        var taxCode = $(this).attr('data-taxcode')
+        var tempTaxMap = {};
+        var taxValue = getFloatValueOfMoney( $(this).find('.taxValue').html() );
+        var taxName = $(this).find('.taxLine_description').html();
+        var taxCode = $(this).attr('data-taxcode');
 
-        tempTaxMap.taxCode = taxCode
-        tempTaxMap.name = taxName
-        tempTaxMap.value = taxValue
-        taxLines.push(tempTaxMap)
+        tempTaxMap.taxCode = taxCode;
+        tempTaxMap.name = taxName;
+        tempTaxMap.value = taxValue;
+        taxLines.push(tempTaxMap);
         totalTax = totalTax + taxValue
-    })
+    });
 
-    totalPremiumAndTax = totalPremium + totalTax
-    premiumMap.taxLines = taxLines
-    premiumMap.totalTax = totalTax
-    premiumMap.totalPremiumAndTax = totalPremiumAndTax
+    totalPremiumAndTax = totalPremium + totalTax;
+    premiumMap.taxLines = taxLines;
+    premiumMap.totalTax = totalTax;
+    premiumMap.totalPremiumAndTax = totalPremiumAndTax;
 
 
 
     return premiumMap
 }
 function buildTaxInfo(){
-    var selectedState = $('#stateMailing').val().trim()
-    var taxMap = {}
+    var selectedState = $('#stateMailing').val().trim();
+    var taxMap = {};
 
     if(selectedState !== 'invalid'){
         $.ajax({
@@ -4469,8 +4473,8 @@ function buildTaxInfo(){
                     console.log("Error")
                 }
                 else{
-                    taxMap = jsonStringToObject(msg)
-                    buildTaxRows(taxMap)
+                    taxMap = jsonStringToObject(msg);
+                    buildTaxRows(taxMap);
                     buildPremiumTotalLines()
                 }
             });
@@ -4480,18 +4484,18 @@ function buildTaxInfo(){
     }
 }
 function buildTaxRows(taxMap){
-    var taxMapKeys = Object.keys(taxMap)
-    var taxRowsHTML = ""
-    var subTotalPremium = calculatePremiumSubTotal()
+    var taxMapKeys = Object.keys(taxMap);
+    var taxRowsHTML = "";
+    var subTotalPremium = calculatePremiumSubTotal();
 
     for(var i=0;i<taxMapKeys.length;i++){
-        var taxCode = taxMapKeys[i]
-        var taxCodeMap = taxMap[taxCode]
+        var taxCode = taxMapKeys[i];
+        var taxCodeMap = taxMap[taxCode];
 
         //CHECK IF THIS KEY IS A TAX CODE OR ADDITIONAL INFO
         if(taxCodeMap !== null && taxMap[taxCode].name !== undefined){
-            var taxName = taxCodeMap.name
-            var taxValue = taxCodeMap.taxValue
+            var taxName = taxCodeMap.name;
+            var taxValue = taxCodeMap.taxValue;
 
 
             if(taxValue !== undefined && taxName !== undefined){
@@ -4526,26 +4530,26 @@ function buildTaxRows(taxMap){
 
 //PRODUCT FUNCTIONS
 function getProductIDForCoverage(covID){
-    var operationMap = getCurrentOperationTypeObject()
+    var operationMap = getCurrentOperationTypeObject();
     // var coverageProductMap = jsonStringToObject(operationMap.coverageProductMap)
     // var thisCoverageConditionArray = jsonStringToObject(coverageProductMap[covID])
 
-    var activeProductCard = $('#productCarousel_' + covID).find('.productCard.active')
-    var productID = $(activeProductCard).attr('data-productid')
+    var activeProductCard = $('#productCarousel_' + covID).find('.productCard.active');
+    var productID = $(activeProductCard).attr('data-productid');
 
     return productID
 }
 function getSelectedProductAdditionalOptions(covID, productID){
-    var productObject = getProductOptionObject(covID, productID)
-    var selectedAdditionalOptionsArray = []
+    var productObject = getProductOptionObject(covID, productID);
+    var selectedAdditionalOptionsArray = [];
     //CHECK LIMIT ARRAY FOR PRODUCT LIMIT OPTIONS
     if(productObject.limitArray){
-        var limitArray = jsonStringToObject(productObject.limitArray)
+        var limitArray = jsonStringToObject(productObject.limitArray);
         for(var i=0; i<limitArray.length; i++) {
-            var limitMap = jsonStringToObject(limitArray[i])
+            var limitMap = jsonStringToObject(limitArray[i]);
 
             if (limitMap.limitProductOption) {
-                var optionCheckboxElement = $("#" + productObject.productID + "_" + i + "_ProductOptionCheckbox")
+                var optionCheckboxElement = $("#" + productObject.productID + "_" + i + "_ProductOptionCheckbox");
 
                 //CHECK IF PRODUCT OPTION CHECKBOX EXISTS, AND IS CHECKED
                 if( $(optionCheckboxElement).length > 0 && $(optionCheckboxElement).is(':checked') ){
@@ -4562,8 +4566,8 @@ function getSelectedProductAdditionalOptions(covID, productID){
 
 //PACKAGE LOB FUNCTIONS
 function getLOBObjectFromPackageMap(packageID, lobID){
-    var coveragePackageMap = jsonStringToObject(getCurrentOperationTypeObject().coveragePackageMap)
-    var packageLOBInfoArray = coveragePackageMap[packageID]
+    var coveragePackageMap = jsonStringToObject(getCurrentOperationTypeObject().coveragePackageMap);
+    var packageLOBInfoArray = coveragePackageMap[packageID];
 
     for(var i=0; i<packageLOBInfoArray.length;i++){
         if(packageLOBInfoArray[i].covID === lobID){
@@ -4574,8 +4578,8 @@ function getLOBObjectFromPackageMap(packageID, lobID){
 
 //RATE LOGIC CONDITION FUNCTIONS
 function getRateIDForPackageLOB(packageID, lobID){
-    var lobObject = getLOBObjectFromPackageMap(packageID, lobID)
-    var thisCoverageConditionArray = jsonStringToObject(lobObject.rateConditions)
+    var lobObject = getLOBObjectFromPackageMap(packageID, lobID);
+    var thisCoverageConditionArray = jsonStringToObject(lobObject.rateConditions);
 
     return evaluateLogicConditionArray(thisCoverageConditionArray)
 }
@@ -4599,9 +4603,9 @@ function getWCRateObjectByIDAndState(rateCode, state, prodID){
 }
 
 function getProductsSelectedArray(){
-    var tempMap = buildCoverageAndProductSelectedMap()
-    var tempMapKeys = Object.keys(tempMap)
-    var productsSelectedArray = []
+    var tempMap = buildCoverageAndProductSelectedMap();
+    var tempMapKeys = Object.keys(tempMap);
+    var productsSelectedArray = [];
 
     for(var i=0;i<tempMapKeys.length;i++){
         if( tempMap[tempMapKeys[i]].productID ){
@@ -4613,12 +4617,12 @@ function getProductsSelectedArray(){
     return productsSelectedArray
 }
 function getSelectedProductsAndCoveragesMap(){
-    var coveragesSelected = getCoveragesSelectedArray()
-    var productsAndCoveragesMap = {}
+    var coveragesSelected = getCoveragesSelectedArray();
+    var productsAndCoveragesMap = {};
 
     for(var i=0;i<coveragesSelected.length;i++){
-        var covID = coveragesSelected[i]
-        var productID = getProductIDForCoverage(covID)
+        var covID = coveragesSelected[i];
+        var productID = getProductIDForCoverage(covID);
 
         if(productID){
             productsAndCoveragesMap[covID] = productID
@@ -4645,24 +4649,24 @@ function getProductObjectFromProductID(productID){
 ///////////////////STEP 3 - UNDERWRITING QUESTIONS///////////////////
 function getFilteredQuestionListForCoveragesSelected(){
     //COMBINES QUESTIONS FOR ALL COVERAGES SELECTED INTO ONE LIST, REMOVING DUPLICATES
-    var selectedOperationMap = getCurrentOperationTypeObject()
-    var selectedCoveragesArray = getCoveragesAndPackagesSelectedArray()
+    var selectedOperationMap = getCurrentOperationTypeObject();
+    var selectedCoveragesArray = getCoveragesAndPackagesSelectedArray();
 
-    var uwQuestionMap = JSON.parse(selectedOperationMap.underwriterQuestionsMap)
+    var uwQuestionMap = JSON.parse(selectedOperationMap.underwriterQuestionsMap);
 
     //LOOP THROUGH COVERAGES SELECTED, COMBINE ALL QUESTIONS IN TO ONE CATEGORY-QUESTION MAP
-    var combinedQuestionMap = {}
+    var combinedQuestionMap = {};
     for(var i=0;i<selectedCoveragesArray.length;i++){
-        var covID = selectedCoveragesArray[i]
-        var coverageCategoryMap = jsonStringToObject(uwQuestionMap[covID])
-        var categoryCodesForCoverage = Object.keys(coverageCategoryMap)
+        var covID = selectedCoveragesArray[i];
+        var coverageCategoryMap = jsonStringToObject(uwQuestionMap[covID]);
+        var categoryCodesForCoverage = Object.keys(coverageCategoryMap);
 
         for(var k=0;k<categoryCodesForCoverage.length;k++){
-            var categoryCode = categoryCodesForCoverage[k]
-            var categoryQuestionsArray = coverageCategoryMap[categoryCode]
+            var categoryCode = categoryCodesForCoverage[k];
+            var categoryQuestionsArray = coverageCategoryMap[categoryCode];
 
             if(categoryCode in combinedQuestionMap){
-                combinedQuestionMap[categoryCode].concat(categoryQuestionsArray)
+                combinedQuestionMap[categoryCode].concat(categoryQuestionsArray);
 
                 //REMOVE DUPLICATES
                 combinedQuestionMap[categoryCode] = combinedQuestionMap[categoryCode].filter( function( item, index, inputArray ) {
@@ -4677,12 +4681,12 @@ function getFilteredQuestionListForCoveragesSelected(){
     }
 
     //LOOP THROUGH ONCE MORE TO REORDER QUESTIONS BASED ON WEIGHT IN EACH CATEGORY
-    var allCategoryCodes = Object.keys(coverageCategoryMap)
+    var allCategoryCodes = Object.keys(coverageCategoryMap);
     for(var i=0;i<allCategoryCodes.length;i++){
-        var categoryCode = allCategoryCodes[i]
+        var categoryCode = allCategoryCodes[i];
 
         if(combinedQuestionMap[categoryCode]){
-            var tempArray = combinedQuestionMap[categoryCode]
+            var tempArray = combinedQuestionMap[categoryCode];
             combinedQuestionMap[categoryCode] = tempArray.sort(sortByWeightAscending)
         }
 
@@ -4693,43 +4697,43 @@ function getFilteredQuestionListForCoveragesSelected(){
     return combinedQuestionMap
 }
 function buildUWQuestionSection(){
-    var FORM_COL_SIZE = '12'
-    var columns = 2
+    var FORM_COL_SIZE = '12';
+    var columns = 2;
 
     //SAVE EXISTING ANSWERS
-    var savedAnswers = buildUWQuestionAndAnswerMap()
+    var savedAnswers = buildUWQuestionAndAnswerMap();
 
     //CLEAR EXISTING UW QUESTIONS
-    clearAllUWQuestions()
+    clearAllUWQuestions();
 
-    var finalQuestionMap = getFilteredQuestionListForCoveragesSelected()
-    var categories = Object.keys(finalQuestionMap)
+    var finalQuestionMap = getFilteredQuestionListForCoveragesSelected();
+    var categories = Object.keys(finalQuestionMap);
 
     for(var i=0;i<categories.length;i++){
-        var categoryCode = categories[i]
-        var categoryQuestionArray = finalQuestionMap[categoryCode]
+        var categoryCode = categories[i];
+        var categoryQuestionArray = finalQuestionMap[categoryCode];
 
         for(var q=0;q<categoryQuestionArray.length;q++){
-            var questionID = categoryQuestionArray[q]
-            var questionObject = getQuestionObjectForID(questionID)
-            var questionHTML
+            var questionID = categoryQuestionArray[q];
+            var questionObject = getQuestionObjectForID(questionID);
+            var questionHTML;
 
-            questionHTML = getNewSubmissionUWQuestion(questionID, {gridColumns : '12'})
+            questionHTML = getNewSubmissionUWQuestion(questionID, {gridColumns : '12'});
             $('#' + categoryCode + '_QuestionCategoryContainer').append(questionHTML)
 
 
         }
     }
 
-    initializeGlobalListeners()
-    showHideQuestionCategoryPanels()
+    initializeGlobalListeners();
+    showHideQuestionCategoryPanels();
 
     //FILL IN SAVED ANSWERS
-    var savedQuestionsArray = Object.keys(savedAnswers)
+    var savedQuestionsArray = Object.keys(savedAnswers);
 
     for(var i=0;i<savedQuestionsArray.length;i++){
-        var questionElementID = savedQuestionsArray[i]
-        var questionAnswer = savedAnswers[questionElementID]
+        var questionElementID = savedQuestionsArray[i];
+        var questionAnswer = savedAnswers[questionElementID];
 
         $('#' + questionElementID).val(questionAnswer)
     }
@@ -4750,11 +4754,11 @@ function getLeftOrRightColumnToInsert(categoryCode){
     var $el = $('#bottom');  //record the elem so you don't crawl the DOM everytime
     var bottom = $el.position().top + $el.outerHeight(true);
 
-    var leftColumnElement = $('#' + categoryCode + '_QuestionCategoryContainer .questionLeftColumn')
-    var rightColumnElement = $('#' + categoryCode + '_QuestionCategoryContainer .questionRightColumn')
+    var leftColumnElement = $('#' + categoryCode + '_QuestionCategoryContainer .questionLeftColumn');
+    var rightColumnElement = $('#' + categoryCode + '_QuestionCategoryContainer .questionRightColumn');
 
-    var leftBottom = $(leftColumnElement).position().top + $(leftColumnElement).outerHeight(true)
-    var rightBottom = $(rightColumnElement).position().top + $(rightColumnElement).outerHeight(true)
+    var leftBottom = $(leftColumnElement).position().top + $(leftColumnElement).outerHeight(true);
+    var rightBottom = $(rightColumnElement).position().top + $(rightColumnElement).outerHeight(true);
 
     if(leftBottom > rightBottom){}
 
@@ -4776,21 +4780,21 @@ function getQuestionObjectForID(questionID){
 
 }
 function buildUWQuestionAndAnswerMap(){
-    var questionAnswerMap = {}
+    var questionAnswerMap = {};
 
     $('div.uwQuestion').each(function(){
-        var questionType = $(this).attr('data-inputtype')
-        var questionID = $(this).attr('data-questionid')
+        var questionType = $(this).attr('data-inputtype');
+        var questionID = $(this).attr('data-questionid');
 
         if(questionType === 'text'){
             questionAnswerMap[questionID] = $(this).find('input#' + questionID).val()
         }
         else if(questionType === 'radio'){
-            var groupName = questionType + "_RadioGroup"
+            var groupName = questionType + "_RadioGroup";
             questionAnswerMap[questionID] = $(this).find("input[name='" + groupName + "']:checked").val()
         }
         else if(questionType === 'checkbox'){
-            var groupName = questionType + "_CheckboxGroup"
+            var groupName = questionType + "_CheckboxGroup";
 
             $("input[name='" + groupName + "']:checked").each(function(){
                 questionAnswerMap[questionID] = $(this).val()
@@ -4800,88 +4804,88 @@ function buildUWQuestionAndAnswerMap(){
             questionAnswerMap[questionID] = $(this).find('#' + questionID).val()
         }
         else if(questionType === 'custom_mailingAddress'){
-            var addressContainer = $(this)
+            var addressContainer = $(this);
             $(addressContainer).find('input,select').each(function(){
-                questionID = $(this).attr('id')
+                questionID = $(this).attr('id');
                 questionAnswerMap[questionID] = $(this).val()
             })
         }
-    })
+    });
 
     return questionAnswerMap
 }
 function buildAllQuestionAndAnswerMap(){
-    var questionAnswerArray = []
+    var questionAnswerArray = [];
 
     $('div.uwQuestion').each(function(){
-        var questionAnswerMap = {}
-        var questionType = $(this).attr('data-inputtype')
-        var questionID = $(this).attr('data-questionid')
+        var questionAnswerMap = {};
+        var questionType = $(this).attr('data-inputtype');
+        var questionID = $(this).attr('data-questionid');
 
         if(questionType === 'text'){
-            questionAnswerMap.questionID = questionID
-            questionAnswerMap.questionText = getQuestionObjectForID(questionID).questionText
+            questionAnswerMap.questionID = questionID;
+            questionAnswerMap.questionText = getQuestionObjectForID(questionID).questionText;
             questionAnswerMap.answer = $(this).find('input#' + questionID).val()
         }
         else if(questionType === 'radio'){
-            var groupName = questionID + "_RadioGroup"
-            questionAnswerMap.questionID = questionID
-            questionAnswerMap.questionText = getQuestionObjectForID(questionID).questionText
+            var groupName = questionID + "_RadioGroup";
+            questionAnswerMap.questionID = questionID;
+            questionAnswerMap.questionText = getQuestionObjectForID(questionID).questionText;
             questionAnswerMap.answer = $(this).find("input[name='" + groupName + "']:checked").val()
         }
         else if(questionType === 'checkbox'){
-            var groupName = questionType + "_CheckboxGroup"
+            var groupName = questionType + "_CheckboxGroup";
 
-            questionAnswerMap.questionID = questionID
-            questionAnswerMap.questionText = getQuestionObjectForID(questionID).questionText
+            questionAnswerMap.questionID = questionID;
+            questionAnswerMap.questionText = getQuestionObjectForID(questionID).questionText;
 
-            var tempAnswer = []
+            var tempAnswer = [];
             $("input[name='" + groupName + "']:checked").each(function(){
                 tempAnswer.push( $(this).val() )
-            })
+            });
             questionAnswerMap.answer = tempAnswer.join()
         }
         else if(questionType === 'dropdown'){
-            questionAnswerMap.questionID = questionID
-            questionAnswerMap.questionText = getQuestionObjectForID(questionID).questionText
+            questionAnswerMap.questionID = questionID;
+            questionAnswerMap.questionText = getQuestionObjectForID(questionID).questionText;
 
             questionAnswerMap.answer = $(this).find('#' + questionID).val()
         }
         else if(questionType === 'custom_mailingAddress'){
-            var addressContainer = $(this)
+            var addressContainer = $(this);
 
             $(addressContainer).find('input,select').each(function(){
-                questionID = $(this).attr('id')
+                questionID = $(this).attr('id');
                 questionAnswerMap[questionID] = $(this).val()
             })
         }
 
         questionAnswerArray.push(questionAnswerMap)
-    })
+    });
 
     return questionAnswerArray
 }
 function buildAnswersToQuestionsMap(){
-    var answersToQuestionMap = {}
+    var answersToQuestionMap = {};
 
     $('div.uwQuestion').each(function(){
-        var questionID = $(this).attr('data-questionid')
-        var questionType = $(this).attr('data-inputtype')
+        var questionID = $(this).attr('data-questionid');
+        var questionType = $(this).attr('data-inputtype');
 
         if(questionType === 'text'){
             answersToQuestionMap[questionID] = $(this).find('input#' + questionID).val()
         }
         else if(questionType === 'radio'){
-            var groupName = questionID + "_RadioGroup"
+            var groupName = questionID + "_RadioGroup";
             answersToQuestionMap[questionID] = $(this).find("input[name='" + groupName + "']:checked").val()
         }
         else if(questionType === 'checkbox'){
-            var groupName = questionType + "_CheckboxGroup"
+            var groupName = questionType + "_CheckboxGroup";
 
-            var tempAnswer = []
+            var tempAnswer = [];
             $("input[name='" + groupName + "']:checked").each(function(){
                 tempAnswer.push( $(this).val() )
-            })
+            });
             answersToQuestionMap[questionID] = tempAnswer.join()
         }
         else if(questionType === 'dropdown'){
@@ -4895,43 +4899,43 @@ function buildAnswersToQuestionsMap(){
         if(answersToQuestionMap[questionID] === undefined){
             answersToQuestionMap[questionID] = "Not Answered"
         }
-    })
+    });
 
     return answersToQuestionMap
 }
 function buildUWQuestionsForIndication(){
-    var questionAnswerKeyMap = buildAnswersToQuestionsMap()
-    var questionsCategoryAnswersArray = []
+    var questionAnswerKeyMap = buildAnswersToQuestionsMap();
+    var questionsCategoryAnswersArray = [];
 
     $('.uwQuestionCategoryPanel').each(function(){
-        var displayCSS = $(this).css('display')
+        var displayCSS = $(this).css('display');
 
         if( displayCSS.trim() !== "none" ){
-            var categoryMap = {}
-            var categoryID = $(this).attr('data-questioncategoryid')
-            var categoryName = $(this).attr('data-questioncategoryname')
+            var categoryMap = {};
+            var categoryID = $(this).attr('data-questioncategoryid');
+            var categoryName = $(this).attr('data-questioncategoryname');
 
-            var categoryQuestionsArray = []
+            var categoryQuestionsArray = [];
             $(this).find('div.uwQuestion').each(function(){
-                var questionAnswerMap = {}
-                var questionID = $(this).attr('data-questionid')
-                var questionText = getQuestionObjectForID(questionID).questionText
-                var questionAnswer = questionAnswerKeyMap[questionID]
+                var questionAnswerMap = {};
+                var questionID = $(this).attr('data-questionid');
+                var questionText = getQuestionObjectForID(questionID).questionText;
+                var questionAnswer = questionAnswerKeyMap[questionID];
 
-                questionAnswerMap.questionID = questionID
-                questionAnswerMap.questionText = questionText
-                questionAnswerMap.questionAnswer = questionAnswer
+                questionAnswerMap.questionID = questionID;
+                questionAnswerMap.questionText = questionText;
+                questionAnswerMap.questionAnswer = questionAnswer;
 
                 categoryQuestionsArray.push(questionAnswerMap)
-            })
+            });
 
-            categoryMap.categoryID = categoryID
-            categoryMap.categoryName = categoryName
-            categoryMap.questionsArray = categoryQuestionsArray
+            categoryMap.categoryID = categoryID;
+            categoryMap.categoryName = categoryName;
+            categoryMap.questionsArray = categoryQuestionsArray;
 
             questionsCategoryAnswersArray.push(categoryMap)
         }
-    })
+    });
 
     return questionsCategoryAnswersArray
 }
@@ -4942,50 +4946,50 @@ function buildUWQuestionsForIndication(){
 ///////////////////STEP 4 - REVIEW SECTION///////////////////
 function buildReview(){
     //INSURED INFO
-    $('#review_namedInsured').html( $('#namedInsured').val().trim() )
-    $('#review_namedInsuredStreetAddress').html( $('#streetAddressMailing').val().trim() )
-    $('#review_namedInsuredCity').html( $('#cityMailing').val().trim() )
-    $('#review_namedInsuredZipcode').html( $('#zipCodeMailing').val().trim() )
-    $('#review_namedInsuredState').html( $('#stateMailing').val().trim() )
+    $('#review_namedInsured').html( $('#namedInsured').val().trim() );
+    $('#review_namedInsuredStreetAddress').html( $('#streetAddressMailing').val().trim() );
+    $('#review_namedInsuredCity').html( $('#cityMailing').val().trim() );
+    $('#review_namedInsuredZipcode').html( $('#zipCodeMailing').val().trim() );
+    $('#review_namedInsuredState').html( $('#stateMailing').val().trim() );
 
     //BROKER INFO
-    $('#review_brokerName').html( $('#brokerName').val().trim() )
-    $('#review_brokerEmail').html( $('#brokerEmail').val().trim() )
+    $('#review_brokerName').html( $('#brokerName').val().trim() );
+    $('#review_brokerEmail').html( $('#brokerEmail').val().trim() );
 
     //OPERATIONS AND COVERAGES
-    $('#review_operationTypeName').html( $('#operationsDropdown option:selected').text().trim() )
+    $('#review_operationTypeName').html( $('#operationsDropdown option:selected').text().trim() );
 
     //LIMITS AND DEDUCTBILES
-    var limDedReviewHTML = $('#limitsDeductiblesContainer').parent().clone()
-    $(limDedReviewHTML).find('*').removeAttr('id')
+    var limDedReviewHTML = $('#limitsDeductiblesContainer').parent().clone();
+    $(limDedReviewHTML).find('*').removeAttr('id');
     $(limDedReviewHTML).find('input').each(function(){
-        var inputValue = $(this).val()
-        var spanHTML = "<div class='col-xs-4'><span>" + inputValue + "</span></div>"
-        $(this).before(spanHTML)
+        var inputValue = $(this).val();
+        var spanHTML = "<div class='col-xs-4'><span>" + inputValue + "</span></div>";
+        $(this).before(spanHTML);
         $(this).closest('.form-group').remove()
-    })
+    });
 
-    $('#review_coverageBreakdown').html( $(limDedReviewHTML) )
+    $('#review_coverageBreakdown').html( $(limDedReviewHTML) );
 
     //RATE BREAKDOWN
-    var rateReviewHTML = $('#premiumDetailContainer').parent().clone()
-    $(rateReviewHTML).find('*').removeAttr('id')
+    var rateReviewHTML = $('#premiumDetailContainer').parent().clone();
+    $(rateReviewHTML).find('*').removeAttr('id');
 
-    $('#review_rateBreakdown').html( $(rateReviewHTML) )
+    $('#review_rateBreakdown').html( $(rateReviewHTML) );
 
 
     //TERMS
-    $('#review_termsString').html(buildTermsStringForAllProducts())
+    $('#review_termsString').html(buildTermsStringForAllProducts());
 
 
 
     //UNDERWRITING QUESTIONS
-    var reviewHTML = ""
+    var reviewHTML = "";
     $('div#step-2 .requiredQuestion').each(function(){
         reviewHTML = reviewHTML + getReviewHTMLFromQuestionContainer(this)
-    })
+    });
     $('div#step-3 div.uwQuestionCategoryPanel').each(function(){
-        var questionCategoryName = $(this).data('questioncategoryname')
+        var questionCategoryName = $(this).data('questioncategoryname');
 
         if($(this).find('.uwQuestion').length > 0){
             reviewHTML = reviewHTML +
@@ -4993,7 +4997,7 @@ function buildReview(){
                 "   <div class='col-xs-12'>" +
                 "       <h4>" + questionCategoryName + "</h4>" +
                 "   </div>" +
-                "</div>"
+                "</div>";
 
             $(this).find('.uwQuestion').each(function(){
                 reviewHTML = reviewHTML + getReviewHTMLFromQuestionContainer(this)
@@ -5003,25 +5007,25 @@ function buildReview(){
 
 
 
-    })
+    });
     $('#review_UnderwritingQuestions').html(reviewHTML)
 }
 function getReviewHTMLFromQuestionContainer(questionContainer){
-    var questionText = $(questionContainer).find('.questionText').html()
-    var questionInputType = $(questionContainer).attr('data-inputtype')
-    var questionAnswer = ""
-    var questionReviewHTML = ""
+    var questionText = $(questionContainer).find('.questionText').html();
+    var questionInputType = $(questionContainer).attr('data-inputtype');
+    var questionAnswer = "";
+    var questionReviewHTML = "";
 
     //FIND ANSWERS FOR THIS QUESTION
     if(questionInputType === "radio"){
         $(questionContainer).find('input').each(function(){
             if($(this).is(':checked')){
-                var optionLabelElement = $(this).closest('label.questionOptionLabel')
+                var optionLabelElement = $(this).closest('label.questionOptionLabel');
                 var optionText = $(optionLabelElement).clone()    //clone the element
                     .children() //select all the children
                     .remove()   //remove all the children
                     .end()  //again go back to selected element
-                    .text()
+                    .text();
 
                 questionAnswer = questionAnswer +
                     optionText + ", "
@@ -5031,12 +5035,12 @@ function getReviewHTMLFromQuestionContainer(questionContainer){
     else if(questionInputType === "checkbox"){
         $(questionContainer).find('input').each(function(){
             if($(this).is(':checked')){
-                var optionLabelElement = $(this).closest('label.questionOptionLabel')
+                var optionLabelElement = $(this).closest('label.questionOptionLabel');
                 var optionText = $(optionLabelElement).clone()    //clone the element
                     .children() //select all the children
                     .remove()   //remove all the children
                     .end()  //again go back to selected element
-                    .text()
+                    .text();
 
                 questionAnswer = questionAnswer +
                     optionText + ", "
@@ -5059,7 +5063,7 @@ function getReviewHTMLFromQuestionContainer(questionContainer){
         })
     }
 
-    questionAnswer = removeTrailingComma(questionAnswer)
+    questionAnswer = removeTrailingComma(questionAnswer);
 
     if(questionAnswer.trim().length === 0){
         questionAnswer = "N/A"
@@ -5073,23 +5077,23 @@ function getReviewHTMLFromQuestionContainer(questionContainer){
         "   <div class='col-xs-8'>" +
         "       <span class='reviewDataAnswer'>" + questionAnswer + "</span>" +
         "   </div>" +
-        "</div>"
+        "</div>";
 
     return questionReviewHTML
 }
 function buildTermsStringForAllProducts(){
-    var coveragesSelected = getCoveragesSelectedArray()
-    var finalTermsString = ""
+    var coveragesSelected = getCoveragesSelectedArray();
+    var finalTermsString = "";
 
     for(var i=0;i<coveragesSelected.length;i++){
-        var covID = coveragesSelected[i]
-        var productID = getProductIDForCoverage(covID)
-        var productObject = getProductOptionObject(covID, productID)
+        var covID = coveragesSelected[i];
+        var productID = getProductIDForCoverage(covID);
+        var productObject = getProductOptionObject(covID, productID);
 
         if(productObject.terms){
-            var termsString = productObject.terms.trim()
-            finalTermsString = finalTermsString + productObject.coverage + " - " + productID + "\n\n"
-            finalTermsString = finalTermsString + termsString
+            var termsString = productObject.terms.trim();
+            finalTermsString = finalTermsString + productObject.coverage + " - " + productID + "\n\n";
+            finalTermsString = finalTermsString + termsString;
             finalTermsString = finalTermsString + "\n\n\n\n"
         }
 
@@ -5123,7 +5127,7 @@ function getRiskCategoryChosen() {
     return category;
 }
 function getSelectedRiskTypeID(){
-    var riskID
+    var riskID;
     if (isRiskTypeSelected()) {
         if ($("li.active").children("a.riskOptionLink").hasClass('riskOptionDropdown')) {
             riskID = $("li.active").children("a.riskOptionLink").find('.riskTypeDropdown').attr('data-riskTypeID')
@@ -5175,16 +5179,16 @@ function getCurrentRiskTypeObject(){
 
 //IF A MANDATORY FIELD IS NOT VALID, RETURN FALSE
 function isMandatoryQuestionsComplete_Product(){
-    var isComplete = true
+    var isComplete = true;
     $('.mandatoryForProduct').each(function(){
         if( validateThisInput(this) === "VALID" ){
 
         }
         else{
-            isComplete = false
+            isComplete = false;
             return false
         }
-    })
+    });
 
     return isComplete
 }
@@ -5192,69 +5196,69 @@ function buildProductDisplayForRiskID(){
     var wrapperHTML = function(){
         var htmlString =
             "<div class='row'>" +
-            "</div>"
+            "</div>";
         return htmlString
-    }
+    };
     var leftContainerHTML = function(){
         var htmlString =
             "<div class='col-xs-4' id='productChoicesDiv' style='margin-top: 5px;'>" +
-            "</div>"
+            "</div>";
         return htmlString
-    }
+    };
     var coverageContainerHTML = function(){
         var htmlString =
             "<div class='form-group col-xs-12 EPKGDiv'>" +
-            "</div>"
+            "</div>";
         return htmlString
-    }
+    };
     var coverageCheckboxContainer = function(){
         var htmlString =
             "<div>" +
             "<p><input type='checkbox' class='coverageInput' name='coverage' id='EPKGcoverage'/> Entertainment Package" +
             "</p>" +
-            "</div>"
+            "</div>";
         return htmlString
-    }
+    };
 
     var coverageProductsContainer = function(){
         var htmlString =
             "<div class='form-group col-xs-12' style='padding-left: 40px; margin-top:-20px;' id='EPKGProductsDiv'>" +
-            "</div>"
+            "</div>";
         return htmlString
-    }
+    };
 
     var productsContainer = function(){
         var htmlString =
             "<div class='form-group col-xs-12' style='padding-left: 40px; margin-top:-20px;' id='EPKGProductsDiv'>" +
-            "</div>"
+            "</div>";
         return htmlString
-    }
+    };
 
 
     var coverageOptionsContainer = function(){
         var htmlString =
             "<div class='form-group col-xs-12' style='padding-left: 40px; margin-top:-20px;' id='EPKGProductsDiv'>" +
-            "</div>"
+            "</div>";
         return htmlString
-    }
+    };
 
 
 
     var rightContainerHTML = function(){
         var htmlString =
-            "<div class='col-xs-8' id='coverageInfoDiv' style='margin-top: -33px;'>"
+            "<div class='col-xs-8' id='coverageInfoDiv' style='margin-top: -33px;'>";
         return htmlString
-    }
+    };
 
 
     //FIND RISK TYPE OBJECT
     // var productConditionsMap = jsonStringToObject( getCurrentRiskTypeObject().productConditions )
-    var productConditionsMap = buildTestProductConditionsJSON()
-    var productConditionsKeys = Object.keys(productConditionsMap)
+    var productConditionsMap = buildTestProductConditionsJSON();
+    var productConditionsKeys = Object.keys(productConditionsMap);
 
     for(var i=0; i<productConditionsKeys.length; i++){
-        var coverage = productConditionsKeys[i]
-        var productsForCoverageMap = productConditionsMap[coverage]
+        var coverage = productConditionsKeys[i];
+        var productsForCoverageMap = productConditionsMap[coverage];
         console.log(productsForCoverageMap)
 
     }
@@ -5376,7 +5380,6 @@ function nextButtonStep1ClickActionBACKUP(){
                     // make the script element load file
 
                     sgpScript.src = '/js/forms/sgpFilm.js' + "?ts=" + new Date().getTime();
-                    ;
                     // finally insert the element to the body element in order to load the script
                     document.body.appendChild(sgpScript);
 

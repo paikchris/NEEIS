@@ -59,23 +59,25 @@
 
 
 	<!-- Google Analytics Script -->
-	<script>
-		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-					(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-				m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-		ga('create', 'UA-91154540-1', 'auto');
-		ga('send', 'pageview');
-	</script>
+	%{--<script>--}%
+		%{--(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){--}%
+					%{--(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),--}%
+				%{--m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)--}%
+		%{--})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');--}%
+		%{--ga('create', 'UA-91154540-1', 'auto');--}%
+		%{--ga('send', 'pageview');--}%
+	%{--</script>--}%
 
 
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	%{--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>--}%
-	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+	<script src="${resource(dir: 'js/vendor', file: 'jquery-3.1.1.min.js')}" ></script>
+
+	%{--<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>--}%
 	%{--<script src="https://code.jquery.com/jquery-migrate-3.0.0.js"></script>--}%
 
 	%{--SENTRY--}%
-	<script src="https://cdn.ravenjs.com/3.12.1/raven.min.js" crossorigin="anonymous"></script>
+	%{--<script src="https://cdn.ravenjs.com/3.12.1/raven.min.js" crossorigin="anonymous"></script>--}%
 	%{--<script>--}%
 	%{--<g:if env="development">--}%
 		%{--Raven.config('https://dbc11c2801a349afb0be298fe227925e@sentry.io/145737', {--}%

@@ -30,7 +30,7 @@ div.requiredQuestion, div.uwQuestion {
     background: rgba(0, 143, 247, 0.08);
     padding-bottom: 12px;
     border-radius: 6px;
-    margin: 0px 2px;
+    margin: 0px 0px;
 }
 div.requiredQuestion.basisActive{
     background: rgb(47, 97, 155);

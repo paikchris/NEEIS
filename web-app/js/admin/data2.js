@@ -34,6 +34,7 @@ $(document).ready(function () {
 
     //RULES ENGINE
     initRulesEngine()
+    initRulesBuilder()
 
     //DONE LOADING SHOW PAGE
     doneLoadingShowPage()
@@ -62,6 +63,7 @@ function dataInit(){
     ruleEngineObjects = rO
     rateSheets = rS
     wcRates = wC
+    rateCodes = rC
 
     refreshAll()
 
@@ -330,16 +332,18 @@ function initializeListeners(){
     $(document.body).on('change', '#rateSheetPage_RateSheetsDropdown', function(e) {
         rateSheetsPage_RateDropdownAction(this)
     });
-    $(document.body).on('change', '#wcStateDropdown', function(e) {
-        rateSheetPage_wcStateDropdownAction(this)
+    $(document.body).on('change', '#rateSheetStateDropdown', function(e) {
+        rateSheetPage_RateSheetStateDropdownAction(this)
     });
 
 
     $(document.body).on('click', '#saveRateSheetButton', function(e) {
         saveRateSheet(this)
     })
-    $(document.body).on('click', '#addRatedPremiumButton', function(e) {
-        openSelectRateCodeModal_RateCode()
+    $(document.body).on('click', '.addRatedPremiumButton', function(e) {
+        // openSelectRateCodeModal_RateCode()
+        ADDRULEMODAL_DOMOBJECT.redraw()
+        ADDRULEMODAL_DOMOBJECT.openModal()
     })
 
     $(document.body).on('click', '#testRateSheetButton', function(e) {
@@ -356,18 +360,23 @@ function initializeListeners(){
         //NEEDED BC PARENT ELEMENT .addRateRow also clicks checkbox
         e.stopPropagation()
     })
-    $(document.body).on('click', '.rateSheetRowMoveUpButton', function(e) {
-        moveRateSheetRowUp(this)
-    })
-    $(document.body).on('click', '.rateSheetRowMoveDownButton', function(e) {
-        moveRateSheetRowDown(this)
-    })
-    $(document.body).on('click', '.rateSheetRowDeleteButton', function(e) {
-        deleteRateSheetRow(this)
-    })
 
 
+    $(document.body).on('change click', '.onChangeSaveRateSheet', function(e) {
+        if(pageLoading == false){
+            if(e.type === 'change' && ( $(this).is('input:text') || $(this).is('select') )){
+                saveRateSheet()
+            }
+            else if( e.type === 'click' && ( $(this).is('input:radio') || $(this).is('input:checkbox')) ){
+                saveRateSheet()
+            }
+        }
+    });
 
+    $(document.body).on('click', '.editPremiumLogicButton', function() {
+        editPremiumLogicButtonAction(this)
+
+    })
 
 
 
@@ -2896,9 +2905,10 @@ function rateSheetRowHeaderHTML(){
         "   </div> " +
         "</div>"
 }
-function rateSheetRowHTML(rateObject){
+function wcRateSheetRowHTML(rateObject){
     var htmlString = "" +
         "<div class='row rateSheetRow' " +
+        "   data-rateCodeID='" + (rateObject.code ? rateObject.code : "") + "'" +
         "   data-rateID='" + (rateObject.code ? rateObject.code : "") + "'" +
         "   data-howprocessed='" + (rateObject.howProcessed ? rateObject.howProcessed : "") + "'" +
         ">" +
@@ -2908,7 +2918,7 @@ function rateSheetRowHTML(rateObject){
         "   <div class='col-xs-1'>" +
         "       <span>" + (rateObject.code ? rateObject.code : "") + " </span>" +
             "</div>" +
-        "   <div class='col-xs-4'>" +
+        "   <div class='col-xs-3'>" +
         "       <span>" + (rateObject.description ? rateObject.description : "") + "</span>" +
         "   </div>" +
         "   <div class='col-xs-1'>" +
@@ -2926,7 +2936,7 @@ function rateSheetRowHTML(rateObject){
         "   <div class='col-xs-1'>" +
         "       <span>" + (rateObject.howProcessed ? rateObject.howProcessed : "") + "</span>" +
         "   </div>" +
-        "   <div class='col-xs-1'>" +
+        "   <div class='col-xs-2'>" +
         "       <button type='button' class='btn btn-xs btn-info rateSheetRowMoveUpButton' style='font-size:9px'>" +
         "            <i class='fa fa-caret-up' aria-hidden='true'></i>" +
         "       </button>" +
@@ -2934,6 +2944,52 @@ function rateSheetRowHTML(rateObject){
         "            <i class='fa fa-caret-down' aria-hidden='true'></i>" +
         "       </button>" +
         "       <button type='button' class='btn btn-xs btn-danger rateSheetRowDeleteButton' style='font-size:9px'>" +
+        "            <i class='fa fa-times' aria-hidden='true'></i>" +
+        "       </button>" +
+        "   </div>" +
+        "</div>"
+
+    return htmlString
+}
+function rateSheetRowHTML(rateObject){
+    var htmlString = "" +
+        "<div class='row rateSheetRow' " +
+        "   data-rateCodeID='" + (rateObject.rateCodeID ? rateObject.rateCodeID : "") + "'" +
+        "   data-rateID='" + (rateObject.code ? rateObject.code : "") + "'" +
+        "   data-howprocessed='" + (rateObject.howProcessed ? rateObject.howProcessed : "") + "'" +
+        ">" +
+        "   <div class='col-xs-1'>" +
+        "       <span class='rateSheetLineNumber'>" + "" + "</span>" +
+        "   </div>" +
+        "   <div class='col-xs-1'>" +
+        "       <span>" + (rateObject.code ? rateObject.code : "") + " </span>" +
+        "   </div>" +
+        "   <div class='col-xs-3'>" +
+        "       <span>" + (rateObject.description ? rateObject.description : "") + "</span>" +
+        "   </div>" +
+        "   <div class='col-xs-3'>" +
+        "       <button type='button' class='btn btn-xs btn-info editPremiumLogicButton' style='font-size:9px'>" +
+        "            <i class='fa fa-code' aria-hidden='true'></i>" +
+        "       </button>" +
+        "       <span>" + (rateObject.premiumLogic ? rateObject.premiumLogic : "") + "</span>" +
+        "   </div>" +
+        "   <div class='col-xs-1'>" +
+        "       <button type='button' class='btn btn-xs btn-info' style='font-size:9px'>" +
+        "            <i class='fa fa-code' aria-hidden='true'></i>" +
+        "       </button>" +
+        "       <span>" + (rateObject.howProcessed ? rateObject.howProcessed : "") + "</span>" +
+        "   </div>" +
+        "   <div class='col-xs-1'>" +
+        "       <span>" + (rateObject.premium ? rateObject.premium : "") + "</span>" +
+        "   </div>" +
+        "   <div class='col-xs-2'>" +
+        "       <button type='button' class='btn btn-xs btn-info rateSheetRowMoveUpButton pull-right' style='font-size:9px'>" +
+        "            <i class='fa fa-caret-up' aria-hidden='true'></i>" +
+        "       </button>" +
+        "       <button type='button' class='btn btn-xs btn-info rateSheetRowMoveDownButton pull-right' style='font-size:9px'>" +
+        "            <i class='fa fa-caret-down' aria-hidden='true'></i>" +
+        "       </button>" +
+        "       <button type='button' class='btn btn-xs btn-danger rateSheetRowDeleteButton pull-right' style='font-size:9px'>" +
         "            <i class='fa fa-times' aria-hidden='true'></i>" +
         "       </button>" +
         "   </div>" +
@@ -2949,6 +3005,13 @@ function rateSheetsPage_RateDropdownAction(dropdown){
         var rateSheetID = getSelectedRateSheetID()
         var rateSheetObject = getRateSheetObjectByID(rateSheetID)
 
+        if(rateSheetObject.cov === 'WC'){
+
+        }
+        else{
+            loadSavedRateSheetArrayToRulesBuilderStateModel(rateSheetObject)
+        }
+
         resetRateSheetRows()
 
         //FILL RATE SHEET ID
@@ -2957,8 +3020,17 @@ function rateSheetsPage_RateDropdownAction(dropdown){
         //GET RATE SHEET DESCRIPTION
         $('#rateSheetDescriptionInput').val(rateSheetObject.description)
 
+        //GET RATE SHEET COMPANY
+        $('#rateSheetCompanyInput').val(rateSheetObject.company)
+
+        //GET RATE SHEET COVERAGE
+        $('#rateSheetCoverageIDInput').val(rateSheetObject.cov)
+
+
         //CHECK IF VALID IS SELECTED AND STATE DROPDOWN ACTION NEEDS TO BE RUN
-        rateSheetPage_wcStateDropdownAction()
+        rateSheetPage_RateSheetStateDropdownAction()
+
+
 
 
 
@@ -2971,29 +3043,45 @@ function rateSheetsPage_RateDropdownAction(dropdown){
         hideRateSheetContainer()
     }
 }
-function rateSheetPage_wcStateDropdownAction(){
-    if(getSelectedWCState() === 'invalid'){
-        hideRateSheeWCStateChosenContainer()
+function rateSheetPage_RateSheetStateDropdownAction(){
+    if(getSelectedRateSheetState() === 'invalid'){
+        hideRateSheetWCStateChosenContainer()
         resetRateSheetRows()
         hideRateSheetTestContainer()
+
+        hideRateSheetStateChosenContainer()
     }
     else{
         var rateSheetID = getSelectedRateSheetID()
         var rateSheetObject = getRateSheetObjectByID(rateSheetID)
-        var state = getSelectedWCState()
+        var state = getSelectedRateSheetState()
 
-        //CHECK FOR SAVED RATE SHEET ARRAY FOR CHOSEN STATE
-        if(rateSheetObject.rateSheetArray){
-            var currentRateSheetArray = JSON.parse(rateSheetObject.rateSheetArray)
-            var selectedState = getSelectedWCState()
+        if(rateSheetObject.cov === 'WC'){
+            //CHECK FOR SAVED RATE SHEET ARRAY FOR CHOSEN STATE
+            if(rateSheetObject.rateSheetArray){
+                var currentRateSheetArray = JSON.parse(rateSheetObject.rateSheetArray)
+                var selectedState = getSelectedRateSheetState()
 
-            buildWCRateSheetRowsHTML(currentRateSheetArray, selectedState)
+                buildWCRateSheetRowsHTML(currentRateSheetArray, selectedState)
 
-            formatRateSheetRows()
+                formatRateSheetRows()
+            }
+
+            showRateSheetWCStateChosenContainer()
+        }
+        else{
+            if(rateSheetObject.rateSheetArray){
+                buildRateSheetRowsHTML(state)
+
+            }
+
+            showRateSheetStateChosenContainer()
         }
 
-        showRateSheetWCStateChosenContainer()
     }
+}
+function loadSavedRateSheetArrayToRulesBuilderStateModel(rateSheetObject){
+    rulesDataModelObject.parseJSON(rateSheetObject.rateSheetArray)
 }
 function buildWCRateSheetRowsHTML(rateSheetArray, state){
     //IF CURRENT SELECTED RATE OBJECT HAS A RATE SHEET FOR SELECTED STATE
@@ -3008,7 +3096,7 @@ function buildWCRateSheetRowsHTML(rateSheetArray, state){
             if( $(".rateSheetRow[data-rateID='" + rateCode + "']").length === 0 ){
                 var rateObject = getWCRateObjectByIDAndState(rateCode, state)
 
-                $('#' + rateObject.howProcessed + '_rateSheetRowsContainer').append( rateSheetRowHTML(rateObject))
+                $('#' + rateObject.howProcessed + '_rateSheetRowsContainer').append( wcRateSheetRowHTML(rateObject))
 
                 //IF RATE CODE IS A EMPLOYER LIABILITY LINE, ADD THE MIN PREMIUM FOR EMPLOYER LIABILITY
 
@@ -3033,12 +3121,17 @@ function buildWCRateSheetRowsHTML(rateSheetArray, state){
         hideRateSheetTestContainer()
     }
 }
+function buildRateSheetRowsHTML(state){
+    RATESHEETWELL_DOMOBJECT.setRuleSetObject(state)
+    RATESHEETWELL_DOMOBJECT.redraw()
+    // $('#rateSheet_StateChosen').html( rulesDataModelObject.getRuleSet(state).DOMElement() )
+}
 function resetRateSheetPage(){
     //CLEAR RATE DETAIL INPUTS
     $('#rateSheetPage_RateSheetsDropdown').val('invalid')
     $('#rateSheetIDInput').val('')
     $('#rateSheetDescriptionInput').val('')
-    $('#wcStateDropdown').val('invalid')
+    $('#rateSheetStateDropdown').val('invalid')
 
     resetRateSheetRows()
 }
@@ -3054,26 +3147,40 @@ function hideRateSheetContainer(){
 function showRateSheetContainer(){
     $('#rateSheetContainer').css('display', '')
 }
-function hideRateSheeWCStateChosenContainer(){
+function hideRateSheetWCStateChosenContainer(){
     $('#wcRateSheet_StateChosen').css('display', 'none')
+
 }
 function showRateSheetWCStateChosenContainer(){
     $('#wcRateSheet_StateChosen').css('display', '')
+    hideRateSheetStateChosenContainer()
+}
+function hideRateSheetStateChosenContainer(){
+    $('#rateSheet_StateChosen').css('display', 'none')
+}
+function showRateSheetStateChosenContainer(){
+    $('#rateSheet_StateChosen').css('display', '')
+    hideRateSheetWCStateChosenContainer()
 }
 
 function openSelectRateCodeModal_RateCode(){
-    fillSelectRateCodeModalWithRates("WCRATECODES")
+    var rateSheetObject = getRateSheetObjectByID(getCurrentSelectedRateSheetID())
+    var company = rateSheetObject.company
+    var covID = rateSheetObject.cov
+    var state = getSelectedRateSheetState()
+
+    fillSelectRateCodeModalWithRates(company, covID, state)
+
     $('#selectRateCodeModal').modal('show')
 }
 function hideSelectRateCodeModal(){
     $('#selectRateCodeModal').modal('hide')
 }
-function modalBodyHTML(rateType){
+function modalBodyHTML(company, covID, state){
     var htmlString =""
 
-    if(rateType === 'WCRATECODES'){
-        var state = $('#wcStateDropdown').val()
-        var prodID = 'WC13'
+    if(covID){
+        var state = $('#rateSheetStateDropdown').val()
 
         //HEADER ROWS FOR WC RATES ONLY
         htmlString = htmlString +
@@ -3112,17 +3219,19 @@ function modalBodyHTML(rateType){
             "   </div>" +
             "</div>"
 
-        for(var i=0;i<wcRates.length; i++){
-            if(state === wcRates[i].state &&
-                prodID === wcRates[i].product ){
+        for(var i=0;i<rateCodes.length; i++){
+            if(state === rateCodes[i].state &&
+                company === rateCodes[i].company &&
+                covID === rateCodes[i].cov ){
 
-                var rateCode = wcRates[i].code
-                var rateDescription = wcRates[i].description
-                var rateValue = wcRates[i].rate
-                var ratePremium = wcRates[i].premium
-                var rateFlatFlag = wcRates[i].flat
-                var rateNonModFlag = wcRates[i].nonMod
-                var rateHowProcessed = wcRates[i].howProcessed
+                var rateCodeID = rateCodes[i].rateCodeID
+                var rateCode = rateCodes[i].code
+                var rateDescription = rateCodes[i].description
+                var rateValue = rateCodes[i].rate
+                var ratePremium = rateCodes[i].premium
+                var rateFlatFlag = rateCodes[i].flat
+                var rateNonModFlag = rateCodes[i].nonMod
+                var rateHowProcessed = rateCodes[i].howProcessed
 
                 var backgroundcolor = ""
                 if(i%2 === 0){
@@ -3133,7 +3242,7 @@ function modalBodyHTML(rateType){
                     "<div class='row addRateRow' style='" + backgroundcolor + "'> " +
                     "   <div class='col-xs-1'> " +
                     "       <label class='checkBoxLabel checkboxVerticalLayout'> " +
-                    "           <input type='checkbox' class='addRateCheckbox' value='" + rateCode + "' id='" + rateCode + "_AddRateCheckbox'>" +
+                    "           <input type='checkbox' class='addRateCheckbox' value='" + rateCodeID + "' id='" + rateCodeID + "_AddRateCheckbox'>" +
                     "       </label>" +
                     "   </div> " +
                     "   <div class='col-xs-1'>" +
@@ -3170,74 +3279,13 @@ function modalBodyHTML(rateType){
             }
         }
     }
-    else{
-
-        //HEADER ROWS
-        htmlString = htmlString +
-            "<div class='row'> " +
-            "<div class='col-xs-1'> " +
-            "   <label class=''> Select" +
-            "   </label>" +
-            "</div> " +
-            "<div class='col-xs-2'>" +
-            "   <label class=''> Rate Code" +
-            "   </label>" +
-            "</div>" +
-            "<div class='col-xs-4'>" +
-            "   <label class=''> Rate ID" +
-            "   </label>" +
-            "</div>" +
-            "<div class='col-xs-4'>" +
-            "   <label class=''> Description" +
-            "   </label>" +
-            "</div>" +
-            "</div>"
-
-        for(var i=0;i<rates.length; i++){
-            if( rateType === rates[i].rateType){
-                var rateID = rates[i].rateID
-                var rateCode = rates[i].rateCode
-                var rateDescription = rates[i].description
-
-                if(rateCode === null){
-                    rateCode = ""
-                }
-
-                var backgroundcolor = ""
-                if(i%2 === 0){
-                    backgroundcolor = "background-color: #8bdffb21;"
-                }
-
-                htmlString = htmlString +
-                    "<div class='row addRateRow' style='" + backgroundcolor + "'> " +
-                    "<div class='col-xs-1'> " +
-                    "   <label class='checkBoxLabel checkboxVerticalLayout'> " +
-                    "       <input type='checkbox' class='addRateCheckbox' value='" + rateID + "' id='" + rateID + "_AddRateCheckbox'>" +
-                    "   </label>" +
-                    "</div> " +
-                    "<div class='col-xs-2'>" +
-                    "   <span>" + rateCode +
-                    "   </span>" +
-                    "</div>" +
-                    "<div class='col-xs-4'>" +
-                    "   <span>" + rateID +
-                    "   </span>" +
-                    "</div>" +
-                    "<div class='col-xs-4'>" +
-                    "   <span>" + rateDescription +
-                    "   </span>" +
-                    "</div>" +
-                    "</div>"
-            }
-        }
-    }
 
 
 
     return htmlString
 }
-function fillSelectRateCodeModalWithRates(rateType){
-    $('#selectRateCodeModalBodyContainer').html( modalBodyHTML(rateType) )
+function fillSelectRateCodeModalWithRates(company, covID, state){
+    $('#selectRateCodeModalBodyContainer').html( modalBodyHTML(company, covID, state) )
 }
 function checkEntireRowOnClick(elementClicked){
     if( !$(elementClicked).is(':checkbox')){
@@ -3246,29 +3294,22 @@ function checkEntireRowOnClick(elementClicked){
     }
 }
 
-function getWCRateObjectByIDAndState(rateCode, state){
-    var prodID = 'WC13'
-    for(var i=0;i<wcRates.length;i++){
-        if(rateCode === wcRates[i].code &&
-            state === wcRates[i].state &&
-            prodID === wcRates[i].product){
-            return wcRates[i]
-        }
-    }
-}
-function addSelectedWCRateCodes(){
-    //GET CURRENT SELECTED STATE
-    var state = $('#wcStateDropdown').val()
 
+function addSelectedRateCodes(){
     //FIND CHECKED RATE CODES
     $('.addRateRow input.addRateCheckbox:visible:checked').each(function(){
-        var rateCode = $(this).val()
+        var rateCodeID = $(this).val()
 
         //CHECK IF RATE ROW EXISTS
-        if( $(".rateSheetRow[data-rateID='" + rateCode + "']").length === 0 ){
-            var rateObject = getWCRateObjectByIDAndState(rateCode, state)
+        if( $(".rateSheetRow[data-ratecodeid='" + rateCodeID + "']").length === 0 ){
+            var rateObject = getRateCodeObjectByID(rateCodeID)
 
-            $('#' + rateObject.howProcessed + '_rateSheetRowsContainer').append( rateSheetRowHTML(rateObject))
+            if(rateObject.cov === 'WC'){
+                $('#' + rateObject.howProcessed + '_rateSheetRowsContainer').append( wcRateSheetRowHTML(rateObject))
+            }
+            else{
+                $('#mainRateSheetRows').append( rateSheetRowHTML(rateObject))
+            }
 
             $('.modal').modal('hide')
         }
@@ -3278,41 +3319,22 @@ function addSelectedWCRateCodes(){
     });
     formatRateSheetRows()
 }
+function createNewRateCodeModal(){
+    $('.modal').modal('hide')
+    setTimeout(function() {
+        $('#createNewRateCodeModal').modal('show')
+    }, 500);
 
-function addSelectedRatedPremiumRateCodes(){
-    //FIND CHECKED RATE CODES
-    $('.addRateRow input.addRateCheckbox:visible:checked').each(function(){
-        var rateID = $(this).val()
-
-        //CHECK IF RATE ROW EXISTS
-        if( $(".rateSheetRow[data-rateID='" + rateID + "']").length === 0 ){
-            $('#rateSheetRatedPremiumRowsContainer').append( rateSheetRowHTML( getRateObjectByID(rateID) ) )
-
-            $('.modal').modal('hide')
-        }
-        else{
-        }
-
-    });
-    formatRateSheetRows()
 }
-function addSelectedRatedMinimumPremiumRateCodes(){
-    //FIND CHECKED RATE CODES
-    $('.addRateRow input.addRateCheckbox:visible:checked').each(function(){
-        var rateID = $(this).val()
+function goBackToSelectRateCodeModal(){
+    $('.modal').modal('hide')
+    setTimeout(function() {
+        ADDRULEMODAL_DOMOBJECT.redraw()
+        ADDRULEMODAL_DOMOBJECT.openModal()
+    }, 500);
 
-        //CHECK IF RATE ROW EXISTS
-        if( $(".rateSheetRow[data-rateID='" + rateID + "']").length === 0 ){
-            $('#rateSheetRatedPremiumRowsContainer').append( rateSheetRowHTML( getRateObjectByID(rateID) ) )
-
-            $('.modal').modal('hide')
-        }
-        else{
-        }
-
-    });
-    formatRateSheetRows()
 }
+
 function formatRateSheetRows(){
     $('.rateSheetRow').each(function(index){
         var thisRow = $(this)
@@ -3327,7 +3349,6 @@ function formatRateSheetRows(){
         }
         else{
             $(thisRow).css('background-color', 'rgba(177, 213, 224, 0.21)')
-
         }
 
     })
@@ -3366,14 +3387,41 @@ function deleteRateSheetRow(deleteButton){
     $(deleteButton).closest('.rateSheetRow').remove()
 }
 
+function getWCRateObjectByIDAndState(rateCode, state){
+    var prodID = 'WC13'
+    for(var i=0;i<wcRates.length;i++){
+        if(rateCode === wcRates[i].code &&
+            state === wcRates[i].state &&
+            prodID === wcRates[i].product){
+            return wcRates[i]
+        }
+    }
+}
+function getRateCodeObject(rateCode, company, state, covID){
+    for(var i=0; i<rateCodes.length; i++){
+        if(rateCode === rateCodes[i].code &&
+            company === rateCodes[i].company &&
+            state === rateCodes[i].state &&
+            covID === rateCodes[i].cov){
+            return rateCodes[i]
+        }
+    }
+}
+function getRateCodeObjectByID(rateCodeID){
+    for(var i=0;i<rateCodes.length;i++){
+        if(rateCodeID === rateCodes[i].rateCodeID){
+            return rateCodes[i]
+        }
+    }
+}
 function getSelectedRateSheetID(){
     var rateSheetID = $('#rateSheetPage_RateSheetsDropdown').val()
 
     return rateSheetID
 
 }
-function getSelectedWCState(){
-    var state = $('#wcStateDropdown').val()
+function getSelectedRateSheetState(){
+    var state = $('#rateSheetStateDropdown').val()
 
     return state
 }
@@ -3384,7 +3432,7 @@ function buildWCRateSheetJSON(){
 
     if(currentRateSheetObject){
 
-        var state = getSelectedWCState()
+        var state = getSelectedRateSheetState()
 
         //CHECK VALID STATE IS SELECTED
         if(state === 'invalid'){
@@ -3403,7 +3451,7 @@ function buildWCRateSheetJSON(){
             //INSERT BLANK ARRAY FOR STATES THAT ARE MISSING
 
             //LOOP THROUGH ALL STATES IN STATE DROPDOWN
-            $('#wcStateDropdown option').each(function(){
+            $('#rateSheetStateDropdown option').each(function(){
                 var stateVal = $(this).val()
 
                 if(stateVal.length === 2){
@@ -3417,7 +3465,7 @@ function buildWCRateSheetJSON(){
         //AT THIS POINT, THERE SHOULD BE A RATE SHEET ARRAY WITH ALL STATES
         //BUILD ARRAY FOR STATE SELECTED.
 
-        var selectedState = getSelectedWCState()
+        var selectedState = getSelectedRateSheetState()
         var stateRateCodeArray = []
 
         //LOOP THROUGH RATE SHEET ROWS
@@ -3435,6 +3483,128 @@ function buildWCRateSheetJSON(){
     }
 
 }
+function buildRateSheetJSON(){
+    //BUILD WC RATE SHEET ARRAY FOR CURRENT SELECTED WC RATE SHEET
+    var rateSheetJSON = {}
+    var currentRateSheetObject = getRateSheetObjectByID(getSelectedRateSheetID())
+
+    if(currentRateSheetObject){
+
+        var state = getSelectedRateSheetState()
+
+        //CHECK VALID STATE IS SELECTED
+        if(state === 'invalid'){
+            return undefined
+        }
+
+        //CHECK IF CURRENT RATE SHEET OBJECT HAS A VALID RATE SHEET ARRAY, IF NO ARRAY THAN CREATE NEW BLANK ONE
+        try{
+            rateSheetJSON = JSON.parse(currentRateSheetObject.rateSheetArray)
+        }
+        catch(e){
+            rateSheetJSON = {}
+        }
+
+        if(rateSheetJSON){
+            //INSERT BLANK ARRAY FOR STATES THAT ARE MISSING
+
+            //LOOP THROUGH ALL STATES IN STATE DROPDOWN
+            $('#rateSheetStateDropdown option').each(function(){
+                var stateVal = $(this).val()
+
+                if(stateVal.length === 2){
+                    if(rateSheetJSON[stateVal] === undefined){
+                        rateSheetJSON[stateVal] = []
+                    }
+                }
+            })
+        }
+
+        //AT THIS POINT, THERE SHOULD BE A RATE SHEET ARRAY WITH ALL STATES
+        //BUILD ARRAY FOR STATE SELECTED.
+
+        var selectedState = getSelectedRateSheetState()
+        var stateRateCodeArray = []
+
+        //LOOP THROUGH RATE SHEET ROWS
+        $('#mainRateSheetRows .rateSheetRow').each(function(){
+            var rateCodeID = $(this).attr('data-ratecodeid')
+
+            if(rateCodeID.length > 0){
+                stateRateCodeArray.push(rateCodeID)
+            }
+        });
+
+        rateSheetJSON[selectedState] = stateRateCodeArray
+
+        return rateSheetJSON
+    }
+}
+function buildRateSheetRuleSetJSON(){
+    //BUILD RATE SHEET RULE SET MODEL FOR CURRENT RATE SHEET
+    var rateSheetJSON = {}
+    var currentRateSheetObject = getRateSheetObjectByID(getSelectedRateSheetID())
+
+    if(currentRateSheetObject){
+        var state = getSelectedRateSheetState()
+
+        //CHECK VALID STATE IS SELECTED
+        if(state === 'invalid'){
+            return undefined
+        }
+
+        //CHECK IF CURRENT RATE SHEET OBJECT HAS A VALID RATE SHEET ARRAY, IF NO ARRAY THAN CREATE NEW BLANK ONE
+        try{
+            rateSheetJSON = JSON.parse(currentRateSheetObject.rateSheetArray)
+        }
+        catch(e){
+            rateSheetJSON = {}
+        }
+
+        if(rateSheetJSON){
+            //INSERT BLANK ARRAY FOR STATES THAT ARE MISSING
+
+            //LOOP THROUGH ALL STATES IN STATE DROPDOWN
+            $('#rateSheetStateDropdown option').each(function(){
+                var stateVal = $(this).val()
+
+                if(stateVal.length === 2){
+                    if(rateSheetJSON[stateVal] === undefined){
+                        rateSheetJSON[stateVal] = []
+                    }
+                }
+            })
+        }
+
+        //AT THIS POINT, THERE SHOULD BE A RATE SHEET ARRAY WITH ALL STATES
+        //BUILD ARRAY FOR STATE SELECTED.
+
+        var selectedState = getSelectedRateSheetState()
+        var stateRateCodeArray = []
+
+        //LOOP THROUGH RATE SHEET ROWS
+        $('#mainRateSheetRows .rateSheetRow').each(function(){
+            var rateCodeID = $(this).attr('data-ratecodeid')
+
+            if(rateCodeID.length > 0){
+                stateRateCodeArray.push(rateCodeID)
+            }
+        });
+
+        rateSheetJSON[selectedState] = stateRateCodeArray
+
+        return rateSheetJSON
+    }
+}
+
+function editPremiumLogicButtonAction(button){
+    var rateCodeRow = $(button).closest('.rateSheetRow')
+    //TODO:IF RATE CODE ROW HAS SAVED RULES, LOAD THE SAVED RULE SET
+    //TODO:IF ELSE OPEN BLANK RULE BUILDER MDOAL
+    showLogicBuilderModal(rateCodeRow)
+}
+
+
 
 
 //RATE SHEET TEST FUNCTIONS
@@ -3501,7 +3671,7 @@ function buildRateSheetTestDisplay(){
     })
 
     //LOOP OVER RATE CODE ARRAY
-    var state = getSelectedWCState()
+    var state = getSelectedRateSheetState()
     for(var i=0; i<rateCodeArray.length; i++){
         var rateCode = rateCodeArray[i]
         var rateCodeObject = getWCRateObjectByIDAndState(rateCode, state)
@@ -3518,7 +3688,6 @@ function buildRateSheetTestDisplay(){
         }
         else if(howProcessed === '2RATE'){
             //PAYROLL PREMIUM ROW
-
             //FIND THE INPUT WITH THE RATE CODE
             testResultRowObject.basisValue = getIntValueOfMoney($(".rateSheetTestInput[data-ratecode='" + rateCode + "']").val())
             testResultRowObject.rate = rateCodeObject.rate
@@ -6327,7 +6496,17 @@ function saveRateSheet(){
     var dataMap ={}
     dataMap.rateSheetID = getCurrentSelectedRateSheetID()
     dataMap.description = $('#rateSheetDescriptionInput').val()
-    dataMap.rateSheetArray = JSON.stringify(buildWCRateSheetJSON())
+    dataMap.company = $('#rateSheetCompanyInput').val()
+    dataMap.cov = $('#rateSheetCoverageIDInput').val()
+
+    if(dataMap.cov === 'WC'){
+        dataMap.rateSheetArray = JSON.stringify(buildWCRateSheetJSON())
+    }
+    else{
+        // dataMap.rateSheetArray = JSON.stringify(buildRateSheetJSON())
+        dataMap.rateSheetArray = JSON.stringify(rulesDataModelObject.getModel())
+
+    }
 
     $.ajax({
         method: "POST",
@@ -6405,6 +6584,63 @@ function refreshRateSheets(){
                 }
 
 
+            }
+        });
+}
+
+function createNewRateCode(){
+    //CHECK IF ALL REQUIRED FIELDS ARE FILLED
+    var rateCodeID = $('#newRateCode_rateCodeID').val().trim()
+    var code = $('#newRateCode_code').val().trim()
+    var company = $('#newRateCode_company').val().trim()
+    var state = $('#newRateCode_state').val().trim()
+    var coverage = $('#newRateCode_cov').val().trim()
+    var description = $('#newRateCode_description').val().trim()
+
+    if(rateCodeID.length === 0 || code.length === 0 || company === 'invalid' || state === 'invalid' || coverage === 'invalid' || description.length === 0){
+        alert("Complete All Fields")
+    }
+    else{
+        $.ajax({
+            method: "POST",
+            url: "/Admin/createRateCode",
+            data: {
+                rateCodeID: rateCodeID,
+                code: code,
+                company: company,
+                state: state,
+                coverage: coverage,
+                description: description
+            }
+        })
+            .done(function(msg) {
+                if(msg === "Success"){
+                    alert("Saved")
+                    refreshRateCodes()
+                    goBackToSelectRateCodeModal()
+                }
+                else if(msg === "Error"){
+                    alert("Error Saving")
+                }
+                else{
+                    alert(msg)
+                }
+            });
+    }
+}
+function refreshRateCodes(){
+    $.ajax({
+        method: "POST",
+        url: "/Admin/refreshRateCodes",
+        data: {
+        }
+    })
+        .done(function(msg) {
+            if(msg === "Error"){
+                console.log("Error: refreshRates")
+            }
+            else{
+                rateCodes = jsonStringToObject(msg)
             }
         });
 }

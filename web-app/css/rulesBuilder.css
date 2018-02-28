@@ -1,0 +1,177 @@
+.logicBuilderRow{
+    padding-top:2px;
+    padding-bottom:2px;
+    cursor: pointer;
+    background: rgb(232, 232, 232);
+    margin-bottom:1px;
+}
+.logicBuilderRow.active{
+    background: rgba(131, 175, 216, 0.41);
+}
+
+
+
+.logicPreviewObjectContainer{
+     display:inline-block;
+     padding-left: 4px;
+     padding-right: 4px;
+ }
+.dataModelObject{
+    display:inline-block;
+}
+.previewModalRow{
+    width:100%;
+}
+
+.logicPreviewObject, .rulePreviewObjects, .ruleHintObject, .previewObjectInputContainer{
+    display:inline-block;
+}
+.previewObjectInput{
+    display:inline-block;
+    vertical-align: top;
+}
+
+.condition_booleanLogic_ObjectContainer, .condition_statement_ObjectContainer, .condition_actions_ObjectContainer{
+    margin-top:4px;
+    margin-bottom:4px;
+}
+
+
+button.logicPreviewHint{
+    border: 1px dashed;
+    background: rgba(255, 255, 255, 0);
+    color: gray;
+}
+button.logicPreviewHint:hover, button.logicPreviewHint:active, button.logicPreviewHint:focus{
+    background: rgba(255, 255, 255, 0);
+    color: gray;
+}
+
+.logicPreviewBtnGroupButton{
+    width:70px;
+}
+.logicPreviewInput{
+    width:120px;
+}
+.logicPreviewHintObject>.dropdown-menu>li>a , .logicPreviewObject>.dropdown-menu>li>a {
+    font-size:10px;
+}
+
+div.previewObjectInputContainer > input, div.previewObjectInputContainer > select{
+    max-width: 140px;
+    font-size: 10px;
+    font-weight:500;
+    height: 22px;
+    vertical-align: top;
+}
+
+div.ruleSetVariableContainer{
+    display: inline-block;
+    min-width: 520px;
+    margin-right: 20px;
+}
+div.ruleSetVariableContainer > .variableTypeFormGroup {
+    display:inline-block;
+    width:15%;
+}
+div.ruleSetVariableContainer > .variableNameFormGroup {
+    display:inline-block;
+    width:20%;
+}
+div.ruleSetVariableContainer > .variableValueFormGroup{
+    display:inline-block;
+    width:45%;
+}
+div.ruleSetVariableContainer > .variableValidationFeedback{
+    display:inline-block;
+    width:5%;
+    padding-left:5px;
+}
+
+div.ruleSetVariableContainer > .form-group > input, div.ruleSetVariableContainer > .form-group > select{
+    display: inline-block;
+    font-size: 10px;
+    height: 22px;
+    vertical-align: top;
+}
+div.ruleSetVariableContainer > .form-group > input.ruleSetVariableName{
+    background: #00a6ff08;
+    font-weight: 500;
+}
+div.ruleSetVariableContainer > .form-group > input.ruleSetVariableValue{
+    background: #0afc3a0a;
+    font-weight: 500;
+}
+
+div.rateSheetInputsContainer{
+    margin-top:12px;
+}
+
+
+/*RATE SHEET WELL ROWS*/
+#mainRateSheetRows .rateSheetRow{
+    max-height: 22px;
+    overflow:hidden;
+}
+.rateSheetRow{
+    -webkit-transition: max-height 0.5s;
+    -moz-transition: max-height 0.5s;
+    -ms-transition: max-height 0.5s;
+    -o-transition: max-height 0.5s;
+    transition: max-height 0.5s;
+    /*max-height: 0;*/
+}
+
+
+/*RATE SHEET WELL ROW PREMIOM LOGIC COLUMN*/
+button.editPremiumLogicButton{
+    font-size:9px;
+    display:inline-block;
+    vertical-align: top;
+    margin-right: 6px;
+}
+button.expandPremiumLogicDisplayButton{
+    font-size:9px;
+    display:inline-block;
+    vertical-align: top;
+}
+div.rateSheetRowPreview{
+    width:100%;
+    display:inline-block;
+}
+div.rowPreviewText{
+    display:inline-block;
+    width:100%;
+    font-size:10px;
+    line-height:2.1em;
+}
+
+div.rateSheetRowPreview > div > div.rowPreviewText > span{
+    display:inline-block;
+    vertical-align: top;
+}
+div.rateSheetRowPreview > div > div.rowPreviewText > div.rateSheetRowPreviewQuestion{
+    display:inline-block;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+div.rateSheetRowPreviewQuestion > div.form-group > label.questionText{
+    display: inline-block;
+    height:9px;
+    font-size:9px;
+    margin-right:10px;
+}
+div.rateSheetRowPreviewQuestion > div.form-group > select, div.rateSheetRowPreviewQuestion > div.form-group > input{
+    display: inline-block;
+    height:10px;
+    font-size:10px;
+    width: 120px;
+}
+
+
+/*QUESTIONS*/
+div.requiredQuestion > div.form-group > select, div.requiredQuestion > div.form-group > input{
+    height: 22px;
+    font-size: 10px;
+    font-weight: 500;
+}

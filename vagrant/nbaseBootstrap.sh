@@ -44,6 +44,13 @@ yes | unzip sqlfileProducts.zip
 sqlcmd -S localhost -U SA -P 'jakePoos521' -i /vagrant/files/sqlfileProducts.sql
 
 
+#CREATE GRAILS STARTUP SERVICE
+cp /vagrant/files/sysctlGrailsFile  /etc/systemd/system/grails.service
+systemctl enable grails.service
+systemctl start grails.service
+
+
+
 #CLONE NEEIS REPOSITORY
 #cd /universe/
 #rm -rf Neeis

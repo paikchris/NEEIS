@@ -19,6 +19,7 @@
         var cB = ${raw(productConditions)}
         var rO = ${raw(ruleEngineObjects)}
         var wC = ${raw(wcRates)}
+        var rC = ${raw(rateCodes)}
 
         //VERSION MODE SETUP
         var vM= false

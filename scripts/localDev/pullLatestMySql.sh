@@ -13,3 +13,12 @@ mysql -u root -p$MYSQLPW -e "DROP DATABASE IF EXISTS neeisPortal;"
 mysqladmin -u root -p$MYSQLPW create neeisPortal 
 mysql -u root -p$MYSQLPW neeisPortal --connect-expired-password  < /home/vagrant/backup_mysql_nightly.sql 
 
+
+
+#PUSHING LOCAL DEV TO DEV/ DON'T ATTEMPT UNLESS YOU KNOW WHAT YOU'RE DOING
+
+#mysql -u root -p -e "DROP DATABASE IF EXISTS neeisPortal;"
+#
+#
+#mysqladmin -u root -p create neeisPortal
+#mysql -u root -p neeisPortal --connect-expired-password  < /home/vagrant/localDevSQL.sql

@@ -203,6 +203,21 @@ function autoFillInputCallback(htmlElementArray){
     }
 }
 
+function dataManagementTestHelper(){
+    //CURRENT TEST HELPER FOR DATA MANAGEMENT
+    $('#ratingSheetNavTab').click()
+    if($('#rateSheetPage_RateSheetsDropdown').val() !== 'TEST2'){
+        $('#rateSheetPage_RateSheetsDropdown').val('TEST2')
+        $('#rateSheetPage_RateSheetsDropdown').trigger('change')
+    }
+    $('#rateSheetStateDropdown').val('CA')
+    $('#rateSheetStateDropdown').trigger('change')
+
+    $('.editPremiumLogicButton').eq(0).click()
+    // $('.addRatedPremiumButton').eq(1).click()
+
+}
+
 function autoGetTodaysDate(){
     //Check Drawer can be clicked
     var d = new Date();
