@@ -99,7 +99,7 @@ function formatAllRuleRows(){
         var thisRuleRowsContainer = $(this)
 
         //IF THIS RULE ROW CONTAINER IS EMPTY, INSERT THE INITIAL ADD ROW BUTTON
-        if($(thisRuleRowsContainer).children('.ruleRow').length === 0 && $(thisRuleRowsContainer).parent().hasClass('rulesEngineContainer')){
+        if( $(thisRuleRowsContainer).children('.ruleRow').length === 0 && $(thisRuleRowsContainer).parent().hasClass('rulesEngineContainer')){
             $(this).replaceWith(getInitRulesRow())
         }
         else{

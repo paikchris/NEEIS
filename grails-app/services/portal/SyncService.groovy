@@ -840,6 +840,7 @@ class SyncService {
     }
 
     def saveCoverageChanges(params){
+
         log.info "SAVING COVERAGE CHANGES"
         log.info params
 

@@ -8,6 +8,8 @@
     <script src="${resource(dir: 'js/utils/', file: "rulesEngine.js?ts=" + new Date().getTime())}"></script>
     <link rel="stylesheet" href="${resource(dir: 'css/utils', file: 'rulesEngine.css')}" type="text/css">
     <script src="${resource(dir: 'js/utils/', file: "ratingHelper.js?ts=" + new Date().getTime())}"></script>
+    <script src="${resource(dir: 'js/utils/', file: "rulesBuilder.js?ts=" + new Date().getTime())}"></script>
+    <link rel="stylesheet" href="${resource(dir: 'css', file: 'rulesBuilder.css')}" type="text/css">
     <script src="${resource(dir: 'js/utils/', file: "stringUtils.js?ts=" + new Date().getTime())}"></script>
     <script src="${resource(dir: 'js/vendor/', file: "numeral.min.js")}"></script>
     <script src="${resource(dir: 'js/vendor/', file: "math.js")}"></script>
@@ -33,6 +35,7 @@
         var rO = ${raw(ruleEngineObjects)}
         var rS = ${raw(rateSheets)}
         var wC = ${raw(wcRates)}
+        var rC = ${raw(rateCodes)}
 
 </script>
 </head>
@@ -46,7 +49,14 @@
             </div>
 
             <div class="col-xs-4 header-center">
-
+                <g:if test="${user.admin == "true"}">
+                    <button class="btn btn-xs btn-success" id="testHelper" type="button"
+                            style="background-color: rgb(105, 210, 255); border-color: rgb(105, 210, 255); margin: 2px;"
+                            onclick="dataManagementTestHelper()">
+                        <i class="fa fa-cogs" aria-hidden="true"></i>
+                        <span class="" style="font-size: 14px; font-weight: 500"> Test Helper</span>
+                    </button>
+                </g:if>
             </div>
         </div>
 
@@ -265,7 +275,7 @@
                                                             <select class="form-control rowConditionDropdown onChangeSaveOperation">
                                                                 <option class="alwaysOption" value="ALWAYS">ALWAYS</option>
                                                                 <option class="ifOption" value="IF">IF</option>
-                                                                <option class="ifElseOption" value="IFELSE" >IF ELSE</option>
+                                                                <option class="ifElseOption" value="IFELSE">IF ELSE</option>
                                                                 <option class="elseOption" value="ELSE" >ELSE</option>
                                                             </select>
                                                         </div>
@@ -1012,7 +1022,7 @@
                             </div>
                         </div>
                         <div class="col-xs-6">
-                            <button class="btn btn-sm btn-primary" style="margin-top:26px; display:" id="saveRateSheetButton">
+                            <button class="btn btn-sm btn-primary" style="margin-top:26px;" id="saveRateSheetButton">
                                 <span>SAVE</span>
                             </button>
                             <button type="button" class="btn btn-sm btn-success" id="addNew_RateSheet_Button" style="margin-top:26px" onclick="$('#createRateSheetModal').modal('show')">
@@ -1034,7 +1044,7 @@
                                 <div class="col-xs-2">
                                     <div class="form-group">
                                         <h6>Rate Sheet ID</h6>
-                                        <input class="form-control onChangeSaveRate" id="rateSheetIDInput" type="text">
+                                        <input class="form-control onChangeSaveRateSheet" id="rateSheetIDInput" type="text">
                                     </div>
                                 </div>
                             </div>
@@ -1042,7 +1052,33 @@
                                 <div class="col-xs-4">
                                     <div class="form-group">
                                         <h6>Rate Description</h6>
-                                        <input class="form-control onChangeSaveRate" id="rateSheetDescriptionInput" type="text">
+                                        <input class="form-control onChangeSaveRateSheet" id="rateSheetDescriptionInput" type="text">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-4">
+                                    <div class="form-group">
+                                        <h6>Company</h6>
+                                        <select class="form-control onChangeSaveRateSheet" id="rateSheetCompanyInput">
+                                            <option value="invalid">Select a Company</option>
+                                            <g:each var="company" in="${companyResults}">
+                                                <option value="${company.companyID}">${company.name}</option>
+                                            </g:each>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-2">
+                                    <div class="form-group">
+                                        <h6>Coverage ID</h6>
+                                        <select class="form-control onChangeSaveRateSheet" id="rateSheetCoverageIDInput">
+                                            <option value="invalid">Select Coverage</option>
+                                            <g:each var="coverage" in="${coverageResults}">
+                                                <option value="${coverage.coverageCode}">${coverage.coverageCode}</option>
+                                            </g:each>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -1061,8 +1097,8 @@
                                 <div class="row">
                                     <div class="col-xs-3">
                                         <div class="form-group">
-                                            <select class="form-control" id="wcStateDropdown" >
-                                                <option value="invalid" selected="selected">Select WC State</option>
+                                            <select class="form-control" id="rateSheetStateDropdown" >
+                                                <option value="invalid" selected="selected">Select State</option>
                                                 <option value="AL">Alabama</option>
                                                 <option value="AK">Alaska</option>
                                                 <option value="AZ">Arizona</option>
@@ -1124,22 +1160,25 @@
                                 <div id="wcRateSheet_StateChosen" style="display:none">
                                     %{--ADD RATE CODE BUTTON--}%
                                     <div class="row">
-                                        <div class="col-xs-5">
-                                            <button class='btn btn-sm btn-primary' id='addRatedPremiumButton' style=''>
+                                        <div class="col-xs-12">
+                                            <button class='btn btn-sm btn-primary pull-right addRatedPremiumButton' style=''>
                                                 <i class='fa fa-plus'></i> Add Rate Code
+                                            </button>
+                                            <button class='btn btn-sm btn-primary pull-right' style=''>
+                                                <i class='fa fa-copy'></i> Copy Current to Other States
                                             </button>
                                         </div>
                                     </div>
                                     <br>
                                     %{--SHEET ROWS HEADER--}%
-                                    <div class="row" id="rateSheetRowsHeader">
+                                    <div class="row rateSheetRowsHeader">
                                         <div class="col-xs-1">
                                             <label>#</label>
                                         </div>
                                         <div class="col-xs-1">
                                             <label>Code</label>
                                         </div>
-                                        <div class="col-xs-4">
+                                        <div class="col-xs-3">
                                             <label>Description</label>
                                         </div>
                                         <div class="col-xs-1">
@@ -1161,7 +1200,7 @@
 
                                         </div>
                                     </div>
-                                    %{--SHEET ROWS CONTAINER--}%
+                                    %{--WC SHEET ROWS CONTAINER--}%
                                     <div class="row" id="wcRateSheetRowsContainer">
                                         <div class="col-xs-12 rowContainer" id="1STD_rateSheetRowsContainer">
 
@@ -1203,8 +1242,6 @@
 
                                         </div>
                                     </div>
-
-
                                     <div id="wcRateSheetTestContainer" style="display:none">
                                         %{--RATE SHEET TEST INPUTS--}%
                                         <div class="row" id="rateSheetTestInputsContainer">
@@ -1351,6 +1388,62 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div id="rateSheet_StateChosen" style="display:none">
+                                    %{--ADD RATE CODE BUTTON--}%
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <button class='btn btn-sm btn-primary pull-right addRatedPremiumButton' style=''>
+                                                <i class='fa fa-plus'></i> Add Rate Code
+                                            </button>
+                                            <button class='btn btn-sm btn-primary pull-right' style=''>
+                                                <i class='fa fa-copy'></i> Copy Current to Other States
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    %{--SHEET ROWS HEADER--}%
+                                    <div class="row rateSheetRowsHeader">
+                                        <div class="col-xs-1">
+                                            <label>#</label>
+                                        </div>
+                                        <div class="col-xs-1">
+                                            <label>Code</label>
+                                        </div>
+                                        <div class="col-xs-3">
+                                            <label>Description</label>
+                                        </div>
+                                        <div class="col-xs-3">
+                                            <label>Premium Method</label>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <label>How Processed</label>
+                                        </div>
+                                        <div class="col-xs-2">
+
+                                        </div>
+                                    </div>
+
+                                    %{--All OTHER COVERAGES RATE SHEET ROWS CONTAINER--}%
+                                    <div class="row" id="rateSheetRowsContainer">
+                                        <div class="col-xs-12 rowContainer" id="mainRateSheetRows">
+
+                                        </div>
+                                    </div>
+                                    <div class="row" id="rateSheetTotalsContainer">
+                                        <div class="col-xs-2">
+                                            <div class="form-group">
+                                                <label>Total Premium</label>
+                                                <input class="form-control" type="text">
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <button type="button" class="btn btn-sm btn-info" style="font-size:9px">
+                                                <i class="fa fa-calculator" aria-hidden="true"></i>
+                                            </button>
                                         </div>
 
                                     </div>
@@ -2527,6 +2620,121 @@
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div>
+    <div class="modal fade" tabindex="-1" role="dialog" id="createNewRateCodeModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">Add New Rate Code</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>ID</label>
+                        <input type="text" class="form-control input-xs noSpacesInput" id="newRateCode_rateCodeID" placeholder="ID" style="text-transform: uppercase" maxlength="255">
+                    </div>
+                    <div class="form-group">
+                        <label>Rate Code</label>
+                        <input type="text" class="form-control input-xs noSpacesInput" id="newRateCode_code" placeholder="Rate Code" style="text-transform: uppercase" maxlength="255">
+                    </div>
+                    <div class="form-group">
+                        <label>Company</label>
+                        <select class="form-control" id="newRateCode_company" style="height:22px;">
+                            <option value="invalid" selected="selected">Select Company</option>
+                            <g:each var="company" in="${companyResults}">
+                                <option value="${company.companyID}">${company.companyID} - ${company.name}</option>
+                            </g:each>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>State</label>
+                        <select class="form-control" id="newRateCode_state" style="height:22px;" >
+                            <option value="invalid" selected="selected">Select State</option>
+                            <option value="AL">Alabama</option>
+                            <option value="AK">Alaska</option>
+                            <option value="AZ">Arizona</option>
+                            <option value="AR">Arkansas</option>
+                            <option value="CA">California</option>
+                            <option value="CO">Colorado</option>
+                            <option value="CT">Connecticut</option>
+                            <option value="DE">Delaware</option>
+                            <option value="DC">District Of Columbia</option>
+                            <option value="FL">Florida</option>
+                            <option value="GA">Georgia</option>
+                            <option value="GU">Guam</option>
+                            <option value="HI">Hawaii</option>
+                            <option value="ID">Idaho</option>
+                            <option value="IL">Illinois</option>
+                            <option value="IN">Indiana</option>
+                            <option value="IA">Iowa</option>
+                            <option value="KS">Kansas</option>
+                            <option value="KY">Kentucky</option>
+                            <option value="LA">Louisiana</option>
+                            <option value="ME">Maine</option>
+                            <option value="MD">Maryland</option>
+                            <option value="MA">Massachusetts</option>
+                            <option value="MI">Michigan</option>
+                            <option value="MN">Minnesota</option>
+                            <option value="MS">Mississippi</option>
+                            <option value="MO">Missouri</option>
+                            <option value="MT">Montana</option>
+                            <option value="NE">Nebraska</option>
+                            <option value="NV">Nevada</option>
+                            <option value="NH">New Hampshire</option>
+                            <option value="NJ">New Jersey</option>
+                            <option value="NM">New Mexico</option>
+                            <option value="NY">New York</option>
+                            <option value="NC">North Carolina</option>
+                            <option value="ND">North Dakota</option>
+                            <option value="OH">Ohio</option>
+                            <option value="OK">Oklahoma</option>
+                            <option value="OR">Oregon</option>
+                            <option value="PA">Pennsylvania</option>
+                            <option value="PR">Puerto Rico</option>
+                            <option value="RI">Rhode Island</option>
+                            <option value="SC">South Carolina</option>
+                            <option value="SD">South Dakota</option>
+                            <option value="TN">Tennessee</option>
+                            <option value="TX">Texas</option>
+                            <option value="UT">Utah</option>
+                            <option value="VT">Vermont</option>
+                            <option value="VI">Virgin Islands</option>
+                            <option value="VA">Virginia</option>
+                            <option value="WA">Washington</option>
+                            <option value="WV">West Virginia</option>
+                            <option value="WI">Wisconsin</option>
+                            <option value="WY">Wyoming</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Coverage</label>
+                        <select class="form-control" id="newRateCode_cov" style="height:22px;">
+                            <option value="invalid">Select Coverage</option>
+                            <g:each var="coverage" in="${coverageResults}">
+                                <option value="${coverage.coverageCode}">${coverage.coverageName}</option>
+                            </g:each>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <input type="text" class="form-control input-xs " id="newRateCode_description" placeholder="Rate Description" maxlength="255">
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-xs-4">
+                        </div>
+                        <div class="col-xs-2">
+
+                        </div>
+                        <div class="col-xs-6">
+                            <button type="submit" class="btn btn-primary pull-right" style="margin-left: 10px" onclick="createNewRateCode()">Save Changes</button>
+                            <button type="button" class="btn btn-primary pull-right" onclick="goBackToSelectRateCodeModal()">Cancel</button>
+
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
     <div class="modal fade" tabindex="-1" role="dialog" id="selectRateCodeModal">
         <div class="modal-dialog" role="document" style="width: 1000px;">
             <div class="modal-content">
@@ -2535,14 +2743,7 @@
                     <h4 class="modal-title">Select Rate Code</h4>
                 </div>
                 <div class="modal-body">
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <button type="button" class="btn btn-primary pull-right " style="margin-left: 10px" onclick="addSelectedWCRateCodes()">Add Selected</button>
-                            <button type="button" class="btn btn-primary pull-right" onclick="$('.modal').modal('hide')">Cancel</button>
-                        </div>
-                    </div>
-
-                    <div id="selectRateCodeModalBodyContainer">
+                    <div id="selectRateCodeModalBodyContainer" style="padding-top:10px; padding-bottom:10px;">
                         <div class="row">
                             <div class="col-xs-12">
                                 <select class="form-control">
@@ -2553,12 +2754,56 @@
                     </div>
                     <div class="row">
                         <div class="col-xs-4">
+                            <button type="button" class="btn btn-sm btn-success" style="margin-left: 10px" onclick="createNewRateCodeModal()">Add Selected</button>
                         </div>
                         <div class="col-xs-2">
 
                         </div>
                         <div class="col-xs-6">
-                            <button type="button" class="btn btn-primary pull-right" style="margin-left: 10px" onclick="addSelectedWCRateCodes()">Add Selected</button>
+                            <button type="button" class="btn btn-sm btn-primary pull-right" style="margin-left: 10px" onclick="addSelectedRateCodes()">Add Selected</button>
+                            <button type="button" class="btn btn-sm btn-primary pull-right" onclick="$('.modal').modal('hide')">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <div class="modal fade" tabindex="-1" role="dialog" id="editRateCodeLogic" data-ratecodeid="">
+        <div class="modal-dialog" role="document" style="width: 1000px;">
+            <div class="modal-content" id="previewModalContentContainer">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">Edit Rate Code Actions</h4>
+                </div>
+                <div class="modal-body" >
+                    <div class="row">
+                        <div class="col-xs-10">
+                            <h5 id="previewModalHeader">Premium Logic</h5>
+                            <div class="well" id="logicBuilderRowsContainer">
+                                <div class="row logicBuilderRow">
+                                    <div class="col-xs-1">
+                                        <span>1</span>
+                                    </div>
+                                </div>
+                                <div class="row logicBuilderRow">
+                                    <div class="col-xs-1">
+                                        <span>2</span>
+                                    </div>
+                                </div>
+                                <span class="label label-danger">IF</span>
+                            </div>
+                        </div>
+                        <div class="col-xs-2">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-4">
+                        </div>
+                        <div class="col-xs-2">
+
+                        </div>
+                        <div class="col-xs-6">
+                            <button type="button" class="btn btn-primary pull-right" style="margin-left: 10px" onclick="saveRateSheet()">Save</button>
                             <button type="button" class="btn btn-primary pull-right" onclick="$('.modal').modal('hide')">Cancel</button>
                         </div>
                     </div>

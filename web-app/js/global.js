@@ -204,6 +204,7 @@ function initializeGlobalListeners(){
     capitalizeFirstLettersInputInit()
     emailInputInit()
     numericInputOnlyInit()
+    noSpacesInputInit()
 
     //MULTIROW
     multiRowInputInit()
@@ -350,6 +351,13 @@ function numericInputOnlyInit(){
         $(this).val( stringWithOnlyNumbers )
     });
 
+}
+function noSpacesInputInit(){
+    $(document.body).on('change', '.noSpacesInput', function(e) {
+        var originalString = $(this).val().trim()
+
+        $(this).val(replaceAllSpacesWith(originalString, ""))
+    });
 }
 
 function multiRowInputInit(){

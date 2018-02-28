@@ -4,7 +4,6 @@ import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import groovy.json.JsonOutput
 import groovy.sql.Sql
-import helper.Utils;
 import portal.DAO.*
 import portal.Utils.Email;
 
@@ -19,7 +18,6 @@ class MainController {
 
     def beforeInterceptor = [action: this.&checkUser]
     def dataSource_aim
-    AIMSQL aimDAO = new AIMSQL();
     Email emailHelper = new Email()
 
     def timeZone = TimeZone.getTimeZone('PST')
@@ -192,6 +190,13 @@ class MainController {
         wcRateResults.sort { it.code }
         String wcRates = utilService.gormResultsToJSObject(wcRateResults)
 
+        //RATE CODES
+        List <Ratings> rateCodeResults = portal.Ratings.list()
+        rateCodeResults.sort { it.code }
+        String rateCodes = utilService.gormResultsToJSObject(rateCodeResults)
+
+
+
 
 
 
@@ -328,6 +333,7 @@ class MainController {
          rateSheetResults: rateSheetResults, rateSheets: rateSheets,
          wcRateResults: wcRateResults, wcRates: wcRates,
          ruleEngineObjects: ruleEngineObjects,
+         rateCodeResults: rateCodeResults, rateCodes: rateCodes,
 
          versionMode:versionMode,
          originalVersion: params.editingVersion,

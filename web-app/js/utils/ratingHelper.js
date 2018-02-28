@@ -951,7 +951,6 @@ function getRatingBasisQuestionAbbrev(questionID){
 
 
 //RATING LOGIC
-
 function runWCRateSheet(MODE, productObject){
     //IF MODE IS PREMIUMDISPLAY: BUILD PREMIUMLINEHTML AND RETURN IT
     //IF MODE IS TOTAL: RETURN TOTAL PREMIUM AND FEES
@@ -1242,4 +1241,6 @@ function runWCRateSheet(MODE, productObject){
         return rateSheetTotalFees
     }
 }
+
+
 

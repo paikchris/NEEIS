@@ -19,7 +19,6 @@ function getQuestionObjectByID(qID){
 function getQuestionHTML(qID, options){
     var question = getQuestionObjectByID(qID)
 
-
     var questionText = (typeof options.questionText === 'undefined') ? question.questionText : options.questionText
     var labelStyle = (typeof options.labelStyle === 'undefined') ? "" : options.labelStyle
 
@@ -70,6 +69,8 @@ function getQuestionHTML(qID, options){
     var faIconClass = (typeof options.faIconClass === 'undefined') ? question.faIconClass : options.faIconClass
     var faIconStyle = (typeof options.faIconStyle === 'undefined') ? question.faIconStyle : options.faIconStyle
 
+    var questionAnswer = (options && options.questionAnswer ? options.questionAnswer : undefined)
+
     //HIDDEN DIV STUFF
     var hiddenQuestionTriggerIDMap = (typeof options.hiddenQuestionTriggerIDMap === 'undefined') ? question.hiddenQuestionTriggerIDMap : options.hiddenQuestionTriggerIDMap
 
@@ -77,8 +78,15 @@ function getQuestionHTML(qID, options){
 
 
     //CONTAINER ELEMENT, WIDTH AND GRID SIZE
+    var bootstrapGridString = ""
+    if(gridColumns === "0"){
+        bootstrapGridString = ""
+    }
+    else{
+        bootstrapGridString = "col-" + gridSize + "-" + gridColumns
+    }
     var questionContainerElem = $(
-        "<div class='col-" + gridSize + "-" + gridColumns + " " + containerClass + "' " +
+        "<div class='" + bootstrapGridString + " " + containerClass + "' " +
         formatDataAttributeStringFromMap(containerDataAttr) + "" +
         "style='" + containerStyle + "'" +
         "> " +
@@ -116,6 +124,7 @@ function getQuestionHTML(qID, options){
             "style='" + inputStyle + "' " +
             "id='" + qID + "' " +
             "placeholder='" + htmlPlaceholder + "' " +
+            (questionAnswer !== undefined ? "value='" + questionAnswer + "'" : "" ) +
             ">")
 
         //IF INPUT HAS A MAX LENGTH
@@ -157,8 +166,6 @@ function getQuestionHTML(qID, options){
                 $(inputGroupDivContainer).prepend($(inputAddOnHTML))
             }
             else{
-
-
                 $(inputGroupDivContainer).append($(inputAddOnHTML))
                 $(inputGroupDivContainer).append($(inputElement))
 
@@ -358,16 +365,22 @@ function getQuestionHTML(qID, options){
             var dropdownOptionsValTextMap = jsonStringToObject(dropdownOptionsValText)
             var dropdownOptionsValueArray = Object.keys(dropdownOptionsValTextMap)
 
+            if(dropdownOptionsValueArray[0] !== 'invalid'){
+                optionElement = $("<option value='invalid' >Select One</option>")
+                $(inputElement).append($(optionElement))
+            }
+
             for(var i=0;i<dropdownOptionsValueArray.length;i++){
                 var thisOptionValue = dropdownOptionsValueArray[i]
                 var thisOptionText = dropdownOptionsValTextMap[thisOptionValue]
 
-
-                var optionElement = $("<option value='" + thisOptionValue + "' >" + thisOptionText + "</option>")
-                if(i === 0){
-                    optionElement = $("<option value='invalid' >Select One</option>")
-                    $(optionElement).attr('selected', 'selected')
+                var selectedText = ""
+                if(questionAnswer === thisOptionValue){
+                    selectedText = "selected"
                 }
+
+
+                var optionElement = $("<option value='" + thisOptionValue + "' " + selectedText + " >" + thisOptionText + "</option>")
 
                 $(inputElement).append($(optionElement))
             }
@@ -709,6 +722,74 @@ function getNewSubmissionUWPreviewQuestion(qID, options){
     }
 }
 
+//RATE SHEET PAGE
+function getRateSheetTestQuestionHTML(qID, qAnswer){
+    var questionObject = getQuestionObjectByID(qID)
+
+    if(questionObject) {
+        var gridsize = "6"
+        var options = {
+            gridColumns: gridsize,
+            containerClass: "requiredQuestion ruleBuilderQuestion " + qID + "",
+            containerDataAttr: "data-questionid='" + qID + "' " +
+            "data-weight='" + questionObject.weight + "' " +
+            "data-inputtype='" + questionObject.inputType  + "'" +
+            "data-gridsize='" + gridsize  + "'",
+            formGroupStyle: 'margin-bottom:0px; ',
+            closeButton: false,
+            required: true,
+            questionAnswer: qAnswer
+        }
+
+        var stringHTML = getQuestionHTML(qID, options)
+
+        if(options.required === true){
+            var tempElement = $(stringHTML)
+            $(tempElement).find('input, select').attr('required', 'true')
+
+            stringHTML = $(tempElement)[0].outerHTML
+
+        }
+
+        if(qAnswer){
+            var tempElement = $(stringHTML)
+            $(tempElement).val(qAnswer)
+            stringHTML = $(tempElement)[0].outerHTML
+        }
+        return stringHTML
+    }
+}
+function getRateSheetRowPreviewQuestionHTML(qID){
+    var questionObject = getQuestionObjectByID(qID)
+
+    if(questionObject) {
+        var gridsize = "0"
+        var options = {
+            gridColumns: gridsize,
+            containerClass: "rateSheetRowPreviewQuestion " + qID + "",
+            containerDataAttr: "data-questionid='" + qID + "' " +
+            "data-weight='" + questionObject.weight + "' " +
+            "data-inputtype='" + questionObject.inputType  + "'" +
+            "data-gridsize='" + gridsize  + "'",
+            containerStyle: "width: 80%",
+            formGroupStyle: 'margin-bottom:0px;',
+            closeButton: false,
+            required: true
+        }
+
+        var stringHTML = getQuestionHTML(qID, options)
+
+        if(options.required === true){
+            var tempElement = $(stringHTML)
+            $(tempElement).find('input, select').attr('required', 'true')
+
+            stringHTML = $(tempElement)[0].outerHTML
+
+        }
+
+        return stringHTML
+    }
+}
 
 //QUESTION BUILDERS FOR NEW SUBMISSION PAGE
 function getNewSubmissionRequiredQuestion(qID){
