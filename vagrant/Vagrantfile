@@ -146,6 +146,16 @@ Vagrant.configure("2") do |config|
     end
   end
 
+  config.trigger.after :reload do
+    if OS.windows?
+      run "tasklist | find /i 'fsnotifier64.exe' && taskkill /im fsnotifier64.exe /F || echo process 'fsnotifier64.exe' not running"
+      run "start vagrant fsnotify"
+    else
+      `ps -ef | grep "fsnotify" | awk '{print $2}' | xargs kill`
+      `(vagrant fsnotify &>/dev/null) &`
+    end
+  end
+
   ######################################################
 
   #PERFORMANCE TWEAKS
@@ -207,7 +217,7 @@ Vagrant.configure("2") do |config|
     end
 
     # mem = mem / 1024 / 4
-    mem = 4048
+    mem = 3048
     vb.customize ["modifyvm", :id, "--memory", mem]
 
 

@@ -328,15 +328,15 @@ function isInputBlank(){
 
 function markClosestFormGroup_Error(input){
     markClosestFormGroup_Clear(input)
-    $(input).closest(".form-group").addClass("has-error");
+    $(input).closest(".form-group, .input-group").addClass("has-error");
 }
 function markClosestFormGroup_Success(input){
     markClosestFormGroup_Clear(input)
-    $(input).closest(".form-group").addClass("has-success");
+    $(input).closest(".form-group, .input-group").addClass("has-success");
 }
 function markClosestFormGroup_Clear(input){
-    $(input).closest(".form-group").removeClass("has-success");
-    $(input).closest(".form-group").removeClass("has-error");
+    $(input).closest(".form-group, .input-group").removeClass("has-success");
+    $(input).closest(".form-group, .input-group").removeClass("has-error");
 
 }
 

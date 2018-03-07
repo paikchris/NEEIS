@@ -213,8 +213,15 @@ function dataManagementTestHelper(){
     $('#rateSheetStateDropdown').val('CA')
     $('#rateSheetStateDropdown').trigger('change')
 
-    $('.editPremiumLogicButton').eq(0).click()
+    // $('.editPremiumLogicButton').eq(0).click()
     // $('.addRatedPremiumButton').eq(1).click()
+
+    var temp = new QuestionBuilder();
+    temp.openQuestionBuilderModal()
+
+    $('#questionBuilder_QuestionTypeDropdown').val('checkbox')
+    $('#questionBuilder_QuestionTypeDropdown').trigger('change')
+
 
 }
 

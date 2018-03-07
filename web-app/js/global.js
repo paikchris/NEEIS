@@ -205,6 +205,7 @@ function initializeGlobalListeners(){
     emailInputInit()
     numericInputOnlyInit()
     noSpacesInputInit()
+    phoneNumberMaskInit()
 
     //MULTIROW
     multiRowInputInit()
@@ -319,7 +320,6 @@ function capitalizeFirstLettersInputInit(){
         // console.log(capitalizedFirstLettersString)
         $(this).val( capitalizedFirstLettersString )
     });
-
 }
 function emailInputInit(){
     $(document.body).on('change', 'input.emailInput', function(e) {
@@ -357,6 +357,12 @@ function noSpacesInputInit(){
         var originalString = $(this).val().trim()
 
         $(this).val(replaceAllSpacesWith(originalString, ""))
+    });
+}
+function phoneNumberMaskInit(){
+    //MASK PHONE NUMBER FORMAT
+    $(document.body).on('focus', '.phoneNumberMask', function () {
+        $(".phoneNumberMask").mask("(999) 999-9999");
     });
 }
 
@@ -553,7 +559,6 @@ function checkboxNoneOfAboveListener(){
 
         }
     });
-
 }
 function radioHiddenDivInit(){
     /*
