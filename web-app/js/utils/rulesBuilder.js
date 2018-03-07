@@ -1464,6 +1464,27 @@ function BoolExpression(options){
     //REPRESENTS (X==Y)
     this.boolType = 'BoolExpression'
     this.CONSTANT_VALUES = {
+        quickExpression:{
+            hintButtonText: 'Quick Condition',
+            validValues:{
+                questionAnswerIs:{
+                    id: 'questionAnswerIs',
+                    displayText: 'A Question Answer is',
+                    bootstrapColorClass: 'info',
+                    quickValues:{
+                        "objectType": "question",
+                        "objectID": "questionID",
+                        "attributeName": "questionAnswer",
+                        "attributeValue": "questionAnswerValue"
+                    }
+                },
+                manual:{
+                    id: 'manual',
+                    displayText: 'Manual Entry',
+                    bootstrapColorClass: 'info'
+                }
+            }
+        },
         objectType: {
             hintButtonText: 'Object Type',
             validValues: {
@@ -1587,6 +1608,7 @@ function BoolExpression(options){
     }
 
     this.id = (options && options.id ? options.id : generateUniqueID() )
+    this.quickExpression = (options && options.quickExpression ? options.quickExpression : '' )
     this.objectType = (options && options.objectType ? options.objectType : '' )
     this.objectID = (options && options.objectID ? options.objectID : '' )
     this.attributeName = (options && options.attributeName ? options.attributeName : '' )
@@ -2128,6 +2150,9 @@ function BoolExpression(options){
     }
     this.getDefaultValueForProperty = function(propertyName){
         return this.getConstantValuesForPropertyName(propertyName).defaultValue
+    }
+    this.getQuickValuesMap = function(propertyName, id){
+        return this.getConstantValuesForPropertyName(propertyName).validValues[id].quickValues
     }
 
     //PLAIN ENGLISH FUNCTIONS
@@ -2825,9 +2850,20 @@ function Action(options){
         htmlString = htmlString +
             "<input class='form-control logicPreviewInput' type='text' " +
             "data-class='" + this.constructor.name + "' " +
-            "data-property='targetAttributeValue_Value' " +
-            "value='" + this.targetAttributeValue_Value.replace(/(['"])/g, "&quot;") + "'" +
+            "data-property='targetAttributeValue_Value' "
 
+        if(variableObject.type === 'formula'){
+            this.targetAttributeValue_Value = this.targetAttributeValue_Value + ""
+            htmlString = htmlString +
+                "value='" + this.targetAttributeValue_Value.replace(/(['"])/g, "&quot;") + "'"
+
+        }
+        else{
+            htmlString = htmlString +
+                "value='" + this.targetAttributeValue_Value + "'"
+
+        }
+        htmlString = htmlString +
             ">"
 
 
@@ -4775,6 +4811,13 @@ function initRulesBuilderListeners(){
                 else if(type === 'boolean'){
                     propertyValue = (propertyValue === 'true')
                 }
+            }
+            else if(propertyName === 'type'){
+                if(propertyValue === 'formula'){
+                    //IF CHANGING VARIABLE TYPE TO FORMULA, CONVERT THE VALUE TO STRING
+                    variableObj.value = variableObj.value + ""
+                }
+
             }
 
 

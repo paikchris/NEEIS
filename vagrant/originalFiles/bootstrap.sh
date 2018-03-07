@@ -46,7 +46,9 @@ echo "ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQLPW_NEW';" > /home/vagra
 mysql -u "root" -p$mysqlpw  --connect-expired-password < /home/vagrant/mysqlinit.sql
 echo "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '$MYSQLPW_NEW';" > /home/vagrant/mysqlinit.sql
 mysql -u "root" -p$MYSQLPW_NEW  --connect-expired-password < /home/vagrant/mysqlinit.sql
-rm mysqlinit.sql
+rm mysqlinit.sqlq
+qexit
+
 
 #CREATE SSH KEYS
 sudo mkdir /root/.ssh/

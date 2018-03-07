@@ -1,0 +1,22 @@
+#questionBuilderModalDialog{
+    font-size:12px;
+}
+#questionBuilderModalDialog .form-group{
+    margin-bottom:8px;
+}
+#questionBuilderModalDialog label{
+    margin-bottom:0px;
+}
+#questionBuilderModalDialog .input-group .input-group-addon{
+    height: 22px;
+    font-size: 9px;
+    padding: 4px 8px;
+}
+
+#questionBuilderModalDialog select, #questionBuilderModalDialog input[type='text']{
+    height:22px;
+    font-size:12px;
+}
+#questionBuilderModalDialog div.checkbox, #questionBuilderModalDialog div.radio{
+    margin:0px;
+}

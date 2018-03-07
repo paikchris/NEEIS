@@ -146,8 +146,17 @@
 
 	<script src="${resource(dir: 'js/utils', file: 'notifications.js')}" ></script>
 
+
+	<!-- Neeis DAO Modules-->
+	<script src="${resource(dir: 'js/DAO', file: "Questions.js?ts=" + new Date().getTime())}"></script>
+	<link rel="stylesheet" href="${resource(dir: 'css/DAO', file: "Questions.css?ts=" + new Date().getTime())}" type="text/css">
+
+
+
 	<!-- Neeis Global JS file-->
 	<script src="${resource(dir: 'js', file: "global.js?ts=" + new Date().getTime())}"></script>
+	<script src="${resource(dir: 'js/newSubmissionUtils/', file: "formValidation.js?ts=" + new Date().getTime())}"></script>
+
 
 	<script src="${resource(dir: 'js/utils', file: 'ajaxHandlers.js')}" ></script>
 
@@ -319,6 +328,9 @@
 <g:render template="/shared/modals/loadingModal" model=""/>
 <g:render template="/shared/modals/progressBarModal" model=""/>
 <g:render template="/shared/modals/newMessageModal" model=""/>
+
+<div class='modal fade' tabindex='-1' role='dialog' id='dynamicModalContainer'>
+</div>
 
 </body>
 </html>

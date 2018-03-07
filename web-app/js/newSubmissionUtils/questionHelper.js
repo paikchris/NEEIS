@@ -2,6 +2,9 @@
 // IF TEMPLATE IS NOT IMPORTING CORRECTLY MAKE SURE TO ADD NECESSARY METHOD IN THE FORMS CONTROLLER
 
 
+
+
+
 var closeButton = "<button type='button' class='close' aria-label='Close'>" +
     "<span aria-hidden='true'>&times;</span></button>"
 
@@ -48,6 +51,7 @@ function getQuestionHTML(qID, options){
     var htmlCheckboxRadioValText = (typeof options.htmlCheckboxRadioValText === 'undefined') ? question.htmlCheckboxRadioValText : options.htmlCheckboxRadioValText
     var dropdownOptionsValText = (typeof options.dropdownOptionsValText === 'undefined') ? question.dropdownOptionsValText : options.dropdownOptionsValText
     var multiColumnMap = (typeof options.multiColumnMap === 'undefined') ? question.multiColumnMap : options.multiColumnMap
+
 
 
     //INPUT GROUP STUFF
@@ -1086,8 +1090,6 @@ function formatDataAttributeStringFromMap(inputDataAttrJSON){
         }
 
     }
-
-    // console.log(attrString)
 
     return attrString
 }
