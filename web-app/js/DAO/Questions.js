@@ -1,3 +1,4 @@
+
 function Question(options){
     this.CONSTANT_VALUES = {
         inputType: {
@@ -85,6 +86,9 @@ function Question(options){
     }
 
     this.id = (options && options.id ? options.id : '' )
+    this.weight = (options && options.weight ? options.weight : 0 )
+    this.hiddenFlag = (options && options.hiddenFlag ? options.hiddenFlag : 'N' )
+    this.category = (options && options.category ? options.category : 'MISC' )
     this.questionType = (options && options.questionType ? options.questionType : 'basicText' )
     this.questionID = (options && options.questionID ? options.questionID : '' )
     this.questionText = (options && options.questionText ? options.questionText : '')
@@ -107,9 +111,9 @@ function Question(options){
     this.inputClass = (options && options.inputClass ? options.inputClass : 'form-control questionAnswer showReview')
     this.inputDataAttr = (options && options.inputDataAttr ? options.inputDataAttr : '')
     this.inputStyle = (options && options.inputStyle ? options.inputStyle : '')
-    this.required = (options && options.required ? options.required : '')
-    this.attachments = (options && options.attachments ? options.attachments : '')
-    this.disabled = (options && options.disabled ? options.disabled : '')
+    this.required = (options && options.required ? options.required : 'N')
+    this.attachments = (options && options.attachments ? options.attachments : 'N')
+    this.disabled = (options && options.disabled ? options.disabled : 'N')
     this.htmlDataReviewName = (options && options.htmlDataReviewName ? options.htmlDataReviewName : '')
     this.htmlPlaceholder = (options && options.htmlPlaceholder ? options.htmlPlaceholder : '')
     this.maxLength = (options && options.maxLength ? options.maxLength : '')
@@ -120,27 +124,36 @@ function Question(options){
 
 
     //INPUT GROUP STUFF
-    this.inputAddOnLeft = (options && options.inputAddOnLeft ? options.inputAddOnLeft : '')
-    this.inputAddOnRight = (options && options.inputAddOnRight ? options.inputAddOnRight : '')
+    this.inputAddOnLeft = (options && options.inputAddOnLeft ? options.inputAddOnLeft : 'N')
+    this.inputAddOnRight = (options && options.inputAddOnRight ? options.inputAddOnRight : 'N')
     this.inputButtonText = (options && options.inputButtonText ? options.inputButtonText : '')
     this.inputAddOnText = (options && options.inputAddOnText ? options.inputAddOnText : '')
 
     //ICON
-    this.faIconLeft = (options && options.faIconLeft ? options.faIconLeft : '')
+    this.faIconLeft = (options && options.faIconLeft ? options.faIconLeft : 'N')
     if(this.faIconLeft === false && options.faIconLeft === 'Y'){
         this.faIconLeft = true
     }
-    this.faIconRight = (options && options.faIconRight ? options.faIconRight : '')
+    this.faIconRight = (options && options.faIconRight ? options.faIconRight : 'N')
     if(this.thisfaIconRight === false && options.faIconRight === 'Y'){
         this.faIconRight = true
     }
-    this.faIconClass = (options && options.faIconClass ? options.faIconClass : '')
+    this.faIconClass = (options && options.faIconClass ? options.faIconClass : 'N' )
     this.faIconStyle = (options && options.faIconStyle ? options.faIconStyle : '')
 
     //NON DATABASE PROPERTIES
     this.questionAnswer = (options && options.questionAnswer ? options.questionAnswer : '')
 
     //DATA VALIDATION FUNCTIONS
+    this.questionID_IsValid = function(){
+        //TODO: FIGURE OUT A WAY TO CHECK UNIQUENESS WHEN USING ASYNC CALL
+        if(this.questionID.trim().length > 0){
+            return true
+        }
+        else{
+            return false
+        }
+    }
     this.inputType_IsValid = function(){
         //TODO: MAKE THIS USE THE CONSTANT VALID VALUES LATER
         if(this.inputType.trim().length > 0){
@@ -171,7 +184,8 @@ function Question(options){
     }
     this.isValid = function(){
         //RUN ALL VALIDATIONS
-        if( this.inputType_IsValid() &&
+        if( this.questionID_IsValid() &&
+            this.inputType_IsValid() &&
             this.questionType_IsValid() &&
             this.inputClass_IsValid()){
             return true
@@ -793,6 +807,11 @@ function Question(options){
 
         this[property] = value
 
+        //IF THE QUESTION ID CHANGES, CHECK FOR UNIQUENESS
+        if(property === 'questionID'){
+
+        }
+
         //IF THE INPUT TYPE CHANGES, RESET THE QUESTION TYPE
         if(property === 'inputType'){
             //CHANGE QUESTION TYPE TO DEFAULT
@@ -832,6 +851,20 @@ function Question(options){
     }
     this.resetHTMLPlaceholder = function(){
         this.htmlPlaceholder = this.getDefaultHTMLPlaceholder(this.inputType, this.questionType)
+    }
+    this.questionIDIsUnique = function(questionID, callback){
+        var questionObject = this
+
+        $.ajax({
+            method: "GET",
+            url: "/Data/isQuestionIDUnique",
+            data: {
+                questionID: questionID
+            }
+        })
+            .done(function(msg) {
+                callback(msg)
+            });
     }
 
 
@@ -1087,32 +1120,34 @@ function Question(options){
     }
 
     //DB FUNCTIONS
-    this.save = function(){
-        console.log( this )
+    this.save = function(callback){
+        var questionID = this.questionID
 
-        $.ajax({
-            method: "POST",
-            url: "/Data/saveQuestion",
-            data: {
-                question: JSON.stringify( this )
-            }
-        })
-            .done(function(msg) {
-                if(msg === "Success"){
-                    refreshQuestionCategories()
-                    refreshQuestions()
-                    // alert("Saved")
-                    setFooterStatusUpToDate()
-                    updateQuestionPreview(questionID)
+        if( this.isValid() ){
+            $.ajax({
+                method: "POST",
+                url: "/Data/saveQuestion",
+                data: {
+                    question: JSON.stringify( this )
                 }
-                else if(msg === "Error"){
-                    // alert("Error Saving")
-                    setFooterStatusSaveError()
-                }
-                else{
-                    alert(msg)
-                }
-            });
+            })
+                .done(function(msg) {
+                    if(msg === "Success"){
+                        refreshQuestions()
+                        setFooterStatusUpToDate()
+
+                        callback(questionID)
+                    }
+                    else if(msg === "Error"){
+                        // alert("Error Saving")
+                        setFooterStatusSaveError()
+                    }
+                    else{
+                        alert(msg)
+                    }
+                });
+        }
+
     }
 
     function saveQuestionChanges(questionID){
@@ -1233,6 +1268,8 @@ function Question(options){
 
 function QuestionBuilder(options){
     this.questionObject = (options && options.questionObject ? options.questionObject : new Question() )
+    this.afterSave = (options && options.afterSave ? options.afterSave : undefined ) //FUNCTION FOR AFTER QUESTION SAVE
+    this.afterClose = (options && options.afterClose ? options.afterClose : undefined ) //FUNCTION FOR AFTER QUESTIONBUILDER CLOSE
 
     //DOM ELEMENTS
     this.DOMElement = function(){
@@ -1244,6 +1281,9 @@ function QuestionBuilder(options){
             "               <h4 class='modal-title'>Create A Question</h4> " +
             "           </div> " +
             "           <div class='modal-body'> " +
+            "               <div class='row'>" +
+                                this.questionBuilderQuestionIDInput_DOMElement() +
+            "               </div>" +
             "               <div class='row'>" +
                                 this.questionBuilderInputTypeDropdown_DOMElement() +
             "               </div>" +
@@ -1398,6 +1438,28 @@ function QuestionBuilder(options){
 
         return htmlString
     }
+    this.questionBuilderQuestionIDInput_DOMElement = function(){
+        var value = (this.questionObject.questionID.trim().length > 0 ? this.questionObject.questionID : '')
+        this.questionObject.questionID = value
+        var htmlString = "" +
+            "<div class='col-xs-6'>" +
+            "<div class='form-group'>" +
+            "   <label>Question ID (No Spaces, Must be Unique)</label>" +
+            "   <input type='text' class='form-control noSpacesInput questionBuilderInput' " +
+            "       id='questionBuilder_QuestionIDInput' " +
+            "       value='" + value + "' " +
+            "       data-class='Question' " +
+            "       data-id='" + this.questionObject.id + "' " +
+            "       data-property='questionID' " +
+            "       placeholder='questionUniqueID' " +
+            "   >" +
+            "</div>" +
+            "</div>"
+
+
+        return htmlString
+    }
+
 
     //DOME ELEMENTS: INPUT TYPE SECTIONS
     this.inputTypeForm_text_DOMElement = function(){
@@ -1982,6 +2044,9 @@ function QuestionBuilder(options){
         }, 500);
 
     }
+    this.closeModal = function(){
+        this.afterClose()
+    }
     this.redraw = function(){
         $('#dynamicModalContainer').html( this.DOMElement() )
 
@@ -1993,6 +2058,29 @@ function QuestionBuilder(options){
         var property = $(inputElement).attr('data-property')
         var value = ""
 
+
+        if(property === 'questionID'){
+            var questionID = $(inputElement).val()
+
+            //DONE FUNCTION
+            var questionBuilderObject = this
+            var doneFunction = function(msg){
+                if(msg === 'true'){
+                    questionBuilderObject.questionObject.setProperty(property, value)
+                    questionBuilderObject.redraw()
+                }
+                else{
+                    console.log(msg)
+                    alert('Question ID already exists')
+                    markClosestFormGroup_Error( $('#questionBuilder_QuestionIDInput') )
+                }
+            }
+            //CHECK FOR UNIQUNESS
+            this.questionObject.questionIDIsUnique( questionID, doneFunction)
+
+            //CHANGE CLASS TYPE TO NOT CHANGE THE QUESTION ID VALUE IMMEDIATELY
+            classType = "HOLD"
+        }
         if(property === 'inputDataAttr'){
             //REBUILD THE DATA MAP
             var precision = $('input[name="questionBuilder_inputDataAttr_precision"]:checked').val()
@@ -2097,6 +2185,24 @@ function QuestionBuilder(options){
 
             this.redraw()
         }
+    }
+    this.checkDBForQuestionIDUniqueness = function(questionID){
+        $.ajax({
+            method: "GET",
+            url: "/Data/isQuestionIDUnique",
+            data: {
+                questionID: questionID
+            }
+        })
+            .done(function(msg) {
+                if(msg === "true"){
+                }
+                else if(msg === "false"){
+                }
+                else{
+                    alert(msg)
+                }
+            });
     }
     this.dropdownOptionsAddOption = function(button){
         var optionMap
@@ -2217,17 +2323,18 @@ function QuestionBuilder(options){
 
     //QUESTION BUILDER SAVE FUNCTION
     this.saveQuestion = function(){
-        this.questionObject.save()
+        this.questionObject.save(this.afterSave)
     }
-
-
-
 
     //LISTENERS
     this.listeners = function(){
         var QUESTIONBUILDER = this
 
         //MODAL LISTENERS
+        $(document.body).on('hidden.bs.modal', '#dynamicModalContainer', function() {
+            QUESTIONBUILDER.closeModal()
+        });
+
         $(document.body).on('change', '#questionBuilderModalDialog .questionBuilderInput', function() {
             QUESTIONBUILDER.questionInputElementChange(this)
         });
@@ -2235,6 +2342,11 @@ function QuestionBuilder(options){
         $(document.body).on('click', '#questionBuilderModalDialog .questionBuilder_SaveQuestionButton', function() {
             QUESTIONBUILDER.saveQuestion(this)
         });
+
+        $(document.body).on('click', '#questionBuilderModalDialog .questionBuilder_CancelQuestionButton', function() {
+            QUESTIONBUILDER.closeModal()
+        });
+
 
         //DROPDOWN OPTIONS MULTI ROW LISTENERS
         $(document.body).on('click', '#questionBuilderModalDialog .addDropdownOptionButton', function() {

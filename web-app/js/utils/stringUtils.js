@@ -191,6 +191,10 @@ function replaceAllSpacesWith(originalString, charToReplaceSpace){
     return originalString.replace(/\s+/g, charToReplaceSpace)
 }
 
+function removeAllSpaces(originalString){
+    return originalString.replace(/\s+/g, '')
+}
+
 function removeTrailingComma(string){
     return string.replace(/,\s*$/, "");
 }

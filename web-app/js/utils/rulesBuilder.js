@@ -321,6 +321,12 @@ function RulesDataModel(){
     this.setRuleSetVariableValue_ByName = function(ruleSetID, variableName, newValue){
         this.getRuleSetVariableByName(variableName, ruleSetID).value = newValue
     }
+    this.setTargetAttributeName_Value = function(ruleSetID, ruleID, conditionID, actionID, newValue){
+        this.getAction(actionID, conditionID, ruleID, ruleSetID).targetAttributeName_Value = newValue
+    }
+    this.setObjectID_Value = function(ruleSetID, ruleID, conditionID, boolExpressionID, newValue){
+        this.getBoolExpression(boolExpressionID, conditionID, ruleID, ruleSetID).objectID_Value = newValue
+    }
 
     //INIT
     this.init()
@@ -1513,7 +1519,7 @@ function BoolExpression(options){
                     id: 'questionID',
                     displayText: 'Question ID',
                     bootstrapColorClass: 'info',
-                    DOMElementFunction: 'this.questionIDDropdown_DOMElement()',
+                    DOMElementFunction: 'this.questionTypeaheadInput_DOMElement()',
                     required: {
                         propertyName: 'objectType',
                         propertyValue: 'question'
@@ -1837,6 +1843,18 @@ function BoolExpression(options){
 
         return htmlString
     }
+    this.launchQuestionBuilderButton_DOMElement = function(){
+        var htmlString = ""
+
+        htmlString = htmlString +
+            "<button type='button' class='btn btn-xs btn-primary pull-right addNewQuestionButton' " +
+            "   onclick=''>" +
+            "   <i class='fa fa-pencil' aria-hidden='true'></i>" +
+            "   " +
+            "</button> "
+
+        return htmlString
+    }
 
     //INPUT DOM ELEMENT FUNCTIONS
     this.questionIDDropdown_DOMElement = function(){
@@ -1857,6 +1875,27 @@ function BoolExpression(options){
 
         htmlString = htmlString +
             "</select>"
+
+        return htmlString
+    }
+    this.questionTypeaheadInput_DOMElement = function(){
+        var htmlString = ""
+        var value = ""
+        if(this.objectIDIsValid() ){
+            value = this.objectID_Value
+        }
+
+        htmlString = htmlString +
+            "<input class='form-control logicPreviewInput typeahead' type='text' " +
+            "data-class='" + this.constructor.name + "' " +
+            "data-property='objectID_Value' " +
+            "data-ttid='questions' " +
+            "value='" + value + "'>"
+
+        //ADD NEW QUESTION BUTTON
+        htmlString = htmlString +
+            this.launchQuestionBuilderButton_DOMElement()
+
 
         return htmlString
     }
@@ -2499,7 +2538,7 @@ function Action(options){
                     id: 'targetQuestionID',
                     displayText: 'Question ID',
                     bootstrapColorClass: 'success',
-                    DOMElementFunction: 'this.questionIDDropdown_DOMElement()',
+                    DOMElementFunction: 'this.questionTypeaheadInput_DOMElement()',
                     required: {
                         propertyName: 'targetID',
                         propertyValue: 'questionID'
@@ -2807,6 +2846,18 @@ function Action(options){
 
         return htmlString
     }
+    this.launchQuestionBuilderButton_DOMElement = function(){
+        var htmlString = ""
+
+        htmlString = htmlString +
+            "<button type='button' class='btn btn-xs btn-primary pull-right addNewQuestionButton' " +
+            "   onclick=''>" +
+            "   <i class='fa fa-pencil' aria-hidden='true'></i>" +
+            "   " +
+            "</button> "
+
+        return htmlString
+    }
 
     //PREVIEW OBJECT INPUT FUNCTIONS
     this.rateSheetVariableDropdown_DOMElement = function(){
@@ -2975,6 +3026,25 @@ function Action(options){
 
         htmlString = htmlString +
             "</select>"
+
+        return htmlString
+    }
+    this.questionTypeaheadInput_DOMElement = function(){
+        var htmlString = ""
+        var value = ""
+        if(this.targetAttributeName_ValueIsValid() ){
+            value = this.targetAttributeName_Value
+        }
+
+        htmlString = htmlString +
+            "<input class='form-control logicPreviewInput typeahead' type='text' " +
+            "data-class='" + this.constructor.name + "' " +
+            "data-property='targetAttributeName_Value' " +
+            "data-ttid='questions' " +
+            "value='" + value + "'>"
+
+        htmlString = htmlString +
+            this.launchQuestionBuilderButton_DOMElement()
 
         return htmlString
     }
@@ -3604,18 +3674,66 @@ function RateSheetWell(options){
         var buttonClickedRowIndex = $(buttonClicked).closest('.rateSheetRow').index()
 
         //ADD PLACEHOLDER ROW AFTER THE CLICKED ROW
-        $(buttonClickedRow).after( this.newRuleRowPlaceholder_DOMElement({insertAfterIndex: buttonClickedRowIndex}))
+        var rulePlacholderElement = $( this.newRuleRowPlaceholder_DOMElement({insertAfterIndex: buttonClickedRowIndex}) )
+        $(buttonClickedRow).after( rulePlacholderElement )
+
+
+        //TYPEAHEAD SETUP
+        var options = {
+            element: $(rulePlacholderElement).find('input.newRule_descriptionInput'),
+            url: '/Data/getRateCodesTypeahead',
+            dataSearchKey:'description',
+            selectListener: function(typeaheadInputElement, event, dataObj, datasetName){
+                var descriptionInputElement = $(typeaheadInputElement)
+                var placeHolderRow = $(typeaheadInputElement).closest('.placeHolderRow')
+                var rateCodeInputElement = $(placeHolderRow).find('.newRule_codeInput')
+                $(rateCodeInputElement).val( dataObj.code )
+
+                //STORE RATE CODE ID
+                $(placeHolderRow).attr('data-ratecodeid', dataObj.id)
+            }
+        }
+        var placeHolderTypeAhead = new Typeahead(options)
     }
 
     //DOM LISTENER FUNCTIONS
     this.validateNewRule = function(){
 
     }
+    this.newRuleSubmitButtonClickAction = function(submitButton){
+        var placeHolderRuleElement = $(submitButton).closest('.placeHolderRow')
+        var dbID = $(placeHolderRuleElement).attr('data-ratecodeid')
+        var index = $(placeHolderRuleElement).attr('data-insertafterindex')
+
+
+        //CHECK DATABASE FOR EXISTING RULE
+        $.ajax({
+            method: "POST",
+            url: "/Data/getRateCode",
+            data: {
+                dbID: dbID
+            }
+        })
+            .done(function(msg) {
+                console.log(msg)
+
+                if(msg === null){
+                    //IF MSG IS NULL, NO MATCHING RULE EXISTS, SAVE NEW
+                    RATESHEETWELL_DOMOBJECT.saveNewRule(submitButton)
+
+                }
+                else{
+                    //EXISTING RULE, JUST IMPORT
+                    RATESHEETWELL_DOMOBJECT.refreshRateCodeAfterSave(JSON.parse(msg).rateCodeID, index)
+                }
+            });
+
+    }
     this.saveNewRule = function (submitButton){
         var placeHolderRuleElement = $(submitButton).closest('.placeHolderRow')
         var index = $(placeHolderRuleElement).attr('data-insertafterindex')
         var code = $(placeHolderRuleElement).find('.newRule_codeInput').val()
-        var description = $(placeHolderRuleElement).find('.newRule_descriptionInput').val()
+        var description = $(placeHolderRuleElement).find('.newRule_descriptionInput.tt-input').val()
         var company = $('#rateSheetCompanyInput').val()
         var state = getSelectedRateSheetState()
         var coverage = $('#rateSheetCoverageIDInput').val()
@@ -3670,7 +3788,7 @@ function RateSheetWell(options){
                 else{
                     rateCodes = jsonStringToObject(msg)
                     //ADD NEW RULE TO CURRENT RULESET
-                    var newRateCodeObj = getRateCodeObjectByID(rateCodeID.toUpperCase())
+                    var newRateCodeObj = getRateCodeObjectByID(rateCodeID)
                     newRateCodeObj = jQuery.extend(true, {}, newRateCodeObj)
                     newRateCodeObj.id = generateUniqueID()
                     if(newRateCodeObj){
@@ -4435,6 +4553,48 @@ function PreviewModal(options){
 
         rulesDataModelObject.removeBoolExpression(this.ruleSetID, this.ruleID, conditionID, boolExpressionID)
     }
+    this.launchQuestionBuilderModal = function(button){
+        var questionInputElement = $(button).closest('.previewObjectInputContainer').find('.logicPreviewInput')
+        var ruleID  = this.findElementsRuleID(button)
+        var ruleSetID = this.findElementsRuleSetID(button)
+        var conditionID = this.findElementsConditionID(button)
+        var actionID = this.findElementsActionID(button)
+        var boolExpressionID = this.findElementsBoolExpressionID(button)
+
+        var options = {
+            afterSave: function(questionID){
+                $('.modal').modal('hide')
+
+                setTimeout(function(){
+
+
+                    //REDRAW THE PREVIEW MODAL
+                    PREVIEW_MODAL_DOMOBJECT.openModal(ruleID)
+
+                    //ADD THE QUESTION ID TO THE DATA MODEL BEFORE THE REDRAW
+                    if(actionID && boolExpressionID === undefined){
+                        rulesDataModelObject.setTargetAttributeName_Value(ruleSetID, ruleID, conditionID, actionID, questionID)
+
+                    }
+                    else if(boolExpressionID && actionID === undefined){
+                        rulesDataModelObject.setObjectID_Value(ruleSetID, ruleID, conditionID, boolExpressionID, questionID)
+
+                    }
+                    PREVIEW_MODAL_DOMOBJECT.openModal(ruleID)
+
+                }, 500);
+            },
+            afterClose: function(){
+                $('.modal').modal('hide')
+
+                setTimeout(function(){
+                    //REDRAW THE PREVIEW MODAL
+                    PREVIEW_MODAL_DOMOBJECT.openModal(ruleID)
+                }, 500);
+            }
+        }
+        new QuestionBuilder(options).openQuestionBuilderModal()
+    }
 
     this.openModal = function(ruleID, parentRuleID){
         this.ruleID = ruleID
@@ -4459,6 +4619,35 @@ function PreviewModal(options){
         this.clearPreviewModal()
 
         $(this.previewModalContainer).html( this.DOMElement() )
+
+        //RUN TYPEAHEAD INITIALIZERS
+        this.typeaheadInputsInit()
+
+    }
+    this.typeaheadInputsInit = function(){
+        //QUESTION ID TYPE AHEAD INIT
+        var questionIDInputs = $(".typeahead[data-ttid='questions']")
+
+        if($(questionIDInputs).length > 0){
+            //ONLY RUN IF THERE ARE QUESTION INPUTS
+
+            //DESTROY EXISTING FIRST
+            $(questionIDInputs).typeahead('destroy');
+
+            //SETUP NEW TYPEAHEAD
+            var options = {
+                element: $(questionIDInputs),
+                url: '/Data/typeaheadData_Questions',
+                dataSearchKey:'questionText',
+                displayKey: 'questionID',
+                selectListener: function(typeaheadInputElement, event, dataObj, datasetName){
+                    $(typeaheadInputElement).typeahead('val', dataObj.questionID)
+                }
+
+            }
+            new Typeahead(options)
+        }
+
     }
     this.clearPreviewModal = function() {
         $(this.previewModalContainer).html('')
@@ -4613,6 +4802,7 @@ function PreviewInput(options){
             "       <div class='previewObjectInputContainer'>" +
                         this.inputDOMElement +
             "       </div>" +
+
             "   </div>" +
             "</div>"
 
@@ -4767,6 +4957,11 @@ function initRulesBuilderListeners(){
         // previewHintSelectAction(this)
     });
 
+    //PREVIEW MODAL QUESTION BUILDER
+    $(document.body).on('click', '.addNewQuestionButton', function(e) {
+        PREVIEW_MODAL_DOMOBJECT.launchQuestionBuilderModal(this)
+        // previewHintSelectAction(this)
+    });
 
 
     //PREVIEW OBJECT INPUTS CHANGE ACTION
@@ -4835,7 +5030,7 @@ function initRulesBuilderListeners(){
         RATESHEETWELL_DOMOBJECT.addNewRulePlaceHolderRow(this)
     });
     $(document.body).on('click', 'button.rulePlaceholderRowSubmitButton', function(e) {
-        RATESHEETWELL_DOMOBJECT.saveNewRule(this)
+        RATESHEETWELL_DOMOBJECT.newRuleSubmitButtonClickAction(this)
     });
     $(document.body).on('click', 'button.rulePlaceholderRowCancelButton', function(e) {
         RATESHEETWELL_DOMOBJECT.cancelAddNewRule(this)

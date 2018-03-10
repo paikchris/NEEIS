@@ -151,6 +151,10 @@
 	<script src="${resource(dir: 'js/DAO', file: "Questions.js?ts=" + new Date().getTime())}"></script>
 	<link rel="stylesheet" href="${resource(dir: 'css/DAO', file: "Questions.css?ts=" + new Date().getTime())}" type="text/css">
 
+	<!-- Neeis UTIL Modules-->
+	<script src="${resource(dir: 'js/utils', file: "Typeahead.js?ts=" + new Date().getTime())}"></script>
+
+
 
 
 	<!-- Neeis Global JS file-->
@@ -173,9 +177,9 @@
 	<link rel="stylesheet" href="${resource(dir: 'css', file: 'bootstrap-datepicker3.css')}" type="text/css">
 
 	<!-- TWITTER'S TYPEAHEAD PLUGIN-->
-	<script src=	"${resource(dir: 'js/vendor/typeahead', file: 'bloodhound.min.js')}" ></script>
-	<script src="${resource(dir: 'js/vendor/typeahead', file: 'typeahead.bundle.min.js')}" ></script>
-	<script src="${resource(dir: 'js/vendor/typeahead', file: 'typeahead.jquery.min.js')}" ></script>
+	<script src=	"${resource(dir: 'js/vendor/typeahead', file: 'bloodhound.js')}" ></script>
+	<script src="${resource(dir: 'js/vendor/typeahead', file: 'typeahead.bundle.js')}" ></script>
+	<script src="${resource(dir: 'js/vendor/typeahead', file: 'typeahead.jquery.js')}" ></script>
 	<link rel="stylesheet" href="${resource(dir: 'css', file: 'typeaheadjs.css')}" type="text/css">
 
 
