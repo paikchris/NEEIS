@@ -213,14 +213,23 @@ function dataManagementTestHelper(){
     $('#rateSheetStateDropdown').val('CA')
     $('#rateSheetStateDropdown').trigger('change')
 
+    $('.addRuleButton').eq(0).click()
+
+
+    //TYPEAHEAD TESTING
+    // var temp = {element: $('#testtypeahead'), url: '/Data/getRateCodesTypeahead', dataSearchKey:'description' }
+    // var typea = new Typeahead(temp)
+
+    //RULES BUILDER TESTING
     // $('.editPremiumLogicButton').eq(0).click()
     // $('.addRatedPremiumButton').eq(1).click()
 
-    var temp = new QuestionBuilder();
-    temp.openQuestionBuilderModal()
 
-    $('#questionBuilder_QuestionTypeDropdown').val('checkbox')
-    $('#questionBuilder_QuestionTypeDropdown').trigger('change')
+    //QUESTION BUILDER TESTING
+    // var temp = new QuestionBuilder();
+    // temp.openQuestionBuilderModal()
+    // $('#questionBuilder_QuestionTypeDropdown').val('checkbox')
+    // $('#questionBuilder_QuestionTypeDropdown').trigger('change')
 
 
 }

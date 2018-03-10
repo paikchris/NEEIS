@@ -1039,6 +1039,10 @@
                                 <div class="col-xs-12">
                                     <label class="control-label">Rate Sheet Details</label>
                                 </div>
+                                <div class="col-xs-12">
+
+                                    <input class="form-control" type="text" id="testtypeahead">
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-xs-2">
